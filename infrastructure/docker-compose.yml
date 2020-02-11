@@ -1,0 +1,73 @@
+version: "3.7"
+services:
+  #  production:
+  #    build:
+  #      context: ../api
+  #      dockerfile: ../api
+  #      target: production
+  #      args:
+  #        - BASE_BUILD_IMAGE: 11-jdk
+  #    image: ${DOCKER_REPO}/api:latest
+  workspace:
+    build:
+      context: ../api
+      #      dockerfile: ../api
+      target: build
+    #      Start the container but don't do anything
+    entrypoint: ["tail", "-f", "/dev/null"]
+    env_file:
+      - ../api/api.env
+    environment:
+      SPRING_PROFILE: "local"
+      ARTIFACT_NAME: "api-0.0.1-SNAPSHOT.jar"
+    ##      Remote Debug info
+    #      - JPDA_ADDRESS: "8000"
+    #          - JPDA_TRANSPORT: "dt_socket"
+    #      - JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
+    #      - JPDA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
+    depends_on:
+      - postgres
+    expose:
+      - 8000 # Port 8000 available to other services
+    ports:
+      - "8080:8080"
+    #      - "5005:5005"
+    networks:
+      - back-end
+      - front-end
+    volumes:
+      - ${API_HOST_CODE_PATH}:/app # TODO: mount logs
+      - ~/.m2:/root/.m2
+  postgres:
+    build:
+      context: ../db
+    #      dockerfile: ../db
+    networks:
+      - back-end
+    env_file:
+      - ../db/db.env
+    environment:
+      PGDATA: ${DB_CONTAINER_DATA_PATH}
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    volumes:
+      - ${DB_HOST_DATA_PATH}:${DB_CONTAINER_DATA_PATH} #TODO: Mount logs
+
+#  frontend:
+#    build:
+#      context: ../web-frontend
+#      dockerfile: ../web-frontend
+#    networks:
+#      - front-end
+
+networks:
+  front-end:
+  back-end:
+  external:
+    driver: overlay
+
+volumes:
+  db-data:
+
