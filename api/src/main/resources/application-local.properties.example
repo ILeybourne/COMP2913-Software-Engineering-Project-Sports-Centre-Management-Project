@@ -1,0 +1,20 @@
+#spring.datasource.name=sports_management_postgres
+#spring.datasource.schema=
+#spring.datasource.platform=postgres
+#spring.jpa.database=POSTGRESQL
+spring.datasource.url=jdbc:postgresql://localhost:5432/comp2913
+spring.datasource.username=comp2913
+spring.datasource.password=y4UYMmX%zFrH%Cnvz6
+########################################################## FLYWAY
+spring.flyway.enabled=true
+spring.flyway.schemas=sports_centre_management
+########################################################## JPA
+spring.jpa.generate-ddl=true
+spring.jpa.properties.hibernate.hbm2ddl.auto=update
+spring.jpa.properties.hibernate.default_schema=sports_centre_management
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.show-sql=true
+########################################################## HIKARI
+spring.datasource.hikari.connectionTimeout=20000
+spring.datasource.hikari.maximumPoolSize=5
+spring.jpa.open-in-view=false
