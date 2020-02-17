@@ -82,9 +82,14 @@ password to something memorable as you will need this to view the database schem
 
 ### Starting the Project up
 
-To start the Database and a local API server connected to the database you can simply run `docker-compose up -d api postgres` and then should be able to point the JavaScript front end or Postman to the local port (by default this is 8000)
+To start the Database and a local API server connected to the database you can simply run `docker-compose up -d workspace postgres`
+Then run `docker-compose exec workspace bash`
 
-localhost:8000 by default, however this may be configured in `/.env`
+When in the workspace shell, you should be able to run `./mvnw springboot:run`
+
+and then should be able to point the JavaScript front end or Postman to the local port (by default this is 8000)
+
+localhost:8000 by default, however this may be configured differently for you in `/.env` if you decided to change it
 
 **Please Note:** that the server will be running the code was checked out at the time of running `docker-compose up`, if the code doesn't run then the docker container will not run either
 
