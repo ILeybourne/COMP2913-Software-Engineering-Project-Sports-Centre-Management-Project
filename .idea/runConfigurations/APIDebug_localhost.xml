@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="APIDebug@localhost" type="Remote">
+    <module name="api" />
+    <option name="USE_SOCKET_TRANSPORT" value="true" />
+    <option name="SERVER_MODE" value="false" />
+    <option name="SHMEM_ADDRESS" />
+    <option name="HOST" value="localhost" />
+    <option name="PORT" value="5005" />
+    <option name="AUTO_RESTART" value="false" />
+    <method v="2">
+      <option name="com.intellij.docker.debug.DockerBeforeRunTask" compose-service="workspace" run-config="infrastructure.api: Compose Deployment" />
+    </method>
+  </configuration>
+</component>

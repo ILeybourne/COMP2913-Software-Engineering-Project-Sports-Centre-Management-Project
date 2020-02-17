@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ApiApplication - Demo" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="api" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="uk.ac.leeds.comp2913.api.ApiApplication" />
+    <option name="HIDE_BANNER" value="true" />
+    <option name="ACTIVE_PROFILES" value="demo" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
