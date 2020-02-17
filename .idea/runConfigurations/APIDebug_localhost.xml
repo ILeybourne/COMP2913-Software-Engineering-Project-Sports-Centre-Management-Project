@@ -8,7 +8,7 @@
     <option name="PORT" value="5005" />
     <option name="AUTO_RESTART" value="false" />
     <method v="2">
-      <option name="com.intellij.docker.debug.DockerBeforeRunTask" compose-service="workspace" run-config="infrastructure.api: Compose Deployment" />
+      <option name="com.intellij.docker.debug.DockerBeforeRunTask" compose-service="workspace" run-config="infrastructure[workspace, postgres]: Compose Deployment" />
     </method>
   </configuration>
 </component>
