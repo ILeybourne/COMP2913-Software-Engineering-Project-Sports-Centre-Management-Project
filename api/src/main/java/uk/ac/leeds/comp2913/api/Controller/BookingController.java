@@ -6,11 +6,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 
+import java.util.Date;
+
 @RestController
 @RequestMapping("/booking")
 public class BookingController {
   @GetMapping("")
   public Booking booking(@RequestParam(value = "name", defaultValue = "World") String name) {
-    return new Booking();
+    Booking b = new Booking();
+    b.setCreatedAt(new Date());
+    return b;
   }
 }

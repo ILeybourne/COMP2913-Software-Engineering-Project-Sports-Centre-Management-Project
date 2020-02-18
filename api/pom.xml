@@ -16,7 +16,6 @@
 
   <properties>
     <java.version>11</java.version>
-    <spring-boot-admin.version>2.2.1</spring-boot-admin.version>
   </properties>
 
   <dependencies>
@@ -43,10 +42,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>de.codecentric</groupId>
-      <artifactId>spring-boot-admin-starter-server</artifactId>
     </dependency>
     <dependency>
       <groupId>org.flywaydb</groupId>
@@ -87,24 +82,12 @@
     </dependency>
   </dependencies>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>de.codecentric</groupId>
-        <artifactId>spring-boot-admin-dependencies</artifactId>
-        <version>${spring-boot-admin.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <build>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-<!--        TOOD: needed?-->
+        <!--        TOOD: needed?-->
         <configuration>
           <excludeDevtools>false</excludeDevtools>
         </configuration>
