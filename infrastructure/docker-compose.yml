@@ -20,6 +20,7 @@ services:
     environment:
       SPRING_PROFILE: "local"
       ARTIFACT_NAME: "api-0.0.1-SNAPSHOT.jar"
+      SPRING_PORT: ${API_HOST_PORT}
     ##      Remote Debug info
     #      - JPDA_ADDRESS: "8000"
     #          - JPDA_TRANSPORT: "dt_socket"
@@ -28,9 +29,9 @@ services:
     depends_on:
       - postgres
     expose:
-      - 8000 # Port 8000 available to other services
+      - 8080 # Port 8080 available to other services
     ports:
-      - "8080:8080"
+      - "8080:${API_HOST_PORT}"
     #      - "5005:5005"
     networks:
       - back-end
@@ -56,12 +57,22 @@ services:
     volumes:
       - ${DB_HOST_DATA_PATH}:${DB_CONTAINER_DATA_PATH} #TODO: Mount logs
 
-#  frontend:
-#    build:
-#      context: ../web-frontend
-#      dockerfile: ../web-frontend
-#    networks:
-#      - front-end
+  frontend:
+    build:
+      context: ../web-frontend
+      target: build
+    networks:
+      - front-end
+    entrypoint: ["tail", "-f", "/dev/null"]
+    env_file:
+      - ../web-frontend/web-frontend.env
+    depends_on:
+      - workspace
+    ports:
+      - "8000:8080"
+    volumes:
+      - ./web-frontend/customer-app/:/app/
+      - /app/node_modules
 
 networks:
   front-end:
