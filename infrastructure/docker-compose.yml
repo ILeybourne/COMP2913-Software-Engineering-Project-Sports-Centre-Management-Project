@@ -71,7 +71,7 @@ services:
     ports:
       - "8000:8080"
     volumes:
-      - ./web-frontend/customer-app/:/app/
+      - ../web-frontend/customer-app/:/app/
       - /app/node_modules
 
 networks:
