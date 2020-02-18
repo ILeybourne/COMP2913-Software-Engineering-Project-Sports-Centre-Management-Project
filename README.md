@@ -8,7 +8,7 @@ This file is intended to give a general overview of all of these files.
 
 ## API
 
-Please see the [wiki]() for Technical Reference with respect to the API
+Please see the [wiki](https://gitlab.com/sgarwood/comp2913-sports-centre-management-project/-/wikis/API-Technical-Reference) for Technical Reference with respect to the API
 
 ## Front End
 
