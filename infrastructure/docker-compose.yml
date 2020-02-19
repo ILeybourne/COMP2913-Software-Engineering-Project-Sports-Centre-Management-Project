@@ -18,21 +18,23 @@ services:
     env_file:
       - ../api/api.env
     environment:
-      SPRING_PROFILE: "local"
       ARTIFACT_NAME: "api-0.0.1-SNAPSHOT.jar"
-      SPRING_PORT: ${API_HOST_PORT}
-    ##      Remote Debug info
-    #      - JPDA_ADDRESS: "8000"
-    #          - JPDA_TRANSPORT: "dt_socket"
-    #      - JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
-    #      - JPDA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
+      ## Overwrite current profile when in workspace environment
+      SPRING_PROFILES_ACTIVE: ${API_SPRING_PROFILES_ACTIVE}
+      SERVER_PORT: ${API_HOST_PORT}
+      FLYWAY_CONFIG_FILES: flyway.conf
+      ## Remote Debug info
+      JPDA_ADDRESS: "8000"
+      JPDA_TRANSPORT: "dt_socket"
+      JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
+      JPDA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
     depends_on:
       - postgres
     expose:
-      - 8080 # Port 8080 available to other services
+      - ${API_CONTAINER_PORT} # Port available to other services
     ports:
-      - "8080:${API_HOST_PORT}"
-    #      - "5005:5005"
+      - "${API_CONTAINER_PORT}:${API_HOST_PORT}"
+      - "5005:5005"
     networks:
       - back-end
       - front-end
@@ -51,9 +53,9 @@ services:
     environment:
       PGDATA: ${DB_CONTAINER_DATA_PATH}
     ports:
-      - "5432:5432"
+      - "${DB_CONTAINER_PORT}:${DB_HOST_PORT}"
     expose:
-      - 5432
+      - ${DB_CONTAINER_PORT}
     volumes:
       - ${DB_HOST_DATA_PATH}:${DB_CONTAINER_DATA_PATH} #TODO: Mount logs
 
@@ -68,8 +70,10 @@ services:
       - ../web-frontend/web-frontend.env
     depends_on:
       - workspace
+    environment:
+      HTTPSERVER_PORT: ${FRONTEND_CONTAINER_PORT}
     ports:
-      - "8000:8080"
+      - "${FRONTEND_CONTAINER_PORT}:${FRONTEND_HOST_PORT}"
     volumes:
       - ../web-frontend/customer-app/:/app/
       - /app/node_modules
@@ -77,9 +81,5 @@ services:
 networks:
   front-end:
   back-end:
-  external:
-    driver: overlay
-
 volumes:
   db-data:
-

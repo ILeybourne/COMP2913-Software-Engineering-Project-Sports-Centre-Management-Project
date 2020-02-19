@@ -46,7 +46,7 @@ ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urando
 FROM build AS test
 
 ENV TEST=1
-ENV SPRING_PROFILE=test
+ENV SPRING_PROFILES_ACTIVE=test
 
 RUN ./mvnw test
 ENTRYPOINT ["./mvnw", "test"]
