@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
+import Timetable from "../views/Timetable";
 import Profile from "../views/Profile";
 import { authGuard } from "../auth/helpers/auth.guard";
 
@@ -26,6 +27,12 @@ const routes = [
     name: "Profile",
     component: Profile,
     beforeEnter: authGuard
+  },
+  {
+    path: "/timetable",
+    name: "Resource Timetable",
+    component: Timetable
+
   }
 ];
 

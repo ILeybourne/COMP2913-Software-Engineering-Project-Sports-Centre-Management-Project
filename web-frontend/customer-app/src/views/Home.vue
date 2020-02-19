@@ -8,7 +8,7 @@
       <button v-if="$auth.isAuthenticated" @click="logout">Log out</button>
     </div>
     <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <HelloWorld msg="Welcome to Your Vue.js App Elliot" />
   </div>
 </template>
 
