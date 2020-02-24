@@ -19,7 +19,10 @@ public class Activity {
     @GeneratedValue
     private Long id;
 
-    private Long booking_id;
+    @OneToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
+
     private Date start_time;
     private Date end_time;
     @ManyToOne
@@ -53,14 +56,6 @@ public class Activity {
 
     public void setEnd_time(Date end_time) {
         this.end_time = end_time;
-    }
-
-    public Long getBooking_id() {
-        return booking_id;
-    }
-
-    public void setBooking_id(Long booking_id) {
-        this.booking_id = booking_id;
     }
 
     public Resource getResource() {
