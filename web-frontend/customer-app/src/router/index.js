@@ -1,6 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
+import Timetable from "../views/Timetable";
+import Facility from "../views/Facilities"
+import BookingInformation from "../views/BookingPage"
 
 Vue.use(VueRouter);
 
@@ -18,6 +21,24 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue")
+  },
+  {
+    path: "/timetable",
+    name: "Resource Timetable",
+    component: Timetable
+
+  },
+  {
+    path: "/facilities",
+    name: "Facilities",
+    component: Facility
+
+  },
+  {
+    path: "/bookings",
+    name: "BookingPage",
+    component: BookingInformation
+
   }
 ];
 
