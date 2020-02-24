@@ -24,7 +24,9 @@ public class Activity {
     private Booking booking;
 
     private Date start_time;
+
     private Date end_time;
+
     @ManyToOne
     @JoinColumn(name="resource_id", nullable=false)
     private Resource resource;
