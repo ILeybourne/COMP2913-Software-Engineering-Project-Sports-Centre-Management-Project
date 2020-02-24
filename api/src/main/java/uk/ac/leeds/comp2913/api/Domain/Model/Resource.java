@@ -4,29 +4,33 @@ import java.util.Date;
 import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import javax.persistence.OneToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.*;
 
+import javax.persistence.OneToMany;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.util.Date;
 
 
+/**
+ * Represents a resource available inside the sports center. eg Astro Turf, Squash Court, Swimming Pool etc.
+ */
 @Entity
 public class Resource {
+
     @Id
     @GeneratedValue
     private Long id;
-    private String name; // Astro Turf
+
+    private String name;
 
     @OneToMany(mappedBy = "resource")
     private List<Activity> activities;
+
     @CreationTimestamp
     private Date created_at;
     @UpdateTimestamp
     private Date updated_at;
+
     public String getName() {
         return name;
     }
