@@ -21,17 +21,17 @@ public class ResourceController {
     this.resourceRepository = resourceRepository;
   }
 
-  @GetMapping("")
+  @GetMapping("/")
   public Page<Resource> getResources(Pageable pageable) {
     return resourceRepository.findAll(pageable);
   }
 
-  @PostMapping("")
+  @PostMapping("/")
   public Resource createResource(@Valid @RequestBody Resource resource) {
     return resourceRepository.save(resource);
   }
 
-  @PutMapping("{resource_id}")
+  @PutMapping("/{resource_id}")
   public Resource updateResource(@PathVariable Long resource_id, @Valid @RequestBody Resource resourceRequest) {
     return resourceRepository.findById(resource_id)
       .map(resource -> {
@@ -41,7 +41,7 @@ public class ResourceController {
       }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
   }
 
-  @DeleteMapping("{resource_id}")
+  @DeleteMapping("/{resource_id}")
   public ResponseEntity<?> deleteResource(@PathVariable Long resource_id) {
     return resourceRepository.findById(resource_id)
       .map(resource -> {
