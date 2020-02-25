@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import Timetable from "../views/Timetable";
 import Facility from "../views/Facilities"
 import BookingInformation from "../views/BookingPage"
+import MembershipPage from "../views/MembershipPage";
 
 Vue.use(VueRouter);
 
@@ -38,6 +39,12 @@ const routes = [
     path: "/bookings",
     name: "BookingPage",
     component: BookingInformation
+
+  },
+  {
+    path: "/membership",
+    name: "MembershipPage",
+    component: MembershipPage
 
   }
 ];

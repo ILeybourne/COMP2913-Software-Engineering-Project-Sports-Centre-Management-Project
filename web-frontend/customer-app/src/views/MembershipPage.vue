@@ -4,22 +4,22 @@
             <button type="button" class="btn btn-outline-secondary" style="padding:15px;">Back</button>
         </div>
         <div style="   margin: auto; width: 50%;">
-            <h1>Bookings</h1>
+            <h1>Membership Options</h1>
         </div>
         <div>
-            <BookingInformation></BookingInformation>
+            <MembershipOptions></MembershipOptions>
         </div>
     </div>
 </template>
 
 <script>
-    import BookingInformation from "@/components/BookingInformation.vue";
+    import MembershipOptions from "@/components/MembershipOptions.vue";
 
     // @ is an alias to /src
     export default {
-        name: "BookingPage",
+        name: "MembershipPage",
         components: {
-            BookingInformation
+            MembershipOptions
         }
     };
 </script>
