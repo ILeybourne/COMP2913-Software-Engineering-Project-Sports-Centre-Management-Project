@@ -1,0 +1,1 @@
+alter table if exists sports_centre_management.activity add column total_capacity int

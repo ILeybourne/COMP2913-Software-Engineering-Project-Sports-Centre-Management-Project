@@ -1,16 +1,16 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
-import java.util.Date;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
-
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.util.Date;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 //defining an entity
 @Entity
@@ -78,10 +78,6 @@ public class Activity {
         return booking;
     }
 
-    public Resource getResource() {
-        return resource;
-    }
-
     public Integer getTotal_capacity() {
         return total_capacity;
     }
@@ -96,5 +92,11 @@ public class Activity {
 
     public void setCurrent_capacity(Integer current_capacity) {
         this.current_capacity = current_capacity;
+    }
+
+    public void getResource(Long resource_id) { //use in ActivityController
+    }
+
+    public void getResource() { //use in TimetableController (may change)
     }
 }

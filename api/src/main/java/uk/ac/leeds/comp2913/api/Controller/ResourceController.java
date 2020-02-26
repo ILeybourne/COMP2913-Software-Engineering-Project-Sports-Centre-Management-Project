@@ -36,7 +36,7 @@ public class ResourceController {
     return resourceRepository.findById(resource_id)
       .map(resource -> {
         resource.setName(resourceRequest.getName());
-        resource.setActivities(resourceRequest.getActivities()); //need to change this
+        resource.setActivities(resourceRequest.getActivities());
         return resourceRepository.save(resource);
       }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
   }
