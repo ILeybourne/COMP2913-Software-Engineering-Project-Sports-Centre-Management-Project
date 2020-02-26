@@ -1,16 +1,15 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
-import java.util.Date;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
-
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.util.Date;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 //defining an entity
 @Entity
@@ -18,6 +17,7 @@ public class Activity {
     @Id
     @GeneratedValue
     private Long id;
+    private String name;
 
     private Long booking_id;
     private Date start_time;
@@ -63,7 +63,18 @@ public class Activity {
         this.booking_id = booking_id;
     }
 
-    public Resource getResource() {
-        return resource;
+    //public Resource getResource() {
+     //   return resource;
+   // }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void getResource(Long resource_id) {
     }
 }
