@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import java.util.Date;
 
 @Entity
-public class Booking {
+public class Membership {
 
     @Id
     @GeneratedValue
@@ -19,6 +19,10 @@ public class Booking {
     private Date created_at;
     @UpdateTimestamp
     private Date updated_at;
+
+    private String MembershipType;
+    private Date StartDate;
+    private Date EndDate;
 
     public long getId() {
         return id;
@@ -38,5 +42,17 @@ public class Booking {
 
     public void setUpdatedAt(Date updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public void makePayment() {
+    }
+
+    public void emailReceipt() {
+    }
+
+    public void printReceipt() {
+    }
+
+    public void storeReceipt() {
     }
 }

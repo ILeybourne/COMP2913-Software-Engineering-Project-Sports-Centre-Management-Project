@@ -1,15 +1,16 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import java.util.Date;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
+import javax.persistence.*;
+
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import java.util.Date;
 
 //defining an entity
 @Entity
@@ -17,11 +18,21 @@ public class Activity {
     @Id
     @GeneratedValue
     private Long id;
+
     private String name;
 
-    private Long booking_id;
+    private Integer total_capacity;
+
+    private Integer current_capacity;
+
+    @OneToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
+
     private Date start_time;
+
     private Date end_time;
+
     @ManyToOne
     @JoinColumn(name="resource_id", nullable=false)
     private Resource resource;
@@ -55,18 +66,6 @@ public class Activity {
         this.end_time = end_time;
     }
 
-    public Long getBooking_id() {
-        return booking_id;
-    }
-
-    public void setBooking_id(Long booking_id) {
-        this.booking_id = booking_id;
-    }
-
-    //public Resource getResource() {
-     //   return resource;
-   // }
-
     public String getName() {
         return name;
     }
@@ -75,6 +74,27 @@ public class Activity {
         this.name = name;
     }
 
-    public void getResource(Long resource_id) {
+    public Booking getBooking() {
+        return booking;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public Integer getTotal_capacity() {
+        return total_capacity;
+    }
+
+    public void setTotal_capacity(Integer total_capacity) {
+        this.total_capacity = total_capacity;
+    }
+
+    public Integer getCurrent_capacity() {
+        return current_capacity;
+    }
+
+    public void setCurrent_capacity(Integer current_capacity) {
+        this.current_capacity = current_capacity;
     }
 }
