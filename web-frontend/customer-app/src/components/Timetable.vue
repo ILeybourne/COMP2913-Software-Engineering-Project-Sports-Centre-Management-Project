@@ -4,6 +4,7 @@
     import dayGridPlugin from '@fullcalendar/daygrid'
     import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 
+    //Old data
     // var demoData = {
     //     "resource_1": {
     //         name: "Astro Turf",
@@ -61,6 +62,8 @@
     //     }
     // };
 
+    //TODO write functions in form of adapter (https://www.dofactory.com/javascript/adapter-design-pattern)
+    //new data
     var demoData2 = {
         content: [
             {
@@ -73,8 +76,8 @@
                         total_capacity: 15,
                         current_capacity: 10,
                         booking: null,
-                        start_time: "2020-02-26T07:50:46.000+0000",
-                        end_time: "2020-02-26T08:50:34.000+0000"
+                        start_time: "2020-02-27T08:00:00.000+0000",
+                        end_time: "2020-02-27T10:00:00.000+0000"
                     }
                 ]
             },
@@ -84,15 +87,34 @@
                 activities: []
             }
         ]
-    }
+    };
 
+    /*events: [
+{
+  title  : 'event1',
+  start  : '2010-01-01'
+},
+{
+  title  : 'event2',
+  start  : '2010-01-05',
+  end    : '2010-01-07'
+},
+{
+  title  : 'event3',
+  start  : '2010-01-09T12:30:00',
+  allDay : false // will make the time show
+}
+]*/
+
+    //functions for new data format
     function dataToResourceFormat() {
         var resourcesArray = [];
 
         for (var resource in demoData2.content) {
             // console.log(demoData2.content[resource])
             var resourceObject = {
-                id: (String.fromCharCode(96 + demoData2.content[resource].id)),
+                // id: (String.fromCharCode(96 + demoData2.content[resource].id)),
+                id: demoData2.content[resource].id,
                 title: demoData2.content[resource].name
             };
 
@@ -101,37 +123,24 @@
         return resourcesArray;
     };
 
-    /*events: [
-    {
-      title  : 'event1',
-      start  : '2010-01-01'
-    },
-    {
-      title  : 'event2',
-      start  : '2010-01-05',
-      end    : '2010-01-07'
-    },
-    {
-      title  : 'event3',
-      start  : '2010-01-09T12:30:00',
-      allDay : false // will make the time show
-    }
-  ]*/
-
     function dataToEventFormat() {
         var eventArray = [];
 
 
         for (var resource in demoData2.content) {
             // console.log('resource')
-            console.log(demoData2.content[resource])
+            // console.log(demoData2.content[resource])
             // console.log(demoData2.content[resource].activities)
-            for (var act in demoData2.content[resource].activities){
-                console.log('act')
-                console.log(demoData2.content[resource].activities[act])
-                var eventObj = {title: demoData2.content[resource].activities[act].name,
-                                start  : demoData2.content[resource].activities[act].start_time,
-                                end    : demoData2.content[resource].activities[act].end_time
+            for (var act in demoData2.content[resource].activities) {
+                // console.log('act')
+                // console.log(demoData2.content[resource].activities[act])
+                var eventObj = {
+                    // id: (String.fromCharCode(96 + demoData2.content[resource].activities[act].id)),
+                    id:  demoData2.content[resource].activities[act].id,
+                    resourceId:  demoData2.content[resource].id,
+                    title: demoData2.content[resource].activities[act].name,
+                    start: demoData2.content[resource].activities[act].start_time,
+                    end: demoData2.content[resource].activities[act].end_time
                 }
                 eventArray.push(eventObj)
             }
@@ -141,6 +150,7 @@
         return eventArray
     };
 
+    //Functions for old data format
     //For demoData
     //     function dataToEventFormat() {
     //     console.log(demoData);
@@ -209,28 +219,26 @@
     // };
 
     var newResources = dataToResourceFormat();
-
-    // var newEvents = dataToEventFormat();
-
     var newEvents = dataToEventFormat();
-
-
-
 
     console.log(newEvents)
     console.log(newResources)
 
-    //console.log(newEvents)
     export default {
         name: "Timetable",
         components: {
             FullCalendar // make the <FullCalendar> tag available
         },
+        props: {
+            eventData: {
+                type: Array
+            }
+        },
         data() {
             return {
                 calendarPlugins: [dayGridPlugin, resourceTimelinePlugin],
-                resources:
-                newResources,
+                resources: newResources,
+                events: newEvents,
                 //     [
                 //     {id: 'a', building: '460 Bryant', title: 'Auditorium A'},
                 //     {id: 'b', building: '460 Bryant', title: 'Auditorium B'},
@@ -267,39 +275,33 @@
             }
         }
     }
-
 </script>
 
 
 <!--Add groupings-->
 <!--resourceGroupField="building"-->
 <template>
-
     <div id="calendar">
-        <FullCalendar schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-                      defaultView="resourceTimelineDay"
-                      aspectRatio="1"
-                      events="https://fullcalendar.io/demo-events.json?single-day&for-resource-timeline"
-                      :plugins="calendarPlugins"
-                      :header="header"
-                      minTime="06:00:00"
-                      maxTime="23:00:00"
-                      :resources="resources"/>
+        <FullCalendar
+                schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+                defaultView="resourceTimelineDay"
+                aspectRatio="1"
+                :events="events"
+                :plugins="calendarPlugins"
+                :header="header"
+                minTime="06:00:00"
+                maxTime="23:00:00"
+                :resources="resources"/>
     </div>
-
-
-
 </template>
 
 <style lang='scss'>
-
     @import '~@fullcalendar/core/main.css';
     @import '~@fullcalendar/daygrid/main.css';
     @import '~@fullcalendar/resource-timeline/main.css';
     @import '~@fullcalendar/timeline/main.css';
 
     #calendar {
-        max-width: 2048px;
+        max-width: 100%;
     }
-
 </style>
