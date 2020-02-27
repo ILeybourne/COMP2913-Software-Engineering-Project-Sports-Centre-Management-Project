@@ -1,18 +1,18 @@
 <template>
     <div class="timetable">
         <h1>Timetable</h1>
-        <Test></Test>
+        <Timetable></Timetable>
     </div>
 </template>
 
 <script>
-    import Test from "@/components/Test.vue";
+    import Timetable from "../components/Timetable";
 
     // @ is an alias to /src
     export default {
-        name: "Timetable",
+        name: "TimetablePage",
         components: {
-            Test
+            Timetable,
         }
     };
 </script>

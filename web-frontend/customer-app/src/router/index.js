@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
-import Timetable from "../views/Timetable";
+import TimetablePage from "../views/TimetablePage";
 import Facility from "../views/Facilities"
 import BookingInformation from "../views/BookingPage"
 import MembershipPage from "../views/MembershipPage";
@@ -26,7 +26,7 @@ const routes = [
   {
     path: "/timetable",
     name: "Resource Timetable",
-    component: Timetable
+    component: TimetablePage
 
   },
   {

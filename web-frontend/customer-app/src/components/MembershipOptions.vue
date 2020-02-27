@@ -1,8 +1,8 @@
 <template>
     <div class="membership-options">
         <div class="membership-container">
-            <div class="spacer"></div>
-            <form>
+            <div class="info-container">
+                <div class="spacer"></div>
                 <div class="annual-membership-details">
                     Annual Membership Details
                 </div>
@@ -16,7 +16,27 @@
                 <div class="account-creation-form">
                     Account Creation Form
                 </div>
-            </form>
+            </div>
+            <div class="form-container">
+                <form class="form-inline">
+
+                    <div class="spacer"></div>
+                    <div class="btn-container">
+                        <input type="radio" id="annual" name="membership-type" value="annual">
+                    </div>
+
+                    <div class="spacer"></div>
+                    <div class="btn-container">
+                        <input type="radio" id="monthly" name="membership-type" value="monthly">
+
+                    </div>
+                    <div class="spacer"></div>
+                    <div class="submit-container">
+                        <button type="submit" value="submit"
+                                class="btn btn-default">Buy Membership And Create Account</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </template>
@@ -30,7 +50,6 @@
     }
 
     .membership-container {
-        display: flex;
         /*margin: auto;*/
         /*width: 50%;*/
         border: 3px solid #3183E5;
@@ -38,9 +57,23 @@
 
         padding: 10px;
         min-height: 50%;
-        height: 500px;
     }
 
+    .info-container {
+        display: flex;
+        width: 100%;
+        height: 500px;
+
+    }
+
+    .btn-container {
+        margin: 0 auto
+
+    }
+
+    /*form {*/
+    /*    diplay: flex;*/
+    /*}*/
 
     .annual-membership-details {
         width: 20%;
@@ -66,7 +99,23 @@
     }
 
     .spacer {
-        width: 5%;
+        width: 4%;
+        height: 1%;
+    }
+
+    .form-container {
+        display: flex;
+    }
+
+    .btn-container {
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .form-inline{
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center
     }
 </style>
 

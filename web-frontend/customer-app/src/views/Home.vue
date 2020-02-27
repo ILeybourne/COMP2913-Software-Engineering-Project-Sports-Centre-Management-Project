@@ -3,14 +3,14 @@
         <Facility></Facility>
         <Facility></Facility>
         <BookingInformation></BookingInformation>
-        <Test></Test>
+        <Timetable></Timetable>
     </div>
 </template>
 
 <script>
     // @ is an alias to /src
     //import HelloWorld from "@/components/HelloWorld.vue";
-    import Test from "@/components/Test.vue";
+    import Timetable from "@/components/Timetable.vue";
     import BookingInformation from "@/components/BookingInformation.vue"
     import Facility from "@/components/Facility.vue"
 
@@ -19,7 +19,7 @@
         name: "Home",
         components: {
 //    HelloWorld,
-            Test,
+            Timetable,
             BookingInformation,
             Facility
         }
