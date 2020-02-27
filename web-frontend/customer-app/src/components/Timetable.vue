@@ -136,7 +136,7 @@
     };
 
     var newResources = dataToResourceFormat();
-   // var newEvents = dataToEventFormat();
+    // var newEvents = dataToEventFormat();
 
     //console.log(newEvents)
 
@@ -192,15 +192,17 @@
 <!--Add groupings-->
 <!--resourceGroupField="building"-->
 <template>
-    <FullCalendar schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-                  defaultView="resourceTimelineDay"
-                  aspectRatio="1"
-                  events="https://fullcalendar.io/demo-events.json?single-day&for-resource-timeline"
-                  :plugins="calendarPlugins"
-                  :header="header"
-                  minTime = "06:00:00"
-                  maxTime = "23:00:00"
-                  :resources="resources"/>
+    <div id="calendar">
+        <FullCalendar schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+                      defaultView="resourceTimelineDay"
+                      aspectRatio="1"
+                      events="https://fullcalendar.io/demo-events.json?single-day&for-resource-timeline"
+                      :plugins="calendarPlugins"
+                      :header="header"
+                      minTime="06:00:00"
+                      maxTime="23:00:00"
+                      :resources="resources"/>
+    </div>
 </template>
 
 <style lang='scss'>
@@ -208,5 +210,10 @@
     @import '~@fullcalendar/core/main.css';
     @import '~@fullcalendar/daygrid/main.css';
     @import '~@fullcalendar/resource-timeline/main.css';
+    @import '~@fullcalendar/timeline/main.css';
+
+    #calendar {
+        max-width: 2048px;
+    }
 
 </style>
