@@ -61,7 +61,7 @@
         }
     };
 
-
+    /*
     function dataToEventFormat() {
         console.log(demoData);
         var eventArray = [];
@@ -78,6 +78,7 @@
         });
 
     }
+    */
 
     function dataToResourceFormat() {
         // console.log(demoData);
@@ -135,9 +136,9 @@
     };
 
     var newResources = dataToResourceFormat();
-    var newEvents = dataToEventFormat();
+   // var newEvents = dataToEventFormat();
 
-    console.log(newEvents)
+    //console.log(newEvents)
 
     export default {
         name: "Timetable",
@@ -197,6 +198,8 @@
                   events="https://fullcalendar.io/demo-events.json?single-day&for-resource-timeline"
                   :plugins="calendarPlugins"
                   :header="header"
+                  minTime = "06:00:00"
+                  maxTime = "23:00:00"
                   :resources="resources"/>
 </template>
 
