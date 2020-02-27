@@ -63,7 +63,20 @@
 
 
     function dataToEventFormat() {
-        console.log(demoData)
+        console.log(demoData);
+        var eventArray = [];
+
+        Object.keys(git).forEach((resource) => {
+            // console.log(resources[resource]);
+            // console.log(resource)
+            eventArray.push(resources[resource])
+            if (typeof resources[resource] === 'object') {
+                // console.log("hello")
+                console.log(resources[resource])
+            }
+
+        });
+
     }
 
     function dataToResourceFormat() {
@@ -94,7 +107,7 @@
                     // console.log(resources[res][attr]);
                     // console.log(resources[res][attr].name);
                     var objRes = {
-                        id: (String.fromCharCode(97 + n)),
+                        id: (String.fromCharCode(97 + res)),
                         res, title: resources[res][attr].name
                     };
                     resourcesOutput.push(objRes);
@@ -122,6 +135,9 @@
     };
 
     var newResources = dataToResourceFormat();
+    var newEvents = dataToEventFormat();
+
+    console.log(newEvents)
 
     export default {
         name: "Timetable",
