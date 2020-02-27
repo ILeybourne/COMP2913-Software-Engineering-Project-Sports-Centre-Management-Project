@@ -92,7 +92,7 @@
         for (var resource in demoData2.content) {
             // console.log(demoData2.content[resource])
             var resourceObject = {
-                id: (String.fromCharCode(97 + demoData2.content[resource].id)),
+                id: (String.fromCharCode(96 + demoData2.content[resource].id)),
                 title: demoData2.content[resource].name
             };
 
@@ -101,15 +101,43 @@
         return resourcesArray;
     };
 
+    /*events: [
+    {
+      title  : 'event1',
+      start  : '2010-01-01'
+    },
+    {
+      title  : 'event2',
+      start  : '2010-01-05',
+      end    : '2010-01-07'
+    },
+    {
+      title  : 'event3',
+      start  : '2010-01-09T12:30:00',
+      allDay : false // will make the time show
+    }
+  ]*/
 
     function dataToEventFormat() {
         var eventArray = [];
 
 
         for (var resource in demoData2.content) {
+            // console.log('resource')
             console.log(demoData2.content[resource])
-
+            // console.log(demoData2.content[resource].activities)
+            for (var act in demoData2.content[resource].activities){
+                console.log('act')
+                console.log(demoData2.content[resource].activities[act])
+                var eventObj = {title: demoData2.content[resource].activities[act].name,
+                                start  : demoData2.content[resource].activities[act].start_time,
+                                end    : demoData2.content[resource].activities[act].end_time
+                }
+                eventArray.push(eventObj)
+            }
         }
+
+        // console.log(eventArray)
         return eventArray
     };
 
