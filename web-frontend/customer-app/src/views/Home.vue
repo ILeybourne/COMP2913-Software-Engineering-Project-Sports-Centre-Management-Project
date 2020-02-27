@@ -1,5 +1,6 @@
 <template>
     <div class="home">
+<!--        <HelloWorld></HelloWorld>-->
         <Facility></Facility>
         <Facility></Facility>
         <BookingInformation></BookingInformation>
@@ -13,12 +14,13 @@
     import Timetable from "@/components/Timetable.vue";
     import BookingInformation from "@/components/BookingInformation.vue"
     import Facility from "@/components/Facility.vue"
+    // import HelloWorld from "@/components/HelloWorld.vue"
 
 
     export default {
         name: "Home",
         components: {
-//    HelloWorld,
+            // HelloWorld,
             Timetable,
             BookingInformation,
             Facility

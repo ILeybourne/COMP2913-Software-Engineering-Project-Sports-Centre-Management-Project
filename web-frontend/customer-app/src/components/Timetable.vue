@@ -4,140 +4,182 @@
     import dayGridPlugin from '@fullcalendar/daygrid'
     import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 
-    var demoData = {
-        "resource_1": {
-            name: "Astro Turf",
-            activities: [
-                {
-                    activity_id: "3",
-                    booking_id: "1312312",
-                    start_time: "2020-02-27T12:30:00",
-                    end_time: "2020-02-27T13:30:00"
-                },
-                {
-                    activity_id: "5",
-                    booking_id: "78654342",
-                    start_time: "2020-02-27T14:30:00",
-                    end_time: "2020-02-27T15:30:00"
-                },
-                {
-                    booking_id: "7564323",
-                    start_time: "",
-                    end_time: ""
-                },
-                {
-                    booking_id: "253445",
-                    start_time: "",
-                    end_time: ""
-                },
-            ]
-        },
-        "resource_2": {
-            name: "Squash Court",
-            activities: [
-                {
-                    activity_id: "3",
-                    booking_id: "1312312",
-                    start_time: "2020-02-27T12:30:00",
-                    end_time: "2020-02-27T13:30:00"
-                },
-                {
-                    activity_id: "5",
-                    booking_id: "78654342",
-                    start_time: "2020-02-27T14:30:00",
-                    end_time: "2020-02-27T15:30:00"
-                },
-                {
-                    booking_id: "7564323",
-                    start_time: "",
-                    end_time: ""
-                },
-                {
-                    booking_id: "253445",
-                    start_time: "",
-                    end_time: ""
-                },
-            ]
-        }
-    };
+    // var demoData = {
+    //     "resource_1": {
+    //         name: "Astro Turf",
+    //         activities: [
+    //             {
+    //                 activity_id: "3",
+    //                 booking_id: "1312312",
+    //                 start_time: "2020-02-27T12:30:00",
+    //                 end_time: "2020-02-27T13:30:00"
+    //             },
+    //             {
+    //                 activity_id: "5",
+    //                 booking_id: "78654342",
+    //                 start_time: "2020-02-27T14:30:00",
+    //                 end_time: "2020-02-27T15:30:00"
+    //             },
+    //             {
+    //                 booking_id: "7564323",
+    //                 start_time: "",
+    //                 end_time: ""
+    //             },
+    //             {
+    //                 booking_id: "253445",
+    //                 start_time: "",
+    //                 end_time: ""
+    //             },
+    //         ]
+    //     },
+    //     "resource_2": {
+    //         name: "Squash Court",
+    //         activities: [
+    //             {
+    //                 activity_id: "3",
+    //                 booking_id: "1312312",
+    //                 start_time: "2020-02-27T12:30:00",
+    //                 end_time: "2020-02-27T13:30:00"
+    //             },
+    //             {
+    //                 activity_id: "5",
+    //                 booking_id: "78654342",
+    //                 start_time: "2020-02-27T14:30:00",
+    //                 end_time: "2020-02-27T15:30:00"
+    //             },
+    //             {
+    //                 booking_id: "7564323",
+    //                 start_time: "",
+    //                 end_time: ""
+    //             },
+    //             {
+    //                 booking_id: "253445",
+    //                 start_time: "",
+    //                 end_time: ""
+    //             },
+    //         ]
+    //     }
+    // };
 
+    var demoData2 = {
+        content: [
+            {
+                id: 1,
+                name: "Squash Court",
+                activities: [
+                    {
+                        id: 1,
+                        name: "Morning Squash",
+                        total_capacity: 15,
+                        current_capacity: 10,
+                        booking: null,
+                        start_time: "2020-02-26T07:50:46.000+0000",
+                        end_time: "2020-02-26T08:50:34.000+0000"
+                    }
+                ]
+            },
+            {
+                id: 2,
+                name: "Tennis Court",
+                activities: []
+            }
+        ]
+    }
+    function dataToResourceFormat() {
+        var resourcesArray = [];
+
+        for(var resource in demoData2.content){
+           // console.log(demoData2.content[resource])
+            var resourceObject =  {id: (String.fromCharCode(97 + demoData2.content[resource].id)),  title: demoData2.content[resource].name};
+
+            resourcesArray.push(resourceObject);
+        }
+        return resourcesArray;
+    };
 
     function dataToEventFormat() {
-        console.log(demoData);
         var eventArray = [];
 
-        Object.keys(git).forEach((resource) => {
-            // console.log(resources[resource]);
-            // console.log(resource)
-            eventArray.push(resources[resource])
-            if (typeof resources[resource] === 'object') {
-                // console.log("hello")
-                console.log(resources[resource])
-            }
 
-        });
+        for(var resource in demoData2.content) {
+            console.log(demoData2.content[resource])
 
+        }
+        return eventArray
     }
 
-    function dataToResourceFormat() {
-        // console.log(demoData);
-        var resourcesOutput = [];
-        // var resourceBuilding = Object.keys(demoData);
+        //For demoData
+    //     function dataToEventFormat() {
+    //     console.log(demoData);
+    //     var eventArray = [];
+    //     const resources = Object.entries(demoData);
+    //
+    //     console.log(resources);
+    //
+    //
+    //     Object.keys(resources).forEach((resource) => {
+    //         // console.log(resources[resource]);
+    //         // console.log(resource)
+    //         // eventArray.push(resources[resource])
+    //         for (var attr in resources[resource]) {
+    //             if (attr == 1){
+    //                 console.log(resources[resource][attr])
+    //                 eventArray.push(resources[resource][attr].activities)
+    //
+    //             }
+    //         }
+    //         //     if (typeof resources[resource] === 'object') {
+    //         //         console.log("hello")
+    //         //         console.log(resources[resource][attr])
+    //         //     }
+    //         // }
+    //
+    //
+    //     });
+    //     console.log(eventArray)
+    // }
 
-        var resourcesArray = [];
-        const resources = Object.entries(demoData);
-
-        Object.keys(resources).forEach((resource) => {
-            // console.log(resources[resource]);
-            // console.log(resource)
-            resourcesArray.push(resources[resource])
-            if (typeof resources[resource] === 'object') {
-                // console.log("hello")
-                // console.log(resources[resource])
-            }
-
-        });
-
-        for (var res in resourcesArray) {
-            for (var attr in resourcesArray[res]) {
-
-
-                if (typeof resourcesArray[res][attr] === 'object') {
-                    // console.log("hello")
-                    // console.log(resources[res][attr]);
-                    // console.log(resources[res][attr].name);
-                    var objRes = {
-                        id: (String.fromCharCode(97 + res)),
-                        res, title: resources[res][attr].name
-                    };
-                    resourcesOutput.push(objRes);
-                }
-            }
-        }
-        // console.log(resourcesOutput)
-        return resourcesOutput;
-        // for (var resource in resources){
-        //     console.log(resource);
-        //
-        //     if (typeof resource === 'object') {
-        //         console.log(resource);
-        //         console.log("hello")
-        //     }
-        // }
-        // for (var resource in demoData) {
-        //     console.log(resource);
-        //     //Resource for locations' headers?
-        //
-        //     for (var el in resource){
-        //         console.log(el);
-        //     }
-        // }
-    };
+    // function dataToResourceFormat() {
+    //     // console.log(demoData);
+    //     var resourcesOutput = [];
+    //     // var resourceBuilding = Object.keys(demoData);
+    //
+    //     var resourcesArray = [];
+    //     const resources = Object.entries(demoData);
+    //
+    //     Object.keys(resources).forEach((resource) => {
+    //         // console.log(resources[resource]);
+    //         // console.log(resource)
+    //         resourcesArray.push(resources[resource])
+    //         if (typeof resources[resource] === 'object') {
+    //             // console.log("hello")
+    //             // console.log(resources[resource])
+    //         }
+    //
+    //     });
+    //
+    //     for (var res in resourcesArray) {
+    //         for (var attr in resourcesArray[res]) {
+    //             if (typeof resourcesArray[res][attr] === 'object') {
+    //                 // console.log("hello")
+    //                 // console.log(resources[res][attr]);
+    //                 // console.log(resources[res][attr].name);
+    //                 var objRes = {
+    //                     id: (String.fromCharCode(97 + res)),
+    //                     res, title: resources[res][attr].name
+    //                 };
+    //                 resourcesOutput.push(objRes);
+    //             }
+    //         }
+    //     }
+    //     return resourcesOutput;
+    // };
 
     var newResources = dataToResourceFormat();
     var newEvents = dataToEventFormat();
 
     console.log(newEvents)
+    console.log(newResources)
 
     export default {
         name: "Timetable",
@@ -147,14 +189,15 @@
         data() {
             return {
                 calendarPlugins: [dayGridPlugin, resourceTimelinePlugin],
-                resources: newResources,
+                resources:
+                newResources,
                 //     [
                 //     {id: 'a', building: '460 Bryant', title: 'Auditorium A'},
                 //     {id: 'b', building: '460 Bryant', title: 'Auditorium B'},
                 //     {id: 'c', building: '460 Bryant', title: 'Auditorium C'},
                 //     {id: 'd', building: '460 Bryant', title: 'Auditorium D'},
                 //     {id: 'e', building: '460 Bryant', title: 'Auditorium E'},
-                //     {id: 'dataToResourceFormat', building: '460 Bryant', title: 'Auditorium F'},
+                //     {id: 'f', building: '460 Bryant', title: 'Auditorium F'},
                 //     {id: 'g', building: '564 Pacific', title: 'Auditorium G'},
                 //     {id: 'h', building: '564 Pacific', title: 'Auditorium H'},
                 //     {id: 'i', building: '564 Pacific', title: 'Auditorium I'},
