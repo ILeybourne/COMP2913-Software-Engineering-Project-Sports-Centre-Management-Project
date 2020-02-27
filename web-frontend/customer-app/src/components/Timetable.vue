@@ -85,30 +85,35 @@
             }
         ]
     }
+
     function dataToResourceFormat() {
         var resourcesArray = [];
 
-        for(var resource in demoData2.content){
-           // console.log(demoData2.content[resource])
-            var resourceObject =  {id: (String.fromCharCode(97 + demoData2.content[resource].id)),  title: demoData2.content[resource].name};
+        for (var resource in demoData2.content) {
+            // console.log(demoData2.content[resource])
+            var resourceObject = {
+                id: (String.fromCharCode(97 + demoData2.content[resource].id)),
+                title: demoData2.content[resource].name
+            };
 
             resourcesArray.push(resourceObject);
         }
         return resourcesArray;
     };
 
+
     function dataToEventFormat() {
         var eventArray = [];
 
 
-        for(var resource in demoData2.content) {
+        for (var resource in demoData2.content) {
             console.log(demoData2.content[resource])
 
         }
         return eventArray
-    }
+    };
 
-        //For demoData
+    //For demoData
     //     function dataToEventFormat() {
     //     console.log(demoData);
     //     var eventArray = [];
@@ -178,9 +183,12 @@
     var newResources = dataToResourceFormat();
     var newEvents = dataToEventFormat();
 
+
+
     console.log(newEvents)
     console.log(newResources)
 
+    //console.log(newEvents)
     export default {
         name: "Timetable",
         components: {
@@ -240,6 +248,8 @@
                   events="https://fullcalendar.io/demo-events.json?single-day&for-resource-timeline"
                   :plugins="calendarPlugins"
                   :header="header"
+                  minTime="06:00:00"
+                  maxTime="23:00:00"
                   :resources="resources"/>
 </template>
 
