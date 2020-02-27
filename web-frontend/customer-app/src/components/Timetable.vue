@@ -11,14 +11,14 @@
                 {
                     activity_id: "3",
                     booking_id: "1312312",
-                    start_time: "",
-                    end_time: ""
+                    start_time: "2020-02-27T12:30:00",
+                    end_time: "2020-02-27T13:30:00"
                 },
                 {
                     activity_id: "5",
                     booking_id: "78654342",
-                    start_time: "",
-                    end_time: ""
+                    start_time: "2020-02-27T14:30:00",
+                    end_time: "2020-02-27T15:30:00"
                 },
                 {
                     booking_id: "7564323",
@@ -38,14 +38,14 @@
                 {
                     activity_id: "3",
                     booking_id: "1312312",
-                    start_time: "",
-                    end_time: ""
+                    start_time: "2020-02-27T12:30:00",
+                    end_time: "2020-02-27T13:30:00"
                 },
                 {
                     activity_id: "5",
                     booking_id: "78654342",
-                    start_time: "",
-                    end_time: ""
+                    start_time: "2020-02-27T14:30:00",
+                    end_time: "2020-02-27T15:30:00"
                 },
                 {
                     booking_id: "7564323",
@@ -62,20 +62,17 @@
     };
 
 
-    function f() {
+    function dataToEventFormat() {
+        console.log(demoData)
+    }
+
+    function dataToResourceFormat() {
         // console.log(demoData);
-        var resourcesOutput =[];
-
-
+        var resourcesOutput = [];
         // var resourceBuilding = Object.keys(demoData);
 
         var resourcesArray = [];
         const resources = Object.entries(demoData);
-        // console.log(resources)
-        // console.log(resources[0][1])
-        // for (var res in resources){
-        //     console.log(res)
-        // }
 
         Object.keys(resources).forEach((resource) => {
             // console.log(resources[resource]);
@@ -85,12 +82,8 @@
                 // console.log("hello")
                 // console.log(resources[resource])
             }
-            // Object.keys(resource[1]).forEach((el) => {
-            //     // console.log(el)
-            // })
-        });
 
-        // console.log(resourcesArray)
+        });
 
         for (var res in resourcesArray) {
             for (var attr in resourcesArray[res]) {
@@ -100,13 +93,15 @@
                     // console.log("hello")
                     // console.log(resources[res][attr]);
                     // console.log(resources[res][attr].name);
-                    var objRes = {id: (String.fromCharCode(97 + n)),
-                        res, title: resources[res][attr].name};
+                    var objRes = {
+                        id: (String.fromCharCode(97 + n)),
+                        res, title: resources[res][attr].name
+                    };
                     resourcesOutput.push(objRes);
                 }
             }
         }
-        console.log(resourcesOutput)
+        // console.log(resourcesOutput)
         return resourcesOutput;
         // for (var resource in resources){
         //     console.log(resource);
@@ -126,7 +121,7 @@
         // }
     };
 
-    var newResources = f();
+    var newResources = dataToResourceFormat();
 
     export default {
         name: "Timetable",
@@ -143,7 +138,7 @@
                 //     {id: 'c', building: '460 Bryant', title: 'Auditorium C'},
                 //     {id: 'd', building: '460 Bryant', title: 'Auditorium D'},
                 //     {id: 'e', building: '460 Bryant', title: 'Auditorium E'},
-                //     {id: 'f', building: '460 Bryant', title: 'Auditorium F'},
+                //     {id: 'dataToResourceFormat', building: '460 Bryant', title: 'Auditorium F'},
                 //     {id: 'g', building: '564 Pacific', title: 'Auditorium G'},
                 //     {id: 'h', building: '564 Pacific', title: 'Auditorium H'},
                 //     {id: 'i', building: '564 Pacific', title: 'Auditorium I'},
