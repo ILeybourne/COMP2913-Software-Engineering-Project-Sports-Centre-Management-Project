@@ -94,9 +94,6 @@ public class Activity {
         this.current_capacity = current_capacity;
     }
 
-    public void getResource(Long resource_id) { //use in ActivityController
-    }
-
-    public void getResource() { //use in TimetableController (may change)
+    public void getResource(Long resource_id) {
     }
 }

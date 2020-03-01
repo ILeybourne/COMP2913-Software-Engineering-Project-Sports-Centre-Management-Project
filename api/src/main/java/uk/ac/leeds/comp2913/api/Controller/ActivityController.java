@@ -28,11 +28,13 @@ public class ActivityController {
     @Autowired
     private ResourceRepository resourceRepository;
 
+    //get activities by resource ID
     @GetMapping("/resources/{resource_id}/activities")
     public List<Activity> getActivitiesByResourceId(@PathVariable Long resource_id) {
         return activityRepository.findByResourceId(resource_id);
     }
 
+    //add new activity to resource
     @PostMapping("/resources/{resource_id}/activities")
     public Activity AddActivity(@PathVariable Long resource_id,
                             @Valid @RequestBody Activity activity) {
@@ -43,6 +45,7 @@ public class ActivityController {
                 }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
     }
 
+    //update activity
     @PutMapping("/resources/{resource_id}/activities/{activity_id}")
     public Activity updateActivity(@PathVariable Long resource_id,
                                @PathVariable Long activity_id,
@@ -58,6 +61,7 @@ public class ActivityController {
                 }).orElseThrow(() -> new ResourceNotFoundException("Activity not found with id " + activity_id));
     }
 
+    //delete activity
     @DeleteMapping("/resources/{resource_id}/activities/{activity_id}")
     public ResponseEntity<?> deleteActivity(@PathVariable Long resource_id,
                                           @PathVariable Long activity_id) {
