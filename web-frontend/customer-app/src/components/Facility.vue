@@ -59,16 +59,9 @@
     }
 </style>
 
+<!--TODO pass image to component-->
 <script>
     export default {
         name: "Facility",
-
-    };
-</script>
-
-<script>
-    export default {
-        name: "Facility",
-
     };
 </script>
