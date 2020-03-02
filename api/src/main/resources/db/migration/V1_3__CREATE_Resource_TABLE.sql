@@ -1,4 +1,4 @@
-create table sports_centre_management.resource
+create table if not exists sports_centre_management.resource
 (
     id         int8 not null,
     created_at timestamp,

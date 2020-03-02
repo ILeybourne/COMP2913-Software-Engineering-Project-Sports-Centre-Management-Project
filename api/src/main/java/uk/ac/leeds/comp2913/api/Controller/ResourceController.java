@@ -21,26 +21,30 @@ public class ResourceController {
     this.resourceRepository = resourceRepository;
   }
 
-  @GetMapping("/")
+  //Get Resources
+  @GetMapping("")
   public Page<Resource> getResources(Pageable pageable) {
     return resourceRepository.findAll(pageable);
   }
 
+  //Post new resource
   @PostMapping("/")
   public Resource createResource(@Valid @RequestBody Resource resource) {
     return resourceRepository.save(resource);
   }
 
+  //update resource
   @PutMapping("/{resource_id}")
   public Resource updateResource(@PathVariable Long resource_id, @Valid @RequestBody Resource resourceRequest) {
     return resourceRepository.findById(resource_id)
       .map(resource -> {
         resource.setName(resourceRequest.getName());
-        resource.setActivities(resourceRequest.getActivities()); //need to change this
+        resource.setActivities(resourceRequest.getActivities());
         return resourceRepository.save(resource);
       }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
   }
 
+  //delete resource
   @DeleteMapping("/{resource_id}")
   public ResponseEntity<?> deleteResource(@PathVariable Long resource_id) {
     return resourceRepository.findById(resource_id)
