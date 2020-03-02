@@ -50,19 +50,19 @@ public class Activity {
         this.id = id;
     }
 
-    public Date getStart_time() {
+    public Date getStartTime() {
         return start_time;
     }
 
-    public void setStart_time(Date start_time) {
+    public void setStartTime(Date start_time) {
         this.start_time = start_time;
     }
 
-    public Date getEnd_time() {
+    public Date getEndTime() {
         return end_time;
     }
 
-    public void setEnd_time(Date end_time) {
+    public void setEndTime(Date end_time) {
         this.end_time = end_time;
     }
 
@@ -78,19 +78,19 @@ public class Activity {
         return booking;
     }
 
-    public Integer getTotal_capacity() {
+    public Integer getTotalCapacity() {
         return total_capacity;
     }
 
-    public void setTotal_capacity(Integer total_capacity) {
+    public void setTotalCapacity(Integer total_capacity) {
         this.total_capacity = total_capacity;
     }
 
-    public Integer getCurrent_capacity() {
+    public Integer getCurrentCapacity() {
         return current_capacity;
     }
 
-    public void setCurrent_capacity(Integer current_capacity) {
+    public void setCurrentCapacity(Integer current_capacity) {
         this.current_capacity = current_capacity;
     }
 

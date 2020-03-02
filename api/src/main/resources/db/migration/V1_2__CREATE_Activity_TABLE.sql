@@ -1,4 +1,4 @@
-create table if not exists sports_centre_management.activity
+create table sports_centre_management.activity
 (
     id          int8 not null,
     booking_id  int8,
