@@ -10,14 +10,14 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CustomerTest {
+class ActivityTest {
 
-    Customer customer;
+    Activity activity;
     Random random;
 
     @BeforeEach
     void setUp() {
-        customer = new Customer();
+        activity = new Activity();
         random = new Random();
     }
 
@@ -27,45 +27,55 @@ class CustomerTest {
 
     @Test
     void getId() {
-        long testId = customer.getId();
-        assertTrue(testId > 0);
+        long testIdSet = random.nextLong();
+        activity.setId(testIdSet);
+        long testIdGet = activity.getId();
+        assertEquals(testIdSet, testIdGet);
     }
 
     @Test
-    void getCreatedAt() {
+    void setId() {
+        long testIdSet = random.nextLong();
+        activity.setId(testIdSet);
+        long testIdGet = activity.getId();
+        assertEquals(testIdSet, testIdGet);
+    }
+
+    @Test
+    void getStart_time() {
         Date testDateSet = new Date(random.nextLong());
-        customer.setCreatedAt(testDateSet);
-        Date testDateGet = customer.getCreatedAt();
+        activity.setStart_time(testDateSet);
+        Date testDateGet = activity.getStart_time();
         assertEquals(testDateSet, testDateGet);
     }
 
     @Test
-    void setCreatedAt() {
+    void setStart_time() {
         Date testDateSet = new Date(random.nextLong());
-        customer.setCreatedAt(testDateSet);
-        Date testDateGet = customer.getCreatedAt();
+        activity.setStart_time(testDateSet);
+        Date testDateGet = activity.getStart_time();
         assertEquals(testDateSet, testDateGet);
     }
 
     @Test
-    void getUpdatedAt() {
+    void getEnd_time() {
         Date testDateSet = new Date(random.nextLong());
-        customer.setUpdatedAt(testDateSet);
-        Date testDateGet = customer.getUpdatedAt();
+        activity.setEnd_time(testDateSet);
+        Date testDateGet = activity.getEnd_time();
         assertEquals(testDateSet, testDateGet);
     }
 
     @Test
-    void setUpdatedAt() {
+    void setEnd_time() {
         Date testDateSet = new Date(random.nextLong());
-        customer.setUpdatedAt(testDateSet);
-        Date testDateGet = customer.getUpdatedAt();
+        activity.setEnd_time(testDateSet);
+        Date testDateGet = activity.getEnd_time();
         assertEquals(testDateSet, testDateGet);
     }
 
     @Test
     @Disabled
-    void userLogin() {
+    void getResource() {
         // TODO Not implemented
     }
 }
