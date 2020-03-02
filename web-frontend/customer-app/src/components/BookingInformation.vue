@@ -2,15 +2,16 @@
     <div class="booking-info">
         <div class="booking-container">
             <form>
+<!--                TODO set input types and import select options-->
                 <label for="facility">Facility:</label>
-                <input type="text" id="activity" name="activity"><br>
+                <input type="text" id="facility" name="facility"><br>
                 <label for="activity">Activity:</label>
                 <input type="text" id="activity" name="activity"><br>
                 <label for="date">Date:</label>
                 <input type="text" id="date" name="date"><br>
                 <label for="time">Time:</label>
                 <input type="text" id="time" name="time"><br>
-                <label for="facility">Price:</label>
+                <label for="price">Price:</label>
                 <input type="text" id="price" name="price">
                 <div class="button-container">
                     <button type="button" class="btn btn-outline-secondary">Checkout As Guest</button>

@@ -1,22 +1,45 @@
 <template>
     <div class="facility-container">
-        <div style="padding: 10px;"></div>
-        <div style="display: flex; width: 100%; ">
-            <div style=" width: 5%;"></div>
-            <Facility style=" width: 40%; "></Facility>
-            <div style=" width: 10%;"></div>
-            <Facility style=" width: 40%;"></Facility>
-
+        <div class="outer-padding" ></div>
+        <div class="inline-div">
+            <div class="inner-div-5"></div>
+            <Facility class="facilities"></Facility>
+            <div class="inner-div-10"></div>
+            <Facility class="facilities"></Facility>
         </div>
-        <div style="padding: 10px;"></div>
-        <div style="display: flex; width: 100%; ">
-            <div style=" width: 5%;"></div>
-            <Facility style=" width: 40%; "></Facility>
-            <div style=" width: 10%;"></div>
-            <Facility style=" width: 40%;"></Facility>
+        <div class="outer-padding"></div>
+        <div class="inline-div">
+            <div class="inner-div-5"></div>
+            <Facility class="facilities"></Facility>
+            <div class="inner-div-10"></div>
+            <Facility class="facilities"></Facility>
+
         </div>
     </div>
 </template>
+
+<style scoped>
+    .outer-padding{
+       padding: 10px;
+    }
+
+    .inline-div{
+        display: flex;
+        width: 100%;
+    }
+
+    .facilities{
+        width: 40%;
+    }
+
+    .inner-div-5{
+        width: 5%;
+    }
+
+    .inner-div-10{
+        width: 10%;
+    }
+</style>
 
 <script>
     import Facility from "@/components/Facility.vue";

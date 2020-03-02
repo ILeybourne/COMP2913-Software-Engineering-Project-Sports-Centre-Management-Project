@@ -4,66 +4,8 @@
     import dayGridPlugin from '@fullcalendar/daygrid'
     import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 
-    //Old data
-    // var demoData = {
-    //     "resource_1": {
-    //         name: "Astro Turf",
-    //         activities: [
-    //             {
-    //                 activity_id: "3",
-    //                 booking_id: "1312312",
-    //                 start_time: "2020-02-27T12:30:00",
-    //                 end_time: "2020-02-27T13:30:00"
-    //             },
-    //             {
-    //                 activity_id: "5",
-    //                 booking_id: "78654342",
-    //                 start_time: "2020-02-27T14:30:00",
-    //                 end_time: "2020-02-27T15:30:00"
-    //             },
-    //             {
-    //                 booking_id: "7564323",
-    //                 start_time: "",
-    //                 end_time: ""
-    //             },
-    //             {
-    //                 booking_id: "253445",
-    //                 start_time: "",
-    //                 end_time: ""
-    //             },
-    //         ]
-    //     },
-    //     "resource_2": {
-    //         name: "Squash Court",
-    //         activities: [
-    //             {
-    //                 activity_id: "3",
-    //                 booking_id: "1312312",
-    //                 start_time: "2020-02-27T12:30:00",
-    //                 end_time: "2020-02-27T13:30:00"
-    //             },
-    //             {
-    //                 activity_id: "5",
-    //                 booking_id: "78654342",
-    //                 start_time: "2020-02-27T14:30:00",
-    //                 end_time: "2020-02-27T15:30:00"
-    //             },
-    //             {
-    //                 booking_id: "7564323",
-    //                 start_time: "",
-    //                 end_time: ""
-    //             },
-    //             {
-    //                 booking_id: "253445",
-    //                 start_time: "",
-    //                 end_time: ""
-    //             },
-    //         ]
-    //     }
-    // };
+    //TODO pull from db 1 facility
 
-    //TODO write functions in form of adapter (https://www.dofactory.com/javascript/adapter-design-pattern)
-    //new data
     var demoData2 = {
         content: [
             {
@@ -89,23 +31,8 @@
         ]
     };
 
-    /*events: [
-{
-  title  : 'event1',
-  start  : '2010-01-01'
-},
-{
-  title  : 'event2',
-  start  : '2010-01-05',
-  end    : '2010-01-07'
-},
-{
-  title  : 'event3',
-  start  : '2010-01-09T12:30:00',
-  allDay : false // will make the time show
-}
-]*/
 
+    //TODO write functions in form of adapter (https://www.dofactory.com/javascript/adapter-design-pattern)
     //functions for new data format
     function dataToResourceFormat() {
         var resourcesArray = [];
@@ -126,16 +53,9 @@
     function dataToEventFormat() {
         var eventArray = [];
 
-
         for (var resource in demoData2.content) {
-            // console.log('resource')
-            // console.log(demoData2.content[resource])
-            // console.log(demoData2.content[resource].activities)
             for (var act in demoData2.content[resource].activities) {
-                // console.log('act')
-                // console.log(demoData2.content[resource].activities[act])
                 var eventObj = {
-                    // id: (String.fromCharCode(96 + demoData2.content[resource].activities[act].id)),
                     id:  demoData2.content[resource].activities[act].id,
                     resourceId:  demoData2.content[resource].id,
                     title: demoData2.content[resource].activities[act].name,
@@ -145,8 +65,6 @@
                 eventArray.push(eventObj)
             }
         }
-
-        // console.log(eventArray)
         return eventArray
     };
 
