@@ -89,6 +89,10 @@ public abstract class User implements UserDetails {
     this.password = password;
   }
 
+  public String getUsername(){
+    return this.emailAddress;
+  }
+
   @JsonIgnore
   @Override
   public Collection<GrantedAuthority> getAuthorities() {
