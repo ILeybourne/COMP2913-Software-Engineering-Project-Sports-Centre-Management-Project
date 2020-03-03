@@ -6,6 +6,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import java.util.Date;
 
 @Entity
@@ -19,6 +20,9 @@ public class Account {
     private Date created_at;
     @UpdateTimestamp
     private Date updated_at;
+
+    @ManyToOne
+    private Centre centre;
 
     private String Password;
     private Date DateOfBirth;
@@ -49,5 +53,13 @@ public class Account {
     }
 
     public void cancelMembership() {
+    }
+
+    public Centre getCentre() {
+        return centre;
+    }
+
+    public void setCentre(Centre centre) {
+        this.centre = centre;
     }
 }

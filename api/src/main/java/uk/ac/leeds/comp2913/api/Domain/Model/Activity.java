@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
+import java.util.List;
 
 //defining an entity
 @Entity
@@ -19,13 +20,12 @@ public class Activity {
     @GeneratedValue
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
-
     private Date start_time;
 
     private Date end_time;
+
+    @OneToMany(mappedBy = "activity")
+    private List<Booking> bookings;
 
     @ManyToOne
     @JoinColumn(name="resource_id", nullable=false)
@@ -62,5 +62,13 @@ public class Activity {
 
     public Resource getResource() {
         return resource;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
     }
 }
