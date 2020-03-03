@@ -15,9 +15,7 @@ public class Booking {
 
     private String name;
 
-    @OneToOne
-    @JoinColumn(name = "activity_id")
-    private Activity activity;
+    private String activity;
 
     private Date start_time;
 
@@ -62,5 +60,21 @@ public class Booking {
 
     public void setStart_time(Date start_time) {
         this.start_time = start_time;
+    }
+
+    public String getActivity() {
+        return activity;
+    }
+
+    public void setActivity(String activity) {
+        this.activity = activity;
+    }
+
+    public Date getEnd_time() {
+        return end_time;
+    }
+
+    public void setEnd_time(Date end_time) {
+        this.end_time = end_time;
     }
 }
