@@ -22,6 +22,7 @@
         justify-content: space-between;
         padding: 30px;
     }
+
 </style>
 
 <script>

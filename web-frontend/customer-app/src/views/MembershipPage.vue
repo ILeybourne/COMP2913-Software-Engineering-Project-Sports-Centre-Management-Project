@@ -1,9 +1,9 @@
 <template>
     <div class="booking-container">
-        <div style="padding:15px;">
+        <div class="padding-div">
             <button type="button" class="btn btn-outline-secondary" style="padding:15px;">Back</button>
         </div>
-        <div style="   margin: auto; width: 50%;">
+        <div class="heading-div">
             <h1>Membership Options</h1>
         </div>
         <div>
@@ -11,6 +11,16 @@
         </div>
     </div>
 </template>
+
+<style scoped>
+    .padding-div{
+        padding:15px;
+    }
+
+    .heading-div{
+        margin: auto; width: 50%;
+    }
+</style>
 
 <script>
     import MembershipOptions from "@/components/MembershipOptions.vue";
