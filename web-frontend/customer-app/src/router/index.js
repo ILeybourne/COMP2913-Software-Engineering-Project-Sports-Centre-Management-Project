@@ -6,6 +6,9 @@ import TimetableSinglePage from "../views/TimetableSinglePage";
 import Facility from "../views/Facilities"
 import BookingInformation from "../views/BookingPage"
 import MembershipPage from "../views/MembershipPage";
+import Timetable from "../views/Timetable";
+import Profile from "../views/Profile";
+import { authGuard } from "../auth/helpers/auth.guard";
 
 Vue.use(VueRouter);
 
@@ -23,6 +26,18 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue")
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
+    beforeEnter: authGuard
+  },
+  {
+    path: "/timetable",
+    name: "Resource Timetable",
+    component: Timetable
+
   },
   {
     path: "/timetable",

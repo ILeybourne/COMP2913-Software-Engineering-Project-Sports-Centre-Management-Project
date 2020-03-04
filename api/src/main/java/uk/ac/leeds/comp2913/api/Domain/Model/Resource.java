@@ -1,14 +1,16 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
-import java.util.Date;
-import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.OneToMany;
+import java.util.Date;
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 
 /**
@@ -23,7 +25,7 @@ public class Resource {
 
     private String name;
 
-    @OneToMany(mappedBy = "resource")
+    @OneToMany(mappedBy = "resource", fetch = FetchType.EAGER)
     private List<Activity> activities;
 
     @CreationTimestamp
@@ -45,5 +47,9 @@ public class Resource {
 
     public void setActivities(List<Activity> activities) {
         this.activities = activities;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

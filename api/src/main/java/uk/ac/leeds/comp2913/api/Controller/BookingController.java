@@ -15,7 +15,6 @@ public class BookingController {
     @GetMapping("")
     public Booking booking(@RequestParam(value = "name", defaultValue = "World") String name) {
         Booking b = new Booking();
-        Booking v = new Booking();
         b.setCreatedAt(new Date());
         return b;
     }
