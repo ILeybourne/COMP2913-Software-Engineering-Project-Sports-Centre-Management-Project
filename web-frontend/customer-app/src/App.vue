@@ -5,7 +5,9 @@
       <router-link to="/about">About</router-link> |
       <router-link v-if="$auth.isAuthenticated" to="/profile">Profile</router-link>
     </div>
+    <NavBar/>
     <router-view />
+    <Footer/>
   </div>
 </template>
 
@@ -31,3 +33,16 @@
   }
 }
 </style>
+
+<script>
+import NavBar from "@/components/NavBar.vue";
+import Footer from "@/components/Footer.vue";
+
+export default {
+  name: "Home",
+  components: {
+    NavBar,
+    Footer
+  }
+};
+</script>

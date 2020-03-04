@@ -11,6 +11,10 @@
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.6.4",
+    "@fullcalendar/core": "^4.4.0",
+    "@fullcalendar/daygrid": "^4.4.0",
+    "@fullcalendar/resource-timeline": "^4.4.0",
+    "@fullcalendar/vue": "^4.4.0",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.4.2",
     "core-js": "^3.6.4",
