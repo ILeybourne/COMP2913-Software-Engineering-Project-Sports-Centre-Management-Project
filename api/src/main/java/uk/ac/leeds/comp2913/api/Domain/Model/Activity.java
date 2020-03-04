@@ -1,17 +1,15 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
-import java.util.Date;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.Date;
+
 import javax.persistence.*;
 
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Date;
 import java.util.List;
+
 
 //defining an entity
 @Entity
@@ -19,6 +17,16 @@ public class Activity {
     @Id
     @GeneratedValue
     private Long id;
+
+    private String name;
+
+    private Integer total_capacity;
+
+    private Integer current_capacity;
+
+    @OneToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
 
     private Date start_time;
 
@@ -28,7 +36,7 @@ public class Activity {
     private List<Booking> bookings;
 
     @ManyToOne
-    @JoinColumn(name="resource_id", nullable=false)
+    @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
 
     @CreationTimestamp
@@ -44,24 +52,51 @@ public class Activity {
         this.id = id;
     }
 
-    public Date getStart_time() {
+    public Date getStartTime() {
         return start_time;
     }
 
-    public void setStart_time(Date start_time) {
+    public void setStartTime(Date start_time) {
         this.start_time = start_time;
     }
 
-    public Date getEnd_time() {
+    public Date getEndTime() {
         return end_time;
     }
 
-    public void setEnd_time(Date end_time) {
+    public void setEndTime(Date end_time) {
         this.end_time = end_time;
     }
 
-    public Resource getResource() {
-        return resource;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Booking getBooking() {
+        return booking;
+    }
+
+    public Integer getTotalCapacity() {
+        return total_capacity;
+    }
+
+    public void setTotalCapacity(Integer total_capacity) {
+        this.total_capacity = total_capacity;
+    }
+
+    public Integer getCurrentCapacity() {
+        return current_capacity;
+    }
+
+    public void setCurrentCapacity(Integer current_capacity) {
+        this.current_capacity = current_capacity;
+    }
+
+    public void getResource(Long resource_id) {
     }
 
     public List<Booking> getBookings() {
