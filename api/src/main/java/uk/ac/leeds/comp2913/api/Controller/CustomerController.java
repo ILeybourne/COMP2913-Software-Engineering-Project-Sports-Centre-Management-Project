@@ -15,7 +15,7 @@ public class CustomerController {
     @GetMapping("")
     public Customer customer(@RequestParam(value = "name", defaultValue = "World") String name) {
         Customer c = new Customer();
-        c.setCreatedAt(new Date());
+//        c.setCreatedAt(new Date());
         return c;
     }
 }
