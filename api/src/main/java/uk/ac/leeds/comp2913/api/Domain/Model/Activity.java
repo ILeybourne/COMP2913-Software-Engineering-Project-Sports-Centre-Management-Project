@@ -5,12 +5,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+
+import java.util.Date;
+import java.util.List;
+
 
 //defining an entity
 @Entity
@@ -33,8 +32,11 @@ public class Activity {
 
     private Date end_time;
 
+//    @OneToMany(mappedBy = "activity")
+//    private List<Booking> bookings;
+
     @ManyToOne
-    @JoinColumn(name="resource_id", nullable=false)
+    @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
 
     @CreationTimestamp
@@ -96,4 +98,12 @@ public class Activity {
 
     public void getResource(Long resource_id) {
     }
+
+//    public List<Booking> getBookings() {
+//        return bookings;
+//    }
+//
+//    public void setBookings(List<Booking> bookings) {
+//        this.bookings = bookings;
+//    }
 }

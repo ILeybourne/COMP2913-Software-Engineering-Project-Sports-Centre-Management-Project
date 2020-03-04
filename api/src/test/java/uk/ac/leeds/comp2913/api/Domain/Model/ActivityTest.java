@@ -44,32 +44,32 @@ class ActivityTest {
     @Test
     void getStart_time() {
         Date testDateSet = new Date(random.nextLong());
-        activity.setStart_time(testDateSet);
-        Date testDateGet = activity.getStart_time();
+        activity.setStartTime(testDateSet);
+        Date testDateGet = activity.getStartTime();
         assertEquals(testDateSet, testDateGet);
     }
 
     @Test
     void setStart_time() {
         Date testDateSet = new Date(random.nextLong());
-        activity.setStart_time(testDateSet);
-        Date testDateGet = activity.getStart_time();
+        activity.setStartTime(testDateSet);
+        Date testDateGet = activity.getStartTime();
         assertEquals(testDateSet, testDateGet);
     }
 
     @Test
     void getEnd_time() {
         Date testDateSet = new Date(random.nextLong());
-        activity.setEnd_time(testDateSet);
-        Date testDateGet = activity.getEnd_time();
+        activity.setStartTime(testDateSet);
+        Date testDateGet = activity.getStartTime();
         assertEquals(testDateSet, testDateGet);
     }
 
     @Test
     void setEnd_time() {
         Date testDateSet = new Date(random.nextLong());
-        activity.setEnd_time(testDateSet);
-        Date testDateGet = activity.getEnd_time();
+        activity.setStartTime(testDateSet);
+        Date testDateGet = activity.getStartTime();
         assertEquals(testDateSet, testDateGet);
     }
 
