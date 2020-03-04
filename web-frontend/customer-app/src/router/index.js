@@ -3,10 +3,9 @@ import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import TimetablePage from "../views/TimetablePage";
 import TimetableSinglePage from "../views/TimetableSinglePage";
-import Facility from "../views/Facilities"
-import BookingInformation from "../views/BookingPage"
+import Facility from "../views/Facilities";
+import BookingInformation from "../views/BookingPage";
 import MembershipPage from "../views/MembershipPage";
-import Timetable from "../views/Timetable";
 import Profile from "../views/Profile";
 import { authGuard } from "../auth/helpers/auth.guard";
 
@@ -36,39 +35,28 @@ const routes = [
   {
     path: "/timetable",
     name: "Resource Timetable",
-    component: Timetable
-
-  },
-  {
-    path: "/timetable",
-    name: "Resource Timetable",
     component: TimetablePage
-
   },
   {
     path: "/timetable/:facilityName",
     name: "Resource Timetable",
     component: TimetableSinglePage,
     props: true
-
   },
   {
     path: "/facilities",
     name: "Facilities",
     component: Facility
-
   },
   {
     path: "/bookings",
     name: "BookingPage",
     component: BookingInformation
-
   },
   {
     path: "/membership",
     name: "MembershipPage",
     component: MembershipPage
-
   }
 ];
 
