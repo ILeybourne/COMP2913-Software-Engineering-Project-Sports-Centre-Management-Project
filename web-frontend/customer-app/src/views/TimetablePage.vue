@@ -1,14 +1,17 @@
 <template>
   <div class="timetable">
     <h1>Timetable</h1>
+    <Timetable></Timetable>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
+import Timetable from "../components/Timetable";
+
 export default {
-  name: "Timetable",
+  name: "TimetablePage",
   components: {
+    Timetable
   }
 };
 </script>
