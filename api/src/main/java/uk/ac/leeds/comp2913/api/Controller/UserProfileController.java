@@ -18,7 +18,7 @@ final class UserProfileController {
 //    TODO: find by Username
 //    TODO: Use permissions from token
 //    TODO: Only enable JwtAuth in Security
-    return user.toString();
+    return user.getSubject() + user.getClaims() + user.getAudience();
   }
 
 }
