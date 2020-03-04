@@ -14,6 +14,7 @@ public class Booking {
     private long id;
 
     @OneToOne
+    @JoinColumn(name = "account_id")
     private Account account;
 
     @CreationTimestamp

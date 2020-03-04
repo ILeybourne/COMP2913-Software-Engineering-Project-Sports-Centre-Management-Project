@@ -1,0 +1,1 @@
+alter table sports_centre_management.booking add column account_id int8

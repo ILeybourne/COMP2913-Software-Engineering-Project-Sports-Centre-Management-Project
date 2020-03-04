@@ -32,8 +32,8 @@ public class Activity {
 
     private Date end_time;
 
-    @OneToMany(mappedBy = "activity")
-    private List<Booking> bookings;
+//    @OneToMany(mappedBy = "activity")
+//    private List<Booking> bookings;
 
     @ManyToOne
     @JoinColumn(name = "resource_id", nullable = false)
@@ -99,11 +99,11 @@ public class Activity {
     public void getResource(Long resource_id) {
     }
 
-    public List<Booking> getBookings() {
-        return bookings;
-    }
-
-    public void setBookings(List<Booking> bookings) {
-        this.bookings = bookings;
-    }
+//    public List<Booking> getBookings() {
+//        return bookings;
+//    }
+//
+//    public void setBookings(List<Booking> bookings) {
+//        this.bookings = bookings;
+//    }
 }
