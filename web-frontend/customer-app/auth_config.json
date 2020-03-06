@@ -1,4 +1,5 @@
 {
   "domain": "prod-comp2931.eu.auth0.com",
-  "clientId": "zr4pbcmS4lDD8ggIOqLc6oO7CmfRENFX"
+  "clientId": "zr4pbcmS4lDD8ggIOqLc6oO7CmfRENFX",
+  "audience": "localhost:8000/"
 }
