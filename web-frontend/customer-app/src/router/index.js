@@ -8,6 +8,7 @@ import BookingInformation from "../views/BookingPage";
 import MembershipPage from "../views/MembershipPage";
 import Profile from "../views/Profile";
 import { authGuard } from "../auth/helpers/auth.guard";
+import ExampleServerSide from "../views/ExampleServerSide";
 
 Vue.use(VueRouter);
 
@@ -57,6 +58,12 @@ const routes = [
     path: "/membership",
     name: "MembershipPage",
     component: MembershipPage
+  },
+  {
+    path: "/exampleapi",
+    name: "ExampleAPI",
+    component: ExampleServerSide,
+    beforeEnter: authGuard
   }
 ];
 

@@ -11,6 +11,7 @@
           <b-nav-item to="/facilities">Facilities</b-nav-item>
           <b-nav-item to="/bookings">Bookings</b-nav-item>
           <b-nav-item to="/membership">Membership</b-nav-item>
+          <b-nav-item to="/exampleapi">External API Tutorial</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
