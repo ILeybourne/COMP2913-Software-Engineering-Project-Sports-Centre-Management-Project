@@ -4,10 +4,7 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +20,10 @@ public class FacilityTimetable {
 
     private String name;
 
-    @OneToMany(mappedBy = "facility_timetable")
+    @OneToOne
+    private Centre centre;
+
+    @OneToMany //discuss parent of relation with resources, recommend facilityTimetable
     private List<Resource> resources;
 
     @CreationTimestamp
@@ -45,5 +45,13 @@ public class FacilityTimetable {
 
     public void setResources(List<Resource> resources) {
         this.resources = resources;
+    }
+
+    public Centre getCentre() {
+        return centre;
+    }
+
+    public void setCentre(Centre centre) {
+        this.centre = centre;
     }
 }

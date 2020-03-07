@@ -13,6 +13,9 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
 import javax.validation.Valid;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequestMapping("/booking")

@@ -16,10 +16,6 @@ public class Centre {
 
     private String name;
 
-    @OneToOne
-    @JoinColumn(name = "timetable_id")
-    private FacilityTimetable timetable;
-
     @OneToMany(mappedBy = "centre")
     private List<Account> accounts;
 
@@ -37,4 +33,11 @@ public class Centre {
     }
 
 
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
 }

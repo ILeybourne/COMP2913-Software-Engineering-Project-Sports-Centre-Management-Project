@@ -21,10 +21,17 @@ public class Booking {
 
     private Date end_time;
 
+    @OneToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
     @CreationTimestamp
     private Date created_at;
     @UpdateTimestamp
     private Date updated_at;
+
+    public Booking() {
+    }
 
     public long getId() {
         return id;
@@ -76,5 +83,13 @@ public class Booking {
 
     public void setEnd_time(Date end_time) {
         this.end_time = end_time;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }
