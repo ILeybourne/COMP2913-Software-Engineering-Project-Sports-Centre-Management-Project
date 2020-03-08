@@ -52,7 +52,8 @@ const routes = [
   {
     path: "/bookings",
     name: "BookingPage",
-    component: BookingInformation
+    component: BookingInformation,
+    beforeEnter: authGuard
   },
   {
     path: "/membership",

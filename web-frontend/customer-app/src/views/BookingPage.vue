@@ -1,5 +1,7 @@
 <template>
   <div class="booking-container">
+    <button @click="callApi">Call</button>
+    <pre>{{ JSON.stringify(message) }}</pre>
     <div class="padding-div">
       <button
         type="button"
@@ -31,12 +33,31 @@
 
 <script>
 import BookingInformation from "@/components/BookingInformation.vue";
+import axios from "axios";
 
 // @ is an alias to /src
 export default {
   name: "BookingPage",
   components: {
     BookingInformation
+  },
+  data() {
+    return {
+      message: ""
+    };
+  },
+  methods: {
+    async callApi() {
+      const token = await this.$auth.getTokenSilently();
+
+      const { data } = await axios.get("http://localhost:8000/resources", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log(data);
+      this.message = data;
+    }
   }
 };
 </script>
