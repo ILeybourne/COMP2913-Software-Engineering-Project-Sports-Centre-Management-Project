@@ -1,5 +1,8 @@
 <template>
   <div class="booking-container">
+    <div>
+      {{facilitiesList.facilities}}
+    </div>
     <button @click="callApi">Call</button>
     <pre>{{ JSON.stringify(message) }}</pre>
     <div class="padding-div">
@@ -43,7 +46,10 @@ export default {
   },
   data() {
     return {
-      message: ""
+      message: "",
+      facilitiesList: {
+        facilities: ""
+      }
     };
   },
   methods: {
@@ -56,7 +62,26 @@ export default {
         }
       });
       console.log(data);
+
       this.message = data;
+
+      const content = data.content;
+      // content.forEach(myFunction);
+      const facils = [];
+      // function myFunction(item) {
+      //   console.log(item.name);
+      //   facils.push(item.name);
+      // }
+
+      for (const facil in content){
+        console.log(content[facil].name);
+        facils.push(content[facil].name);
+
+      }
+
+      console.log(content);
+      this.facilitiesList.facilities = facils;
+      console.log(facils);
     }
   }
 };
