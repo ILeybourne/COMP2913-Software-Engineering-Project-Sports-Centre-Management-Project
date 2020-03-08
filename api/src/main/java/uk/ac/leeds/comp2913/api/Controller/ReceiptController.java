@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ReceiptRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
-import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
 import javax.validation.Valid;
