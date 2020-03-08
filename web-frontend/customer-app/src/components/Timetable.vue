@@ -2,10 +2,7 @@
 import FullCalendar from "@fullcalendar/vue";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
-
-//TODO pull from db 1 facility
-
-//TODO write functions in form of adapter (https://www.dofactory.com/javascript/adapter-design-pattern)
+import interactionPlugin from "@fullcalendar/interaction";
 
 export default {
   name: "Timetable",
@@ -19,70 +16,103 @@ export default {
   },
   data() {
     return {
-      calendarPlugins: [dayGridPlugin, resourceTimelinePlugin],
+      calendarPlugins: [
+        dayGridPlugin,
+        resourceTimelinePlugin,
+        interactionPlugin
+      ],
       header: {
         left: "today prev,next",
         center: "title",
         right: "resourceTimelineDay,resourceTimelineWeek"
-      },
-      demoData2: [
-        {
-          id: 1,
-          name: "Squash Court",
-          activities: [
-            {
-              id: 1,
-              name: "Morning Squash",
-              total_capacity: 15,
-              current_capacity: 10,
-              booking: null,
-              start_time: "2020-02-27T08:00:00.000+0000",
-              end_time: "2020-02-27T10:00:00.000+0000"
-            }
-          ]
-        },
-        {
-          id: 2,
-          name: "Tennis Court",
-          activities: []
-        }
-      ]
+      }
     };
   },
   computed: {
-    //functions for new data format
     resources() {
-      const resourcesArray = [];
-
-      for (const resource in this.demoData2.content) {
-        // console.log(demoData2.content[resource])
-        const resourceObject = {
-          // id: (String.fromCharCode(96 + demoData2.content[resource].id)),
-          id: this.demoData2.content[resource].id,
-          title: this.demoData2.content[resource].name
-        };
-
-        resourcesArray.push(resourceObject);
-      }
-      return resourcesArray;
+      return [
+        { id: "a", title: "Auditorium A" },
+        { id: "b", title: "Auditorium B", eventColor: "green" },
+        { id: "c", title: "Auditorium C", eventColor: "orange" },
+        {
+          id: "d",
+          title: "Auditorium D",
+          children: [
+            { id: "d1", title: "Room D1" },
+            { id: "d2", title: "Room D2" }
+          ]
+        },
+        { id: "e", title: "Auditorium E" },
+        { id: "f", title: "Auditorium F", eventColor: "red" },
+        { id: "g", title: "Auditorium G" },
+        { id: "h", title: "Auditorium H" },
+        { id: "i", title: "Auditorium I" },
+        { id: "j", title: "Auditorium J" },
+        { id: "k", title: "Auditorium K" },
+        { id: "l", title: "Auditorium L" },
+        { id: "m", title: "Auditorium M" },
+        { id: "n", title: "Auditorium N" },
+        { id: "o", title: "Auditorium O" },
+        { id: "p", title: "Auditorium P" },
+        { id: "q", title: "Auditorium Q" },
+        { id: "r", title: "Auditorium R" },
+        { id: "s", title: "Auditorium S" },
+        { id: "t", title: "Auditorium T" },
+        { id: "u", title: "Auditorium U" },
+        { id: "v", title: "Auditorium V" },
+        { id: "w", title: "Auditorium W" },
+        { id: "x", title: "Auditorium X" },
+        { id: "y", title: "Auditorium Y" },
+        { id: "z", title: "Auditorium Z" }
+      ];
     },
-
     events() {
-      const eventArray = [];
-
-      for (const resource in this.demoData2.content) {
-        for (const act in this.demoData2.content[resource].activities) {
-          const eventObj = {
-            id: this.demoData2.content[resource].activities[act].id,
-            resourceId: this.demoData2.content[resource].id,
-            title: this.demoData2.content[resource].activities[act].name,
-            start: this.demoData2.content[resource].activities[act].start_time,
-            end: this.demoData2.content[resource].activities[act].end_time
-          };
-          eventArray.push(eventObj);
+      return [
+        {
+          resourceId: "d",
+          title: "event 1",
+          start: "2020-03-07",
+          end: "2020-03-09"
+        },
+        {
+          resourceId: "c",
+          title: "event 3",
+          start: "2020-03-08T12:00:00+00:00",
+          end: "2020-03-09T06:00:00+00:00"
+        },
+        {
+          resourceId: "f",
+          title: "event 4",
+          start: "2020-03-08T07:30:00+00:00",
+          end: "2020-03-08T09:30:00+00:00"
+        },
+        {
+          resourceId: "b",
+          title: "event 5",
+          start: "2020-03-08T10:00:00+00:00",
+          end: "2020-03-08T15:00:00+00:00"
+        },
+        {
+          resourceId: "e",
+          title: "event 2",
+          start: "2020-03-08T09:00:00+00:00",
+          end: "2020-03-08T14:00:00+00:00"
         }
-      }
-      return eventArray;
+      ];
+    }
+  },
+  methods: {
+    onUnselectEvent(a) {
+      console.log(a);
+    },
+    onUpdateSelectedEvent(a) {
+      console.log(a);
+    },
+    onEventTimeChange(a) {
+      console.log(a);
+    },
+    onSelect(a) {
+      console.log(a);
     }
   }
 };
@@ -91,15 +121,22 @@ export default {
 <template>
   <div id="calendar">
     <FullCalendar
-      schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-      defaultView="resourceTimelineDay"
-      aspectRatio="1"
+      :resources="resources"
       :events="events"
       :plugins="calendarPlugins"
       :header="header"
+      :selectable="true"
+      :selectMirror="true"
+      schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+      defaultView="resourceTimelineDay"
+      aspectRatio="1"
       minTime="06:00:00"
       maxTime="23:00:00"
-      :resources="resources"
+      @dateClick="onUnselectEvent($event)"
+      @eventClick="onUpdateSelectedEvent($event)"
+      @eventDrop="onEventTimeChange($event)"
+      @eventResize="onEventTimeChange($event)"
+      @select="onSelect()"
     />
   </div>
 </template>
