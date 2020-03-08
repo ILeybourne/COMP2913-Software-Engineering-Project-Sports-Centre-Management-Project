@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,8 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
@@ -18,7 +17,6 @@ import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -29,8 +27,10 @@ public class BookingController {
   private final JavaMailSender javaMailSender;
   private final BookingRepository bookingRepository;
 
-  public BookingController(JavaMailSender javaMailSender) {
+  @Autowired
+  public BookingController(JavaMailSender javaMailSender, BookingRepository bookingRepository) {
     this.javaMailSender = javaMailSender;
+    this.bookingRepository = bookingRepository;
   }
 
   @GetMapping("/send_email")
@@ -68,10 +68,6 @@ public class BookingController {
     return null;
   }
 
-
-  public BookingController(BookingRepository bookingRepository) {
-    this.bookingRepository = bookingRepository;
-  }
 
   @GetMapping("/bookings")
   public Page<Booking> getBookings(Pageable pageable) {
