@@ -1,0 +1,1 @@
+alter table sports_centre_management.membership drop column membership_type;

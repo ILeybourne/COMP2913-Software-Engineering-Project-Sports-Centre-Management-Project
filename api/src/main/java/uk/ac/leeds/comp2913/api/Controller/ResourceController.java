@@ -23,7 +23,7 @@ public class ResourceController {
 
     //Get Resources
     @GetMapping("")
-    public Page<Resource> getResources(Pageable pageable) {
+    public Page<Resource> getResources( Pageable pageable) {
         return resourceRepository.findAll(pageable);
     }
 

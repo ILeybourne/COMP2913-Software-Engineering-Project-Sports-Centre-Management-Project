@@ -3,8 +3,14 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
 import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Booking {
@@ -13,14 +19,17 @@ public class Booking {
     @GeneratedValue
     private long id;
 
-    @OneToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
-
     @CreationTimestamp
     private Date created_at;
     @UpdateTimestamp
     private Date updated_at;
+
+    /**
+     * The Activity associated with the booking
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_id")
+    private Activity activity;
 
     public Booking() {
     }
@@ -43,13 +52,5 @@ public class Booking {
 
     public void setUpdatedAt(Date updated_at) {
         this.updated_at = updated_at;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
     }
 }

@@ -4,11 +4,15 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
-
-import javax.persistence.*;
-
-import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 
 //defining an entity
@@ -24,16 +28,16 @@ public class Activity {
 
     private Integer current_capacity;
 
-    @OneToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
-
     private Date start_time;
 
     private Date end_time;
 
-//    @OneToMany(mappedBy = "activity")
-//    private List<Booking> bookings;
+    /**
+     * The bookings that have been made against the activity
+     */
+    @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY)
+    private List<Booking> booking;
+
 
     @ManyToOne
     @JoinColumn(name = "resource_id", nullable = false)
@@ -76,7 +80,7 @@ public class Activity {
         this.name = name;
     }
 
-    public Booking getBooking() {
+    public List<Booking> getBooking() {
         return booking;
     }
 
