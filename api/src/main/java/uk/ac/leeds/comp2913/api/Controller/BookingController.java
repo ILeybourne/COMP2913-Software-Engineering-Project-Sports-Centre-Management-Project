@@ -3,6 +3,19 @@ package uk.ac.leeds.comp2913.api.Controller;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+
+import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
+import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
+import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+
+import javax.validation.Valid;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
@@ -13,44 +26,79 @@ import javax.mail.internet.MimeMessage;
 @RestController
 @RequestMapping("/booking")
 public class BookingController {
-    private final JavaMailSender javaMailSender;
+  private final JavaMailSender javaMailSender;
+  private final BookingRepository bookingRepository;
 
-    public BookingController(JavaMailSender javaMailSender) {
-        this.javaMailSender = javaMailSender;
-    }
+  public BookingController(JavaMailSender javaMailSender) {
+    this.javaMailSender = javaMailSender;
+  }
 
-    @GetMapping("/send_email")
-    public Booking booking() throws MessagingException {
+  @GetMapping("/send_email")
+  public Booking booking() throws MessagingException {
 
-        // To address
-        final String EMAIL_ADDRESS = "tom_oddy@live.co.uk";
+    // To address
+    final String EMAIL_ADDRESS = "tom_oddy@live.co.uk";
 
-        // Subject
-        final String EMAIL_SUBJECT = "Test Email";
+    // Subject
+    final String EMAIL_SUBJECT = "Test Email";
 
-        // Body (can be HTML)
-        final String EMAIL_BODY = "This is a test email.";
+    // Body (can be HTML)
+    final String EMAIL_BODY = "This is a test email.";
 
-        // Name of attached file
-        final String EMAIL_ATTACHMENT_NAME = "receipt.pdf";
+    // Name of attached file
+    final String EMAIL_ATTACHMENT_NAME = "receipt.pdf";
 
-        // Path of file to attach
-        final String EMAIL_ATTACHMENT_PATH = "info/bookings/receipt_123.pdf";
+    // Path of file to attach
+    final String EMAIL_ATTACHMENT_PATH = "info/bookings/receipt_123.pdf";
 
-        // Create message object
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+    // Create message object
+    MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+    MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
 
-        // Set address, subject, and body
-        mimeMessageHelper.setTo(EMAIL_ADDRESS);
-        mimeMessageHelper.setSubject(EMAIL_SUBJECT);
-        mimeMessageHelper.setText(EMAIL_BODY);
+    // Set address, subject, and body
+    mimeMessageHelper.setTo(EMAIL_ADDRESS);
+    mimeMessageHelper.setSubject(EMAIL_SUBJECT);
+    mimeMessageHelper.setText(EMAIL_BODY);
 
-        // Add attachment to email
+    // Add attachment to email
 //        mimeMessageHelper.addAttachment(EMAIL_ATTACHMENT_NAME, new File(EMAIL_ATTACHMENT_PATH));
 
-        // Send email
-        javaMailSender.send(mimeMessage);
-        return null;
-    }
+    // Send email
+    javaMailSender.send(mimeMessage);
+    return null;
+  }
+
+
+  public BookingController(BookingRepository bookingRepository) {
+    this.bookingRepository = bookingRepository;
+  }
+
+  @GetMapping("/bookings")
+  public Page<Booking> getBookings(Pageable pageable) {
+    return bookingRepository.findAll(pageable);
+  }
+
+  @PostMapping("/bookings")
+  public Booking createBooking(@Valid @RequestBody Booking booking) {
+    return bookingRepository.save(booking);
+  }
+
+  @PutMapping("/bookings/{bookingID")
+  public Booking updateBooking(@PathVariable Long bookingId, @Valid @RequestBody Booking bookingRequest) {
+    return bookingRepository.findById(bookingId).map(booking -> {
+      booking.setName(bookingRequest.getName());
+      booking.setActivity(bookingRequest.getActivity());
+      booking.setStart_time(bookingRequest.getStart_time());
+      booking.setEnd_time(bookingRequest.getEnd_time());
+      return bookingRepository.save(booking);
+    }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + bookingId));
+  }
+
+  @DeleteMapping("/bookings/{bookingId")
+  public ResponseEntity<?> deleteBooking(@PathVariable Long bookingId) {
+    return bookingRepository.findById(bookingId).map(booking -> {
+      bookingRepository.delete(booking);
+      return ResponseEntity.ok().build();
+    }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + bookingId));
+  }
 }
