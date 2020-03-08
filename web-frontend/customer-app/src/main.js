@@ -9,6 +9,10 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import { domain, clientId, audience } from "../auth_config.json";
 import { Auth0Plugin } from "./services/auth.service";
+import axios from "axios";
+import VueAxios from "vue-axios";
+
+axios.defaults.baseURL = "localhost:8000";
 
 Vue.use(Auth0Plugin, {
   domain,
@@ -23,6 +27,7 @@ Vue.use(Auth0Plugin, {
   }
 });
 
+Vue.use(VueAxios, axios);
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 Vue.config.productionTip = false;
