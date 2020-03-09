@@ -82,10 +82,10 @@ public class BookingController {
   @PutMapping("/bookings/{bookingID")
   public Booking updateBooking(@PathVariable Long bookingId, @Valid @RequestBody Booking bookingRequest) {
     return bookingRepository.findById(bookingId).map(booking -> {
-      booking.setName(bookingRequest.getName());
-      booking.setActivity(bookingRequest.getActivity());
-      booking.setStart_time(bookingRequest.getStart_time());
-      booking.setEnd_time(bookingRequest.getEnd_time());
+//      booking.setName(bookingRequest.getName());
+//      booking.setActivity(bookingRequest.getActivity());
+//      booking.setStart_time(bookingRequest.getStart_time());
+//      booking.setEnd_time(bookingRequest.getEnd_time());
       return bookingRepository.save(booking);
     }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + bookingId));
   }

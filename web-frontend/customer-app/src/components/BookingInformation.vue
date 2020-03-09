@@ -1,7 +1,7 @@
 <template>
   <div class="booking-info">
     <div class="booking-container">
-      <form>
+      <form @submit="postData">
         <label for="facility">Facility:</label>
         <b-form-select
           v-model="selectedFacil"
@@ -22,7 +22,7 @@
         </b-form-select>
         <br />
         <label for="date">Date:</label>
-        <input type="date" id="date" name="date" @change="getDate" /><br />
+        <input type="date" id="date" name="date" :value="date" /><br />
         <label for="time">Time:</label>
         <b-form-select
           v-model="selectedTime"
@@ -35,20 +35,10 @@
         <label for="price">Price:</label>
         <input type="text" id="price" name="price" disabled />
         <div class="button-container">
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            @click="postData"
-            name="guest"
-          >
+          <button type="submit" class="btn btn-outline-secondary" name="guest">
             Checkout As Guest
           </button>
-          <button
-            type="button"
-            class="btn btn-outline-primary"
-            @click="postData"
-            name="account"
-          >
+          <button type="submit" class="btn btn-outline-primary" name="account">
             Checkout With Account
           </button>
         </div>
@@ -112,6 +102,7 @@ export default {
       selectedTime: null
     };
   },
+  computed: {},
   methods: {
     async getResourceContent() {
       const token = await this.$auth.getTokenSilently();
@@ -121,65 +112,62 @@ export default {
           Authorization: `Bearer ${token}`
         }
       });
-      this.message = data;
-
       const content = data.content;
-      const facils = ["Please Select"];
+      const facilities = ["Please Select"];
 
-      for (const facil in content) {
-        facils.push(content[facil].name);
+      for (const facility of content) {
+        facilities.push(facility.name);
       }
 
-      this.facility = facils;
+      this.facility = facilities;
       this.contents = content;
     },
     getActivities() {
-      const content = this.contents;
-      const activityArray = ["Please Select"];
+      const facilities = this.contents;
+      let activityArray = [];
+      const selectOption = ["Please Select"];
 
-      for (const facil in content) {
-        if (content[facil].name === this.selectedFacil) {
-          for (const act in content[facil].activities) {
-            activityArray.push(content[facil].activities[act].name);
-          }
+      for (const facility of facilities) {
+        if (facility.name === this.selectedFacil) {
+          activityArray = selectOption.concat(
+            facility.activities.map(a => a.name)
+          );
         }
       }
       this.activity = activityArray;
     },
     getTimes() {
-      const content = this.contents;
-      const timeArray = ["Please Select"];
+      const facilities = this.contents;
+      let timeArray = [];
+      const selectOption = ["Please Select"];
 
-      for (const facil in content) {
-        if (content[facil].name === this.selectedFacil) {
-          for (const act in content[facil].activities) {
-            if (content[facil].activities[act].name === this.selectedActivity) {
-              timeArray.push(content[facil].activities[act].startTime);
+      for (const facility of facilities) {
+        if (facility.name === this.selectedFacil) {
+          for (const activity of facility.activities) {
+            if (activity.name === this.selectedActivity) {
+              timeArray = selectOption.concat([activity.startTime]);
             }
           }
         }
       }
       this.time = timeArray;
     },
-    getDate() {
-      const newDate = document.getElementById("date").value;
-      this.date = newDate;
-    },
-    async postData(e) {
+    async postData() {
       const token = await this.$auth.getTokenSilently();
       await axios.post("http://localhost:8000/booking", {
-        facility: this.selectedFacil,
         activity: this.selectedActivity,
-        date: this.date,
-        time: this.time,
-        price: this.price,
-        token: token,
-        userType: e.toElement.name
+        startTime: this.time,
+        endTime: this.time,
+        token: token
+        // facility: this.selectedFacil,
+        // date: this.date,
+        // price: this.price,
+        // userType: e.toElement.name
       });
     }
   },
-  beforeMount() {
-    this.getResourceContent();
+  async mounted() {
+    await this.getResourceContent();
   }
 };
 </script>

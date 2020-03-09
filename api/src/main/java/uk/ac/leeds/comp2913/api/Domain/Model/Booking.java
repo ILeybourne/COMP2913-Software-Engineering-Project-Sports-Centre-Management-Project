@@ -13,13 +13,13 @@ public class Booking {
     @GeneratedValue
     private long id;
 
-    private String name;
+//    private String name;
 
-    private String activity;
+//    private String activity;
 
-    private Date start_time;
-
-    private Date end_time;
+//    private Date start_time;
+//
+//    private Date end_time;
 
     @OneToOne
     @JoinColumn(name = "account_id")
@@ -52,38 +52,31 @@ public class Booking {
     public void setUpdatedAt(Date updated_at) {
         this.updated_at = updated_at;
     }
+//
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Date getStart_time() {
-        return start_time;
-    }
-
-    public void setStart_time(Date start_time) {
-        this.start_time = start_time;
-    }
-
-    public String getActivity() {
-        return activity;
-    }
-
-    public void setActivity(String activity) {
-        this.activity = activity;
-    }
-
-    public Date getEnd_time() {
-        return end_time;
-    }
-
-    public void setEnd_time(Date end_time) {
-        this.end_time = end_time;
-    }
+//    public Date getStart_time() {
+//        return start_time;
+//    }
+//
+//    public void setStart_time(Date start_time) {
+//        this.start_time = start_time;
+//    }
+//
+//
+//    public Date getEnd_time() {
+//        return end_time;
+//    }
+//
+//    public void setEnd_time(Date end_time) {
+//        this.end_time = end_time;
+//    }
 
     public Account getAccount() {
         return account;
