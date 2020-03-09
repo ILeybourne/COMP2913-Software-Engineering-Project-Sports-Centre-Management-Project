@@ -28,7 +28,7 @@ public class Membership {
 
     //Foreign key, membership type (annual, monthly etc)
     @OneToOne (fetch = FetchType.EAGER)
-    @JoinColumn(name = "membership_type_id")
+    @JoinColumn(name = "membership_type_id", nullable = false)
     private MembershipType membershipType;
 
     //foreign key, account id to link user
@@ -40,8 +40,11 @@ public class Membership {
     private Date StartDate;
     private Date EndDate;
 
-    public long getId() {
+    public Long getId() {
         return id;
+
+    }public void setId(Long id) {
+        this.id = id;
     }
 
     public Date getCreatedAt() {
@@ -72,7 +75,7 @@ public class Membership {
     public void storeReceipt() {
     }
 
-    public Account getAccount(Long account_id) {
+    public Account getAccount() {
         return account;
     }
 
@@ -89,7 +92,5 @@ public class Membership {
     public MembershipType getMembershipType() {
         return membershipType;
     }
-
-    public void getMembershipType(Long membership_type_id) {
-    }
+    
 }

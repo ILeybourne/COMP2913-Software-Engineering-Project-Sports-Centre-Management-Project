@@ -52,6 +52,6 @@ public class ResourceController {
                     resourceRepository.delete(resource);
                     return ResponseEntity.ok().build();
                 }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
-    }
+        }
 }
 

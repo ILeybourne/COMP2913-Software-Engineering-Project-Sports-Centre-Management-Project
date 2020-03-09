@@ -1,5 +1,7 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -61,6 +63,7 @@ public class Account {
     }
 
 
+    @JsonIgnore
     public Centre getCentre() {
         return centre;
     }
@@ -69,6 +72,7 @@ public class Account {
         this.centre = centre;
     }
 
+    @JsonIgnore
     public Membership getMemberships() {
         return Memberships;
     }

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -42,16 +41,16 @@ public class MembershipController {
     }
 
     //Add a member, store membership with account Id and membership type id
-    @PostMapping("/add")
-    public Membership addMembership(@RequestParam Long account_id,
-                                    @RequestParam Long membership_type_id,
+    @PostMapping("/add/{account_id}/{membership_type_id}")
+    public Membership addMembership(@PathVariable Long account_id,
+                                    @PathVariable Long membership_type_id,
                                     @Valid @RequestBody Membership membership){
         return accountRepository.findById(account_id)
                 .map(account -> {
-                    membership.getAccount(account_id);
+                    membership.setAccount(membership.getAccount());
                     return membershipTypeRepository.findById(membership_type_id)
                             .map(membershipType -> {
-                                membership.getMembershipType(membership_type_id);
+                                membership.setMembershipType(membership.getMembershipType());
                                 return membershipRepository.save(membership);
                             }) .orElseThrow(() -> new ResourceNotFoundException("Membership Type not found with id " + membership_type_id));
                 }) .orElseThrow(() -> new ResourceNotFoundException("Account not found with id " + account_id));
@@ -59,28 +58,25 @@ public class MembershipController {
 
 
     // Upgrade/downgrade membership type
-    @PutMapping("/members/{membership_id}")
-    public Membership updateMembership(@PathVariable Long membership_id,
-                                       @Valid @RequestBody Membership membershipRequest){
-        if(!membershipRepository.existsById(membership_id)) {
-            throw new ResourceNotFoundException("Membership not found with id" + membership_id);
-        }
-
+    @PutMapping("/{membership_id}")
+    public Membership updateMembership(@PathVariable Long membership_id, @Valid @RequestBody Membership membershipRequest) {
         return membershipRepository.findById(membership_id)
                 .map(membership -> {
                     membership.setMembershipType(membershipRequest.getMembershipType());
                     return membershipRepository.save(membership);
-                }).orElseThrow(() -> new ResourceNotFoundException("Membership not found with id" + membership_id));
+                }).orElseThrow(() -> new ResourceNotFoundException("Membership not found with id " + membership_id));
     }
 
 
+
     //cancel membership
-    @DeleteMapping("/{membership_id}/")
+    @DeleteMapping("/{membership_id}")
     public ResponseEntity<?> deleteMembership(@PathVariable Long membership_id) {
         return membershipRepository.findById(membership_id)
                 .map(membership -> {
                     membershipRepository.delete(membership);
                     return ResponseEntity.ok().build();
                 }).orElseThrow(() -> new ResourceNotFoundException("Membership not found with id" + membership_id));
-        }
+    }
+
 }

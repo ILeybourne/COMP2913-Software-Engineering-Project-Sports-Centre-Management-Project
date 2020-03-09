@@ -19,7 +19,9 @@ public class OAuth2ResourceServerSecurityConfiguration extends WebSecurityConfig
   protected void configure(HttpSecurity http) throws Exception {
     // @formatter:off
     http
-      .authorizeRequests(authorizeRequests ->
+        .csrf().disable()
+        .cors().and()
+            .authorizeRequests(authorizeRequests ->
         authorizeRequests
 //          TODO: Public endpoints for timetable
 //          .antMatchers(HttpMethod.POST, "/test/permission/**").hasAuthority("SCOPE_message:write")

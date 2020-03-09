@@ -1,5 +1,7 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,6 +17,7 @@ import javax.persistence.Id;
 @Entity
 public class MembershipType {
 
+    @JsonProperty
     @Id
     @GeneratedValue
     private long id;
@@ -32,6 +35,9 @@ public class MembershipType {
     private int duration;
 
     private BigDecimal cost;
+
+    // for deserialisation
+   // public MembershipType() {}
 
     public long getId() {
         return id;
