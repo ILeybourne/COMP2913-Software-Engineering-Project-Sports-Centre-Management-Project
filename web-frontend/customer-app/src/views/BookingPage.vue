@@ -1,10 +1,10 @@
 <template>
   <div class="booking-container" onload="callApi">
     <div>
-      {{ facility }}
+<!--      {{ facility }}-->
     </div>
 <!--    <button @click="callApi">Call</button>-->
-    <pre>{{ JSON.stringify(message) }}</pre>
+<!--    <pre>{{ JSON.stringify(message) }}</pre>-->
     <div class="padding-div">
       <button
         type="button"
@@ -18,7 +18,8 @@
       <h1>Bookings</h1>
     </div>
     <div>
-      <BookingInformation :facilities="facility" :content="contents"></BookingInformation>
+<!--      <BookingInformation :facilities="facility" :content="contents"></BookingInformation>-->
+      <BookingInformation ></BookingInformation>
     </div>
   </div>
 </template>
