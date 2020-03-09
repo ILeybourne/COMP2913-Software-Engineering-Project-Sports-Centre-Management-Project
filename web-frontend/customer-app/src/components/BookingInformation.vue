@@ -1,17 +1,6 @@
 <template>
   <div class="booking-info">
     <div class="booking-container">
-      <!--      For Debugging purposes-->
-      <data>
-        {{ facility }}
-      </data>
-      <br />
-      <data>
-        {{ contents }}<br />
-        {{ date }}
-      </data>
-      <button @click="getResourceContent">Call</button>
-
       <form>
         <label for="facility">Facility:</label>
         <b-form-select
@@ -28,25 +17,37 @@
           :options="activity"
           name="activity"
           id="activity"
+          @change="getTimes"
         >
         </b-form-select>
-        <!--        <select id="activity" name="activity"></select-->
-        ><br />
+        <br />
         <label for="date">Date:</label>
         <input type="date" id="date" name="date" @change="getDate" /><br />
         <label for="time">Time:</label>
-        <select id="time" name="time"></select
-        ><br />
+        <b-form-select
+          v-model="selectedTime"
+          :options="time"
+          name="time"
+          id="time"
+        >
+        </b-form-select>
+        <br />
         <label for="price">Price:</label>
         <input type="text" id="price" name="price" disabled />
         <div class="button-container">
-          <button type="button" class="btn btn-outline-secondary">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            @click="postData"
+            name="guest"
+          >
             Checkout As Guest
           </button>
           <button
             type="button"
             class="btn btn-outline-primary"
             @click="postData"
+            name="account"
           >
             Checkout With Account
           </button>
@@ -103,10 +104,12 @@ export default {
       contents: [],
       facility: ["Please Select"],
       activity: ["Please Select"],
+      time: ["Please Select"],
+      price: 0,
       date: null,
       selectedFacil: null,
       selectedActivity: null,
-      time: null
+      selectedTime: null
     };
   },
   methods: {
@@ -118,7 +121,6 @@ export default {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(data);
       this.message = data;
 
       const content = data.content;
@@ -132,12 +134,10 @@ export default {
       this.contents = content;
     },
     getActivities() {
-      // console.log("activiesi")
       const content = this.contents;
       const activityArray = ["Please Select"];
 
       for (const facil in content) {
-        console.log(content[facil].name + "   " + this.selectedFacil);
         if (content[facil].name === this.selectedFacil) {
           for (const act in content[facil].activities) {
             activityArray.push(content[facil].activities[act].name);
@@ -146,32 +146,40 @@ export default {
       }
       this.activity = activityArray;
     },
+    getTimes() {
+      const content = this.contents;
+      const timeArray = ["Please Select"];
+
+      for (const facil in content) {
+        if (content[facil].name === this.selectedFacil) {
+          for (const act in content[facil].activities) {
+            if (content[facil].activities[act].name === this.selectedActivity) {
+              timeArray.push(content[facil].activities[act].startTime);
+            }
+          }
+        }
+      }
+      this.time = timeArray;
+    },
     getDate() {
       const newDate = document.getElementById("date").value;
       this.date = newDate;
-      console.log(newDate);
     },
-    async postData() {
-      // e.preventDefault();
-
+    async postData(e) {
       const token = await this.$auth.getTokenSilently();
-      await axios.post("http://localhost:8000/yourPostApi", {
-        facility:  this.selectedFacil,
+      await axios.post("http://localhost:8000/booking", {
+        facility: this.selectedFacil,
         activity: this.selectedActivity,
         date: this.date,
         time: this.time,
         price: this.price,
-        token: token
+        token: token,
+        userType: e.toElement.name
       });
     }
   },
   beforeMount() {
     this.getResourceContent();
-    this.getActivities();
-    this.getDate();
-    this.postData();
   }
 };
-
-
 </script>
