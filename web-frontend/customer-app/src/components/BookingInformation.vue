@@ -1,16 +1,18 @@
 <template>
   <div class="booking-info">
     <div class="booking-container">
+      <!--      For Debugging purposes-->
       <data>
         {{ facility }}
-      </data> <br />
-      <data>
-        {{ contents }}
       </data>
-      <button @click="callApi">Call</button>
+      <br />
+      <data>
+        {{ contents }}<br />
+        {{ date }}
+      </data>
+      <button @click="getResourceContent">Call</button>
 
       <form>
-        <!--                TODO set input types and import select options-->
         <label for="facility">Facility:</label>
         <b-form-select
           v-model="selectedFacil"
@@ -19,7 +21,6 @@
           id="facility"
           @change="getActivities"
         >
-
         </b-form-select>
         <label for="activity">Activity:</label>
         <b-form-select
@@ -29,10 +30,10 @@
           id="activity"
         >
         </b-form-select>
-<!--        <select id="activity" name="activity"></select-->
+        <!--        <select id="activity" name="activity"></select-->
         ><br />
         <label for="date">Date:</label>
-        <input type="date" id="date" name="date" /><br />
+        <input type="date" id="date" name="date" @change="getDate" /><br />
         <label for="time">Time:</label>
         <select id="time" name="time"></select
         ><br />
@@ -42,7 +43,11 @@
           <button type="button" class="btn btn-outline-secondary">
             Checkout As Guest
           </button>
-          <button type="button" class="btn btn-outline-primary">
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            @click="postData"
+          >
             Checkout With Account
           </button>
         </div>
@@ -100,12 +105,12 @@ export default {
       activity: ["Please Select"],
       date: null,
       selectedFacil: null,
-      selectedActivity: null
+      selectedActivity: null,
+      time: null
     };
   },
   methods: {
-
-    async callApi() {
+    async getResourceContent() {
       const token = await this.$auth.getTokenSilently();
 
       const { data } = await axios.get("http://localhost:8000/resources", {
@@ -120,36 +125,51 @@ export default {
       const facils = ["Please Select"];
 
       for (const facil in content) {
-        console.log(content[facil].name);
         facils.push(content[facil].name);
       }
 
       this.facility = facils;
       this.contents = content;
-      console.log(content);
-      console.log(facils);
     },
     getActivities() {
-      console.log("activiesi")
+      // console.log("activiesi")
       const content = this.contents;
-      const activityArray = ["Please Select"]
+      const activityArray = ["Please Select"];
 
-      for (const facil in content){
-        console.log(content[facil].name + "   " +  this.selectedFacil)
+      for (const facil in content) {
+        console.log(content[facil].name + "   " + this.selectedFacil);
         if (content[facil].name === this.selectedFacil) {
-
           for (const act in content[facil].activities) {
-            activityArray.push(content[facil].activities[act].name)
+            activityArray.push(content[facil].activities[act].name);
           }
-          console.log(content[facil].name)
         }
       }
       this.activity = activityArray;
     },
+    getDate() {
+      const newDate = document.getElementById("date").value;
+      this.date = newDate;
+      console.log(newDate);
+    },
+    async postData() {
+      // e.preventDefault();
+
+      const token = await this.$auth.getTokenSilently();
+      await axios.post("http://localhost:8000/yourPostApi", {
+        facility:  this.selectedFacil,
+        activity: this.selectedActivity,
+        date: this.date,
+        time: this.time,
+        price: this.price,
+        token: token
+      });
+    }
   },
   beforeMount() {
-    this.callApi();
+    this.getResourceContent();
     this.getActivities();
+    this.getDate();
+    this.postData();
   }
 };
 

@@ -1,10 +1,5 @@
 <template>
   <div class="booking-container" onload="callApi">
-    <div>
-<!--      {{ facility }}-->
-    </div>
-<!--    <button @click="callApi">Call</button>-->
-<!--    <pre>{{ JSON.stringify(message) }}</pre>-->
     <div class="padding-div">
       <button
         type="button"
@@ -18,7 +13,6 @@
       <h1>Bookings</h1>
     </div>
     <div>
-<!--      <BookingInformation :facilities="facility" :content="contents"></BookingInformation>-->
       <BookingInformation ></BookingInformation>
     </div>
   </div>
@@ -45,42 +39,6 @@ export default {
   components: {
     BookingInformation
   },
-  // data() {
-  //   return {
-  //     message: "",
-  //     contents: "",
-  //     facility: ""
-  //   };
-  // },
-  // methods: {
-  //   async callApi() {
-  //     const token = await this.$auth.getTokenSilently();
-  //
-  //     const { data } = await axios.get("http://localhost:8000/resources", {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`
-  //       }
-  //     });
-  //     console.log(data);
-  //
-  //     this.message = data;
-  //
-  //     const content = data.content;
-  //     const facils = [];
-  //
-  //     for (const facil in content){
-  //       console.log(content[facil].name);
-  //       facils.push(content[facil].name);
-  //
-  //     }
-  //
-  //     console.log(content);
-  //     this.facilities = facils;
-  //     this.contents = content;
-  //     console.log(facils);
-  //   }
-  //
-  // }
 };
 
 
