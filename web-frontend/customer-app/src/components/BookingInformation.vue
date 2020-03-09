@@ -1,15 +1,25 @@
 <template>
   <div class="booking-info">
     <div class="booking-container">
-      <data value="">
+      <data >
         {{facilities}}
       </data>
+      <data >
+        {{content}}
+      </data>
+      <button @click="callApi">Call</button>
+
       <form>
         <!--                TODO set input types and import select options-->
         <label for="facility">Facility:</label>
-        <select id="facility" name="facility">
-        </select><br />
+<!--        <select id="facility" name="facility" v-model="selectedFacilty">-->
+<!--        <select id="facility" name="facility">-->
+<!--&lt;!&ndash;          <option disabled value="">Please select one</option>&ndash;&gt;-->
+<!--        </select><br />-->
+<!--        <v-select :options="facilities"></v-select>-->
+        <b-form-select v-model="selected" :options="facilities" name="facility"></b-form-select>
         <label for="activity">Activity:</label>
+
         <select id="activity" name="activity">
         </select><br />
         <label for="date">Date:</label>
@@ -68,9 +78,50 @@ label {
 </style>
 
 <script>
+
+
+import axios from "axios";
+
 export default {
   name: "BookingInformation",
-  props: ['facilities']
+  props: ['content','facilities'],
+  data() {
+    return {
+      message: [],
+      contents: [],
+      facility: [],
+      selected: null
+    };
+  },
+  methods: {
+    async callApi() {
+      const token = await this.$auth.getTokenSilently();
 
+      const { data } = await axios.get("http://localhost:8000/resources", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log(data);
+      this.message = data;
+
+      const content = data.content;
+      const facils = [];
+
+      for (const facil in content){
+        console.log(content[facil].name);
+        facils.push(content[facil].name);
+
+      }
+
+      this.facilities = facils;
+      this.contents = content;
+      console.log(content);
+      console.log(facils);
+    }
+
+  }
 };
+
+
 </script>

@@ -1,9 +1,9 @@
 <template>
-  <div class="booking-container">
+  <div class="booking-container" onload="callApi">
     <div>
-      {{facilitiesList.facilities}}
+      {{ facility }}
     </div>
-    <button @click="callApi">Call</button>
+<!--    <button @click="callApi">Call</button>-->
     <pre>{{ JSON.stringify(message) }}</pre>
     <div class="padding-div">
       <button
@@ -18,7 +18,7 @@
       <h1>Bookings</h1>
     </div>
     <div>
-      <BookingInformation></BookingInformation>
+      <BookingInformation :facilities="facility" :content="contents"></BookingInformation>
     </div>
   </div>
 </template>
@@ -36,7 +36,7 @@
 
 <script>
 import BookingInformation from "@/components/BookingInformation.vue";
-import axios from "axios";
+// import axios from "axios";
 
 // @ is an alias to /src
 export default {
@@ -44,45 +44,43 @@ export default {
   components: {
     BookingInformation
   },
-  data() {
-    return {
-      message: "",
-      facilitiesList: {
-        facilities: ""
-      }
-    };
-  },
-  methods: {
-    async callApi() {
-      const token = await this.$auth.getTokenSilently();
-
-      const { data } = await axios.get("http://localhost:8000/resources", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log(data);
-
-      this.message = data;
-
-      const content = data.content;
-      // content.forEach(myFunction);
-      const facils = [];
-      // function myFunction(item) {
-      //   console.log(item.name);
-      //   facils.push(item.name);
-      // }
-
-      for (const facil in content){
-        console.log(content[facil].name);
-        facils.push(content[facil].name);
-
-      }
-
-      console.log(content);
-      this.facilitiesList.facilities = facils;
-      console.log(facils);
-    }
-  }
+  // data() {
+  //   return {
+  //     message: "",
+  //     contents: "",
+  //     facility: ""
+  //   };
+  // },
+  // methods: {
+  //   async callApi() {
+  //     const token = await this.$auth.getTokenSilently();
+  //
+  //     const { data } = await axios.get("http://localhost:8000/resources", {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+  //     console.log(data);
+  //
+  //     this.message = data;
+  //
+  //     const content = data.content;
+  //     const facils = [];
+  //
+  //     for (const facil in content){
+  //       console.log(content[facil].name);
+  //       facils.push(content[facil].name);
+  //
+  //     }
+  //
+  //     console.log(content);
+  //     this.facilities = facils;
+  //     this.contents = content;
+  //     console.log(facils);
+  //   }
+  //
+  // }
 };
+
+
 </script>
