@@ -23,7 +23,7 @@
         </b-form-select>
         <label for="activity">Activity:</label>
         <b-form-select
-          v-model="selected"
+          v-model="selectedActivity"
           :options="activity"
           name="activity"
           id="activity"
@@ -98,8 +98,9 @@ export default {
       contents: [],
       facility: ["Please Select"],
       activity: ["Please Select"],
+      date: null,
       selectedFacil: null,
-      selected: null
+      selectedActivity: null
     };
   },
   methods: {
