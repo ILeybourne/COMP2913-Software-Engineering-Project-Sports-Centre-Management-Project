@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ResourceRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 
+import java.util.Collection;
+import java.util.List;
+
 @RestController
 @RequestMapping("/timetable")
 public class TimetableController {
@@ -21,8 +24,8 @@ public class TimetableController {
 
     //Get all resources
     @GetMapping("")
-    public Page<Resource> getResources(Pageable pageable) {
-        return resourceRepository.findAll(pageable);
+    public Collection<Resource> getResources() {
+        return resourceRepository.findAllWithBookings();
     }
 }
 
