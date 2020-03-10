@@ -1,25 +1,18 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
-import io.micrometer.core.ipc.http.HttpSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-
-import javax.validation.Valid;
-
+import org.springframework.web.bind.annotation.*;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ResourceRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class ActivityController {
@@ -34,7 +27,19 @@ public class ActivityController {
       this.resourceRepository = resourceRepository;
     }
 
-    //get activities by resource ID
+
+  /**
+   * Get all activities in the database
+   *
+   * @param pageable
+   * @return
+   */
+  @GetMapping("/activities")
+  public Page<Activity> getActivities(Pageable pageable) {
+    return activityRepository.findAll(pageable);
+  }
+
+  //get activities by resource ID
     @GetMapping("/resources/{resource_id}/activities")
     public List<Activity> getActivitiesByResourceId(@PathVariable Long resource_id) {
         return activityRepository.findByResourceId(resource_id);
