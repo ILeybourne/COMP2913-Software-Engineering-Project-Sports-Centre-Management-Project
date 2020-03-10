@@ -79,18 +79,16 @@ public class BookingController {
     return bookingRepository.save(booking);
   }
 
-  @PutMapping("/bookings/{bookingID")
-  public Booking updateBooking(@PathVariable Long bookingId, @Valid @RequestBody Booking bookingRequest) {
-    return bookingRepository.findById(bookingId).map(booking -> {
-//      booking.setName(bookingRequest.getName());
-//      booking.setActivity(bookingRequest.getActivity());
-//      booking.setStart_time(bookingRequest.getStart_time());
-//      booking.setEnd_time(bookingRequest.getEnd_time());
+  @PutMapping("/bookings/{booking_id")
+  public Booking updateBooking(@PathVariable Long booking_id, @Valid @RequestBody Booking bookingRequest) {
+    return bookingRepository.findById(booking_id).map(booking -> {
+      booking.setActivity(bookingRequest.getActivity());
+      booking.setAccount(bookingRequest.getAccount());
       return bookingRepository.save(booking);
-    }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + bookingId));
+    }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
   }
 
-  @DeleteMapping("/bookings/{bookingId")
+  @DeleteMapping("/bookings/{booking_id")
   public ResponseEntity<?> deleteBooking(@PathVariable Long bookingId) {
     return bookingRepository.findById(bookingId).map(booking -> {
       bookingRepository.delete(booking);

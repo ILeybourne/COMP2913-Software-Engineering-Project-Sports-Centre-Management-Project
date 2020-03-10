@@ -62,4 +62,12 @@ public class Booking {
   public void setAccount(Account account) {
     this.account = account;
   }
+
+  public Activity getActivity() {
+    return activity;
+  }
+
+  public void setActivity(Activity activity) {
+    this.activity = activity;
+  }
 }
