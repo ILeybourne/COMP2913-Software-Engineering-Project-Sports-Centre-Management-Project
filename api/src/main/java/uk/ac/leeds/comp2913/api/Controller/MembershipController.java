@@ -25,23 +25,27 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 @RequestMapping("/membership")
 public class MembershipController {
 
-    @Autowired
-    private MembershipRepository membershipRepository;
+    private final MembershipRepository membershipRepository;
+
+    private final AccountRepository accountRepository;
+
+    private final MembershipTypeRepository membershipTypeRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
+    public MembershipController(MembershipRepository membershipRepository, AccountRepository accountRepository, MembershipTypeRepository membershipTypeRepository) {
+      this.membershipRepository = membershipRepository;
+      this.accountRepository = accountRepository;
+      this.membershipTypeRepository = membershipTypeRepository;
+    }
 
-    @Autowired
-    private MembershipTypeRepository membershipTypeRepository;
-
-    // get all memberships
+  // get all memberships
     @GetMapping("/members")
     public Page<Membership> getMemberships(Pageable pageable) {
         return membershipRepository.findAll(pageable);
     }
 
     //Add a member, store membership with account Id and membership type id
-    @PostMapping("/add/{account_id}/{membership_type_id}")
+    @PostMapping("/{account_id}/{membership_type_id}")
     public Membership addMembership(@PathVariable Long account_id,
                                     @PathVariable Long membership_type_id,
                                     @Valid @RequestBody Membership membership){
