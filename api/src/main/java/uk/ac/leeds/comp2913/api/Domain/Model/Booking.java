@@ -6,83 +6,64 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
 @Entity
 public class Booking {
 
-    @Id
-    @GeneratedValue
-    private long id;
+  @Id
+  @GeneratedValue
+  private long id;
 
-//    private String name;
+  @CreationTimestamp
+  private Date created_at;
+  @UpdateTimestamp
+  private Date updated_at;
 
-//    private String activity;
 
-//    private Date start_time;
-//
-//    private Date end_time;
+  @OneToOne
+  @JoinColumn(name = "account_id")
+  private Account account;
+  /**
+   * The Activity associated with the booking
+   */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "activity_id")
+  private Activity activity;
 
-    @OneToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
+  public Booking() {
+  }
 
-    @CreationTimestamp
-    private Date created_at;
-    @UpdateTimestamp
-    private Date updated_at;
+  public long getId() {
+    return id;
+  }
 
-    public Booking() {
-    }
+  public Date getCreatedAt() {
+    return created_at;
+  }
 
-    public long getId() {
-        return id;
-    }
+  public void setCreatedAt(Date created_at) {
+    this.created_at = created_at;
+  }
 
-    public Date getCreatedAt() {
-        return created_at;
-    }
+  public Date getUpdatedAt() {
+    return updated_at;
+  }
 
-    public void setCreatedAt(Date created_at) {
-        this.created_at = created_at;
-    }
+  public void setUpdatedAt(Date updated_at) {
+    this.updated_at = updated_at;
+  }
 
-    public Date getUpdatedAt() {
-        return updated_at;
-    }
+  public Account getAccount() {
+    return account;
+  }
 
-    public void setUpdatedAt(Date updated_at) {
-        this.updated_at = updated_at;
-    }
-//
-//    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-
-//    public Date getStart_time() {
-//        return start_time;
-//    }
-//
-//    public void setStart_time(Date start_time) {
-//        this.start_time = start_time;
-//    }
-//
-//
-//    public Date getEnd_time() {
-//        return end_time;
-//    }
-//
-//    public void setEnd_time(Date end_time) {
-//        this.end_time = end_time;
-//    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
+  public void setAccount(Account account) {
+    this.account = account;
+  }
 }
