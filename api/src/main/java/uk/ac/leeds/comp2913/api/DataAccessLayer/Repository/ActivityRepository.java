@@ -8,5 +8,8 @@ import java.util.List;
 
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
-    List<Activity> findByResourceId(Long resource_id);
+  List<Activity> findByResourceId(Long resource_id);
+
+  @Override
+  void deleteById(Long aLong);
 }

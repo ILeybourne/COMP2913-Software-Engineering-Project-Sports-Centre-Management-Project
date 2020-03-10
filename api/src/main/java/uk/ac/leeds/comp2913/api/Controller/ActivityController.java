@@ -1,6 +1,8 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
+import io.micrometer.core.ipc.http.HttpSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,33 +52,26 @@ public class ActivityController {
 
     //update activity
     @PutMapping("/activities/{activity_id}")
-    public Activity updateActivity(@PathVariable Long resource_id,
-                               @PathVariable Long activity_id,
-                               @Valid @RequestBody Activity activityRequest) {
-        if(!resourceRepository.existsById(resource_id)) {
-            throw new ResourceNotFoundException("Resource not found with id " + resource_id);
-        }
+    public Activity updateActivity(@PathVariable Long activity_id, @Valid @RequestBody Activity activityRequest) {
 
         return activityRepository.findById(activity_id)
                 .map(activity -> {
                     activity.setName(activityRequest.getName());
                     return activityRepository.save(activity);
-                }).orElseThrow(() -> new ResourceNotFoundException("Activity not found with id " + activity_id));
+                }).orElseThrow(() -> new ResourceNotFoundException("Activity not found with ID " + activity_id));
     }
 
     //delete activity
     @DeleteMapping("/activities/{activity_id}")
-    public ResponseEntity<?> deleteActivity(@PathVariable Long resource_id,
-                                          @PathVariable Long activity_id) {
-        if(!resourceRepository.existsById(resource_id)) {
-            throw new ResourceNotFoundException("Resource not found with id " + resource_id);
-        }
+    public ResponseEntity<?> deleteActivity(@PathVariable Long activity_id) {
 
-        return activityRepository.findById(activity_id)
-                .map(activity -> {
-                    activityRepository.delete(activity);
-                    return ResponseEntity.ok().build();
-                }).orElseThrow(() -> new ResourceNotFoundException("Activity not found with id " + activity_id));
-
+      try {
+        activityRepository.deleteById(activity_id);
+        return ResponseEntity
+          .noContent()
+          .build();
+      } catch (EmptyResultDataAccessException e){
+        throw new ResourceNotFoundException("Activity not found with that ID " + activity_id);
+      }
     }
 }
