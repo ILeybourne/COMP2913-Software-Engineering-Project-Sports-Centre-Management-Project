@@ -27,6 +27,12 @@ public class ResourceController {
         return resourceRepository.findAll(pageable);
     }
 
+    @GetMapping("/{resource_id}")
+    public Resource indexResource(@PathVariable Long resource_id){
+      return resourceRepository.findById(resource_id)
+        .orElseThrow(() -> new ResourceNotFoundException("Resource not found with ID " + resource_id));
+    }
+
     //Post new resource
     @PostMapping("/")
     public Resource createResource(@Valid @RequestBody Resource resource) {
