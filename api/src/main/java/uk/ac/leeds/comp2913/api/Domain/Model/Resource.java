@@ -1,17 +1,12 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import java.util.Set;
 
 
 /**
@@ -33,7 +28,7 @@ public class Resource {
      * List of activities ever booked for the resource
      */
     @OneToMany(mappedBy = "resource", fetch = FetchType.EAGER)
-    private List<Activity> activities;
+    private Set<Activity> activities;
 
     @CreationTimestamp
     private Date created_at;
@@ -48,11 +43,11 @@ public class Resource {
         this.name = name;
     }
 
-    public List<Activity> getActivities() {
+    public Set<Activity> getActivities() {
         return activities;
     }
 
-    public void setActivities(List<Activity> activities) {
+    public void setActivities(Set<Activity> activities) {
         this.activities = activities;
     }
 
