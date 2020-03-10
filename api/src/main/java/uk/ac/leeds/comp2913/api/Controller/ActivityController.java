@@ -36,12 +36,11 @@ public class ActivityController {
 
     //add new activity to resource
     @PostMapping("/resources/{resource_id}/activities")
-    public Activity AddActivity(@PathVariable Long resource_id,
-                            @Valid @RequestBody Activity activity) {
-        return resourceRepository.findById(resource_id)
+    public Activity AddActivity(@PathVariable Long resource_id, @Valid @RequestBody Activity activity) {
+      return resourceRepository.findById(resource_id)
                 .map(resource -> {
-                    activity.getResource(resource_id);
-                    return activityRepository.save(activity);
+                  activity.setResource(resource);
+                  return activityRepository.save(activity);
                 }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
     }
 

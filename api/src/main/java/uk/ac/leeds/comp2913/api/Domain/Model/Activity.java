@@ -1,5 +1,7 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -99,11 +101,13 @@ public class Activity {
     public void getResource(Long resource_id) {
     }
 
-//    public List<Booking> getBookings() {
-//        return bookings;
-//    }
-//
-//    public void setBookings(List<Booking> bookings) {
-//        this.bookings = bookings;
-//    }
+    @JsonIgnoreProperties("activities")
+    public Resource getResource() {
+      return resource;
+    }
+
+    public void setResource(Resource resource) {
+      this.resource = resource;
+    }
+
 }
