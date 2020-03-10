@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -63,6 +64,7 @@ public class Booking {
     this.account = account;
   }
 
+  @JsonIgnoreProperties("bookings")
   public Activity getActivity() {
     return activity;
   }
