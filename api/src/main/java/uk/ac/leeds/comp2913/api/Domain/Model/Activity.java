@@ -115,14 +115,6 @@ public class Activity {
         this.bookings = bookings;
     }
 
-    public Resource getResource() {
-      return resource;
-    }
-
-    public void setResource(Resource resource) {
-      this.resource = resource;
-    }
-
     @JsonIgnoreProperties("activities")
     public Resource getResource() {
       return resource;
