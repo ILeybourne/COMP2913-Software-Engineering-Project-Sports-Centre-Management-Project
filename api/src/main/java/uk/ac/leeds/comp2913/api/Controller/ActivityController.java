@@ -57,7 +57,12 @@ public class ActivityController {
         return activityRepository.findById(activity_id)
                 .map(activity -> {
                     activity.setName(activityRequest.getName());
-                    return activityRepository.save(activity);
+                    activity.setStartTime(activityRequest.getStartTime());
+                    activity.setEndTime(activityRequest.getEndTime());
+                    activity.setTotalCapacity(activityRequest.getTotalCapacity());
+                    activity.setCurrentCapacity(activityRequest.getCurrentCapacity());
+//                    TODO: Others
+                  return activityRepository.save(activity);
                 }).orElseThrow(() -> new ResourceNotFoundException("Activity not found with ID " + activity_id));
     }
 
