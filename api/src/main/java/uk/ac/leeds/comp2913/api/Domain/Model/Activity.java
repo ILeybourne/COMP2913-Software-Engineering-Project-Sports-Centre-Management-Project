@@ -1,12 +1,15 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -41,7 +44,7 @@ public class Activity {
      * The bookings that have been made against the activity
      */
     @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY)
-    private List<Booking> bookings;
+    private Set<Booking> bookings;
 
 
   /**
@@ -107,11 +110,11 @@ public class Activity {
     public void getResource(Long resource_id) {
     }
 
-    public List<Booking> getBookings() {
+    public Set<Booking> getBookings() {
         return bookings;
     }
 
-    public void setBookings(List<Booking> bookings) {
+    public void setBookings(Set<Booking> bookings) {
         this.bookings = bookings;
     }
 
