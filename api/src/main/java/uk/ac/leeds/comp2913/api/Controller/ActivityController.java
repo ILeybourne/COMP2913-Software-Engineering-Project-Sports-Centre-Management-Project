@@ -22,11 +22,15 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 @RestController
 public class ActivityController {
 
-    @Autowired
-    private ActivityRepository activityRepository;
+    private final ActivityRepository activityRepository;
+
+    private final ResourceRepository resourceRepository;
 
     @Autowired
-    private ResourceRepository resourceRepository;
+    public ActivityController(ActivityRepository activityRepository, ResourceRepository resourceRepository) {
+      this.activityRepository = activityRepository;
+      this.resourceRepository = resourceRepository;
+    }
 
     //get activities by resource ID
     @GetMapping("/resources/{resource_id}/activities")
@@ -45,7 +49,7 @@ public class ActivityController {
     }
 
     //update activity
-    @PutMapping("/resources/{resource_id}/activities/{activity_id}")
+    @PutMapping("/activities/{activity_id}")
     public Activity updateActivity(@PathVariable Long resource_id,
                                @PathVariable Long activity_id,
                                @Valid @RequestBody Activity activityRequest) {
@@ -61,7 +65,7 @@ public class ActivityController {
     }
 
     //delete activity
-    @DeleteMapping("/resources/{resource_id}/activities/{activity_id}")
+    @DeleteMapping("/activities/{activity_id}")
     public ResponseEntity<?> deleteActivity(@PathVariable Long resource_id,
                                           @PathVariable Long activity_id) {
         if(!resourceRepository.existsById(resource_id)) {
