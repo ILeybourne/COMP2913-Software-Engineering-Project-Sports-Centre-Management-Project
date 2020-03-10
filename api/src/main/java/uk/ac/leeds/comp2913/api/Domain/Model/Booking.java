@@ -6,13 +6,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
 @Entity
 public class Booking {
 
@@ -26,7 +19,10 @@ public class Booking {
   private Date updated_at;
 
 
-  @OneToOne
+  /**
+   * The account associated with the booking
+   */
+  @ManyToOne
   @JoinColumn(name = "account_id")
   private Account account;
   /**
