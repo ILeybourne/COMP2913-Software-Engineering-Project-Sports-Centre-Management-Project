@@ -23,7 +23,7 @@ public class ResourceController {
 
     //Get Resources
     @GetMapping("")
-    public Page<Resource> getResources(Pageable pageable) {
+    public Page<Resource> getResources( Pageable pageable) {
         return resourceRepository.findAll(pageable);
     }
 
@@ -58,6 +58,6 @@ public class ResourceController {
                     resourceRepository.delete(resource);
                     return ResponseEntity.ok().build();
                 }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
-    }
+        }
 }
 
