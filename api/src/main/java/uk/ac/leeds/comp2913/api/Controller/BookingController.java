@@ -22,7 +22,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @RestController
-@RequestMapping("/booking")
+@RequestMapping("/bookings")
 public class BookingController {
   private final JavaMailSender javaMailSender;
   private final BookingRepository bookingRepository;
@@ -69,17 +69,15 @@ public class BookingController {
   }
 
 
-  @GetMapping("/bookings")
   public Page<Booking> getBookings(Pageable pageable) {
     return bookingRepository.findAll(pageable);
   }
 
-  @PostMapping("/bookings")
   public Booking createBooking(@Valid @RequestBody Booking booking) {
     return bookingRepository.save(booking);
   }
 
-  @PutMapping("/bookings/{booking_id")
+  @PutMapping("/{booking_id")
   public Booking updateBooking(@PathVariable Long booking_id, @Valid @RequestBody Booking bookingRequest) {
     return bookingRepository.findById(booking_id).map(booking -> {
       booking.setActivity(bookingRequest.getActivity());
@@ -88,7 +86,7 @@ public class BookingController {
     }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
   }
 
-  @DeleteMapping("/bookings/{booking_id")
+  @DeleteMapping("/{booking_id")
   public ResponseEntity<?> deleteBooking(@PathVariable Long bookingId) {
     return bookingRepository.findById(bookingId).map(booking -> {
       bookingRepository.delete(booking);
