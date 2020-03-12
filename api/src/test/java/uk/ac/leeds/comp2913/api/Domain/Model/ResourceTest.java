@@ -41,17 +41,17 @@ class ResourceTest {
 
     @Test
     void getActivities() {
-        List<Activity> testActivitiesSet = Collections.singletonList(new Activity());
+        Set<Activity> testActivitiesSet = Collections.singleton(new Activity());
         resource.setActivities(testActivitiesSet);
-        List<Activity> testActivitiesGet = resource.getActivities();
+        Set<Activity> testActivitiesGet = resource.getActivities();
         assertTrue(testActivitiesGet.size() == 1);
     }
 
     @Test
     void setActivities() {
-        List<Activity> testActivitiesSet = Collections.singletonList(new Activity());
+        Set<Activity> testActivitiesSet = Collections.singleton(new Activity());
         resource.setActivities(testActivitiesSet);
-        List<Activity> testActivitiesGet = resource.getActivities();
+        Set<Activity> testActivitiesGet = resource.getActivities();
         assertTrue(testActivitiesGet.size() == 1);
     }
 }

@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -9,59 +10,80 @@ import java.util.Date;
 @Entity
 public class Booking {
 
-    @Id
-    @GeneratedValue
-    private long id;
+  @Id
+  @GeneratedValue
+  private long id;
 
-    @OneToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
+  @CreationTimestamp
+  private Date created_at;
+  @UpdateTimestamp
+  private Date updated_at;
 
-    @CreationTimestamp
-    private Date created_at;
-    @UpdateTimestamp
-    private Date updated_at;
+  @OneToOne
+  @JoinColumn(name = "receipt_id")
+  private Receipt receipt;
 
-    @OneToOne
-    @JoinColumn(name = "receipt_id")
-    private Receipt receipt;
+  public Booking() {
+  }
 
-    public Booking() {
-    }
+  /**
+   * The account associated with the booking
+   */
+  @ManyToOne
+  @JoinColumn(name = "account_id")
+  private Account account;
+  /**
+   * The Activity associated with the booking
+   */
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "activity_id")
+  private Activity activity;
 
-    public long getId() {
-        return id;
-    }
+  public Booking() {
+  }
 
-    public Date getCreatedAt() {
-        return created_at;
-    }
+  public long getId() {
+    return id;
+  }
 
-    public void setCreatedAt(Date created_at) {
-        this.created_at = created_at;
-    }
+  public Date getCreatedAt() {
+    return created_at;
+  }
 
-    public Date getUpdatedAt() {
-        return updated_at;
-    }
+  public void setCreatedAt(Date created_at) {
+    this.created_at = created_at;
+  }
 
-    public void setUpdatedAt(Date updated_at) {
-        this.updated_at = updated_at;
-    }
+  public Date getUpdatedAt() {
+    return updated_at;
+  }
 
-    public Account getAccount() {
-        return account;
-    }
+  public void setUpdatedAt(Date updated_at) {
+    this.updated_at = updated_at;
+  }
 
-    public void setAccount(Account account) {
-        this.account = account;
-    }
+  public Account getAccount() {
+    return account;
+  }
 
-    public Receipt getReceipt() {
-        return receipt;
-    }
+  public void setAccount(Account account) {
+    this.account = account;
+  }
 
-    public void setReceipt(Receipt receipt) {
-        this.receipt = receipt;
-    }
+  public Receipt getReceipt() {
+    return receipt;
+  }
+
+  public void setReceipt(Receipt receipt) {
+    this.receipt = receipt;
+  }
+
+  @JsonIgnoreProperties("bookings")
+  public Activity getActivity() {
+    return activity;
+  }
+
+  public void setActivity(Activity activity) {
+    this.activity = activity;
+  }
 }

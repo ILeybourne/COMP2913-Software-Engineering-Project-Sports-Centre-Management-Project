@@ -1,17 +1,20 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
-
 import javax.persistence.*;
-
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 
-//defining an entity
+/**
+ * This class represents an activity available to the members of the sports center that they can book onto
+ *
+ * These activities can only be created by the staff at the sports center and should be displayed on the weekly
+ * timetable
+ */
 @Entity
 public class Activity {
     @Id
@@ -20,22 +23,29 @@ public class Activity {
 
     private String name;
 
-    private Integer total_capacity;
+    @Column(name = "total_capacity")
+    private Integer totalCapacity;
 
-    private Integer current_capacity;
+    @Column(name = "current_capacity")
+    private Integer currentCapacity;
 
-    @OneToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
+    @Column(name = "start_time")
+    private Date startTime;
 
-    private Date start_time;
+    @Column(name = "end_time")
+    private Date endTime;
 
-    private Date end_time;
+    /**
+     * The bookings that have been made against the activity
+     */
+    @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER)
+    private Set<Booking> bookings;
 
-//    @OneToMany(mappedBy = "activity")
-//    private List<Booking> bookings;
 
-    @ManyToOne
+  /**
+   * Which resource the activity needs to take place
+   */
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
 
@@ -53,19 +63,19 @@ public class Activity {
     }
 
     public Date getStartTime() {
-        return start_time;
+        return startTime;
     }
 
     public void setStartTime(Date start_time) {
-        this.start_time = start_time;
+        this.startTime = start_time;
     }
 
     public Date getEndTime() {
-        return end_time;
+        return endTime;
     }
 
     public void setEndTime(Date end_time) {
-        this.end_time = end_time;
+        this.endTime = end_time;
     }
 
     public String getName() {
@@ -76,34 +86,40 @@ public class Activity {
         this.name = name;
     }
 
-    public Booking getBooking() {
-        return booking;
-    }
-
     public Integer getTotalCapacity() {
-        return total_capacity;
+        return totalCapacity;
     }
 
     public void setTotalCapacity(Integer total_capacity) {
-        this.total_capacity = total_capacity;
+        this.totalCapacity = total_capacity;
     }
 
     public Integer getCurrentCapacity() {
-        return current_capacity;
+        return currentCapacity;
     }
 
     public void setCurrentCapacity(Integer current_capacity) {
-        this.current_capacity = current_capacity;
+        this.currentCapacity = current_capacity;
     }
 
     public void getResource(Long resource_id) {
     }
 
-//    public List<Booking> getBookings() {
-//        return bookings;
-//    }
-//
-//    public void setBookings(List<Booking> bookings) {
-//        this.bookings = bookings;
-//    }
+    public Set<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
+    }
+
+    @JsonIgnoreProperties("activities")
+    public Resource getResource() {
+      return resource;
+    }
+
+    public void setResource(Resource resource) {
+      this.resource = resource;
+    }
+
 }
