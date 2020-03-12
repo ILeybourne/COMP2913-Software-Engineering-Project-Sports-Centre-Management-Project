@@ -19,6 +19,9 @@ public class Booking {
   @UpdateTimestamp
   private Date updated_at;
 
+  @OneToOne
+  @JoinColumn(name = "receipt_id")
+  private Receipt receipt;
 
   /**
    * The account associated with the booking
@@ -62,6 +65,14 @@ public class Booking {
 
   public void setAccount(Account account) {
     this.account = account;
+  }
+
+  public Receipt getReceipt() {
+    return receipt;
+  }
+
+  public void setReceipt(Receipt receipt) {
+    this.receipt = receipt;
   }
 
   @JsonIgnoreProperties("bookings")
