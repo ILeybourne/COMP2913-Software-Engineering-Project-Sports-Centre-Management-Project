@@ -1,5 +1,5 @@
 <template>
-  <div class="booking-container">
+  <div class="booking-container" onload="callApi">
     <div class="padding-div">
       <button
         type="button"

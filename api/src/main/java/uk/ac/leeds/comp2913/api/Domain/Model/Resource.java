@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 
@@ -25,6 +26,12 @@ public class Resource {
 
     private String name;
 
+    @ManyToOne
+    private Centre centre;
+
+    /**
+     * List of activities ever booked for the resource
+     */
     @OneToMany(mappedBy = "resource", fetch = FetchType.EAGER)
     private List<Activity> activities;
 

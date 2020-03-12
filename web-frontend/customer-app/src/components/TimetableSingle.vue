@@ -69,8 +69,8 @@ function dataToEventFormat() {
 var newResources = dataToResourceFormat();
 var newEvents = dataToEventFormat();
 
-console.log(newEvents);
-console.log(newResources);
+// console.log(newEvents);
+// console.log(newResources);
 
 export default {
   name: "Timetable",
