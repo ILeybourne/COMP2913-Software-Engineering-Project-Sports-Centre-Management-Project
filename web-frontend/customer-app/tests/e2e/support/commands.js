@@ -23,3 +23,9 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+// IMPORTANT : Cypress client needs to be restarted to recognise new commands
+
+Cypress.Commands.add("navigateToHome", () => {
+   cy.visit('/')
+});
