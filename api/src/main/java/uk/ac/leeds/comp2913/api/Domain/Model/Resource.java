@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -43,6 +44,7 @@ public class Resource {
         this.name = name;
     }
 
+    @JsonIgnore()
     public Set<Activity> getActivities() {
         return activities;
     }

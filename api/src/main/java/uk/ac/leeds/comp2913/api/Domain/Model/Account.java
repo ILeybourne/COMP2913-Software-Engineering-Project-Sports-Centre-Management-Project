@@ -32,7 +32,7 @@ public class Account {
     @ManyToOne
     private Centre centre;
 
-    @OneToOne(mappedBy = "account",fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "account",fetch = FetchType.EAGER)
     private Membership Memberships;
 
     @OneToOne(fetch = FetchType.EAGER)

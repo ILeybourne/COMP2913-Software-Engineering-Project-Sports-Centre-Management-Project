@@ -1,17 +1,12 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import javax.persistence.*;
+import java.util.Date;
+import java.util.Set;
 
 
 /**
@@ -43,14 +38,14 @@ public class Activity {
     /**
      * The bookings that have been made against the activity
      */
-    @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER)
     private Set<Booking> bookings;
 
 
   /**
    * Which resource the activity needs to take place
    */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
 

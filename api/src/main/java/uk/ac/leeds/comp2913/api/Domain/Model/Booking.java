@@ -29,7 +29,7 @@ public class Booking {
   /**
    * The Activity associated with the booking
    */
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "activity_id")
   private Activity activity;
 
