@@ -1,4 +1,4 @@
-create table sports_centre_management.receipts
+create table sports_centre_management.receipt
 (
     id                  int8 not null,
     created_at          timestamp,
