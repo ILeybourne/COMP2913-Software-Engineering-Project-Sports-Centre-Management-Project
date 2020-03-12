@@ -23,9 +23,6 @@ public class Booking {
   @JoinColumn(name = "receipt_id")
   private Receipt receipt;
 
-  public Booking() {
-  }
-
   /**
    * The account associated with the booking
    */
