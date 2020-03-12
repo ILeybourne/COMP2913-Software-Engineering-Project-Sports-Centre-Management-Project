@@ -1,11 +1,9 @@
 package uk.ac.leeds.comp2913.api.DataAccessLayer.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 
-import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -18,7 +16,4 @@ public interface ResourceRepository extends JpaRepository<Resource, Long>, Custo
 
     @Override
     void delete(Resource resource);
-
-    @Query("select r from Resource r join fetch r.activities a join fetch a.bookings")
-    Collection<Resource> findAllWithBookings();
 }
