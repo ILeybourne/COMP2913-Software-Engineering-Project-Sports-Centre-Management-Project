@@ -13,6 +13,7 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
 @RestController
 @RequestMapping("/resources")
+@CrossOrigin(value = "http://localhost:8080")
 public class ResourceController {
 
     private final ResourceRepository resourceRepository;

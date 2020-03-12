@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@CrossOrigin(value = "http://localhost:8080")
 public class ActivityController {
 
     private final ActivityRepository activityRepository;
