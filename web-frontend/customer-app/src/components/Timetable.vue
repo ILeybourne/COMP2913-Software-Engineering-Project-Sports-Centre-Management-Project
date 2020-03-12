@@ -2,15 +2,15 @@
 import FullCalendar from "@fullcalendar/vue";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
-
-//TODO pull from db 1 facility
-
-//TODO write functions in form of adapter (https://www.dofactory.com/javascript/adapter-design-pattern)
+import interactionPlugin from "@fullcalendar/interaction";
+import { BPopover } from "bootstrap-vue";
+import ActivityInfo from "@/components/ActivityInfo.vue";
 
 export default {
   name: "Timetable",
   components: {
-    FullCalendar
+    FullCalendar,
+    ActivityInfo
   },
   props: {
     eventData: {
@@ -19,71 +19,214 @@ export default {
   },
   data() {
     return {
-      calendarPlugins: [dayGridPlugin, resourceTimelinePlugin],
+      calendarPlugins: [
+        dayGridPlugin,
+        resourceTimelinePlugin,
+        interactionPlugin
+      ],
       header: {
         left: "today prev,next",
         center: "title",
         right: "resourceTimelineDay,resourceTimelineWeek"
       },
-      demoData2: [
+      /* TODO: pull from server */
+      activityTypes: [
         {
-          id: 1,
-          name: "Squash Court",
-          activities: [
-            {
-              id: 1,
-              name: "Morning Squash",
-              total_capacity: 15,
-              current_capacity: 10,
-              booking: null,
-              start_time: "2020-02-27T08:00:00.000+0000",
-              end_time: "2020-02-27T10:00:00.000+0000"
-            }
-          ]
+          name: "Private Squash Match",
+          totalCapacity: 4,
+          price: 4.0,
+          resources: [1]
         },
         {
-          id: 2,
-          name: "Tennis Court",
-          activities: []
+          name: "Private Squash Coaching",
+          totalCapacity: 1,
+          price: 35.0,
+          resources: [1]
+        },
+        {
+          name: "Private Tennis Match",
+          totalCapacity: 4,
+          price: 4.0,
+          resources: [4]
+        },
+        {
+          name: "Five-a-Side football",
+          totalCapacity: 10,
+          price: 8,
+          resources: [3]
+        },
+        {
+          name: "Squash Match",
+          totalCapacity: 4,
+          price: 4.0,
+          resources: [3]
+        },
+        {
+          name: "1-on-1 Tennis Coaching",
+          totalCapacity: 1,
+          price: 35.0,
+          resources: [4]
         }
-      ]
+      ],
+      facilities: [],
+      activities: [],
+      previewActivity: {},
+      selectedActivityForm: {
+        startTime: null,
+        endTime: null,
+        resourceId: null,
+        activityType: null,
+        name: null
+      }
     };
   },
   computed: {
-    //functions for new data format
     resources() {
-      const resourcesArray = [];
-
-      for (const resource in this.demoData2.content) {
-        // console.log(demoData2.content[resource])
-        const resourceObject = {
-          // id: (String.fromCharCode(96 + demoData2.content[resource].id)),
-          id: this.demoData2.content[resource].id,
-          title: this.demoData2.content[resource].name
+      return this.facilities.map(r => {
+        return {
+          id: r.id,
+          title: r.name
         };
-
-        resourcesArray.push(resourceObject);
-      }
-      return resourcesArray;
+      });
     },
-
     events() {
-      const eventArray = [];
-
-      for (const resource in this.demoData2.content) {
-        for (const act in this.demoData2.content[resource].activities) {
-          const eventObj = {
-            id: this.demoData2.content[resource].activities[act].id,
-            resourceId: this.demoData2.content[resource].id,
-            title: this.demoData2.content[resource].activities[act].name,
-            start: this.demoData2.content[resource].activities[act].start_time,
-            end: this.demoData2.content[resource].activities[act].end_time
-          };
-          eventArray.push(eventObj);
-        }
-      }
-      return eventArray;
+      /* TODO: make adapter */
+      /*Transform the server format into full calendar format*/
+      return this.activities.map(activity => {
+        return {
+          id: activity.id,
+          resourceId: activity.resource.id,
+          title: activity.name,
+          start: activity.startTime,
+          end: activity.endTime,
+          totalCapacity: activity.totalCapacity,
+          currentCapacity: activity.currentCapacity
+        };
+      });
+    },
+    activityTypeOptions() {
+      const filter = activity => {
+        return activity.resources.includes(
+          Number(this.selectedActivityForm.resourceId)
+        );
+      };
+      return this.activityTypes.filter(filter).map(a => a.name);
     }
+  },
+  methods: {
+    drawEvent(eventInfo) {
+      const { event } = eventInfo;
+      const { extendedProps: options } = event;
+      const totalCapacity = options.totalCapacity || 0;
+      const currentCapacity = options.currentCapacity || 0;
+      const content = `Current Capacity: ${currentCapacity} Total Capacity: ${totalCapacity}`;
+      const popover = new BPopover({
+        propsData: {
+          title: event.title,
+          content,
+          placement: "auto",
+          boundary: "scrollParent",
+          boundaryPadding: 5,
+          delay: 500,
+          offset: 0,
+          triggers: "hover",
+          html: true,
+          target: eventInfo.el
+        }
+      });
+      popover.$mount();
+
+      console.log(event);
+      console.log(eventInfo);
+      let capacity = "";
+      if (options.totalCapacity !== null) {
+        capacity = ` - ${currentCapacity}/${totalCapacity}`;
+      }
+      eventInfo.el.innerText = `${event.title}${capacity}`;
+    },
+    activityClick(eventInfo) {
+      const { event } = eventInfo;
+      const { extendedProps: options } = event;
+      console.log(options);
+      this.previewActivity = this.activities.find(activity => activity.id === Number(event.id));
+      this.$bvModal.show("preview-activity-modal");
+    },
+    onEventTimeChange(a) {
+      console.log(a);
+    },
+    onSelect(event) {
+      const s = event.start.toISOString();
+      this.selectedActivityForm.startTime = s.substring(0, s.length - 1);
+      const e = event.end.toISOString();
+      this.selectedActivityForm.endTime = e.substring(0, e.length - 1);
+
+      this.selectedActivityForm.resourceId = event.resource.id;
+      this.$bvModal.show("create-activity-modal");
+    },
+    async submitNewActivity(event) {
+      event.preventDefault();
+      let activityType = this.selectedActivityForm.activityType;
+      debugger;
+      const activity = this.activityTypes.find(a => a.name === activityType);
+      console.log(activity);
+
+      try {
+        /* TODO: Validate and check server response */
+        this.selectedActivityForm.name = activityType;
+        const token = await this.$auth.getTokenSilently();
+        const body = {
+          ...this.selectedActivityForm,
+          ...activity,
+          currentCapacity: 0
+        };
+        console.log(body);
+        const { data } = await this.$http.post(
+          `/resources/${this.selectedActivityForm.resourceId}/activities`,
+          body,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        console.log(data);
+
+        await this.$router.push({
+          name: "BookingPage",
+          query: { activityId: data.id }
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    async getActivities() {
+      const token = await this.$auth.getTokenSilently();
+
+      const { data } = await this.$http.get(`/timetable`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      this.activities = data;
+    },
+    async getResources() {
+      const token = await this.$auth.getTokenSilently();
+
+      const { data } = await this.$http.get("/resources", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      this.facilities = data.content;
+    }
+  },
+  async mounted() {
+    await this.getActivities();
+    await this.getResources();
+    // await timetableService.read();
   }
 };
 </script>
@@ -91,16 +234,78 @@ export default {
 <template>
   <div id="calendar">
     <FullCalendar
-      schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-      defaultView="resourceTimelineDay"
-      aspectRatio="1"
+      :resources="resources"
       :events="events"
       :plugins="calendarPlugins"
       :header="header"
+      :selectable="true"
+      :selectMirror="true"
+      :eventRender="drawEvent"
+      schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+      defaultView="resourceTimelineDay"
+      aspectRatio="1"
       minTime="06:00:00"
       maxTime="23:00:00"
-      :resources="resources"
+      @eventClick="activityClick($event)"
+      @eventDrop="onEventTimeChange($event)"
+      @eventResize="onEventTimeChange($event)"
+      @select="onSelect($event)"
     />
+    <b-modal id="create-activity-modal" title="Create Activity" hide-footer>
+      <!--TODO: use Vuex-->
+      <!--TODO: Reoccurring-->
+      <!--TODO: extract from this page-->
+      <!--TODO: Activity preview component showing capacity etc for selection-->
+      <b-form @submit="submitNewActivity($event)">
+        <b-form-group
+          id="activityType"
+          label="Activity Type"
+          label-for="activitySelect"
+        >
+          <b-select
+            id="activitySelect"
+            v-model="selectedActivityForm.activityType"
+            :options="activityTypeOptions"
+            required
+          ></b-select>
+        </b-form-group>
+        <b-form-group
+          id="startTime"
+          label="Start Time:"
+          label-for="startTimeInput"
+        >
+          <b-form-input
+            id="startTimeInput"
+            v-model="selectedActivityForm.startTime"
+            type="datetime-local"
+            readonly
+            required
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group id="endTime" label="End Time:" label-for="endTimeInput">
+          <b-form-input
+            id="endTimeInput"
+            v-model="selectedActivityForm.endTime"
+            type="datetime-local"
+            readonly
+            required
+          ></b-form-input>
+        </b-form-group>
+        <div class="d-flex justify-content-between">
+          <b-button type="submit" variant="primary">Book Activity</b-button>
+          <b-button
+            type="reset"
+            variant="danger"
+            @click="$bvModal.hide('create-activity-modal')"
+            >Cancel
+          </b-button>
+        </div>
+      </b-form>
+    </b-modal>
+    <b-modal id="preview-activity-modal" title="Activity">
+      <ActivityInfo :activity="this.previewActivity"></ActivityInfo>
+    </b-modal>
   </div>
 </template>
 

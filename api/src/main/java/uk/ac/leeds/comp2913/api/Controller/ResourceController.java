@@ -13,6 +13,7 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
 @RestController
 @RequestMapping("/resources")
+@CrossOrigin(value = "http://localhost:8080")
 public class ResourceController {
 
     private final ResourceRepository resourceRepository;
@@ -25,6 +26,12 @@ public class ResourceController {
     @GetMapping("")
     public Page<Resource> getResources( Pageable pageable) {
         return resourceRepository.findAll(pageable);
+    }
+
+    @GetMapping("/{resource_id}")
+    public Resource indexResource(@PathVariable Long resource_id){
+      return resourceRepository.findById(resource_id)
+        .orElseThrow(() -> new ResourceNotFoundException("Resource not found with ID " + resource_id));
     }
 
     //Post new resource

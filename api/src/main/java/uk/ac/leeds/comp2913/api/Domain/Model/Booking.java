@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -28,7 +29,7 @@ public class Booking {
   /**
    * The Activity associated with the booking
    */
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "activity_id")
   private Activity activity;
 
@@ -61,5 +62,14 @@ public class Booking {
 
   public void setAccount(Account account) {
     this.account = account;
+  }
+
+  @JsonIgnoreProperties("bookings")
+  public Activity getActivity() {
+    return activity;
+  }
+
+  public void setActivity(Activity activity) {
+    this.activity = activity;
   }
 }
