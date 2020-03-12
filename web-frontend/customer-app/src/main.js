@@ -12,7 +12,7 @@ import { Auth0Plugin } from "./services/auth.service";
 import axios from "axios";
 import VueAxios from "vue-axios";
 
-axios.defaults.baseURL = "localhost:8000";
+axios.defaults.baseURL = "http://localhost:8000";
 
 Vue.use(Auth0Plugin, {
   domain,
