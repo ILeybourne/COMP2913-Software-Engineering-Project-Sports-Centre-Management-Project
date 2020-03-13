@@ -35,7 +35,7 @@ public class ActivityTypeController {
     }
 
     /**
-     * Get all activity details required to schedule an activity in the database
+     * Get all activity details required to schedule an activity
      *
      */
 
@@ -60,7 +60,7 @@ public class ActivityTypeController {
                 }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
     }
 
-    //update activity
+    //update activity type
     @PutMapping("/activitytypes/{activity_type_id}")
     public ActivityType updateActivityType(@PathVariable Long activity_type_id, @Valid @RequestBody ActivityType activityTypeRequest) {
 

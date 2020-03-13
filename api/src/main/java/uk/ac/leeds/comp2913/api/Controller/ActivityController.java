@@ -59,7 +59,7 @@ public class ActivityController {
         return activityRepository.findByResourceId(resource_id);
     }
 
-    //add new activity to timetable
+    //schedule an activity
     //Pulls data from activity type, only start and end type is pulled from json
     //need to look at deducting current capacity when bookings are made...
     @PostMapping("/activities/{activity_type_id}/activities")
@@ -76,7 +76,7 @@ public class ActivityController {
                 }).orElseThrow(() -> new ResourceNotFoundException("Activity Type not found with id " + activity_type_id));
     }
 
-    //update activity in timetable
+    //update details of scheduled activity
     @PutMapping("/activities/{activity_id}")
     public Activity updateActivity(@PathVariable Long activity_id, @Valid @RequestBody Activity activityRequest) {
 
