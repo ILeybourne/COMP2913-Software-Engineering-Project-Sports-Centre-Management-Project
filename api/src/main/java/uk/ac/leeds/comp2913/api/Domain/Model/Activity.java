@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
@@ -21,10 +22,10 @@ import javax.persistence.OneToMany;
 
 
 /**
- * This class represents an activity available to the members of the sports center that they can book onto
+ * This class represents scheduled activities available to the members of the sports center that they can book onto
  *
- * These activities can only be created by the staff at the sports center and should be displayed on the weekly
- * timetable
+ * These activities can only be created by the staff at the sports center by selecting a timeslot in the timetable
+ * and should be displayed on the weekly timetable for booking
  */
 @Entity
 public class Activity {
@@ -59,7 +60,6 @@ public class Activity {
   /**
    * Which resource the activity needs to take place
    */
-  @JsonIgnore
   @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
@@ -68,7 +68,7 @@ public class Activity {
     /**
      * Which activity type the activity belongs to
      */
-    @JsonProperty
+    @JsonIgnore
     @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn(name = "activity_type_id", nullable = false)
     private ActivityType activityType;
@@ -77,6 +77,8 @@ public class Activity {
     private Date created_at;
     @UpdateTimestamp
     private Date updated_at;
+
+    private BigDecimal cost;
 
     public Long getId() {
         return id;
@@ -118,6 +120,7 @@ public class Activity {
         this.totalCapacity = total_capacity;
     }
 
+    @JsonProperty
     public Integer getCurrentCapacity() {
         return currentCapacity;
     }
@@ -137,7 +140,7 @@ public class Activity {
         this.bookings = bookings;
     }
 
-    @JsonIgnoreProperties("activities")
+    @JsonIgnoreProperties({ "activities", "activityTypes" })
     public Resource getResource() {
       return resource;
     }
@@ -146,4 +149,11 @@ public class Activity {
       this.resource = resource;
     }
 
+    public BigDecimal getCost() {
+        return cost;
+    }
+
+    public void setCost(BigDecimal cost) {
+        this.cost = cost;
+    }
 }

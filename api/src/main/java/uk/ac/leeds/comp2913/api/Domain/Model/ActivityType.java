@@ -2,6 +2,7 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,8 +13,16 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+/**
+ * Represents types of activities available in a resource. to be used by the
+ * manager to create activities (activity.java) for the public to book onto
+ */
 
 @Entity
 public class ActivityType {
@@ -38,8 +47,20 @@ public class ActivityType {
     @Column(name = "total_capacity")
     private Integer totalCapacity;
 
-    @Column(name = "current_capacity")
-    private Integer currentCapacity;
+    /**
+     * Which resource the activity needs to take place
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "resource_id", nullable = false)
+    private Resource resource;
+
+
+    //@Column(name = "current_capacity")
+    //private Integer currentCapacity;
+
+    //@ManyToOne(fetch = FetchType.EAGER)
+    //@JoinColumn(name = "resource_id", nullable = false)
+    //private Resource resource;
 
     public long getId() {
         return id;
@@ -89,11 +110,20 @@ public class ActivityType {
         this.totalCapacity = totalCapacity;
     }
 
-    public Integer getCurrentCapacity() {
-        return currentCapacity;
+    @JsonIgnoreProperties({ "activities", "activityTypes" })
+    public Resource getResource() {
+        return resource;
     }
 
-    public void setCurrentCapacity(Integer currentCapacity) {
-        this.currentCapacity = currentCapacity;
+    public void setResource(Resource resource) {
+        this.resource = resource;
     }
+
+    // public Integer getCurrentCapacity() {
+        //return currentCapacity;
+   // }
+
+    //public void setCurrentCapacity(Integer currentCapacity) {
+       // this.currentCapacity = currentCapacity;
+ //   }
 }

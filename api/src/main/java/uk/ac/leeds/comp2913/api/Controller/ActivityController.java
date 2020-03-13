@@ -5,14 +5,24 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
+import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityTypeRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ResourceRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @CrossOrigin(value = "http://localhost:8080")
@@ -22,15 +32,18 @@ public class ActivityController {
 
     private final ResourceRepository resourceRepository;
 
+    private final ActivityTypeRepository activityTypeRepository;
+
     @Autowired
-    public ActivityController(ActivityRepository activityRepository, ResourceRepository resourceRepository) {
+    public ActivityController(ActivityRepository activityRepository, ResourceRepository resourceRepository, ActivityTypeRepository activityTypeRepository) {
       this.activityRepository = activityRepository;
       this.resourceRepository = resourceRepository;
+      this.activityTypeRepository = activityTypeRepository;
     }
 
 
   /**
-   * Get all activities in the database
+   * Get all scheduled activities in the database
    *
    * @param pageable
    * @return
@@ -40,23 +53,30 @@ public class ActivityController {
     return activityRepository.findAll(pageable);
   }
 
-  //get activities by resource ID
+    //get scheduled activities by resource ID
     @GetMapping("/resources/{resource_id}/activities")
     public List<Activity> getActivitiesByResourceId(@PathVariable Long resource_id) {
         return activityRepository.findByResourceId(resource_id);
     }
 
-    //add new activity to resource
-    @PostMapping("/resources/{resource_id}/activities")
-    public Activity AddActivity(@PathVariable Long resource_id, @Valid @RequestBody Activity activity) {
-      return resourceRepository.findById(resource_id)
-                .map(resource -> {
-                  activity.setResource(resource);
+    //add new activity to timetable
+    //Pulls data from activity type, only start and end type is pulled from json
+    //need to look at deducting current capacity when bookings are made...
+    @PostMapping("/activities/{activity_type_id}/activities")
+    public Activity AddActivity(@PathVariable Long activity_type_id, @Valid @RequestBody Activity activity) {
+      return activityTypeRepository.findById(activity_type_id)
+                .map(activityType -> {
+                  activity.setCost(activityType.getCost());
+                  activity.setCurrentCapacity(activityType.getTotalCapacity());
+                  activity.setName(activityType.getName());
+                  activity.setResource(activityType.getResource());
+                  activity.setStartTime(activity.getStartTime());
+                  activity.setEndTime(activity.getEndTime());
                   return activityRepository.save(activity);
-                }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
+                }).orElseThrow(() -> new ResourceNotFoundException("Activity Type not found with id " + activity_type_id));
     }
 
-    //update activity
+    //update activity in timetable
     @PutMapping("/activities/{activity_id}")
     public Activity updateActivity(@PathVariable Long activity_id, @Valid @RequestBody Activity activityRequest) {
 
@@ -72,7 +92,7 @@ public class ActivityController {
                 }).orElseThrow(() -> new ResourceNotFoundException("Activity not found with ID " + activity_id));
     }
 
-    //delete activity
+    //delete activity in timetable
     @DeleteMapping("/activities/{activity_id}")
     public ResponseEntity<?> deleteActivity(@PathVariable Long activity_id) {
 
