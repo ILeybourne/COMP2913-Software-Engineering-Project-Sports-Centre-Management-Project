@@ -3,15 +3,23 @@ package uk.ac.leeds.comp2913.api.Controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ReceiptRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+
+
 import javax.validation.Valid;
 
 public class ReceiptController {
 
+    private final JavaMailSender javaMailSender;
     private final ReceiptRepository receiptRepository;
 
     public ReceiptController(ReceiptRepository receiptRepository) {
