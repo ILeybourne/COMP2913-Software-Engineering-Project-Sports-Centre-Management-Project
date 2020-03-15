@@ -1,5 +1,5 @@
 <template>
-  <div class="booking-container">
+  <div class="page-container">
     <div class="padding-div">
       <button
         type="button"
@@ -11,11 +11,13 @@
     <div class="heading-div">
       <h1>Bookings</h1>
     </div>
-    <div>
-      <BookingInformation @getUserType="showGuestInfo"></BookingInformation>
-<!--      <GuestInformation  v-bind:class="{ display: showGuestInfoComponent }"></GuestInformation>-->
-      <GuestInformation v-show="showGuestInfoComponent"></GuestInformation>
+    <div class="form-container">
+<!--    <span>-->
+      <BookingInformation  class="booking-info" @getUserType="showGuestInfo"></BookingInformation>
+      <GuestInformation class="guest-info"></GuestInformation>
+<!--      <GuestInformation class="guest-info" v-show="showGuestInfoComponent"></GuestInformation>-->
     </div>
+<!--    </span>-->
   </div>
 </template>
 
@@ -24,15 +26,25 @@
   padding: 15px;
 }
 
-GuestInformation {
-  display: none;
+.guest-info {
+  /*display: none;*/
+  display: inline-block;
+}
+.booking-info {
+  /*display: none;*/
+  display: inline;
 }
 
 .heading-div {
   margin: auto;
   width: 50%;
+}
+.form-container{
+    /*TODO Display divs inline*/
+  /*margin: auto;*/
+  width: 100%;
 
-
+  display: inline;
 }
 
 /*button{*/
@@ -67,7 +79,5 @@ export default {
 
     }
   }
-
-  // props:
 };
 </script>

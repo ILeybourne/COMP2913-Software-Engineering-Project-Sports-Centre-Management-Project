@@ -1,6 +1,9 @@
 <template>
   <div class="booking-info" @load="fillByQuery">
-    <div class="booking-container">
+    <div
+      class="booking-container"
+      v-bind:style="{ width: this.componentWidth + '%' }"
+    >
       <form>
         <label for="facility">Facility:</label>
         <b-form-select
@@ -22,7 +25,7 @@
         </b-form-select>
         <br />
         <label for="date">Date:</label>
-        <input type="date" id="date" name="date" v-model="date"/><br />
+        <input type="date" id="date" name="date" v-model="date" /><br />
         <label for="time">Time:</label>
         <b-form-select
           v-model="selectedTime"
@@ -35,11 +38,21 @@
         <label for="price">Price:</label>
         <input type="text" id="price" name="price" disabled />
         <div class="button-container">
-<!--          TODO function call on enter press-->
-          <button type="button" class="btn btn-outline-secondary" name="guest" @click="getUserType($event)" >
+          <!--          TODO function call on enter press-->
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            name="guest"
+            @click="getUserType($event)"
+          >
             Checkout As Guest
           </button>
-          <button type="button" class="btn btn-outline-primary" name="account" @click="getUserType($event)">
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            name="account"
+            @click="getUserType($event)"
+          >
             Checkout With Account
           </button>
         </div>
@@ -56,7 +69,15 @@
 
 .booking-container {
   margin: auto;
-  width: 50%;
+  /*width: 50%;*/
+  border: 3px solid #3183e5;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.booking-container-small {
+  margin: auto;
+  width: 25%;
   border: 3px solid #3183e5;
   padding: 10px;
   border-radius: 10px;
@@ -98,23 +119,24 @@ export default {
       activity: ["Please Select"],
       activities: [],
       time: ["Please select"],
-      price: 10.00,
+      price: 10.0,
       date: new Date(),
       selectedFacility: null,
       selectedActivity: null,
       selectedTime: null,
-      userType: null
+      userType: null,
+      componentWidth: 40
     };
   },
   computed: {},
   methods: {
-    getUserType(e){
+    getUserType(e) {
       //TODO Validate before showing 2nd form
-      this.userType = e.toElement.name
-      this.$emit('getUserType', this.userType)
+      this.componentWidth = 25;
+      this.userType = e.toElement.name;
+      this.$emit("getUserType", this.userType);
 
-      console.log(e.toElement.name)
-
+      console.log(e.toElement.name);
     },
     async getFacilities() {
       const token = await this.$auth.getTokenSilently();
@@ -132,11 +154,10 @@ export default {
 
     async getActivitiesForFacility() {
       try {
-
         const token = await this.$auth.getTokenSilently();
         const facilityId = this.$route.query.facilityId;
 
-        const {data} = await axios.get(
+        const { data } = await axios.get(
           "http://localhost:8000/resources/" + facilityId + "/activities",
           {
             headers: {
@@ -145,8 +166,8 @@ export default {
           }
         );
         return data;
-      }catch (e) {
-        console.log(e)
+      } catch (e) {
+        console.log(e);
       }
     },
 
@@ -166,39 +187,37 @@ export default {
             console.log("Date created: ", responseArray[1]);
             facilities = responseArray[0];
             activities = responseArray[1];
-            this.activities = activities
+            this.activities = activities;
           });
 
         this.selectedFacility = facilities.content.find(
           x => x.id == facilityId
         ).name;
-        this.setActivitiesArray()
+        this.setActivitiesArray();
 
-        this.selectedActivity = activities.find(
-          x => x.id == activityId
-        ).name;
+        this.selectedActivity = activities.find(x => x.id == activityId).name;
 
-        let selectedDateUnix = activities.find(
-          x => x.id == activityId
-        ).startTime
+        let selectedDateUnix = activities.find(x => x.id == activityId)
+          .startTime;
 
-        let selectedDate = new Date (selectedDateUnix)
-        console.log(selectedDate)
-        const year = selectedDate.getFullYear()
-        const month = "0" + selectedDate.getMonth()
-        const date = "0" + selectedDate.getDate()
-        const hours = "0" + selectedDate.getHours()
-        const mins = "0" + selectedDate.getMinutes()
-        var formattedDate =  year + "-" + month.substr(-2) + "-" + date.substr(-2)
-        var forrmattedTime =  hours.substr(-2) + ":" + mins.substr(-2)
-        console.log(formattedDate)
-        this.date = formattedDate
+        let selectedDate = new Date(selectedDateUnix);
+        console.log(selectedDate);
+        const year = selectedDate.getFullYear();
+        const month = "0" + selectedDate.getMonth();
+        const date = "0" + selectedDate.getDate();
+        const hours = "0" + selectedDate.getHours();
+        const mins = "0" + selectedDate.getMinutes();
+        var formattedDate =
+          year + "-" + month.substr(-2) + "-" + date.substr(-2);
+        var forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
+        console.log(formattedDate);
+        this.date = formattedDate;
 
         //TODO loop through same named activities in same facility and append times to time array
-        this.time.push(forrmattedTime)
-        this.selectedTime = forrmattedTime
-      }catch (e) {
-        console.log(e)
+        this.time.push(forrmattedTime);
+        this.selectedTime = forrmattedTime;
+      } catch (e) {
+        console.log(e);
       }
     },
 
@@ -232,26 +251,24 @@ export default {
           }
         }
       );
-      console.log("activ")
-      console.log(data)
-      this.activities = data
-
+      console.log("activ");
+      console.log(data);
+      this.activities = data;
     },
-    setActivitiesArray(){
-      let activities = this.activities
-      let activityArray = ["Please Select"]
+    setActivitiesArray() {
+      let activities = this.activities;
+      let activityArray = ["Please Select"];
       try {
         for (const activity of activities) {
-
           if (activity.resource.name == this.selectedFacility) {
-            console.log(activity.resource.name + this.selectedFacility)
-            activityArray.push(activity.name)
+            console.log(activity.resource.name + this.selectedFacility);
+            activityArray.push(activity.name);
           }
         }
-      }catch (e) {
-        console.log(e)
+      } catch (e) {
+        console.log(e);
       }
-      console.log(activityArray)
+      console.log(activityArray);
       this.activity = activityArray;
     },
     getTimes() {

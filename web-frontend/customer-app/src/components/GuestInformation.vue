@@ -1,19 +1,36 @@
 <template>
   <div class="booking-info">
-    <div class="booking-container">
+    <div
+      class="booking-container"
+      v-bind:style="{ width: this.componentWidth + '%' }"
+    >
       <form>
         <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" name="firstName" v-model="surname"/><br />
+        <input
+          type="text"
+          id="firstName"
+          name="firstName"
+          v-model="surname"
+        /><br />
         <label for="surname">Surname:</label>
-        <input type="text" id="surname" name="surname" v-model="surname"/><br />
+        <input
+          type="text"
+          id="surname"
+          name="surname"
+          v-model="surname"
+        /><br />
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email"  v-model="email"/><br />
+        <input type="email" id="email" name="email" v-model="email" /><br />
         <label for="phone">Phone Number:</label>
-        <input type="phone" id="phone" name="phone" v-model="phone"/><br />
+        <input type="phone" id="phone" name="phone" v-model="phone" /><br />
         <label for="health">Health Issues:</label>
-        <input type="health" id="health" name="health" v-model="health"/><br />
+        <input type="health" id="health" name="health" v-model="health" /><br />
         <div class="button-container">
-          <button type="submit" class="btn btn-outline-secondary" name="guest">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            name="details"
+          >
             Submit
           </button>
         </div>
@@ -55,6 +72,12 @@ select {
 label {
   width: 10%;
 }
+
+button {
+  margin: auto;
+
+  width: 50%;
+}
 </style>
 
 <script>
@@ -79,10 +102,20 @@ export default {
       email: "",
       phone: "",
 
-      health: ""
-
+      health: "",
+      componentWidth: 40
     };
   },
   computed: {},
-  methods: {}};
+  methods: {
+    getUserType(e) {
+      //TODO Validate before showing 2nd form
+      this.componentWidth = 25;
+      this.userType = e.toElement.name;
+      this.$emit("getUserType", this.userType);
+
+      console.log(e.toElement.name);
+    }
+  }
+};
 </script>

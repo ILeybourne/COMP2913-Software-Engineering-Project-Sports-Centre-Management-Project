@@ -50,12 +50,12 @@ const routes = [
     name: "Facilities",
     component: Facility
   },
-  {
-    path: "/bookings?activityId=:",
-    name: "BookingPageByActivityId",
-    component: BookingInformation,
-    beforeEnter: authGuard
-  },
+  // {
+  //   path: "/bookings?activityId=:",
+  //   name: "BookingPageByActivityId",
+  //   component: BookingInformation,
+  //   beforeEnter: authGuard
+  // },
   {
     path: "/bookings",
     name: "BookingPage",
