@@ -2,7 +2,11 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -12,12 +16,20 @@ public class Receipt {
     @GeneratedValue
     private long id;
 
+    //@OneToMany(mappedBy = "receipt", fetch = FetchType.EAGER)
+    //todo add list of payments
+
     @CreationTimestamp
-    private Date created_at;
+    @Column(name = "created_at")
+    private Date createdAt;
 
-    private String product_description;
+    @Column(name = "product_description")
+    private String productDescription;
 
-    private int cost_gbp_pence;
+    @Column(name = "cost")
+    private BigDecimal cost;
+
+    //todo add receipt pdf member
 
     public long getId() {
         return id;
@@ -27,27 +39,27 @@ public class Receipt {
         this.id = id;
     }
 
-    public Date getCreated_at() {
-        return created_at;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(Date created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Date created_at) {
+        this.createdAt = created_at;
     }
 
-    public int getCost_gbp_pence() {
-        return cost_gbp_pence;
+    public BigDecimal getCost() {
+        return cost;
     }
 
-    public void setCost_gbp_pence(int cost_gbp_pence) {
-        this.cost_gbp_pence = cost_gbp_pence;
+    public void setCost(BigDecimal cost) {
+        this.cost = cost;
     }
 
-    public String getProduct_description() {
-        return product_description;
+    public String getProductDescription() {
+        return productDescription;
     }
 
-    public void setProduct_description(String product_description) {
-        this.product_description = product_description;
+    public void setProductDescription(String productDescription) {
+        this.productDescription = productDescription;
     }
 }
