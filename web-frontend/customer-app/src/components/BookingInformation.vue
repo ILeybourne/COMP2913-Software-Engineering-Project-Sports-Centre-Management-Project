@@ -8,7 +8,7 @@
           :options="facility"
           name="facility"
           id="facility"
-          @change="setActivitiesArray(this.activities)"
+          @change="setActivitiesArray"
         >
         </b-form-select>
         <label for="activity">Activity:</label>
@@ -149,38 +149,30 @@ export default {
 
       let facilities = [];
       let activities = [];
+      try {
+        await axios
+          .all([this.getFacilities(), this.getActivitiesForFacility()])
+          .then(responseArray => {
+            //this will be executed only when all requests are complete
+            console.log();
+            console.log("Date created: ", responseArray[0]);
+            console.log("Date created: ", responseArray[1]);
+            facilities = responseArray[0];
+            activities = responseArray[1];
+          });
 
-      await axios
-        .all([this.getFacilities(), this.getActivitiesForFacility()])
-        .then(responseArray => {
-          //this will be executed only when all requests are complete
-          console.log();
-          console.log("Date created: ", responseArray[0]);
-          console.log("Date created: ", responseArray[1]);
-          facilities = responseArray[0];
-          activities = responseArray[1];
-        });
+        this.selectedFacility = facilities.content.find(
+          x => x.id == facilityId
+        ).name;
+        this.setActivitiesArray()
 
-      this.selectedFacility = facilities.content.find(
-        x => x.id == facilityId
-      ).name;
-
-      this.selectedActivity = activities.find(
-        x => x.id == activityId
-      ).name;
-
-      // console.log(activities)
-
-      // console.log(activityData);
-      //
-      // // console.log(data.content.find(x => x.id == this.$route.query.facilityId))
-      // this.selectedFacility = facilityData.content.find(x => x.id == facilityId).name;
-      // this.selectedActivity= activityData.content.find(x => x.id == activityId).name;
-
-      // this.facility.push(facilityName)
-      // this.activity.push(activityName)
-      // this.facility = this.$route.query.facilityId;
-      // this.activity = this.$route.query.activityId;
+        debugger
+        this.selectedActivity = activities.find(
+          x => x.id == activityId
+        ).name;
+      }catch (e) {
+        console.log(e)
+      }
     },
 
     async getResourceContent() {
@@ -215,19 +207,23 @@ export default {
       );
       console.log("activ")
       console.log(data)
-      this.activities =  data
+      this.activities = data
 
     },
-    setActivitiesArray(activities){
+    setActivitiesArray(){
+      let activities = this.activities.content
       let activityArray = ["Please Select"]
       // const selectOption = ["Please Select"];
+      try {
+        for (const activity of activities) {
 
-      for (const activity of activities) {
-
-        console.log(activity.content.resource + this.selectedFacility)
-        if (activity.resource == this.selectedFacility) {
-          activityArray.push(activity.name)
+          if (activity.resource.name == this.selectedFacility) {
+            console.log(activity.resource.name + this.selectedFacility)
+            activityArray.push(activity.name)
+          }
         }
+      }catch (e) {
+        console.log(e)
       }
       console.log(activityArray)
       this.activity = activityArray;
@@ -265,7 +261,7 @@ export default {
   async mounted() {
     await this.getResourceContent();
     this.fillByQuery();
-    this.getActivities()
+    this.getActivities();
     this.setActivitiesArray(this.activities);
   }
 };
