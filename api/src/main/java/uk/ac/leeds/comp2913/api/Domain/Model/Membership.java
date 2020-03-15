@@ -8,21 +8,13 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.Sale;
 
 //Membership data, including account number & membership type chosen
 //Start date and end date (based on duration of chosen membership)
 @Entity
-public class Membership implements Sale {
-
-    @Id
-    @GeneratedValue
-    private long id;
+public class Membership extends Sale {
 
     @CreationTimestamp
     private Date created_at;
@@ -44,13 +36,6 @@ public class Membership implements Sale {
     private Date EndDate;
 
     private BigDecimal cost;
-
-    public Long getId() {
-        return id;
-
-    }public void setId(Long id) {
-        this.id = id;
-    }
 
     public Date getCreatedAt() {
         return created_at;

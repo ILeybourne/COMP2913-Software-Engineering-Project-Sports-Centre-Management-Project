@@ -10,20 +10,12 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.Sale;
-
 @Entity
-public class Booking implements Sale {
-
-  @Id
-  @GeneratedValue
-  private long id;
+public class Booking extends Sale {
 
   @CreationTimestamp
   private Date created_at;
@@ -50,10 +42,6 @@ public class Booking implements Sale {
   private BigDecimal cost;
 
   public Booking() {
-  }
-
-  public long getId() {
-    return id;
   }
 
   public Date getCreatedAt() {

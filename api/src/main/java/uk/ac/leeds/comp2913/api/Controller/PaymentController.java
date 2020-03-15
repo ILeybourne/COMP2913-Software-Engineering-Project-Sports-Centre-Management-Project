@@ -22,7 +22,7 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Payment;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
 @RestController
-@RequestMapping("/checkout")
+@RequestMapping("")
 public class PaymentController {
     private final PaymentRepository paymentRepository;
     private final MembershipRepository membershipRepository;
@@ -36,14 +36,14 @@ public class PaymentController {
         this.bookingRepository = bookingRepository;
     }
 
-    // get all memberships
+    // get all payments
     @GetMapping("/payments")
     public Page<Payment> getPayments(Pageable pageable) {
         return paymentRepository.findAll(pageable);
     }
 
     //Pay for a membership. Post membership to payment database
-    @PostMapping("/{membership_id}")
+    @PostMapping("/membership/{membership_id}/checkout")
     public Payment addMembershipPayment(@PathVariable Long membership_id,
                                     @Valid @RequestBody Payment payment){
         return membershipRepository.findById(membership_id)
@@ -55,7 +55,7 @@ public class PaymentController {
     }
 
     //Pay for a booking. Post booking to payment database
-    @PostMapping("/{booking_id}")
+    @PostMapping("/booking/{booking_id}")
     public Payment addBookingPayment(@PathVariable Long booking_id,
                                         @Valid @RequestBody Payment payment){
         return bookingRepository.findById(booking_id)

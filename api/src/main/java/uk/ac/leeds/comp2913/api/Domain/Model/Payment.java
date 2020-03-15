@@ -1,22 +1,15 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
-import org.hibernate.annotations.Any;
-import org.hibernate.annotations.AnyMetaDef;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.MetaValue;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.Sale;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Payment {
@@ -33,25 +26,12 @@ public class Payment {
     @UpdateTimestamp
     private Date updated_at;
 
-    @Any (metaColumn = @Column(name = "sale_type"))
-    @AnyMetaDef(idType = "long", metaType = "string",
-    metaValues = {
-    @MetaValue(targetEntity = Membership.class, value = "membership"),
-    @MetaValue(targetEntity = Booking.class, value = "booking")
-    })
-    @Cascade( { org.hibernate.annotations.CascadeType.ALL})
-    @JoinColumn(name = "sale_id")
+    @OneToOne()
     private Sale sale;
 
     public Payment(){
     }
 
-
-    public Payment(final Date sale_date, final Sale sale,final BigDecimal sale_price) {
-        this.sale_date = sale_date;
-        this.sale = sale;
-        this.sale_price = sale_price;
-    }
     public long getId() {
         return id;
     }
