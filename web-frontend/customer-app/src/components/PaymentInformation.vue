@@ -1,36 +1,42 @@
 <template>
-  <div class="booking-info">
+  <div class="payment-info">
     <div
       class="payment-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
     >
       <form>
-        <label for="firstName">First Name:</label>
+        <!--        TODO Fill from customer details-->
+        <label for="name">Name On Card:</label>
+        <input type="text" id="name" name="name" v-model="name" /><br />
+        <label for="cardType">Card Type:</label>
+        <input
+          type="cardType"
+          id="cardType"
+          name="cardType"
+          v-model="cardType"
+        /><br />
+        <label for="cardNumber">Card Number:</label>
         <input
           type="text"
-          id="firstName"
-          name="firstName"
-          v-model="firstName"
+          id="cardNumber"
+          name="cardNumber"
+          v-model="cardNumber"
         /><br />
-        <label for="surname">Surname:</label>
+        <label for="date">Expiry Date:</label>
+        <input type="text" id="date" name="date" v-model="date" /><br />
+        <label for="secureCode">Security Code:</label>
         <input
           type="text"
-          id="surname"
-          name="surname"
-          v-model="surname"
+          id="secureCode"
+          name="secureCode"
+          v-model="secureCode"
         /><br />
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" v-model="email" /><br />
-        <label for="phone">Phone Number:</label>
-        <input type="phone" id="phone" name="phone" v-model="phone" /><br />
-        <label for="health">Health Issues:</label>
-        <input type="health" id="health" name="health" v-model="health" /><br />
         <div class="button-container">
           <button
             type="button"
             class="btn btn-outline-secondary"
             name="details"
-            @click="submitCustomerDetails($event)"
+            @click="setPaymentInfoToParent()"
           >
             Submit
           </button>
@@ -83,23 +89,24 @@ button {
 
 <script>
 export default {
-  name: "GuestInformation",
+  name: "PaymentInformation",
+  // props: ["content", "facilities"],
   data() {
     return {
-      firstName: "",
-      surname: "",
-      email: "",
-      phone: "",
-      health: "",
+      name: "",
+      cardType: "",
+      cardNumber: "",
+      date: "",
+      secureCode: "",
       componentWidth: 40
     };
   },
   computed: {},
   methods: {
-    submitCustomerDetails() {
+    setPaymentInfoToParent() {
       //TODO Validate before showing 2nd form
       this.componentWidth = 25;
-      this.$emit("submitCustomerDetails", this.$data);
+      this.$emit("setPaymentInfoToParent", this.$data);
     }
   }
 };

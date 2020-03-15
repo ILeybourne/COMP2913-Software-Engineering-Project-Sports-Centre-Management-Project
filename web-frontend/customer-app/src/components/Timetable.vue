@@ -53,7 +53,7 @@ export default {
           name: "Five-a-Side football",
           totalCapacity: 10,
           price: 8,
-          resources: [1,2]
+          resources: [1, 2]
         },
         {
           name: "Squash Match",
@@ -148,7 +148,9 @@ export default {
       const { event } = eventInfo;
       const { extendedProps: options } = event;
       console.log(options);
-      this.previewActivity = this.activities.find(activity => activity.id === Number(event.id));
+      this.previewActivity = this.activities.find(
+        activity => activity.id === Number(event.id)
+      );
       this.$bvModal.show("preview-activity-modal");
     },
     onEventTimeChange(a) {
@@ -195,8 +197,7 @@ export default {
           name: "BookingPage",
           params: {
             facility: String,
-            activity: String,
-
+            activity: String
           },
           query: { facilityId: data.resource.id, activityId: data.id }
         });
@@ -205,16 +206,16 @@ export default {
       }
     },
     async getActivities() {
-          const token = await this.$auth.getTokenSilently();
+      const token = await this.$auth.getTokenSilently();
 
-          const { data } = await this.$http.get(`/timetable`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          console.log("data")
-    console.log(data)
-          this.activities = data;
+      const { data } = await this.$http.get(`/timetable`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log("data");
+      console.log(data);
+      this.activities = data;
     },
     async getResources() {
       const token = await this.$auth.getTokenSilently();

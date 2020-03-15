@@ -37,7 +37,7 @@ const routes = [
     path: "/timetable",
     name: "Resource Timetable",
     component: TimetablePage,
-    beforeEnter: authGuard,
+    beforeEnter: authGuard
   },
   {
     path: "/timetable/:facilityName",
