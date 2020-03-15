@@ -9,7 +9,7 @@
       </button>
     </div>
     <div class="heading-div">
-      <h1>Bookings</h1>
+      <h1>Bookingasdsds</h1>
     </div>
     <div>
       <BookingInformation></BookingInformation>
@@ -28,10 +28,9 @@
 
 
 }
-
-/*button{*/
-/*  padding: 15px;*/
-/*}*/
+  button{
+    padding: 15px;
+  }
 </style>
 
 <script>
@@ -43,7 +42,9 @@ export default {
   components: {
     BookingInformation
   }
-
-  // props:
 };
+
+// (){
+//   console.log()
+// }
 </script>

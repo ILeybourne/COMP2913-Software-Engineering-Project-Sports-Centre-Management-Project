@@ -51,6 +51,12 @@ const routes = [
     component: Facility
   },
   {
+    path: "/bookings?activityId=:",
+    name: "BookingPageByActivityId",
+    component: BookingInformation,
+    beforeEnter: authGuard
+  },
+  {
     path: "/bookings",
     name: "BookingPage",
     component: BookingInformation,

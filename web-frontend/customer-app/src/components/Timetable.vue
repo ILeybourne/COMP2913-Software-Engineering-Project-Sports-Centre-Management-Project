@@ -53,7 +53,7 @@ export default {
           name: "Five-a-Side football",
           totalCapacity: 10,
           price: 8,
-          resources: [3]
+          resources: [1,2]
         },
         {
           name: "Squash Match",
@@ -166,7 +166,6 @@ export default {
     async submitNewActivity(event) {
       event.preventDefault();
       let activityType = this.selectedActivityForm.activityType;
-      debugger;
       const activity = this.activityTypes.find(a => a.name === activityType);
       console.log(activity);
 
@@ -194,22 +193,28 @@ export default {
 
         await this.$router.push({
           name: "BookingPage",
-          query: { activityId: data.id }
+          params: {
+            facility: String,
+            activity: String,
+
+          },
+          query: { facilityId: data.resource.id, activityId: data.id }
         });
       } catch (e) {
         console.error(e);
       }
     },
     async getActivities() {
-      const token = await this.$auth.getTokenSilently();
+          const token = await this.$auth.getTokenSilently();
 
-      const { data } = await this.$http.get(`/timetable`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      this.activities = data;
+          const { data } = await this.$http.get(`/timetable`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          console.log("data")
+    console.log(data)
+          this.activities = data;
     },
     async getResources() {
       const token = await this.$auth.getTokenSilently();

@@ -1,14 +1,14 @@
 <template>
-  <div class="booking-info">
+  <div class="booking-info" @load="fillByQuery">
     <div class="booking-container">
       <form @submit="postData">
         <label for="facility">Facility:</label>
         <b-form-select
-          v-model="selectedFacil"
+          v-model="selectedFacility"
           :options="facility"
           name="facility"
           id="facility"
-          @change="getActivities"
+          @change="setActivitiesArray(this.activities)"
         >
         </b-form-select>
         <label for="activity">Activity:</label>
@@ -94,16 +94,95 @@ export default {
       contents: [],
       facility: ["Please Select"],
       activity: ["Please Select"],
+      activities: [],
       time: ["Please Select"],
       price: 0,
       date: null,
-      selectedFacil: null,
+      selectedFacility: null,
       selectedActivity: null,
       selectedTime: null
     };
   },
   computed: {},
   methods: {
+    // keelItWithFire() {
+    //   document.querySelector(".sithLord").style.display = "none";
+    // },
+
+    async getFacilities() {
+      const token = await this.$auth.getTokenSilently();
+      const { data } = await axios.get(
+        "http://localhost:8000/resources",
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      return data;
+    },
+
+    async getActivitiesForFacility() {
+      try {
+
+        const token = await this.$auth.getTokenSilently();
+        const facilityId = this.$route.query.facilityId;
+
+        const {data} = await axios.get(
+          "http://localhost:8000/resources/" + facilityId + "/activities",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        return data;
+      }catch (e) {
+        console.log(e)
+      }
+    },
+
+    async fillByQuery() {
+      const facilityId = this.$route.query.facilityId;
+      const activityId = this.$route.query.activityId;
+
+      let facilities = [];
+      let activities = [];
+
+      await axios
+        .all([this.getFacilities(), this.getActivitiesForFacility()])
+        .then(responseArray => {
+          //this will be executed only when all requests are complete
+          console.log();
+          console.log("Date created: ", responseArray[0]);
+          console.log("Date created: ", responseArray[1]);
+          facilities = responseArray[0];
+          activities = responseArray[1];
+        });
+
+      this.selectedFacility = facilities.content.find(
+        x => x.id == facilityId
+      ).name;
+
+      this.selectedActivity = activities.find(
+        x => x.id == activityId
+      ).name;
+
+      // console.log(activities)
+
+      // console.log(activityData);
+      //
+      // // console.log(data.content.find(x => x.id == this.$route.query.facilityId))
+      // this.selectedFacility = facilityData.content.find(x => x.id == facilityId).name;
+      // this.selectedActivity= activityData.content.find(x => x.id == activityId).name;
+
+      // this.facility.push(facilityName)
+      // this.activity.push(activityName)
+      // this.facility = this.$route.query.facilityId;
+      // this.activity = this.$route.query.activityId;
+    },
+
     async getResourceContent() {
       const token = await this.$auth.getTokenSilently();
 
@@ -112,8 +191,9 @@ export default {
           Authorization: `Bearer ${token}`
         }
       });
+
       const content = data.content;
-      const facilities = ["Please Select"];
+      const facilities = this.facility;
 
       for (const facility of content) {
         facilities.push(facility.name);
@@ -122,18 +202,34 @@ export default {
       this.facility = facilities;
       this.contents = content;
     },
-    getActivities() {
-      const facilities = this.contents;
-      let activityArray = [];
-      const selectOption = ["Please Select"];
+    async getActivities() {
+      const token = await this.$auth.getTokenSilently();
+      const { data } = await axios.get(
+        "http://localhost:8000/activities",
 
-      for (const facility of facilities) {
-        if (facility.name === this.selectedFacil) {
-          activityArray = selectOption.concat(
-            facility.activities.map(a => a.name)
-          );
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      console.log("activ")
+      console.log(data)
+      this.activities =  data
+
+    },
+    setActivitiesArray(activities){
+      let activityArray = ["Please Select"]
+      // const selectOption = ["Please Select"];
+
+      for (const activity of activities) {
+
+        console.log(activity.content.resource + this.selectedFacility)
+        if (activity.resource == this.selectedFacility) {
+          activityArray.push(activity.name)
         }
       }
+      console.log(activityArray)
       this.activity = activityArray;
     },
     getTimes() {
@@ -142,7 +238,7 @@ export default {
       const selectOption = ["Please Select"];
 
       for (const facility of facilities) {
-        if (facility.name === this.selectedFacil) {
+        if (facility.name === this.selectedFacility) {
           for (const activity of facility.activities) {
             if (activity.name === this.selectedActivity) {
               timeArray = selectOption.concat([activity.startTime]);
@@ -159,7 +255,7 @@ export default {
         startTime: this.time,
         endTime: this.time,
         token: token
-        // facility: this.selectedFacil,
+        // facility: this.selectedFacility,
         // date: this.date,
         // price: this.price,
         // userType: e.toElement.name
@@ -168,6 +264,9 @@ export default {
   },
   async mounted() {
     await this.getResourceContent();
+    this.fillByQuery();
+    this.getActivities()
+    this.setActivitiesArray(this.activities);
   }
 };
 </script>
