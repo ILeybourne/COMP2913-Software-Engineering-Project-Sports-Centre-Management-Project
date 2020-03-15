@@ -36,10 +36,6 @@ public class Activity {
     private String name;
 
     @JsonIgnore
-    @Column(name = "total_capacity")
-    private Integer totalCapacity;
-
-    @JsonIgnore
     @Column(name = "current_capacity")
     private Integer currentCapacity;
 
@@ -110,14 +106,6 @@ public class Activity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Integer getTotalCapacity() {
-        return totalCapacity;
-    }
-
-    public void setTotalCapacity(Integer total_capacity) {
-        this.totalCapacity = total_capacity;
     }
 
     @JsonProperty

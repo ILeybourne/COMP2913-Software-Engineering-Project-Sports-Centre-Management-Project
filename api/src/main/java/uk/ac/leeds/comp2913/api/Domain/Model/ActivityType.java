@@ -54,14 +54,6 @@ public class ActivityType {
     @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
 
-
-    //@Column(name = "current_capacity")
-    //private Integer currentCapacity;
-
-    //@ManyToOne(fetch = FetchType.EAGER)
-    //@JoinColumn(name = "resource_id", nullable = false)
-    //private Resource resource;
-
     public long getId() {
         return id;
     }
@@ -119,11 +111,4 @@ public class ActivityType {
         this.resource = resource;
     }
 
-    // public Integer getCurrentCapacity() {
-        //return currentCapacity;
-   // }
-
-    //public void setCurrentCapacity(Integer currentCapacity) {
-       // this.currentCapacity = currentCapacity;
- //   }
 }

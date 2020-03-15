@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
 
 @RestController
+@RequestMapping("/activitytypes")
 public class ActivityTypeController {
 
     private final ResourceRepository resourceRepository;
@@ -39,19 +41,19 @@ public class ActivityTypeController {
      *
      */
 
-    @GetMapping("/activitytypes")
+    @GetMapping("")
     public List<ActivityType> getActivityTypes() {
         return activityTypeRepository.findAll();
     }
 
     //Get activity types for a resource
-    @GetMapping("/resources/{resource_id}/activitytypes")
+    @GetMapping("/resource/{resource_id}")
     public List<ActivityType> getActivitiesByResourceId(@PathVariable Long resource_id) {
         return activityTypeRepository.findByResourceId(resource_id);
     }
 
     //add new activity type to resource
-    @PostMapping("/resources/{resource_id}/activitytypes")
+    @PostMapping("/resource/{resource_id}")
     public ActivityType addActivityType(@PathVariable Long resource_id, @Valid @RequestBody ActivityType activityType) {
         return resourceRepository.findById(resource_id)
                 .map(resource -> {
@@ -61,7 +63,7 @@ public class ActivityTypeController {
     }
 
     //update activity type
-    @PutMapping("/activitytypes/{activity_type_id}")
+    @PutMapping("/{activity_type_id}")
     public ActivityType updateActivityType(@PathVariable Long activity_type_id, @Valid @RequestBody ActivityType activityTypeRequest) {
 
         return activityTypeRepository.findById(activity_type_id)
@@ -75,7 +77,7 @@ public class ActivityTypeController {
     }
 
     //delete activity
-    @DeleteMapping("/activitytypes/{activity_type_id}")
+    @DeleteMapping("/{activity_type_id}")
     public ResponseEntity<?> deleteActivityType(@PathVariable Long activity_type_id) {
 
         try {
