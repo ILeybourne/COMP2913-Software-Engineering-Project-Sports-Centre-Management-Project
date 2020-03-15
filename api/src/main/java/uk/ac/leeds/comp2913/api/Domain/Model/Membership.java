@@ -3,6 +3,7 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -12,10 +13,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.Sale;
+
 //Membership data, including account number & membership type chosen
 //Start date and end date (based on duration of chosen membership)
 @Entity
-public class Membership {
+public class Membership implements Sale {
 
     @Id
     @GeneratedValue
@@ -39,6 +42,8 @@ public class Membership {
 
     private Date StartDate;
     private Date EndDate;
+
+    private BigDecimal cost;
 
     public Long getId() {
         return id;
@@ -92,5 +97,12 @@ public class Membership {
     public MembershipType getMembershipType() {
         return membershipType;
     }
-    
+
+    public BigDecimal getCost() {
+        return cost;
+    }
+
+    public void setCost(BigDecimal cost) {
+        this.cost = cost;
+    }
 }

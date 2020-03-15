@@ -1,14 +1,25 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+
+import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.Sale;
+
 @Entity
-public class Booking {
+public class Booking implements Sale {
 
   @Id
   @GeneratedValue
@@ -35,6 +46,8 @@ public class Booking {
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "activity_id")
   private Activity activity;
+
+  private BigDecimal cost;
 
   public Booking() {
   }
@@ -82,5 +95,13 @@ public class Booking {
 
   public void setActivity(Activity activity) {
     this.activity = activity;
+  }
+
+  public BigDecimal getCost() {
+    return cost;
+  }
+
+  public void setCost(BigDecimal cost) {
+    this.cost = cost;
   }
 }
