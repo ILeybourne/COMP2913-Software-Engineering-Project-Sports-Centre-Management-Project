@@ -316,68 +316,20 @@ export default {
 
       this.time = timeArray;
     },
-    async postData() {
-      const token = await this.$auth.getTokenSilently();
-      await axios.post("http://localhost:8000/booking", {
-        activity: this.selectedActivity,
-        startTime: this.time,
-        endTime: this.time,
-        token: token
-        // facility: this.selectedFacility,
-        // date: this.date,
-        // price: this.price,
-        // userType: e.toElement.name
-      });
-    }
+    // async postData() {
+    //   const token = await this.$auth.getTokenSilently();
+    //   await axios.post("http://localhost:8000/booking", {
+    //     activity: this.selectedActivity,
+    //     startTime: this.time,
+    //     endTime: this.time,
+    //     token: token
+    //     // facility: this.selectedFacility,
+    //     // date: this.date,
+    //     // price: this.price,
+    //     // userType: e.toElement.name
+    //   });
+    // }
   },
-
-  // async submitBookingEvent(event) {
-  //   event.preventDefault();
-  //   let facility = this.selectedFacility;
-  //   let activity =  this.selectedActivity;
-  //   let startTime = this.time;
-  //   let date = this.date;
-  //   let price = this.price;
-  //   let userType = event.toElement.name;
-  //   try {
-  //     /* TODO: Validate and check server response */
-  //     const token = await this.$auth.getTokenSilently();
-  //     const body = {
-  //       ...this.selectedActivityForm,
-  //       ...facility,
-  //       ...startTime,
-  //       ...date,
-  //       ...price,
-  //       ...activity,
-  //       ...userType,
-  //       currentCapacity: 0
-  //     };
-  //     console.log(body);
-  //     const { data } = await this.$http.post(
-  //       `/resources/${this.selectedActivityForm.resourceId}/activities`,
-  //       body,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`
-  //         }
-  //       }
-  //     );
-  //
-  //     console.log(data);
-  //
-  //     await this.$router.push({
-  //       name: "BookingPage",
-  //       params: {
-  //         facility: String,
-  //         activity: String,
-  //
-  //       },
-  //       query: { facilityId: data.resource.id, activityId: data.id }
-  //     });
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // },
   async mounted() {
     await this.getResourceContent();
     this.fillByQuery();

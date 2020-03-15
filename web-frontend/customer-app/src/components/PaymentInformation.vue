@@ -90,7 +90,6 @@ button {
 <script>
 export default {
   name: "PaymentInformation",
-  // props: ["content", "facilities"],
   data() {
     return {
       name: "",

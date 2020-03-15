@@ -92,27 +92,8 @@ button {
 <script>
 export default {
   name: "BillingInformation",
-  // props: ["content", "facilities"],
   data() {
     return {
-      // message: [],
-      // contents: [],
-      // facility: ["Please Select"],
-      // activity: ["Please Select"],
-      // activities: [],
-      // time: ["Please select"],
-      // price: 10.00,
-      // date: new Date(),
-      // selectedFacility: null,
-      // selectedActivity: null,
-      // selectedTime: null
-      // firstName: "",
-      // surname: "",
-      // email: "",
-      // phone: "",
-      //
-      // health: "",
-      // componentWidth: 40
       name: "",
       email: "",
       houseNumber: "",
