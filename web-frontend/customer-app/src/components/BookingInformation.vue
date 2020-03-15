@@ -1,7 +1,7 @@
 <template>
   <div class="booking-info" @load="fillByQuery">
     <div class="booking-container">
-      <form @submit="postData">
+      <form>
         <label for="facility">Facility:</label>
         <b-form-select
           v-model="selectedFacility"
@@ -22,7 +22,7 @@
         </b-form-select>
         <br />
         <label for="date">Date:</label>
-        <input type="date" id="date" name="date" :value="date" /><br />
+        <input type="date" id="date" name="date" v-model="date"/><br />
         <label for="time">Time:</label>
         <b-form-select
           v-model="selectedTime"
@@ -35,10 +35,11 @@
         <label for="price">Price:</label>
         <input type="text" id="price" name="price" disabled />
         <div class="button-container">
-          <button type="submit" class="btn btn-outline-secondary" name="guest">
+<!--          TODO function call on enter press-->
+          <button type="button" class="btn btn-outline-secondary" name="guest" @click="getUserType($event)" >
             Checkout As Guest
           </button>
-          <button type="submit" class="btn btn-outline-primary" name="account">
+          <button type="button" class="btn btn-outline-primary" name="account" @click="getUserType($event)">
             Checkout With Account
           </button>
         </div>
@@ -88,6 +89,7 @@ import axios from "axios";
 export default {
   name: "BookingInformation",
   // props: ["content", "facilities"],
+  // props:
   data() {
     return {
       message: [],
@@ -95,20 +97,25 @@ export default {
       facility: ["Please Select"],
       activity: ["Please Select"],
       activities: [],
-      time: ["Please Select"],
-      price: 0,
-      date: null,
+      time: ["Please select"],
+      price: 10.00,
+      date: new Date(),
       selectedFacility: null,
       selectedActivity: null,
-      selectedTime: null
+      selectedTime: null,
+      userType: null
     };
   },
   computed: {},
   methods: {
-    // keelItWithFire() {
-    //   document.querySelector(".sithLord").style.display = "none";
-    // },
+    getUserType(e){
+      //TODO Validate before showing 2nd form
+      this.userType = e.toElement.name
+      this.$emit('getUserType', this.userType)
 
+      console.log(e.toElement.name)
+
+    },
     async getFacilities() {
       const token = await this.$auth.getTokenSilently();
       const { data } = await axios.get(
@@ -159,6 +166,7 @@ export default {
             console.log("Date created: ", responseArray[1]);
             facilities = responseArray[0];
             activities = responseArray[1];
+            this.activities = activities
           });
 
         this.selectedFacility = facilities.content.find(
@@ -166,10 +174,29 @@ export default {
         ).name;
         this.setActivitiesArray()
 
-        debugger
         this.selectedActivity = activities.find(
           x => x.id == activityId
         ).name;
+
+        let selectedDateUnix = activities.find(
+          x => x.id == activityId
+        ).startTime
+
+        let selectedDate = new Date (selectedDateUnix)
+        console.log(selectedDate)
+        const year = selectedDate.getFullYear()
+        const month = "0" + selectedDate.getMonth()
+        const date = "0" + selectedDate.getDate()
+        const hours = "0" + selectedDate.getHours()
+        const mins = "0" + selectedDate.getMinutes()
+        var formattedDate =  year + "-" + month.substr(-2) + "-" + date.substr(-2)
+        var forrmattedTime =  hours.substr(-2) + ":" + mins.substr(-2)
+        console.log(formattedDate)
+        this.date = formattedDate
+
+        //TODO loop through same named activities in same facility and append times to time array
+        this.time.push(forrmattedTime)
+        this.selectedTime = forrmattedTime
       }catch (e) {
         console.log(e)
       }
@@ -211,9 +238,8 @@ export default {
 
     },
     setActivitiesArray(){
-      let activities = this.activities.content
+      let activities = this.activities
       let activityArray = ["Please Select"]
-      // const selectOption = ["Please Select"];
       try {
         for (const activity of activities) {
 
@@ -258,6 +284,54 @@ export default {
       });
     }
   },
+
+  // async submitBookingEvent(event) {
+  //   event.preventDefault();
+  //   let facility = this.selectedFacility;
+  //   let activity =  this.selectedActivity;
+  //   let startTime = this.time;
+  //   let date = this.date;
+  //   let price = this.price;
+  //   let userType = event.toElement.name;
+  //   try {
+  //     /* TODO: Validate and check server response */
+  //     const token = await this.$auth.getTokenSilently();
+  //     const body = {
+  //       ...this.selectedActivityForm,
+  //       ...facility,
+  //       ...startTime,
+  //       ...date,
+  //       ...price,
+  //       ...activity,
+  //       ...userType,
+  //       currentCapacity: 0
+  //     };
+  //     console.log(body);
+  //     const { data } = await this.$http.post(
+  //       `/resources/${this.selectedActivityForm.resourceId}/activities`,
+  //       body,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`
+  //         }
+  //       }
+  //     );
+  //
+  //     console.log(data);
+  //
+  //     await this.$router.push({
+  //       name: "BookingPage",
+  //       params: {
+  //         facility: String,
+  //         activity: String,
+  //
+  //       },
+  //       query: { facilityId: data.resource.id, activityId: data.id }
+  //     });
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // },
   async mounted() {
     await this.getResourceContent();
     this.fillByQuery();

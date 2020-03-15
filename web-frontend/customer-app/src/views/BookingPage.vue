@@ -12,7 +12,9 @@
       <h1>Bookings</h1>
     </div>
     <div>
-      <BookingInformation></BookingInformation>
+      <BookingInformation @getUserType="showGuestInfo"></BookingInformation>
+<!--      <GuestInformation  v-bind:class="{ display: showGuestInfoComponent }"></GuestInformation>-->
+      <GuestInformation v-show="showGuestInfoComponent"></GuestInformation>
     </div>
   </div>
 </template>
@@ -20,6 +22,10 @@
 <style scoped>
 .padding-div {
   padding: 15px;
+}
+
+GuestInformation {
+  display: none;
 }
 
 .heading-div {
@@ -36,12 +42,30 @@
 
 <script>
 import BookingInformation from "@/components/BookingInformation.vue";
+import GuestInformation from "../components/GuestInformation";
 
 // @ is an alias to /src
 export default {
   name: "BookingPage",
   components: {
+    GuestInformation,
     BookingInformation
+  },
+  data() {
+    return {
+    showGuestInfoComponent: false,
+  }
+  }  ,
+  methods: {
+    showGuestInfo(value){
+      console.log("hello")
+      console.log(value + "guest")
+      if (value == "guest"){
+        this.showGuestInfoComponent = true;
+        console.log(this.showGuestInfoComponent)
+      }
+
+    }
   }
 
   // props:
