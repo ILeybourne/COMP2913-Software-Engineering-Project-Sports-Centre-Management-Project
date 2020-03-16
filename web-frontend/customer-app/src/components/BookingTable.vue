@@ -1,99 +1,104 @@
 <template>
-  <div class="booking-info">
-    <div class="booking-container">
-      <form @submit="postData">
-        <label for="facility">Facility:</label>
-        <b-form-select
-          v-model="selectedFacil"
-          :options="facility"
-          name="facility"
-          id="facility"
-          @change="getActivities"
-        >
-        </b-form-select>
-        <label for="activity">Activity:</label>
-        <b-form-select
-          v-model="selectedActivity"
-          :options="activity"
-          name="activity"
-          id="activity"
-          @change="getTimes"
-        >
-        </b-form-select>
-        <br />
-        <label for="date">Date:</label>
-        <input type="date" id="date" name="date" :value="date" /><br />
-        <label for="time">Time:</label>
-        <b-form-select
-          v-model="selectedTime"
-          :options="time"
-          name="time"
-          id="time"
-        >
-        </b-form-select>
-        <br />
-        <label for="price">Price:</label>
-        <input type="text" id="price" name="price" disabled />
-        <div class="button-container">
-          <button type="submit" class="btn btn-outline-secondary" name="guest">
-            Checkout As Guest
-          </button>
-          <button type="submit" class="btn btn-outline-primary" name="account">
-            Checkout With Account
-          </button>
-        </div>
-      </form>
-    </div>
+  <div id="app">
+    <h3 class="title">v-Datatable example</h3>
+    <DataTable
+      :header-fields="headerFields"
+      :sort-field="sortField"
+      :sort="sort"
+      :data="bookings || []"
+      not-found-msg="Items not found"
+      trackBy="id"
+    >
+      <!--      @onUpdate="dtUpdateSort"-->
+
+      <!--      <input-->
+      <!--        slot="actions"-->
+      <!--        slot-scope="props"-->
+      <!--        type="button"-->
+      <!--        class="btn btn-info"-->
+      <!--        value="Edit"-->
+      <!--        @click="dtEditClick(props)"-->
+      <!--      />-->
+      <Pagination
+        slot="pagination"
+        :page="currentPage"
+        :total-items="this.bookings.length"
+        :items-per-page="itemsPerPage"
+      />
+      <!--      @onUpdate="changePage"-->
+      <!--      @updateCurrentPage="updateCurrentPage"-->
+      <div class="items-per-page" slot="ItemsPerPage">
+<!--        <label>Items per page</label>-->
+<!--        <ItemsPerPageDropdown-->
+<!--          :list-items-per-page="listItemsPerPage"-->
+<!--          :items-per-page="itemsPerPage"-->
+<!--          :css="itemsPerPageCss"-->
+<!--          @onUpdate="updateItemsPerPage"-->
+<!--        />-->
+      </div>
+      <!--      <Spinner slot="spinner" />-->
+    </DataTable>
   </div>
 </template>
 
-<style scoped>
-.booking-info {
-  padding-top: 5%;
-  padding-bottom: 5%;
-}
-
-.booking-container {
-  margin: auto;
-  width: 50%;
-  border: 3px solid #3183e5;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.button-container {
-  display: flex;
-  justify-content: space-between;
-  padding-left: 20%;
-  padding-right: 20%;
-  padding-top: 10px;
-}
-
-input {
-  width: 90%;
-}
-
-select {
-  width: 90%;
-}
-
-label {
-  width: 10%;
-}
-</style>
+<style scoped></style>
 
 <script>
-import axios from "axios";
-
+// import Spinner from "vue-simple-spinner";
+import { DataTable, Pagination } from "v-datatable-light";
+// import orderBy from "lodash.orderby";
+const dummyData = [
+  {
+    account: "Elliot",
+    activity: null,
+    createdAt: null,
+    id: 1,
+    receipt: null,
+    updatedAT: null,
+  }
+];
 export default {
   name: "BookingTable",
+  components: { DataTable, Pagination },
+  // ItemsPerPageDropdown
+  data() {
+    return {
+      /*
+      account: null
+      activity: null
+      createdAt: 1584288689000
+      id: 1
+      receipt: null
+      updatedAt: 1584288692000
+      * */
+      bookings: [],
+      headerFields: [
+        "Account",
+        "Booking Time",
+        "Booking Reference",
+        "Receipt"
+      ],
+      sortField: "id",
+      sort: "asc",
+      itemsPerPage: 10,
+      currentPage: 1
+    };
+  },
+  computed: {},
+  methods: {
+    async getBooking() {
+      const token = await this.$auth.getTokenSilently();
 
-
-
-
-
+      const { data } = await this.$http.get(`/bookings`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      this.bookings = data.content;
+    }
+  },
   async mounted() {
-    await this.getResourceContent();
+    await this.getBooking();
   }
 };
 </script>

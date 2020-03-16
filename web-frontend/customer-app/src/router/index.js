@@ -9,6 +9,7 @@ import MembershipPage from "../views/MembershipPage";
 import Profile from "../views/Profile";
 import { authGuard } from "../auth/helpers/auth.guard";
 import ExampleServerSide from "../views/ExampleServerSide";
+import BookingsTablePage from "../views/BookingsTablePage";
 
 Vue.use(VueRouter);
 
@@ -37,7 +38,7 @@ const routes = [
     path: "/timetable",
     name: "Resource Timetable",
     component: TimetablePage,
-    beforeEnter: authGuard,
+    beforeEnter: authGuard
   },
   {
     path: "/timetable/:facilityName",
@@ -65,6 +66,12 @@ const routes = [
     path: "/exampleapi",
     name: "ExampleAPI",
     component: ExampleServerSide,
+    beforeEnter: authGuard
+  },
+  {
+    path: "/bookingtable",
+    name: "BookingTable",
+    component: BookingsTablePage,
     beforeEnter: authGuard
   }
 ];
