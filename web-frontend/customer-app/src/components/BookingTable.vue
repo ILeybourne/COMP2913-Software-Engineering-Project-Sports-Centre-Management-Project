@@ -8,17 +8,24 @@
       :data="bookings || []"
       not-found-msg="Items not found"
       trackBy="id"
+      @onUpdate="dtUpdateSort"
     >
-      <!--      @onUpdate="dtUpdateSort"-->
-
-      <!--      <input-->
-      <!--        slot="actions"-->
-      <!--        slot-scope="props"-->
-      <!--        type="button"-->
-      <!--        class="btn btn-info"-->
-      <!--        value="Edit"-->
-      <!--        @click="dtEditClick(props)"-->
-      <!--      />-->
+      <input
+        slot="actions"
+        slot-scope="props"
+        type="button"
+        class="btn btn-info"
+        value="Edit"
+        @click="dtEditClick(props)"
+      />
+      <input
+        slot="receipt"
+        slot-scope="props"
+        type="button"
+        class="btn btn-info"
+        value="print receipt"
+        @click="dtEditClick(props)"
+      />
       <Pagination
         slot="pagination"
         :page="currentPage"
@@ -38,6 +45,18 @@
       </div>
       <Spinner slot="spinner" />
     </DataTable>
+
+    <b-modal id="create-activity-modal" title="Create Activity" hide-footer>
+      <div class="d-flex justify-content-between">
+        <b-button type="submit" variant="primary">Book Activity</b-button>
+        <b-button
+          type="reset"
+          variant="danger"
+          @click="$bvModal.hide('create-activity-modal')"
+          >Cancel
+        </b-button>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -177,6 +196,7 @@
   opacity: 0.65;
 }
 /* END PAGINATION CSS */
+
 /* ITEMS PER PAGE DROPDOWN CSS */
 .item-per-page-dropdown {
   background-color: transparent;
@@ -261,7 +281,8 @@ export default {
           label: "Booking Time 2",
           sortable: true,
           format: formatDate
-        }
+        },
+        "__slot:actions"
       ],
       // headerFields: ["Account", "Booking Time", "Booking Reference", "Receipt"],
       data: dummyData.slice(0, 10),
@@ -295,6 +316,7 @@ export default {
   },
   computed: {},
   methods: {
+    dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     async getBooking() {
       const token = await this.$auth.getTokenSilently();
 
