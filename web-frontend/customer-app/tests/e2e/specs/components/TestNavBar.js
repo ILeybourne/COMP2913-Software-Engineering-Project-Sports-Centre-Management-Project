@@ -1,7 +1,7 @@
 describe("TestNavBar", () => {
     it("Navigate to homepage", function () {
         // Navigate to homepage
-        cy.navigateToHome();
+        cy.visit('/');
     });
 
     it('Checking elements exist in the nav bar', function () {
@@ -35,7 +35,7 @@ describe("TestNavBar", () => {
         cy.screenshot();
 
         // Return to home page
-        cy.go('back')
+        cy.go('back');
 
         // Check navigation is successful
         cy.url().should('eq', 'http://localhost:8081/');
