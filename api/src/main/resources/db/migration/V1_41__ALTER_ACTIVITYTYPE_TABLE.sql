@@ -1,0 +1,2 @@
+alter table sports_centre_management.activity_type drop column current_capacity;
+alter table sports_centre_management.activity drop column total_capacity;
