@@ -69,10 +69,11 @@ public class BookingController {
   }
 
 
+  @GetMapping("")
   public Page<Booking> getBookings(Pageable pageable) {
     return bookingRepository.findAll(pageable);
   }
-
+  @PostMapping("")
   public Booking createBooking(@Valid @RequestBody Booking booking) {
     return bookingRepository.save(booking);
   }
