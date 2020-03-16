@@ -1,18 +1,11 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
+import javax.persistence.*;
 import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 @Entity
 public class Booking extends Sale {
@@ -21,10 +14,6 @@ public class Booking extends Sale {
   private Date created_at;
   @UpdateTimestamp
   private Date updated_at;
-
-  @OneToOne
-  @JoinColumn(name = "receipt_id")
-  private Receipt receipt;
 
   /**
    * The account associated with the booking
@@ -38,8 +27,6 @@ public class Booking extends Sale {
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "activity_id")
   private Activity activity;
-
-  private BigDecimal cost;
 
   public Booking() {
   }
@@ -68,14 +55,6 @@ public class Booking extends Sale {
     this.account = account;
   }
 
-  public Receipt getReceipt() {
-    return receipt;
-  }
-
-  public void setReceipt(Receipt receipt) {
-    this.receipt = receipt;
-  }
-
   @JsonIgnoreProperties("bookings")
   public Activity getActivity() {
     return activity;
@@ -83,13 +62,5 @@ public class Booking extends Sale {
 
   public void setActivity(Activity activity) {
     this.activity = activity;
-  }
-
-  public BigDecimal getCost() {
-    return cost;
-  }
-
-  public void setCost(BigDecimal cost) {
-    this.cost = cost;
   }
 }

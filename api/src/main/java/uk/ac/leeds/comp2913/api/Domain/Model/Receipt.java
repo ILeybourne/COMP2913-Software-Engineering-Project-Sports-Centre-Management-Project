@@ -3,7 +3,9 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 public class Receipt {
@@ -15,9 +17,12 @@ public class Receipt {
     @CreationTimestamp
     private Date created_at;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "receipt")
+    private Set<Payment> payments;
+
     private String product_description;
 
-    private int cost_gbp_pence;
+    private BigInteger costGbpPence;
 
     public long getId() {
         return id;
@@ -27,27 +32,35 @@ public class Receipt {
         this.id = id;
     }
 
-    public Date getCreated_at() {
+    public Date getCreatedAt() {
         return created_at;
     }
 
-    public void setCreated_at(Date created_at) {
+    public void setCreatedAt(Date created_at) {
         this.created_at = created_at;
     }
 
-    public int getCost_gbp_pence() {
-        return cost_gbp_pence;
+    public BigInteger getCostGbpPence() {
+        return costGbpPence;
     }
 
-    public void setCost_gbp_pence(int cost_gbp_pence) {
-        this.cost_gbp_pence = cost_gbp_pence;
+    public void setCostGbpPence(BigInteger cost_gbp_pence) {
+        this.costGbpPence = cost_gbp_pence;
     }
 
-    public String getProduct_description() {
+    public String getProductDescription() {
         return product_description;
     }
 
-    public void setProduct_description(String product_description) {
+    public void setProductDescription(String product_description) {
         this.product_description = product_description;
+    }
+
+    public Set<Payment> getPayments() {
+      return payments;
+    }
+
+    public void setPayments(Set<Payment> payments) {
+      this.payments = payments;
     }
 }

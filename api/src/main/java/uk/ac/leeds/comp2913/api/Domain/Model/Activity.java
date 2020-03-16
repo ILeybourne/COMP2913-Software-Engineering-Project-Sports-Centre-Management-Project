@@ -102,9 +102,6 @@ public class Activity {
         this.currentCapacity = current_capacity;
     }
 
-    public void getResource(Long resource_id) {
-    }
-
     public Set<Booking> getBookings() {
         return bookings;
     }

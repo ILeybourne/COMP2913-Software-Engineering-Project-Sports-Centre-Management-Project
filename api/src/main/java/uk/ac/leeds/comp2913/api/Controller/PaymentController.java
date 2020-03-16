@@ -49,7 +49,7 @@ public class PaymentController {
         return membershipRepository.findById(membership_id)
                 .map(membership -> {
                     payment.setSale(membership);
-                    payment.setSale_price(membership.getCost());
+                    payment.setSalePrice(membership.getCost());
                     return paymentRepository.save(payment);
                 }) .orElseThrow(() -> new ResourceNotFoundException("Membership not found with id " + membership_id));
     }
@@ -61,7 +61,7 @@ public class PaymentController {
         return bookingRepository.findById(booking_id)
                 .map(booking -> {
                     payment.setSale(booking);
-                    payment.setSale_price(booking.getCost());
+                    payment.setSalePrice(booking.getCost());
                     return paymentRepository.save(payment);
                 }) .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
     }
@@ -72,7 +72,7 @@ public class PaymentController {
                                  @Valid @RequestBody Payment paymentRequest) {
         return paymentRepository.findById(payment_id)
                 .map(payment -> {
-                    payment.setSale_price(paymentRequest.getSale_price());
+                    payment.setSalePrice(paymentRequest.getSalePrice());
                     return paymentRepository.save(payment);
                 }).orElseThrow(() -> new ResourceNotFoundException("Payment not found with id " + payment_id));
     }

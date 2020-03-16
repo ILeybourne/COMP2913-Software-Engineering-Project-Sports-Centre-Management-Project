@@ -32,8 +32,8 @@ public class ReceiptController {
     public Receipt updateResource(@PathVariable Long receipt_id, @Valid @RequestBody Receipt receiptRequest) {
         return receiptRepository.findById(receipt_id)
                 .map(receipt -> {
-                    receipt.setProduct_description(receiptRequest.getProduct_description());
-                    receipt.setCost_gbp_pence(receiptRequest.getCost_gbp_pence());
+                    receipt.setProductDescription(receiptRequest.getProductDescription());
+                    receipt.setCostGbpPence(receiptRequest.getCostGbpPence());
                     return receiptRepository.save(receipt);
                 }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + receipt_id));
     }

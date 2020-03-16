@@ -2,34 +2,61 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Length;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
+/**
+ * Represents a payment from a Customer.
+ *
+ * The payment is associated with a sale, marking the sale as paid.
+ *
+ * A customer can choose to pay via Cash or via Card
+ */
 @Entity
 public class Payment {
     @Id
     @GeneratedValue
     private long id;
 
-    private BigDecimal sale_price;
+    @Column(name = "sale_price")
+    private BigDecimal salePrice;
 
-    private Date sale_date;
+    @Column(name = "sale_date")
+    private Date saleDate;
 
-    @CreationTimestamp
-    private Date created_at;
-    @UpdateTimestamp
-    private Date updated_at;
+  /**
+   * The Receipt in which the payment was sent out on
+   */
+    @ManyToOne
+    @JoinColumn(name = "receipt_id")
+    private Receipt receipt;
 
-    @OneToOne()
+  /**
+   * The Transaction ID verifying the payment
+   *
+   * In case of card handling system eg Stripe, or Transaction ID if cash payment
+   */
+    @Column(name = "transaction_id")
+    @Length(max = 255)
+    private String transactionId;
+
+    @OneToOne(mappedBy = "payment")
     private Sale sale;
 
-    public Payment(){
+
+    @Column(name = "created_at")
+    @CreationTimestamp
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    private Date updatedAt;
+
+  public Payment(){
     }
 
     public long getId() {
@@ -40,36 +67,36 @@ public class Payment {
         this.id = id;
     }
 
-    public BigDecimal getSale_price() {
-        return sale_price;
+    public BigDecimal getSalePrice() {
+        return salePrice;
     }
 
-    public void setSale_price(BigDecimal sale_price) {
-        this.sale_price = sale_price;
+    public void setSalePrice(BigDecimal sale_price) {
+        this.salePrice = sale_price;
     }
 
-    public Date getSale_date() {
-        return sale_date;
+    public Date getSaleDate() {
+        return saleDate;
     }
 
-    public void setSale_date(Date sale_date) {
-        this.sale_date = sale_date;
+    public void setSaleDate(Date sale_date) {
+        this.saleDate = sale_date;
     }
 
-    public Date getCreated_at() {
-        return created_at;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(Date created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Date created_at) {
+        this.createdAt = created_at;
     }
 
-    public Date getUpdated_at() {
-        return updated_at;
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(Date updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(Date updated_at) {
+        this.updatedAt = updated_at;
     }
 
     public Sale getSale() {
@@ -79,4 +106,20 @@ public class Payment {
     public void setSale(Sale sale) {
         this.sale = sale;
     }
+
+    public Receipt getReceipt() {
+      return receipt;
+    }
+
+    public void setReceipt(Receipt receipt) {
+      this.receipt = receipt;
+    }
+
+  public String getTransactionId() {
+    return transactionId;
+  }
+
+  public void setTransactionId(String transactionId) {
+    this.transactionId = transactionId;
+  }
 }

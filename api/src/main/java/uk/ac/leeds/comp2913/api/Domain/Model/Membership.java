@@ -3,13 +3,9 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 //Membership data, including account number & membership type chosen
 //Start date and end date (based on duration of chosen membership)
@@ -31,11 +27,11 @@ public class Membership extends Sale {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
+    @Column(name = "start_date")
+    private Date startDate;
 
-    private Date StartDate;
-    private Date EndDate;
-
-    private BigDecimal cost;
+    @Column(name = "end_date")
+    private Date endDate;
 
     public Date getCreatedAt() {
         return created_at;
@@ -83,11 +79,19 @@ public class Membership extends Sale {
         return membershipType;
     }
 
-    public BigDecimal getCost() {
-        return cost;
+    public Date getStartDate() {
+      return startDate;
     }
 
-    public void setCost(BigDecimal cost) {
-        this.cost = cost;
+    public void setStartDate(Date startDate) {
+      this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+      return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+      this.endDate = endDate;
     }
 }
