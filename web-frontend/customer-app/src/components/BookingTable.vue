@@ -47,6 +47,8 @@
 // import Spinner from "vue-simple-spinner";
 import { DataTable, Pagination } from "v-datatable-light";
 // import orderBy from "lodash.orderby";
+
+/*
 const dummyData = [
   {
     account: "Elliot",
@@ -57,6 +59,8 @@ const dummyData = [
     updatedAT: null,
   }
 ];
+*/
+
 export default {
   name: "BookingTable",
   components: { DataTable, Pagination },
