@@ -191,7 +191,6 @@ export default {
   computed: {},
   methods: {
     validateBillingName() {
-      console.log(this.$data.selectedFacility !== "");
       this.billingNameValid = this.$data.firstName !== "";
     },
     validateEmail() {
@@ -244,7 +243,6 @@ export default {
         this.cityValid = true;
         this.postCodeValid = true;
       } else {
-        console.log("wont emit");
         this.callValidation();
       }
     }

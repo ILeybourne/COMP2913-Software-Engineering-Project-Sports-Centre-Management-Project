@@ -204,7 +204,6 @@ export default {
         this.dateValid = true;
         this.secureCode = true;
       } else {
-        console.log("wont emit");
         this.callValidation();
       }
     }

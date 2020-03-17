@@ -213,7 +213,7 @@ export default {
         this.dateValid = true;
         this.timeValid = true;
       } else {
-        console.log("wont emit");
+        //Dont pass data and call validators
         this.callValidation();
       }
     },

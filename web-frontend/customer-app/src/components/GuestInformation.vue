@@ -199,7 +199,6 @@ export default {
         this.dateValid = true;
         this.timeValid = true;
       } else {
-        console.log("wont emit");
         this.callValidation();
       }
     }
