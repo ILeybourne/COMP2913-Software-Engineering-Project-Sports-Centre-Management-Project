@@ -1,25 +1,25 @@
 <template>
   <div id="app">
-    <h3 class="title">v-Datatable example</h3>
+    <h3 class="title">Bookings Table</h3>
     <DataTable
       :header-fields="headerFields"
       :sort-field="sortField"
       :sort="sort"
       :data="bookings || []"
+      :css="datatableCss"
       not-found-msg="Items not found"
       trackBy="id"
       @onUpdate="dtUpdateSort"
     >
       <input
         slot="actions"
-        slot-scope="props"
         type="button"
         class="btn btn-info"
         value="Edit"
-        @click="dtEditClick(props)"
+        @click="showCancel()"
       />
       <input
-        slot="receipt"
+        slot="submit"
         slot-scope="props"
         type="button"
         class="btn btn-info"
@@ -31,6 +31,7 @@
         :page="currentPage"
         :total-items="this.bookings.length"
         :items-per-page="itemsPerPage"
+        :css="paginationCss"
         @onUpdate="changePage"
         @updateCurrentPage="updateCurrentPage"
       />
@@ -46,14 +47,13 @@
       <Spinner slot="spinner" />
     </DataTable>
 
-    <b-modal id="create-activity-modal" title="Create Activity" hide-footer>
+    <b-modal id="edit-booking-modal" title="Create Activity" hide-footer>
       <div class="d-flex justify-content-between">
-        <b-button type="submit" variant="primary">Book Activity</b-button>
         <b-button
           type="reset"
           variant="danger"
-          @click="$bvModal.hide('create-activity-modal')"
-          >Cancel
+          @click="$bvModal.hide('edit-booking-modal')"
+          >Delete
         </b-button>
       </div>
     </b-modal>
@@ -215,6 +215,7 @@
 import Spinner from "vue-simple-spinner";
 import { DataTable, ItemsPerPageDropdown, Pagination } from "v-datatable-light";
 import orderBy from "lodash.orderby";
+
 const addZero = value => ("0" + value).slice(-2);
 
 const formatDate = value => {
@@ -256,11 +257,6 @@ export default {
           sortable: true
         },
         {
-          name: "account",
-          label: "Account",
-          sortable: true
-        },
-        {
           name: "createdAt",
           label: "Booking Time",
           sortable: true,
@@ -272,15 +268,19 @@ export default {
           sortable: true
         },
         {
+          name: "account",
+          label: "Account",
+          sortable: true
+        },
+        {
+          name: "email",
+          label: "Email",
+          sortable: true
+        },
+        {
           name: "receipt",
           label: "Receipt",
           sortable: false
-        },
-        {
-          name: "updatedAt",
-          label: "Booking Time 2",
-          sortable: true,
-          format: formatDate
         },
         "__slot:actions"
       ],
@@ -297,7 +297,8 @@ export default {
         arrowsWrapper: "arrows-wrapper",
         arrowUp: "arrow up",
         arrowDown: "arrow down",
-        footer: "footer"
+        footer: "footer",
+        button: "button"
       },
       paginationCss: {
         paginationItem: "pagination-item",
@@ -353,6 +354,9 @@ export default {
     updateCurrentPage: function(currentPage) {
       this.currentPage = currentPage;
       console.log("update current page without need to load data", currentPage);
+    },
+    showCancel() {
+      this.$bvModal.show("edit-booking-modal");
     }
   },
 
