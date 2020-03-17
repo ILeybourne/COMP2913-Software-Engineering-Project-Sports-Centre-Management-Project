@@ -55,7 +55,7 @@ public class PaymentController {
     }
 
     //Pay for a booking. Post booking to payment database
-    @PostMapping("/booking/{booking_id}")
+    @PostMapping("payments/booking/{booking_id}")
     public Payment addBookingPayment(@PathVariable Long booking_id,
                                         @Valid @RequestBody Payment payment){
         return bookingRepository.findById(booking_id)
