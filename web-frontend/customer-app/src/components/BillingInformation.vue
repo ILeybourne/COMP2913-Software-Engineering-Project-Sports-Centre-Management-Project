@@ -1,38 +1,50 @@
 <template>
-  <div class="booking-info">
+  <div class="billing-info">
     <div
-      class="payment-container"
+      class="billing-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
     >
       <form>
         <!--        TODO Fill from customer details-->
-        <label for="name">Billing Name:</label>
-        <input type="text" id="name" name="name" v-model="name" /><br />
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" v-model="email" /><br />
-        <label for="houseNumber">House Number:</label>
-        <input
-          type="houseNumber"
-          id="houseNumber"
-          name="houseNumber"
-          v-model="houseNumber"
-        /><br />
-        <label for="streetName">Street Name:</label>
-        <input
-          type="streetName"
-          id="streetName"
-          name="streetName"
-          v-model="streetName"
-        /><br />
-        <label for="city">City:</label>
-        <input type="city" id="city" name="city" v-model="city" /><br />
-        <label for="postCode">Post Code:</label>
-        <input
-          type="postCode"
-          id="postCode"
-          name="postCode"
-          v-model="postCode"
-        /><br />
+        <div class="form-row">
+          <label for="name">Billing Name:</label>
+          <input type="text" id="name" name="name" v-model="name" />
+        </div>
+        <div class="form-row">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" v-model="email" />
+        </div>
+        <div class="form-row">
+          <label for="houseNumber">House Number:</label>
+          <input
+            type="houseNumber"
+            id="houseNumber"
+            name="houseNumber"
+            v-model="houseNumber"
+          />
+        </div>
+        <div class="form-row">
+          <label for="streetName">Street Name:</label>
+          <input
+            type="streetName"
+            id="streetName"
+            name="streetName"
+            v-model="streetName"
+          />
+        </div>
+        <div class="form-row">
+          <label for="city">City:</label>
+          <input type="city" id="city" name="city" v-model="city" />
+        </div>
+        <div class="form-row">
+          <label for="postCode">Post Code:</label>
+          <input
+            type="postCode"
+            id="postCode"
+            name="postCode"
+            v-model="postCode"
+          />
+        </div>
         <div class="button-container">
           <button
             type="button"
@@ -49,12 +61,16 @@
 </template>
 
 <style scoped>
-.booking-info {
-  padding-top: 5%;
-  padding-bottom: 5%;
+.form-row {
+  padding: 5px;
 }
 
-.payment-container {
+/*.booking-info {*/
+/*  padding-top: 5%;*/
+/*  padding-bottom: 5%;*/
+/*}*/
+
+.billing-container {
   margin: auto;
   width: 50%;
   border: 3px solid #3183e5;
@@ -100,7 +116,7 @@ export default {
       streetName: "",
       city: "",
       postCode: "",
-      componentWidth: 40
+      componentWidth: 90
     };
   },
   computed: {},
@@ -108,7 +124,7 @@ export default {
     submitBillingDetails(e) {
       //TODO Validate before showing 2nd form
 
-      this.componentWidth = 25;
+      this.componentWidth = 60;
       // this.userType = e.toElement.name;
       this.$emit("submitBillingDetails", this.$data);
 

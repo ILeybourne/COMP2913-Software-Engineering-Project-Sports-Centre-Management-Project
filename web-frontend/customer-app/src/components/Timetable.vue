@@ -169,6 +169,7 @@ export default {
       event.preventDefault();
       let activityType = this.selectedActivityForm.activityType;
       const activity = this.activityTypes.find(a => a.name === activityType);
+      console.log("activity");
       console.log(activity);
 
       try {
@@ -284,7 +285,6 @@ export default {
             id="startTimeInput"
             v-model="selectedActivityForm.startTime"
             type="datetime-local"
-            readonly
             required
           ></b-form-input>
         </b-form-group>

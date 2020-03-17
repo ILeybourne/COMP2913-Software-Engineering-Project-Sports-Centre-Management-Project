@@ -6,31 +6,41 @@
     >
       <form>
         <!--        TODO Fill from customer details-->
-        <label for="name">Name On Card:</label>
-        <input type="text" id="name" name="name" v-model="name" /><br />
-        <label for="cardType">Card Type:</label>
-        <input
-          type="cardType"
-          id="cardType"
-          name="cardType"
-          v-model="cardType"
-        /><br />
-        <label for="cardNumber">Card Number:</label>
-        <input
-          type="text"
-          id="cardNumber"
-          name="cardNumber"
-          v-model="cardNumber"
-        /><br />
-        <label for="date">Expiry Date:</label>
-        <input type="text" id="date" name="date" v-model="date" /><br />
-        <label for="secureCode">Security Code:</label>
-        <input
-          type="text"
-          id="secureCode"
-          name="secureCode"
-          v-model="secureCode"
-        /><br />
+        <div class="form-row">
+          <label for="name">Name On Card:</label>
+          <input type="text" id="name" name="name" v-model="name" />
+        </div>
+        <div class="form-row">
+          <label for="cardType">Card Type:</label>
+          <input
+            type="cardType"
+            id="cardType"
+            name="cardType"
+            v-model="cardType"
+          />
+        </div>
+        <div class="form-row">
+          <label for="cardNumber">Card Number:</label>
+          <input
+            type="text"
+            id="cardNumber"
+            name="cardNumber"
+            v-model="cardNumber"
+          />
+        </div>
+        <div class="form-row">
+          <label for="date">Expiry Date:</label>
+          <input type="text" id="date" name="date" v-model="date" />
+        </div>
+        <div class="form-row">
+          <label for="secureCode">Security Code:</label>
+          <input
+            type="text"
+            id="secureCode"
+            name="secureCode"
+            v-model="secureCode"
+          />
+        </div>
         <div class="button-container">
           <button
             type="button"
@@ -47,14 +57,17 @@
 </template>
 
 <style scoped>
-.booking-info {
-  padding-top: 5%;
-  padding-bottom: 5%;
+.form-row {
+  padding: 5px;
 }
+
+/*.payment-info {*/
+/*  padding-top: 5%;*/
+/*  padding-bottom: 5%;*/
+/*}*/
 
 .payment-container {
   margin: auto;
-  width: 50%;
   border: 3px solid #3183e5;
   padding: 10px;
   border-radius: 10px;
@@ -97,14 +110,14 @@ export default {
       cardNumber: "",
       date: "",
       secureCode: "",
-      componentWidth: 40
+      componentWidth: 90
     };
   },
   computed: {},
   methods: {
     setPaymentInfoToParent() {
       //TODO Validate before showing 2nd form
-      this.componentWidth = 25;
+      this.componentWidth = 60;
       this.$emit("setPaymentInfoToParent", this.$data);
     }
   }

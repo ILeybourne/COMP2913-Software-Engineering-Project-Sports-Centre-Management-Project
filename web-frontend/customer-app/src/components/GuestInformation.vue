@@ -1,30 +1,35 @@
 <template>
-  <div class="booking-info">
+  <div class="guest-info">
     <div
-      class="payment-container"
+      class="guest-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
     >
       <form>
-        <label for="firstName">First Name:</label>
-        <input
-          type="text"
-          id="firstName"
-          name="firstName"
-          v-model="firstName"
-        /><br />
-        <label for="surname">Surname:</label>
-        <input
-          type="text"
-          id="surname"
-          name="surname"
-          v-model="surname"
-        /><br />
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" v-model="email" /><br />
-        <label for="phone">Phone Number:</label>
-        <input type="phone" id="phone" name="phone" v-model="phone" /><br />
-        <label for="health">Health Issues:</label>
-        <input type="health" id="health" name="health" v-model="health" /><br />
+        <div class="form-row">
+          <label for="firstName">First Name:</label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            v-model="firstName"
+          />
+        </div>
+        <div class="form-row">
+          <label for="surname">Surname:</label>
+          <input type="text" id="surname" name="surname" v-model="surname" />
+        </div>
+        <div class="form-row">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" v-model="email" />
+        </div>
+        <div class="form-row">
+          <label for="phone">Phone Number:</label>
+          <input type="phone" id="phone" name="phone" v-model="phone" />
+        </div>
+        <div class="form-row">
+          <label for="health">Health Issues:</label>
+          <input type="health" id="health" name="health" v-model="health" />
+        </div>
         <div class="button-container">
           <button
             type="button"
@@ -41,14 +46,18 @@
 </template>
 
 <style scoped>
-.booking-info {
-  padding-top: 5%;
-  padding-bottom: 5%;
+.form-row {
+  padding: 5px;
 }
 
-.payment-container {
+/*.guest-info {*/
+/*  padding-top: 5%;*/
+/*  padding-bottom: 5%;*/
+/*}*/
+
+.guest-container {
   margin: auto;
-  width: 50%;
+  /*width: 50%;*/
   border: 3px solid #3183e5;
   padding: 10px;
   border-radius: 10px;
@@ -91,14 +100,14 @@ export default {
       email: "",
       phone: "",
       health: "",
-      componentWidth: 40
+      componentWidth: 90
     };
   },
   computed: {},
   methods: {
     submitCustomerDetails() {
       //TODO Validate before showing 2nd form
-      this.componentWidth = 25;
+      this.componentWidth = 60;
       this.$emit("submitCustomerDetails", this.$data);
     }
   }

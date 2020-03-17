@@ -9,27 +9,52 @@
       <h1>Bookings</h1>
     </div>
     <div class="form-container">
-      <!--    <span>-->
-      <BookingInformation
-        class="booking-info"
-        @getUserType="showGuestInfo"
-      ></BookingInformation>
-      <!--      <GuestInformation class="guest-info"></GuestInformation>-->
-      <GuestInformation
-        class="guest-info"
-        @submitCustomerDetails="showBillingInfo"
-        v-show="showGuestInfoComponent"
-      ></GuestInformation>
-      <BillingInformation
-        class="billing-info"
-        @submitBillingDetails="showPaymentInfo"
-        v-show="showBillingInfoComponent"
-      ></BillingInformation>
-      <PaymentInformation
-        class="payment-info"
-        v-show="showPaymentInfoComponent"
-        @setPaymentInfoToParent="fillPaymentInfo"
-      ></PaymentInformation>
+      <div class="row">
+        <div
+          v-bind:class="{
+            'col-lg-12': bookingCol12,
+            'col-lg-6': bookingCol6,
+            'col-lg-4': bookingCol4,
+            'col-lg-3': bookingCol3
+          }"
+        >
+          <BookingInformation
+            class="booking-info"
+            @getUserType="showGuestInfo"
+          ></BookingInformation>
+        </div>
+        <div
+          v-bind:class="{
+            'col-lg-6': guestCol6,
+            'col-lg-4': guestCol4,
+            'col-lg-3': guestCol3
+          }"
+        >
+          <GuestInformation
+            class="guest-info"
+            @submitCustomerDetails="showBillingInfo"
+            v-show="showGuestInfoComponent"
+          ></GuestInformation>
+        </div>
+
+        <div
+          v-bind:class="{ 'col-lg-4': billingCol4, 'col-lg-3': billingCol3 }"
+        >
+          <BillingInformation
+            class="billing-info"
+            @submitBillingDetails="showPaymentInfo"
+            v-show="showBillingInfoComponent"
+          ></BillingInformation>
+        </div>
+
+        <div class="col-lg-3">
+          <PaymentInformation
+            class="payment-info"
+            v-show="showPaymentInfoComponent"
+            @setPaymentInfoToParent="fillPaymentInfo"
+          ></PaymentInformation>
+        </div>
+      </div>
     </div>
     <!--    </span>-->
   </div>
@@ -42,7 +67,7 @@
 
 .guest-info {
   /*display: none;*/
-  display: inline-block;
+  display: inline;
 }
 .booking-info {
   display: inline;
@@ -63,19 +88,26 @@
   margin: auto;
   width: 50%;
 }
+
 .form-container {
   /*TODO Display divs inline*/
   width: 100%;
-
+  padding-top: 5%;
+  padding-bottom: 5%;
   display: inline;
+}
+
+h1 {
+  text-align: center;
 }
 </style>
 
 <script>
-import BookingInformation from "../components/BookingInformation.vue";
-import GuestInformation from "../components/GuestInformation.vue";
-import BillingInformation from "../components/BillingInformation.vue";
-import PaymentInformation from "../components/PaymentInformation.vue";
+import axios from "axios";
+import BookingInformation from "@/components/BookingInformation.vue";
+import GuestInformation from "@/components/GuestInformation.vue";
+import BillingInformation from "@/components/BillingInformation.vue";
+import PaymentInformation from "@/components/PaymentInformation.vue";
 
 // @ is an alias to /src
 export default {
@@ -93,6 +125,7 @@ export default {
       showPaymentInfoComponent: false,
       selectedFacility: null,
       selectedActivity: null,
+      selectedActivityId: null,
       date: new Date(),
       selectedTime: null,
       price: 10.0,
@@ -112,14 +145,24 @@ export default {
       cardType: "",
       cardNumber: "",
       expiryDate: "",
-      secureCode: ""
+      secureCode: "",
+      bookingCol12: true,
+      bookingCol6: false,
+      bookingCol4: false,
+      bookingCol3: false,
+      guestCol6: true,
+      guestCol4: false,
+      guestCol3: false,
+      billingCol4: true,
+      billingCol3: false,
+      bookings: []
     };
   },
   methods: {
     async postAllFormData() {
       try {
         /* TODO: Validate and check server response */
-        // const token = await this.$auth.getTokenSilently();
+        const token = await this.$auth.getTokenSilently();
         const body = {
           ...this.selectedFacility,
           ...this.selectedActivity,
@@ -142,20 +185,31 @@ export default {
           ...this.cardType,
           ...this.cardNumber,
           ...this.expiryDate,
-          ...this.secureCode
+          ...this.secureCode,
+          account: parseInt(this.$auth._uid),
+          activity: parseInt(this.selectedActivityId)
         };
+        console.log("body");
         console.log(body);
-        // const { data } = await this.$http.post(
-        //   `URL`,
-        //   body,
-        //   {
-        //     headers: {
-        //       Authorization: `Bearer ${token}`
-        //     }
-        //   }
-        // );
+        console.log("this.$auth");
+        console.log(this.$auth);
+        const { data } = await this.$http.post(
+          `/bookings/`,
+
+          body,
+
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        console.log("data");
+        console.log(data);
+
         await this.$router.push({
-          name: "BookingPage"
+          name: "BookingPage",
+          query: { status: "success" }
         });
       } catch (e) {
         console.log(e);
@@ -178,6 +232,12 @@ export default {
       this.streetName = value.streetName;
       this.city = value.city;
       this.postCode = value.postCode;
+      this.bookingCol4 = false;
+      this.bookingCol3 = true;
+      this.guestCol4 = false;
+      this.guestCol3 = true;
+      this.billingCol4 = false;
+      this.billingCol3 = true;
     },
     showBillingInfo(value) {
       this.showBillingInfoComponent = true;
@@ -186,6 +246,10 @@ export default {
       this.email = value.email;
       this.phone = value.phone;
       this.health = value.health;
+      this.bookingCol6 = false;
+      this.bookingCol4 = true;
+      this.guestCol6 = false;
+      this.guestCol4 = true;
     },
     showGuestInfo(value) {
       if (value.userType == "guest") {
@@ -193,10 +257,30 @@ export default {
         console.log(this.showGuestInfoComponent);
         this.selectedFacility = value.selectedFacility;
         this.selectedActivity = value.selectedActivity;
+        this.selectedActivityId = value.selectedActivityId;
         this.date = value.date;
         this.selectedTime = value.selectedTime;
         this.price = value.price;
+        this.bookingCol12 = false;
+        this.bookingCol6 = true;
       }
+      this.getBookings();
+    },
+
+    async getBookings() {
+      const token = await this.$auth.getTokenSilently();
+      const { data } = await axios.get(
+        "http://localhost:8000/bookings",
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      console.log("bbokings");
+      console.log(data);
+      this.bookings = data;
     }
   }
 };
