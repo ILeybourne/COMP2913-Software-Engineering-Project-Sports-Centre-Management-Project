@@ -1,89 +1,67 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.PaymentRepository;
-import uk.ac.leeds.comp2913.api.Domain.Model.Payment;
+import org.springframework.web.bind.annotation.*;
+import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.SalesRepository;
+import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
+import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
+import uk.ac.leeds.comp2913.api.Domain.Service.SalesService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
+import javax.validation.Valid;
+import java.util.List;
+
 @RestController
-@RequestMapping("")
-public class PaymentController {
-    private final PaymentRepository paymentRepository;
-    private final MembershipRepository membershipRepository;
-    private final BookingRepository bookingRepository;
+@RequestMapping("/sales")
+public class SalesController {
+    private final SalesRepository salesRepository;
+    private final SalesService salesService;
 
-
-    @Autowired
-    public PaymentController(PaymentRepository paymentRepository, MembershipRepository membershipRepository, BookingRepository bookingRepository) {
-        this.paymentRepository = paymentRepository;
-        this.membershipRepository = membershipRepository;
-        this.bookingRepository = bookingRepository;
+  @Autowired
+    public SalesController(SalesRepository salesRepository, SalesService salesService) {
+        this.salesRepository = salesRepository;
+        this.salesService = salesService;
     }
 
-    // get all payments
-    @GetMapping("/payments")
-    public Page<Payment> getPayments(Pageable pageable) {
-        return paymentRepository.findAll(pageable);
+  /**
+   * List of all sales in the system
+   *
+   * TODO: should only return your sales, or everything if employee
+   *
+   * TODO: maybe make this a REST query language
+   *
+   * @param pageable pagination request
+   * @return list of all sales in the system
+   */
+    @GetMapping("/")
+    public Page<Sale> sales(Pageable pageable) {
+        return salesRepository.findAll(pageable);
     }
 
-    //Pay for a membership. Post membership to payment database
-    @PostMapping("/membership/{membership_id}/checkout")
-    public Payment addMembershipPayment(@PathVariable Long membership_id,
-                                    @Valid @RequestBody Payment payment){
-        return membershipRepository.findById(membership_id)
-                .map(membership -> {
-                    payment.setSale(membership);
-                    payment.setSalePrice(membership.getCost());
-                    return paymentRepository.save(payment);
-                }) .orElseThrow(() -> new ResourceNotFoundException("Membership not found with id " + membership_id));
+  /**
+   * @param sale the sale to mark as paid
+   * @return Receipt for transaction
+   */
+    @PostMapping("/checkout")
+    public Receipt checkout(@Valid @RequestBody List<Sale> sale){
+      // TODO: 17/03/2020 mark sale as paid and add to invoice
+      return null;
     }
 
-    //Pay for a booking. Post booking to payment database
-    @PostMapping("payments/booking/{booking_id}")
-    public Payment addBookingPayment(@PathVariable Long booking_id,
-                                        @Valid @RequestBody Payment payment){
-        return bookingRepository.findById(booking_id)
-                .map(booking -> {
-                    payment.setSale(booking);
-                    payment.setSalePrice(booking.getCost());
-                    return paymentRepository.save(payment);
-                }) .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
-    }
+    @DeleteMapping("/refund/{sale_id}")
+    public ResponseEntity<?> deletePayment(@PathVariable Long sale_id) {
 
-    // Update Payment
-    @PutMapping("/{payment_id}/revise")
-    public Payment updatePayment(@PathVariable Long payment_id,
-                                 @Valid @RequestBody Payment paymentRequest) {
-        return paymentRepository.findById(payment_id)
-                .map(payment -> {
-                    payment.setSalePrice(paymentRequest.getSalePrice());
-                    return paymentRepository.save(payment);
-                }).orElseThrow(() -> new ResourceNotFoundException("Payment not found with id " + payment_id));
-    }
-
-    //cancel / refund payment
-    @DeleteMapping("/refund/{payment_id}")
-    public ResponseEntity<?> deletePayment(@PathVariable Long payment_id) {
-        return paymentRepository.findById(payment_id)
-                .map(payment -> {
-                    paymentRepository.delete(payment);
-                    return ResponseEntity.ok().build();
-                }).orElseThrow(() -> new ResourceNotFoundException("payment not found with id" + payment_id));
+      try {
+        salesRepository.deleteById(sale_id);
+        return ResponseEntity
+          .noContent()
+          .build();
+      } catch (EmptyResultDataAccessException e){
+        throw new ResourceNotFoundException("Sale not found with that ID " + sale_id);
+      }
     }
 }
