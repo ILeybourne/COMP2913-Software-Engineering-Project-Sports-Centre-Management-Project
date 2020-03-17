@@ -9,12 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 
 /**
@@ -24,7 +19,7 @@ import javax.persistence.OneToMany;
 public class Resource {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -46,9 +41,10 @@ public class Resource {
     private Set<ActivityType> activityTypes;
 
     @CreationTimestamp
-    private Date created_at;
+    private Date createdAt;
+
     @UpdateTimestamp
-    private Date updated_at;
+    private Date updatedAt;
 
     public String getName() {
         return name;

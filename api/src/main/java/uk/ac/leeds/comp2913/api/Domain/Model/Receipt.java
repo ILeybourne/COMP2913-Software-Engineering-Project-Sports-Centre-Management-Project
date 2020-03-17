@@ -18,10 +18,12 @@ public class Receipt {
     private Date created_at;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "receipt")
-    private Set<Payment> payments;
+    private Set<Sale> sales;
 
-    private String product_description;
+    @Column(nullable = true, name = "product_description")
+    private String productDescription;
 
+    @Column(name = "total")
     private BigInteger total;
 
     public long getId() {
@@ -49,18 +51,18 @@ public class Receipt {
     }
 
     public String getProductDescription() {
-        return product_description;
+        return productDescription;
     }
 
     public void setProductDescription(String product_description) {
-        this.product_description = product_description;
+        this.productDescription = product_description;
     }
 
-    public Set<Payment> getPayments() {
-      return payments;
+    public Set<Sale> getSales() {
+      return sales;
     }
 
-    public void setPayments(Set<Payment> payments) {
-      this.payments = payments;
+    public void setSales(Set<Sale> sales) {
+      this.sales = sales;
     }
 }
