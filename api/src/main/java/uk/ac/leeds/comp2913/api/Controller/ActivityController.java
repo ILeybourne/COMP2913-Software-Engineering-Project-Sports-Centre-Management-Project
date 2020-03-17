@@ -5,53 +5,39 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-
-import javax.validation.Valid;
-
+import org.springframework.web.bind.annotation.*;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityTypeRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ResourceRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
+import javax.validation.Valid;
+import java.util.List;
+
 @RestController
-@CrossOrigin(value = "http://localhost:8080")
 public class ActivityController {
 
     private final ActivityRepository activityRepository;
 
-    private final ResourceRepository resourceRepository;
-
     private final ActivityTypeRepository activityTypeRepository;
 
     @Autowired
-    public ActivityController(ActivityRepository activityRepository, ResourceRepository resourceRepository, ActivityTypeRepository activityTypeRepository) {
+    public ActivityController(ActivityRepository activityRepository, ActivityTypeRepository activityTypeRepository) {
       this.activityRepository = activityRepository;
-      this.resourceRepository = resourceRepository;
       this.activityTypeRepository = activityTypeRepository;
     }
 
 
-  /**
-   * Get all scheduled activities in the database
-   *
-   * @param pageable
-   * @return
-   */
-  @GetMapping("/activities")
-  public Page<Activity> getActivities(Pageable pageable) {
-    return activityRepository.findAll(pageable);
-  }
+    /**
+     * Get all scheduled activities in the database
+     *
+     * @param pageable Pagination Metadata
+     * @return a page of Activities
+     */
+    @GetMapping("/activities")
+    public Page<Activity> getActivities(Pageable pageable) {
+      return activityRepository.findAll(pageable);
+    }
 
     //get scheduled activities by resource ID
     @GetMapping("/resources/{resource_id}/activities")
@@ -63,7 +49,7 @@ public class ActivityController {
     //Pulls data from activity type, only start and end type is pulled from json
     //need to look at deducting current capacity when bookings are made...
     @PostMapping("/activities/{activity_type_id}")
-    public Activity AddActivity(@PathVariable Long activity_type_id, @Valid @RequestBody Activity activity) {
+    public Activity createActivity(@PathVariable Long activity_type_id, @Valid @RequestBody Activity activity) {
       return activityTypeRepository.findById(activity_type_id)
                 .map(activityType -> {
                   activity.setCost(activityType.getCost());
