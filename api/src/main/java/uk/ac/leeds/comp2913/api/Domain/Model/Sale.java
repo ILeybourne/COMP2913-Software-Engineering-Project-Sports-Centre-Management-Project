@@ -24,7 +24,7 @@ import javax.persistence.*;
   @JsonSubTypes.Type(value = Booking.class, name = "booking")
 })
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Entity(name = "sale")
+@Entity
 public abstract class Sale {
   @Id
   @GeneratedValue

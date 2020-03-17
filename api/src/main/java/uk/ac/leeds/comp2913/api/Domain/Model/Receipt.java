@@ -22,7 +22,7 @@ public class Receipt {
 
     private String product_description;
 
-    private BigInteger costGbpPence;
+    private BigInteger cost;
 
     public long getId() {
         return id;
@@ -40,12 +40,12 @@ public class Receipt {
         this.created_at = created_at;
     }
 
-    public BigInteger getCostGbpPence() {
-        return costGbpPence;
+    public BigInteger getCost() {
+        return cost;
     }
 
-    public void setCostGbpPence(BigInteger cost_gbp_pence) {
-        this.costGbpPence = cost_gbp_pence;
+    public void setCost(BigInteger cost_gbp_pence) {
+        this.cost = cost_gbp_pence;
     }
 
     public String getProductDescription() {

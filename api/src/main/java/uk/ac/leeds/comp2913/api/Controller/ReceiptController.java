@@ -33,7 +33,7 @@ public class ReceiptController {
         return receiptRepository.findById(receipt_id)
                 .map(receipt -> {
                     receipt.setProductDescription(receiptRequest.getProductDescription());
-                    receipt.setCostGbpPence(receiptRequest.getCostGbpPence());
+                    receipt.setCost(receiptRequest.getCost());
                     return receiptRepository.save(receipt);
                 }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + receipt_id));
     }
