@@ -7,8 +7,10 @@ import java.util.Date;
 
 import javax.persistence.*;
 
-//Membership data, including account number & membership type chosen
-//Start date and end date (based on duration of chosen membership)
+/**
+ * Membership data, including account number & membership type chosen
+ * Start date and end date (based on duration of chosen membership)
+*/
 @Entity
 public class Membership extends Sale {
 

@@ -32,6 +32,7 @@ public class Account {
     @ManyToOne
     private Centre centre;
 
+  // TODO: 17/03/2020 DROP THIS COLUMN IN DB
     @OneToOne(mappedBy = "account",fetch = FetchType.EAGER)
     private Membership Memberships;
 
