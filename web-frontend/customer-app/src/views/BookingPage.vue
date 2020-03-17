@@ -155,7 +155,8 @@ export default {
       guestCol3: false,
       billingCol4: true,
       billingCol3: false,
-      bookings: []
+      bookings: [],
+      activitiesFromServer: []
     };
   },
   methods: {
@@ -163,36 +164,17 @@ export default {
       try {
         /* TODO: Validate and check server response */
         const token = await this.$auth.getTokenSilently();
+        let activities = this.activitiesFromServer;
+        console.log(activities);
+        let bookedActivity = this.activitiesFromServer.find(
+          activity => activity.id == this.selectedActivityId
+        );
+
         const body = {
-          ...this.selectedFacility,
-          ...this.selectedActivity,
-          ...this.date,
-          ...this.selectedTime,
-          ...this.price,
-          ...this.userType,
-          ...this.firstName,
-          ...this.surname,
-          ...this.email,
-          ...this.phone,
-          ...this.health,
-          ...this.name,
-          ...this.emailBilling,
-          ...this.houseNumber,
-          ...this.streetName,
-          ...this.city,
-          ...this.postCode,
-          ...this.nameCard,
-          ...this.cardType,
-          ...this.cardNumber,
-          ...this.expiryDate,
-          ...this.secureCode,
-          account: parseInt(this.$auth._uid),
-          activity: parseInt(this.selectedActivityId)
+          //TODO PASS USER
+          // account: parseInt(this.$auth._uid),
+          activity: bookedActivity
         };
-        console.log("body");
-        console.log(body);
-        console.log("this.$auth");
-        console.log(this.$auth);
         const { data } = await this.$http.post(
           `/bookings/`,
 
@@ -281,7 +263,24 @@ export default {
       console.log("bbokings");
       console.log(data);
       this.bookings = data;
+    },
+
+    async getActivities() {
+      const token = await this.$auth.getTokenSilently();
+      const { data } = await axios.get(
+        "http://localhost:8000/activities",
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      this.activitiesFromServer = data.content;
     }
+  },
+  mounted() {
+    this.getActivities();
   }
 };
 </script>

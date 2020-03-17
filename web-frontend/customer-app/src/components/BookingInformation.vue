@@ -185,12 +185,21 @@ export default {
     },
 
     isEmpty(obj) {
-      return Object.keys(obj).length === 0;
+      if( Object.keys(obj).length === 0){
+        return true
+      }else{
+        if (Object.keys(obj)[0] == "success"){
+          return false
+        }else {
+          return false
+        }
+      }
     },
 
     async fillByQuery() {
       const facilityId = this.$route.query.facilityId;
       const activityId = this.$route.query.activityId;
+      debugger
       let facilities = [];
       let activities = [];
       if (!this.isEmpty(this.$route.query)) {
