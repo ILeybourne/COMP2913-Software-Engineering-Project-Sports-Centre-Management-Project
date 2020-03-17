@@ -4,7 +4,7 @@
       class="booking-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
     >
-      <form>
+      <form @submit="submitForm($event)">
         <div class="form-row">
           <label for="facility">Facility:</label>
           <b-form-select
@@ -12,7 +12,10 @@
             :options="facility"
             name="facility"
             id="facility"
-            @change="setActivitiesArray"
+            @change="[setActivitiesArray(), validateFacility()]"
+            @load="setFormDefaults($event)"
+            v-bind:state="facilityValid"
+            required
           >
           </b-form-select>
         </div>
@@ -23,7 +26,9 @@
             :options="activity"
             name="activity"
             id="activity"
-            @change="selectActivity($event)"
+            @change="[selectActivity($event), validateActivity()]"
+            v-bind:state="activitiesValid"
+            required
           >
           </b-form-select>
         </div>
@@ -35,6 +40,7 @@
             name="date"
             v-model="date"
             @change="getTimes($event)"
+            required
           />
         </div>
         <div class="form-row">
@@ -44,6 +50,9 @@
             :options="time"
             name="time"
             id="time"
+            v-bind:state="timeValid"
+            @change="validateTime()"
+            required
           >
           </b-form-select>
         </div>
@@ -54,7 +63,7 @@
         <div class="button-container">
           <!--          TODO function call on enter press-->
           <button
-            type="button"
+            type="submit"
             class="btn btn-outline-secondary"
             name="guest"
             @click="getUserType($event)"
@@ -131,24 +140,82 @@ export default {
       time: ["Please select"],
       price: 10.0,
       date: new Date(),
-      selectedFacility: null,
+      selectedFacility: "Please Select",
       selectedActivity: null,
       selectedActivityName: null,
       selectedActivityId: null,
       selectedTime: null,
       userType: null,
-
-      componentWidth: 90
+      componentWidth: 90,
+      facilityValid: null,
+      activitiesValid: null,
+      dateValid: null,
+      timeValid: null
     };
   },
   computed: {},
   methods: {
+    setFormDefaults(e) {
+      console.log("form load");
+      console.log(e);
+    },
+
     getUserType(e) {
-      //TODO Validate before showing 2nd form
-      this.componentWidth = 60;
       this.userType = e.toElement.name;
+    },
+
+    validateFacility(){
+      this.facilityValid = !(this.$data.selectedFacility == null ||
+        this.$data.selectedFacility === "Please Select");
+    },
+    validateActivity(){
+      this.activitiesValid = !(this.$data.selectedActivity == null ||
+        this.$data.selectedActivity === "Please Select");
+    },
+    validateDate(){
+      this.dateValid = this.$data.date != null;
+    },
+    validateTime(){
+      this.timeValid = this.$data.selectedTime != null;
+    },
+
+    callValidation() {
+      this.validateFacility();
+      this.validateActivity();
+      this.validateDate();
+      this.validateTime();
+    },
+
+    submitForm(e) {
+      //TODO Validate before showing 2nd form
+      console.log("e");
+      console.log(e);
+      e.preventDefault();
+      this.componentWidth = 60;
       //TODO send array of data to parent
-      this.$emit("getUserType", this.$data);
+      console.log("this.$data");
+      console.log(this.$data);
+      if (
+        !(
+          this.$data.selectedFacility == null ||
+          this.$data.selectedFacility === "Please Select"
+        ) &&
+        !(
+          this.$data.selectedActivity == null ||
+          this.$data.selectedFacility === "Please Select"
+        ) &&
+        this.$data.date != null &&
+        this.$data.selectedTime != null
+      ) {
+        this.$emit("getUserType", this.$data);
+        this.facilityValid = true;
+        this.activitiesValid = true;
+        this.dateValid = true;
+        this.timeValid = true;
+      } else {
+        console.log("wont emit");
+        this.callValidation();
+      }
     },
 
     async getFacilities() {
@@ -185,13 +252,13 @@ export default {
     },
 
     isEmpty(obj) {
-      if( Object.keys(obj).length === 0){
-        return true
-      }else{
-        if (Object.keys(obj)[0] == "success"){
-          return false
-        }else {
-          return false
+      if (Object.keys(obj).length === 0) {
+        return true;
+      } else {
+        if (Object.keys(obj)[0] == "success") {
+          return false;
+        } else {
+          return false;
         }
       }
     },
@@ -199,7 +266,6 @@ export default {
     async fillByQuery() {
       const facilityId = this.$route.query.facilityId;
       const activityId = this.$route.query.activityId;
-      debugger
       let facilities = [];
       let activities = [];
       if (!this.isEmpty(this.$route.query)) {
