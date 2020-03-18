@@ -37,7 +37,7 @@ public class BookingController {
   public Booking booking() throws MessagingException {
 
     // To address
-    final String EMAIL_ADDRESS = "tom_oddy@live.co.uk";
+    final String EMAIL_ADDRESS = "izzywu@hotmail.com";
 
     // Subject
     final String EMAIL_SUBJECT = "Test Email";
@@ -84,7 +84,7 @@ public class BookingController {
     return bookingRepository.save(booking);
   }
 
-  @PutMapping("/{booking_id")
+  @PutMapping("/{booking_id}")
   public Booking updateBooking(@PathVariable Long booking_id, @Valid @RequestBody Booking bookingRequest) {
     return bookingRepository.findById(booking_id).map(booking -> {
       booking.setActivity(bookingRequest.getActivity());
@@ -93,7 +93,7 @@ public class BookingController {
     }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
   }
 
-  @DeleteMapping("/{booking_id")
+  @DeleteMapping("/{booking_id}")
   public ResponseEntity<?> deleteBooking(@PathVariable Long bookingId) {
     return bookingRepository.findById(bookingId).map(booking -> {
       bookingRepository.delete(booking);

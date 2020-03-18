@@ -53,7 +53,7 @@ export default {
           name: "Five-a-Side football",
           totalCapacity: 10,
           price: 8,
-          resources: [3]
+          resources: [1, 2]
         },
         {
           name: "Squash Match",
@@ -148,7 +148,9 @@ export default {
       const { event } = eventInfo;
       const { extendedProps: options } = event;
       console.log(options);
-      this.previewActivity = this.activities.find(activity => activity.id === Number(event.id));
+      this.previewActivity = this.activities.find(
+        activity => activity.id === Number(event.id)
+      );
       this.$bvModal.show("preview-activity-modal");
     },
     onEventTimeChange(a) {
@@ -166,8 +168,8 @@ export default {
     async submitNewActivity(event) {
       event.preventDefault();
       let activityType = this.selectedActivityForm.activityType;
-      debugger;
       const activity = this.activityTypes.find(a => a.name === activityType);
+      console.log("activity");
       console.log(activity);
 
       try {
@@ -194,7 +196,11 @@ export default {
 
         await this.$router.push({
           name: "BookingPage",
-          query: { activityId: data.id }
+          params: {
+            facility: String,
+            activity: String
+          },
+          query: { facilityId: data.resource.id, activityId: data.id }
         });
       } catch (e) {
         console.error(e);
@@ -208,7 +214,8 @@ export default {
           Authorization: `Bearer ${token}`
         }
       });
-
+      console.log("data");
+      console.log(data);
       this.activities = data;
     },
     async getResources() {
@@ -278,7 +285,6 @@ export default {
             id="startTimeInput"
             v-model="selectedActivityForm.startTime"
             type="datetime-local"
-            readonly
             required
           ></b-form-input>
         </b-form-group>
