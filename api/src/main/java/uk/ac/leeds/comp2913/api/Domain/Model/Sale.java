@@ -54,7 +54,7 @@ public abstract class Sale {
    * <p>
    * In case of card handling system eg Stripe, or Random Transaction ID if cash payment
    */
-  @Column(name = "transaction_id", nullable = true)
+  @Column(name = "transaction_id", nullable = true, unique = true)
   @Length(max = 255)
   private String transactionId;
 
