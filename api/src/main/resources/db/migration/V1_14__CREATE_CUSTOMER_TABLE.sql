@@ -1,6 +1,6 @@
 create table sports_centre_management.customer
 (
-    id         int8 not null,
+    id         bigserial not null,
     booking_id int8,
     primary key (id)
 );
