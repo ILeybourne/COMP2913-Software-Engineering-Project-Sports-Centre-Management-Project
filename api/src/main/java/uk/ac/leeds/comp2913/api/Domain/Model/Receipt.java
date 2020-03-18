@@ -15,7 +15,8 @@ public class Receipt {
     private long id;
 
     @CreationTimestamp
-    private Date created_at;
+    @Column(name = "created_at")
+    private Date createdAt;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "receipt")
     private Set<Sale> sales;
