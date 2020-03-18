@@ -25,7 +25,6 @@ public class Account {
     @ManyToOne
     private Centre centre;
 
-  // TODO: 17/03/2020 DROP THIS COLUMN IN DB
     @OneToOne(mappedBy = "account",fetch = FetchType.EAGER)
     private Membership Memberships;
 
@@ -33,7 +32,7 @@ public class Account {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToMany
+    @OneToMany(mappedBy = "account")
     private List<Booking> bookings;
 
     public long getId() {
@@ -87,5 +86,13 @@ public class Account {
     }
 
     public void cancelMembership() {
+    }
+
+    public List<Booking> getBookings() {
+      return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+      this.bookings = bookings;
     }
 }

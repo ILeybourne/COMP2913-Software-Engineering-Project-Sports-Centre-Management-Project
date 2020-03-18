@@ -75,4 +75,14 @@ public class Resource {
     public void setActivityTypes(Set<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
     }
+
+    public void addActivityType(ActivityType type) {
+      activityTypes.add(type);
+      type.setResource(this);
+    }
+
+    public void removeActivityType(ActivityType type) {
+      activityTypes.remove(type);
+      type.setResource(null);
+    }
 }
