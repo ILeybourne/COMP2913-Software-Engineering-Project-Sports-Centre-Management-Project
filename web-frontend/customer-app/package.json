@@ -25,14 +25,17 @@
     "core-js": "^3.6.4",
     "fibers": "^4.0.2",
     "jquery": "^3.4.1",
+    "lodash.orderby": "^4.6.0",
+    "popper.js": "latest",
     "sass": "^1.25.0",
     "utf-8-validate": "^5.0.2",
+    "v-datatable-light": "^0.8.0",
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
     "vue-router": "^3.1.5",
     "vue-select": "^3.7.0",
-    "vuex": "^3.1.2",
-    "popper.js": "latest"
+    "vue-simple-spinner": "^1.2.10",
+    "vuex": "^3.1.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.2.0",
