@@ -8,20 +8,12 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-public class Booking {
-
-  @Id
-  @GeneratedValue
-  private long id;
+public class Booking extends Sale {
 
   @CreationTimestamp
   private Date created_at;
   @UpdateTimestamp
   private Date updated_at;
-
-  @OneToOne
-  @JoinColumn(name = "receipt_id")
-  private Receipt receipt;
 
   /**
    * The account associated with the booking
@@ -37,10 +29,6 @@ public class Booking {
   private Activity activity;
 
   public Booking() {
-  }
-
-  public long getId() {
-    return id;
   }
 
   public Date getCreatedAt() {
@@ -65,14 +53,6 @@ public class Booking {
 
   public void setAccount(Account account) {
     this.account = account;
-  }
-
-  public Receipt getReceipt() {
-    return receipt;
-  }
-
-  public void setReceipt(Receipt receipt) {
-    this.receipt = receipt;
   }
 
   @JsonIgnoreProperties("bookings")

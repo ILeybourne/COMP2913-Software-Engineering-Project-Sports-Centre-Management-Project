@@ -68,11 +68,17 @@ public class BookingController {
     return null;
   }
 
+  @GetMapping("/{booking_id}")
+  public Booking getBookings(@PathVariable long booking_id, Pageable pageable) {
+    return bookingRepository.findById(booking_id)
+      .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
+  }
 
   @GetMapping("")
   public Page<Booking> getBookings(Pageable pageable) {
     return bookingRepository.findAll(pageable);
   }
+
   @PostMapping("")
   public Booking createBooking(@Valid @RequestBody Booking booking) {
     return bookingRepository.save(booking);
