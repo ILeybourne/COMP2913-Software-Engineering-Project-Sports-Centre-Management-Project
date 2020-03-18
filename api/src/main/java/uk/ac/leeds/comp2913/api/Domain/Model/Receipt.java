@@ -36,11 +36,11 @@ public class Receipt {
     }
 
     public Date getCreatedAt() {
-        return created_at;
+        return createdAt;
     }
 
     public void setCreatedAt(Date created_at) {
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 
     public BigInteger getTotal() {
