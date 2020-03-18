@@ -19,7 +19,7 @@ import java.util.Date;
 )
 public abstract class User implements UserDetails {
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   @Column(name = "email_address", nullable = false)

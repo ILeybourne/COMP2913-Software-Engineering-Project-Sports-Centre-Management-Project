@@ -3,30 +3,37 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Date;
 
-@Entity
-public class Membership {
+import javax.persistence.*;
 
-    @Id
-    @GeneratedValue
-    private long id;
+/**
+ * Membership data, including account number & membership type chosen
+ * Start date and end date (based on duration of chosen membership)
+*/
+@Entity
+public class Membership extends Sale {
 
     @CreationTimestamp
     private Date created_at;
     @UpdateTimestamp
     private Date updated_at;
 
-    private String MembershipType;
-    private Date StartDate;
-    private Date EndDate;
+    //Foreign key, membership type (annual, monthly etc)
+    @OneToOne (fetch = FetchType.EAGER)
+    @JoinColumn(name = "membership_type_id", nullable = false)
+    private MembershipType membershipType;
 
-    public long getId() {
-        return id;
-    }
+    //foreign key, account id to link user
+    @OneToOne (fetch = FetchType.EAGER)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
+    @Column(name = "start_date")
+    private Date startDate;
+
+    @Column(name = "end_date")
+    private Date endDate;
 
     public Date getCreatedAt() {
         return created_at;
@@ -54,5 +61,39 @@ public class Membership {
     }
 
     public void storeReceipt() {
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+
+    public void setMembershipType(MembershipType membershipType) {
+        this.membershipType = membershipType;
+    }
+
+
+    public MembershipType getMembershipType() {
+        return membershipType;
+    }
+
+    public Date getStartDate() {
+      return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+      this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+      return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+      this.endDate = endDate;
     }
 }

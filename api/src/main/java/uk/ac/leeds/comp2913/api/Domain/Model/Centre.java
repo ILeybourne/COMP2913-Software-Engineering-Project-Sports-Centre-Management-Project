@@ -3,20 +3,36 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.*;
+
+/**
+ * A center can be thought of as a location in the country eg. Leeds University
+ * or Leeds Central
+ */
 @Entity
 public class Centre {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    @OneToMany(mappedBy = "centre")
+    /*TODO: Address */
+
+    /**
+     * The resources available in the centre
+     */
+    @OneToMany(mappedBy = "centre", fetch = FetchType.LAZY)
+    private List<Resource> resources;
+
+    /**
+     * The accounts opened in the centre
+     */
+    @OneToMany(mappedBy = "centre", fetch = FetchType.LAZY)
     private List<Account> accounts;
 
     @CreationTimestamp
@@ -39,5 +55,13 @@ public class Centre {
 
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
     }
 }

@@ -4,9 +4,10 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.*;
 
 /**
  * represents the timetable object unique to each facility on the database
@@ -15,7 +16,7 @@ import java.util.List;
 public class FacilityTimetable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;

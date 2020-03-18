@@ -1,6 +1,6 @@
 create table sports_centre_management.manager
 (
-    id int8 not null,
+    id bigserial not null,
     primary key (id)
 );
 alter table if exists sports_centre_management.manager

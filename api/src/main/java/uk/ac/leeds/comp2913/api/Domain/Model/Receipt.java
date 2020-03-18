@@ -2,12 +2,10 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import java.math.BigDecimal;
+import javax.persistence.*;
+import java.math.BigInteger;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 public class Receipt {
@@ -16,20 +14,18 @@ public class Receipt {
     @GeneratedValue
     private long id;
 
-    //@OneToMany(mappedBy = "receipt", fetch = FetchType.EAGER)
-    //todo add list of payments
-
     @CreationTimestamp
     @Column(name = "created_at")
     private Date createdAt;
 
-    @Column(name = "product_description")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "receipt")
+    private Set<Sale> sales;
+
+    @Column(nullable = true, name = "product_description")
     private String productDescription;
 
-    @Column(name = "cost")
-    private BigDecimal cost;
-
-    //todo add receipt pdf member
+    @Column(name = "total")
+    private BigInteger total;
 
     public long getId() {
         return id;
@@ -40,26 +36,34 @@ public class Receipt {
     }
 
     public Date getCreatedAt() {
-        return createdAt;
+        return created_at;
     }
 
     public void setCreatedAt(Date created_at) {
-        this.createdAt = created_at;
+        this.created_at = created_at;
     }
 
-    public BigDecimal getCost() {
-        return cost;
+    public BigInteger getTotal() {
+        return total;
     }
 
-    public void setCost(BigDecimal cost) {
-        this.cost = cost;
+    public void setTotal(BigInteger cost_gbp_pence) {
+        this.total = cost_gbp_pence;
     }
 
     public String getProductDescription() {
         return productDescription;
     }
 
-    public void setProductDescription(String productDescription) {
-        this.productDescription = productDescription;
+    public void setProductDescription(String product_description) {
+        this.productDescription = product_description;
+    }
+
+    public Set<Sale> getSales() {
+      return sales;
+    }
+
+    public void setSales(Set<Sale> sales) {
+      this.sales = sales;
     }
 }

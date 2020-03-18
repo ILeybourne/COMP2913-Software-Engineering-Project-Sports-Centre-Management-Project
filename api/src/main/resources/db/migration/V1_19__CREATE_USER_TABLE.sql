@@ -1,11 +1,11 @@
 create table sports_centre_management.user
 (
-    id            int8         not null,
+    id            bigserial not null,
     created_at    timestamp,
-    email_address varchar(255) not null,
-    first_name    varchar(255) not null,
-    last_name     varchar(255) not null,
-    password      varchar(255) not null,
+    email_address varchar(255)          not null,
+    first_name    varchar(255)          not null,
+    last_name     varchar(255)          not null,
+    password      varchar(255)          not null,
     updated_at    timestamp,
     primary key (id)
 );

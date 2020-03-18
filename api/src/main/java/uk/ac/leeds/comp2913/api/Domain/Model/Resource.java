@@ -1,16 +1,15 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 
 /**
@@ -20,18 +19,32 @@ import javax.persistence.OneToMany;
 public class Resource {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
+    @ManyToOne
+    private Centre centre;
+
+    /**
+     * List of activities ever booked for the resource
+     */
     @OneToMany(mappedBy = "resource", fetch = FetchType.EAGER)
-    private List<Activity> activities;
+    private Set<Activity> activities;
+
+    /**
+     * List of activities held at the resource
+     */
+    @JsonProperty
+    @OneToMany(mappedBy = "resource", fetch = FetchType.EAGER)
+    private Set<ActivityType> activityTypes;
 
     @CreationTimestamp
-    private Date created_at;
+    private Date createdAt;
+
     @UpdateTimestamp
-    private Date updated_at;
+    private Date updatedAt;
 
     public String getName() {
         return name;
@@ -41,15 +54,35 @@ public class Resource {
         this.name = name;
     }
 
-    public List<Activity> getActivities() {
+    @JsonIgnoreProperties("activityType")
+    public Set<Activity> getActivities() {
         return activities;
     }
 
-    public void setActivities(List<Activity> activities) {
+    public void setActivities(Set<Activity> activities) {
         this.activities = activities;
     }
 
     public Long getId() {
         return id;
+    }
+
+    @JsonIgnoreProperties("resource")
+    public Set<ActivityType> getActivityTypes() {
+        return activityTypes;
+    }
+
+    public void setActivityTypes(Set<ActivityType> activityTypes) {
+        this.activityTypes = activityTypes;
+    }
+
+    public void addActivityType(ActivityType type) {
+      activityTypes.add(type);
+      type.setResource(this);
+    }
+
+    public void removeActivityType(ActivityType type) {
+      activityTypes.remove(type);
+      type.setResource(null);
     }
 }

@@ -1,48 +1,73 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.*;
 
-import java.util.Date;
-import java.util.List;
 
-
-//defining an entity
+/**
+ * This class represents scheduled activities available to the members of the sports center that they can book onto
+ *
+ * These activities can only be created by the staff at the sports center by selecting a timeslot in the timetable
+ * and should be displayed on the weekly timetable for booking
+ */
 @Entity
 public class Activity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    private Integer total_capacity;
+    @JsonIgnore
+    @Column(name = "current_capacity")
+    private Integer currentCapacity;
 
-    private Integer current_capacity;
+    @Column(name = "start_time")
+    private Date startTime;
 
-    @OneToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
+    @Column(name = "end_time")
+    private Date endTime;
 
-    private Date start_time;
+    /**
+     * The bookings that have been made against the activity
+     */
+    @JsonIgnore
+    @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER)
+    private Set<Booking> bookings;
 
-    private Date end_time;
 
-//    @OneToMany(mappedBy = "activity")
-//    private List<Booking> bookings;
-
-    @ManyToOne
+  /**
+   * Which resource the activity needs to take place
+   */
+  @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
+
+
+    /**
+     * Which activity type the activity belongs to
+     */
+    @JsonIgnore
+    @ManyToOne (fetch = FetchType.EAGER)
+    @JoinColumn(name = "activity_type_id", nullable = false)
+    private ActivityType activityType;
 
     @CreationTimestamp
     private Date created_at;
     @UpdateTimestamp
     private Date updated_at;
+
+    private BigDecimal cost;
 
     public Long getId() {
         return id;
@@ -53,19 +78,19 @@ public class Activity {
     }
 
     public Date getStartTime() {
-        return start_time;
+        return startTime;
     }
 
     public void setStartTime(Date start_time) {
-        this.start_time = start_time;
+        this.startTime = start_time;
     }
 
     public Date getEndTime() {
-        return end_time;
+        return endTime;
     }
 
     public void setEndTime(Date end_time) {
-        this.end_time = end_time;
+        this.endTime = end_time;
     }
 
     public String getName() {
@@ -76,34 +101,37 @@ public class Activity {
         this.name = name;
     }
 
-    public Booking getBooking() {
-        return booking;
-    }
-
-    public Integer getTotalCapacity() {
-        return total_capacity;
-    }
-
-    public void setTotalCapacity(Integer total_capacity) {
-        this.total_capacity = total_capacity;
-    }
-
+    @JsonProperty
     public Integer getCurrentCapacity() {
-        return current_capacity;
+        return currentCapacity;
     }
 
     public void setCurrentCapacity(Integer current_capacity) {
-        this.current_capacity = current_capacity;
+        this.currentCapacity = current_capacity;
     }
 
-    public void getResource(Long resource_id) {
+    public Set<Booking> getBookings() {
+        return bookings;
     }
 
-//    public List<Booking> getBookings() {
-//        return bookings;
-//    }
-//
-//    public void setBookings(List<Booking> bookings) {
-//        this.bookings = bookings;
-//    }
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
+    }
+
+    @JsonIgnoreProperties({ "activities", "activityTypes" })
+    public Resource getResource() {
+      return resource;
+    }
+
+    public void setResource(Resource resource) {
+      this.resource = resource;
+    }
+
+    public BigDecimal getCost() {
+        return cost;
+    }
+
+    public void setCost(BigDecimal cost) {
+        this.cost = cost;
+    }
 }

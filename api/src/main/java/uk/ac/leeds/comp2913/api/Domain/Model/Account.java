@@ -1,19 +1,20 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.*;
 
 @Entity
 public class Account {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @CreationTimestamp
@@ -24,10 +25,15 @@ public class Account {
     @ManyToOne
     private Centre centre;
 
-    private String Password;
-    private Date DateOfBirth;
-    private String Memberships;
-    private String Bookings;
+    @OneToOne(mappedBy = "account",fetch = FetchType.EAGER)
+    private Membership Memberships;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @OneToMany(mappedBy = "account")
+    private List<Booking> bookings;
 
     public long getId() {
         return id;
@@ -49,17 +55,44 @@ public class Account {
         this.updated_at = updated_at;
     }
 
-    public void buyMembership() {
-    }
 
-    public void cancelMembership() {
-    }
-
+    @JsonIgnore
     public Centre getCentre() {
         return centre;
     }
 
     public void setCentre(Centre centre) {
         this.centre = centre;
+    }
+
+    @JsonIgnore
+    public Membership getMemberships() {
+        return Memberships;
+    }
+
+    public void setMemberships(Membership memberships) {
+        Memberships = memberships;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public void buyMembership() {
+    }
+
+    public void cancelMembership() {
+    }
+
+    public List<Booking> getBookings() {
+      return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+      this.bookings = bookings;
     }
 }
