@@ -1,8 +1,10 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +24,9 @@ public class ReceiptController {
     private final JavaMailSender javaMailSender;
     private final ReceiptRepository receiptRepository;
 
-    public ReceiptController(ReceiptRepository receiptRepository) {
-        this.receiptRepository = receiptRepository;
+    public ReceiptController(JavaMailSender javaMailSender, ReceiptRepository receiptRepository) {
+      this.javaMailSender = javaMailSender;
+      this.receiptRepository = receiptRepository;
     }
 
     @GetMapping("")
@@ -55,20 +58,29 @@ public class ReceiptController {
 
         // Create message object
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+      MimeMessageHelper mimeMessageHelper = null;
+      try {
+        mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
 
-        // Set address, subject, and body
+
+      // Set address, subject, and body
         mimeMessageHelper.setTo(EMAIL_ADDRESS);
         mimeMessageHelper.setSubject(EMAIL_SUBJECT);
         mimeMessageHelper.setText(EMAIL_BODY);
-
+      } catch (MessagingException e) {
+        e.printStackTrace();
+      }
         // Add attachment to email
 //        mimeMessageHelper.addAttachment(EMAIL_ATTACHMENT_NAME, new File(EMAIL_ATTACHMENT_PATH));
 
         // Send email
+      try {
         javaMailSender.send(mimeMessage);
+      } catch (MailException e) {
+        e.printStackTrace();
+      }
 
-        return newReceipt;
+      return newReceipt;
     }
 
     @PutMapping("/{receipt_id}")
@@ -76,7 +88,7 @@ public class ReceiptController {
         return receiptRepository.findById(receipt_id)
                 .map(receipt -> {
                     receipt.setProductDescription(receiptRequest.getProductDescription());
-                    receipt.setCost(receiptRequest.getCost());
+                    receipt.setTotal(receiptRequest.getTotal());
                     //todo add setPayments
                     return receiptRepository.save(receipt);
                 }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + receipt_id));

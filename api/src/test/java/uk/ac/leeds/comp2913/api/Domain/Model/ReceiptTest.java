@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.Random;
 
@@ -50,19 +50,9 @@ class ReceiptTest {
 
     @Test
     void getCost() {
-        String randCost = Double.toString(random.nextDouble());
-        BigDecimal testCostSet = new BigDecimal(randCost);
-        receipt.setCost(testCostSet);
-        BigDecimal testCostGet = receipt.getCost();
-        assertEquals(testCostSet, testCostGet);
-    }
-
-    @Test
-    void setCost() {
-        String randCost = Double.toString(random.nextDouble());
-        BigDecimal testCostSet = new BigDecimal(randCost);
-        receipt.setCost(testCostSet);
-        BigDecimal testCostGet = receipt.getCost();
+      final BigInteger testCostSet = BigInteger.valueOf(random.nextInt());
+      receipt.setTotal(testCostSet);
+        BigInteger testCostGet = receipt.getTotal();
         assertEquals(testCostSet, testCostGet);
     }
 
