@@ -10,6 +10,7 @@ import Profile from "../views/Profile";
 import { authGuard } from "../auth/helpers/auth.guard";
 import ExampleServerSide from "../views/ExampleServerSide";
 import BookingsTablePage from "../views/BookingsTablePage";
+import ActivitiesTablePage from '../views/ActivitiesTablePage'
 
 Vue.use(VueRouter);
 
@@ -72,6 +73,12 @@ const routes = [
     path: "/bookingtable",
     name: "BookingTable",
     component: BookingsTablePage,
+    beforeEnter: authGuard
+  },
+  {
+    path: "/activitiestable",
+    name: "ActivitiesTable",
+    component: ActivitiesTablePage,
     beforeEnter: authGuard
   }
 ];
