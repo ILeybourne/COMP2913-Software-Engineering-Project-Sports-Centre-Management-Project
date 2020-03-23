@@ -18,13 +18,12 @@
         value="Edit"
         @click="showCancel()"
       />
-      <input
-        slot="submit"
-        slot-scope="props"
+      <receipt
+        slot="receipt"
         type="button"
         class="btn btn-info"
-        value="print receipt"
-        @click="dtEditClick(props)"
+        value="receipt"
+        @click="showCancel"
       />
       <Pagination
         slot="pagination"
@@ -282,6 +281,7 @@ export default {
           label: "Receipt",
           sortable: false
         },
+        "__slot:receipt",
         "__slot:actions"
       ],
       // headerFields: ["Account", "Booking Time", "Booking Reference", "Receipt"],
