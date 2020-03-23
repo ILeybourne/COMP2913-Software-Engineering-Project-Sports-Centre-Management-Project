@@ -3,6 +3,7 @@ package uk.ac.leeds.comp2913.api.Domain.Service;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
 
+import javax.transaction.Transactional;
 import java.util.Collection;
 
 public interface ReceiptService {
@@ -14,4 +15,7 @@ public interface ReceiptService {
    * @return receipt generated from sales
    */
   public Receipt invoice(Collection<Sale> sales);
+
+    @Transactional
+    Receipt invoice(String transactionId, Collection<Sale> sales);
 }
