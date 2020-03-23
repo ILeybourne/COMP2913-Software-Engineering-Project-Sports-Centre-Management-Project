@@ -37,7 +37,7 @@ public class Activity {
     this.cost = activityType.getCost();
     this.resource = resource;
   }
-  
+
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
