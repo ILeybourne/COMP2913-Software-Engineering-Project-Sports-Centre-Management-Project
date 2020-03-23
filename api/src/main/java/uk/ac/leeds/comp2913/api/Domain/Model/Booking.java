@@ -15,6 +15,8 @@ public class Booking extends Sale {
   @UpdateTimestamp
   private Date updated_at;
 
+  private int participants;
+
   /**
    * The account associated with the booking
    */
@@ -62,5 +64,13 @@ public class Booking extends Sale {
 
   public void setActivity(Activity activity) {
     this.activity = activity;
+  }
+
+  public int getParticipants() {
+    return participants;
+  }
+
+  public void setParticipants(int participants) {
+    this.participants = participants;
   }
 }

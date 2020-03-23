@@ -48,21 +48,13 @@ public class ActivityController {
     //schedule an activity
     //Pulls data from activity type, only start and end type is pulled from json
     //need to look at deducting current capacity when bookings are made...
-    @PostMapping("/activities/{activity_type_id}")
-    public Activity createActivity(@PathVariable Long activity_type_id, @Valid @RequestBody Activity activity) {
-      return activityTypeRepository.findById(activity_type_id)
-                .map(activityType -> {
-                  activity.setCost(activityType.getCost());
-                  activity.setCurrentCapacity(activityType.getTotalCapacity());
-                  activity.setName(activityType.getName());
-                  activity.setResource(activityType.getResource());
-                  activity.setStartTime(activity.getStartTime());
-                  activity.setEndTime(activity.getEndTime());
-                  return activityRepository.save(activity);
-                }).orElseThrow(() -> new ResourceNotFoundException("Activity Type not found with id " + activity_type_id));
+    @PostMapping("/activities")
+    public Activity createActivity(@Valid @RequestBody Activity activity) {
+      return activityRepository.save(activity);
     }
 
-    //update details of scheduled activity
+
+  //update details of scheduled activity
     @PutMapping("/activities/{activity_id}")
     public Activity updateActivity(@PathVariable Long activity_id, @Valid @RequestBody Activity activityRequest) {
 
