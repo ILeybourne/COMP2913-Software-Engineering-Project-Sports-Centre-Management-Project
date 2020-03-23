@@ -13,5 +13,5 @@ public interface ReceiptService {
    * @param sales list of sales to create a new receipt
    * @return receipt generated from sales
    */
-  public Receipt invoice(Collection<Sale> sales);
+  public Receipt invoice(String transactionId, Collection<Sale> sales);
 }
