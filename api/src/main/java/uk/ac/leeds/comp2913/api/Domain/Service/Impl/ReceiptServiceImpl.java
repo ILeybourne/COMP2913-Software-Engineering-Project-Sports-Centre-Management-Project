@@ -18,9 +18,9 @@ public class ReceiptServiceImpl implements ReceiptService {
    * @return receipt generated from sales
    */
 
-  public String createInvoiceTemplate(String transactionId, Collection<Sale> sales, Receipt receipt) {
+  public String createInvoiceTemplate(String transactionId, Collection<Sale> sales, String receiptId) {
     final Context ctx = new Context(locale);
-    ctx.setVariable("receipt", receipt);
+    ctx.setVariable("receiptId", receiptId);
     ctx.setVariable("sales", receipt.getSales());
     ctx.setVariable("transactionId", transactionId);
 
@@ -30,13 +30,12 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     ctx.setVariable("qrCode", qrCodeFilename);
 
-    final String htmlContent = this.templateEngine.process("receipt.html", ctx);
-    return htmlContent;
+    return this.templateEngine.process("receipt.html", ctx);
   }
 
   @Override
   @Transactional
-  public Receipt invoice(String transactionId, Collection<Sale> sales) {
-    createInvoiceTemplate(transactionId, sales, receipt);
+  public Receipt invoice(String transactionId, Collection<Sale> sales, String receiptId) {
+    createInvoiceTemplate(transactionId, sales, receiptId);
   }
 }
