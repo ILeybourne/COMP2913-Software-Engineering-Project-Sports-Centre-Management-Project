@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
+import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class ActivityServiceImpl implements ActivityService {
   }
 
   @Override
-  public Optional<Integer> getCapacityForActivityId(Long activityId) {
+  public ActivityDTO getCapacityForActivityId(Long activityId) {
     return activityRepository.calculateCurrentCapacity(activityId);
   }
 }

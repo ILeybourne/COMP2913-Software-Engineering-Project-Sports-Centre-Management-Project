@@ -13,8 +13,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -30,6 +34,8 @@ class ResourceControllerTest {
 
     @BeforeEach
     void setUp() {
+        Resource resource = new Resource();
+        resource.setId(new Long(1));
     }
 
     @AfterEach
@@ -38,10 +44,18 @@ class ResourceControllerTest {
 
     @Test
     void getResources() throws Exception {
-        mockMvc.perform(get("/resources")
+        this.mockMvc.perform(get("/resources/")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
+
+    @Test
+    void indexResource() throws Exception {
+        mockMvc.perform(get("/resources/", 1))
+            .andExpect(status().isOk());
+    }
+
 
     @Test
     void createResource() throws Exception {

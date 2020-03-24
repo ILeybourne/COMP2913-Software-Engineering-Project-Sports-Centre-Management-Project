@@ -17,6 +17,7 @@ import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 import javax.validation.Valid;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class ActivityController {
