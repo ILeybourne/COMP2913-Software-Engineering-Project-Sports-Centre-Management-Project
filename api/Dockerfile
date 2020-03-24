@@ -33,7 +33,7 @@ ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urando
 
 FROM openjdk:11-jdk-alpine AS production
 COPY --from=build /app /app
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app/app.jar" ]
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app/$ARTIFACT_NAME" ]
 # Set classpath and Class to run
 #ENTRYPOINT ["java","--classpath","app:app/lib/*","uk.ac.leeds.comp2913.api.ApiApplication"]
 
