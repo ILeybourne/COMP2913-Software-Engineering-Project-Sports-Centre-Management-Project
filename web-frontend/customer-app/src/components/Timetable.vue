@@ -144,14 +144,13 @@ export default {
     },
     activityClick(eventInfo) {
       const { event } = eventInfo;
-      const { extendedProps: options } = event;
+      // const { extendedProps: options } = event;
       this.previewActivity = this.activities.find(
         activity => activity.id === Number(event.id)
       );
       this.$bvModal.show("preview-activity-modal");
     },
-    onEventTimeChange(a) {
-    },
+    onEventTimeChange() {},
     onSelect(event) {
       const s = event.start.toISOString();
       this.selectedActivityForm.startTime = s.substring(0, s.length - 1);
@@ -166,36 +165,32 @@ export default {
       let activityType = this.selectedActivityForm.activityType;
       const activity = this.activityTypes.find(a => a.name === activityType);
 
-      try {
-        /* TODO: Validate and check server response */
-        this.selectedActivityForm.name = activityType;
-        const token = await this.$auth.getTokenSilently();
-        const body = {
-          ...this.selectedActivityForm,
-          ...activity,
-          currentCapacity: 0
-        };
-        const { data } = await this.$http.post(
-          `/resources/${this.selectedActivityForm.resourceId}/activities`,
-          body,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+      /* TODO: Validate and check server response */
+      this.selectedActivityForm.name = activityType;
+      const token = await this.$auth.getTokenSilently();
+      const body = {
+        ...this.selectedActivityForm,
+        ...activity,
+        currentCapacity: 0
+      };
+      const { data } = await this.$http.post(
+        `/resources/${this.selectedActivityForm.resourceId}/activities`,
+        body,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-        );
+        }
+      );
 
-
-        await this.$router.push({
-          name: "BookingPage",
-          params: {
-            facility: String,
-            activity: String
-          },
-          query: { facilityId: data.resource.id, activityId: data.id }
-        });
-      } catch (e) {
-      }
+      await this.$router.push({
+        name: "BookingPage",
+        params: {
+          facility: String,
+          activity: String
+        },
+        query: { facilityId: data.resource.id, activityId: data.id }
+      });
     },
     async getActivities() {
       const token = await this.$auth.getTokenSilently();

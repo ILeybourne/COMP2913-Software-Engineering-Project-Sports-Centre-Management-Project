@@ -161,37 +161,34 @@ export default {
   },
   methods: {
     async postAllFormData() {
-      try {
-        /* TODO: Validate and check server response */
-        const token = await this.$auth.getTokenSilently();
-        let activities = this.activitiesFromServer;
-        let bookedActivity = this.activitiesFromServer.find(
-          activity => activity.id == this.selectedActivityId
-        );
+      /* TODO: Validate and check server response */
+      const token = await this.$auth.getTokenSilently();
+      // let activities = this.activitiesFromServer;
+      let bookedActivity = this.activitiesFromServer.find(
+        activity => activity.id == this.selectedActivityId
+      );
 
-        const body = {
-          //TODO PASS USER
-          // account: parseInt(this.$auth._uid),
-          activity: bookedActivity
-        };
-        const { data } = await this.$http.post(
-          `/bookings/`,
+      const body = {
+        //TODO PASS USER
+        // account: parseInt(this.$auth._uid),
+        activity: bookedActivity
+      };
+      await this.$http.post(
+        `/bookings/`,
 
-          body,
+        body,
 
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-        );
+        }
+      );
 
-        await this.$router.push({
-          name: "BookingPage",
-          query: { status: "success" }
-        });
-      } catch (e) {
-      }
+      await this.$router.push({
+        name: "BookingPage",
+        query: { status: "success" }
+      });
     },
     fillPaymentInfo(value) {
       this.nameCard = value.nameCard;
