@@ -156,8 +156,6 @@ export default {
   computed: {},
   methods: {
     setFormDefaults(e) {
-      console.log("form load");
-      console.log(e);
     },
 
     getUserType(e) {
@@ -188,13 +186,9 @@ export default {
 
     submitForm(e) {
       //TODO Validate before showing 2nd form
-      console.log("e");
-      console.log(e);
       e.preventDefault();
       this.componentWidth = 60;
       //TODO send array of data to parent
-      console.log("this.$data");
-      console.log(this.$data);
       if (
         !(
           this.$data.selectedFacility == null ||
@@ -247,7 +241,6 @@ export default {
         );
         return data;
       } catch (e) {
-        console.log(e);
       }
     },
 
@@ -305,7 +298,6 @@ export default {
           this.time.push(forrmattedTime);
           this.selectedTime = forrmattedTime;
         } catch (e) {
-          console.log(e);
         }
       }
     },
@@ -350,9 +342,7 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e);
       }
-      console.log(activityArray);
       this.activity = activityArray;
     },
 

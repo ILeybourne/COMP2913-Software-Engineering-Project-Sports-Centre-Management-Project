@@ -136,8 +136,6 @@ export default {
       });
       popover.$mount();
 
-      console.log(event);
-      console.log(eventInfo);
       let capacity = "";
       if (options.totalCapacity !== null) {
         capacity = ` - ${currentCapacity}/${totalCapacity}`;
@@ -147,14 +145,12 @@ export default {
     activityClick(eventInfo) {
       const { event } = eventInfo;
       const { extendedProps: options } = event;
-      console.log(options);
       this.previewActivity = this.activities.find(
         activity => activity.id === Number(event.id)
       );
       this.$bvModal.show("preview-activity-modal");
     },
     onEventTimeChange(a) {
-      console.log(a);
     },
     onSelect(event) {
       const s = event.start.toISOString();
@@ -169,8 +165,6 @@ export default {
       event.preventDefault();
       let activityType = this.selectedActivityForm.activityType;
       const activity = this.activityTypes.find(a => a.name === activityType);
-      console.log("activity");
-      console.log(activity);
 
       try {
         /* TODO: Validate and check server response */
@@ -181,7 +175,6 @@ export default {
           ...activity,
           currentCapacity: 0
         };
-        console.log(body);
         const { data } = await this.$http.post(
           `/resources/${this.selectedActivityForm.resourceId}/activities`,
           body,
@@ -192,7 +185,6 @@ export default {
           }
         );
 
-        console.log(data);
 
         await this.$router.push({
           name: "BookingPage",
@@ -203,7 +195,6 @@ export default {
           query: { facilityId: data.resource.id, activityId: data.id }
         });
       } catch (e) {
-        console.error(e);
       }
     },
     async getActivities() {
@@ -214,8 +205,6 @@ export default {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log("data");
-      console.log(data);
       this.activities = data;
     },
     async getResources() {

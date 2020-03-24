@@ -165,7 +165,6 @@ export default {
         /* TODO: Validate and check server response */
         const token = await this.$auth.getTokenSilently();
         let activities = this.activitiesFromServer;
-        console.log(activities);
         let bookedActivity = this.activitiesFromServer.find(
           activity => activity.id == this.selectedActivityId
         );
@@ -186,19 +185,15 @@ export default {
             }
           }
         );
-        console.log("data");
-        console.log(data);
 
         await this.$router.push({
           name: "BookingPage",
           query: { status: "success" }
         });
       } catch (e) {
-        console.log(e);
       }
     },
     fillPaymentInfo(value) {
-      console.log(value);
       this.nameCard = value.nameCard;
       this.cardType = value.cardType;
       this.cardNumber = value.cardNumber;
@@ -236,7 +231,6 @@ export default {
     showGuestInfo(value) {
       if (value.userType == "guest") {
         this.showGuestInfoComponent = true;
-        console.log(this.showGuestInfoComponent);
         this.selectedFacility = value.selectedFacility;
         this.selectedActivity = value.selectedActivity;
         this.selectedActivityId = value.selectedActivityId;
@@ -260,8 +254,6 @@ export default {
           }
         }
       );
-      console.log("bbokings");
-      console.log(data);
       this.bookings = data;
     },
 
