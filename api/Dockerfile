@@ -16,12 +16,14 @@ COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-# Intall dependencies but don't package JAR
-RUN ./mvnw install -DskipTests
+## Intall dependencies but don't package JAR
+#RUN ./mvnw install -DskipTests
+#
+#ENV LOCATION=$BUILD_LOCATION/target/dependency
+#
+#RUN mkdir -p $LOCATION && (cd $LOCATION; jar -xf ../*.jar)
 
-ENV LOCATION=$BUILD_LOCATION/target/dependency
-
-RUN mkdir -p $LOCATION && (cd $LOCATION; jar -xf ../*.jar)
+RUN ./mvn package -DskipTests
 
 # We can attah a debugger if we need via environemnt variables
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app/$ARTIFACT_NAME" ]
