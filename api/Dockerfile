@@ -23,7 +23,7 @@ COPY src src
 #
 #RUN mkdir -p $LOCATION && (cd $LOCATION; jar -xf ../*.jar)
 
-RUN ./mvn package -DskipTests
+RUN ./mvnw package -DskipTests
 
 # We can attah a debugger if we need via environemnt variables
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app/$ARTIFACT_NAME" ]
