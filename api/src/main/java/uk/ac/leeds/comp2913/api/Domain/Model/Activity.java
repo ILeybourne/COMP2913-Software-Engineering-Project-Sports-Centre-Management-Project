@@ -24,7 +24,6 @@ public class Activity {
   public Activity() {
   }
 
-  //look at breaking down details as a seperate method
   @JsonCreator
   public Activity(@JsonProperty("startTime") Date startTime,
                   @JsonProperty("endTimes") Date endTime,

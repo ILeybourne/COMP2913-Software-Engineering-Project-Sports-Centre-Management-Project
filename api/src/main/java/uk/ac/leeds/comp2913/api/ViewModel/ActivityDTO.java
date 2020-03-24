@@ -9,14 +9,14 @@ import java.util.Set;
 
 public class ActivityDTO {
   private Long id;
-  private Boolean social;
-  private BigDecimal cost;
-  private String name;
-  private Integer currentCapacity;
-  private Date startTime;
   private Date endTime;
-  private Set<Booking> bookings;
-  private Resource resource;
+  private Date startTime;
+  private String name;
+  private BigDecimal cost;
+  private Boolean social;
+  private Integer currentCapacity;
+//  private Set<Booking> bookings;
+//  private Resource resource;
 
   public Long getId() {
     return id;
@@ -66,19 +66,27 @@ public class ActivityDTO {
     this.endTime = endTime;
   }
 
-  public Set<Booking> getBookings() {
-    return bookings;
+  public BigDecimal getCost() {
+    return cost;
   }
 
-  public void setBookings(Set<Booking> bookings) {
-    this.bookings = bookings;
+  public void setCost(BigDecimal cost) {
+    this.cost = cost;
   }
 
-  public Resource getResource() {
-    return resource;
-  }
-
-  public void setResource(Resource resource) {
-    this.resource = resource;
-  }
+//  public Set<Booking> getBookings() {
+//    return bookings;
+//  }
+//
+//  public void setBookings(Set<Booking> bookings) {
+//    this.bookings = bookings;
+//  }
+//
+//  public Resource getResource() {
+//    return resource;
+//  }
+//
+//  public void setResource(Resource resource) {
+//    this.resource = resource;
+//  }
 }
