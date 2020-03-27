@@ -1,5 +1,7 @@
 package uk.ac.leeds.comp2913.api.ViewModel;
 
+import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
+import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 
@@ -11,12 +13,49 @@ public class ActivityDTO {
   private Long id;
   private Date endTime;
   private Date startTime;
+  private Date created_at;
+
+  public Date getCreated_at() {
+    return created_at;
+  }
+
+  public void setCreated_at(Date created_at) {
+    this.created_at = created_at;
+  }
+
+  public Date getUpdated_at() {
+    return updated_at;
+  }
+
+  public void setUpdated_at(Date updated_at) {
+    this.updated_at = updated_at;
+  }
+
+  private Date updated_at;
   private String name;
   private BigDecimal cost;
   private Boolean social;
   private Integer currentCapacity;
+  private ActivityType activityType;
 //  private Set<Booking> bookings;
-//  private Resource resource;
+  private Resource resource;
+  public ActivityDTO(){
+
+  }
+
+//public ActivityDTO (Long id, Date endTime,Date created_at, Date updated_at, Date startTime, String name, BigDecimal cost, Boolean social, Integer currentCapacity, ActivityType activityType, Resource resource) {
+//  this.id = id;
+//  this.endtime = endTime;
+//  this.startTime = startTime;
+//  this.created_at = created_at;
+//  this.updated_at = updated_at;
+//  this.name = name;
+//  this.cost = cost;
+//  this.social = social;
+//  this.currentCapacity = currentCapacity;
+//  this.activityType = activityType;
+//  this.resource = resource;
+//}
 
   public Long getId() {
     return id;
@@ -50,19 +89,19 @@ public class ActivityDTO {
     this.currentCapacity = currentCapacity;
   }
 
-  public Date getStartTime() {
+  public Date getStart_time() {
     return startTime;
   }
 
-  public void setStartTime(Date startTime) {
+  public void setStart_time(Date startTime) {
     this.startTime = startTime;
   }
 
-  public Date getEndTime() {
+  public Date getEnd_time() {
     return endTime;
   }
 
-  public void setEndTime(Date endTime) {
+  public void setEnd_time(Date endTime) {
     this.endTime = endTime;
   }
 
@@ -74,6 +113,14 @@ public class ActivityDTO {
     this.cost = cost;
   }
 
+  public ActivityType getActivity_type_id() {
+    return activityType;
+  }
+
+  public void setActivity_type_id(ActivityType activityType) {
+    this.activityType = activityType;
+  }
+
 //  public Set<Booking> getBookings() {
 //    return bookings;
 //  }
@@ -82,11 +129,11 @@ public class ActivityDTO {
 //    this.bookings = bookings;
 //  }
 //
-//  public Resource getResource() {
-//    return resource;
-//  }
-//
-//  public void setResource(Resource resource) {
-//    this.resource = resource;
-//  }
+  public Resource getResource() {
+    return resource;
+  }
+
+  public void setResource(Resource resource) {
+    this.resource = resource;
+  }
 }

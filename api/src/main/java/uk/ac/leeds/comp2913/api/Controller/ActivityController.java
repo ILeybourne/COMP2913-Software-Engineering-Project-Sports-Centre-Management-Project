@@ -51,7 +51,7 @@ public class ActivityController {
     List<ActivityDTO> activityDTOList = new LinkedList<>();
     this.activityService.getActivities(pageable).map(activity -> {
       ActivityDTO activityDTO = activityService.getCapacityForActivityId(activity.getId());
-      return activityDTO;
+      return activityDTOList.add(activityDTO);
     });
     return activityDTOList;
   }
