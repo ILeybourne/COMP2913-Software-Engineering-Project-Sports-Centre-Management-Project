@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
@@ -29,10 +30,12 @@ public class ReceiptServiceImpl implements ReceiptService {
 
   @Value("${COMP2913.iTextLicensePath}")
   private String iTextLicensePath;
+  private TemplateEngine templateEngine;
 
   @Autowired
-  public ReceiptServiceImpl(JavaMailSender javaMailSender) {
+  public ReceiptServiceImpl(JavaMailSender javaMailSender, TemplateEngine templateEngine) {
     this.javaMailSender = javaMailSender;
+    this.templateEngine = templateEngine;
   }
 
   // TODO Remove constant variables
@@ -99,7 +102,8 @@ public class ReceiptServiceImpl implements ReceiptService {
     final Context ctx = new Context();
     ctx.setVariable("receiptId", receipt.getId());
     ctx.setVariable("sales", receipt.getSales());
-    ctx.setVariable("transactionId", receipt.getTransactionId());
+    /*TODO: make this return transactionId*/
+    ctx.setVariable("transactionId", receipt.getId());
 
     QrCodeGenerator qrCodeGenerator = new QrCodeGenerator(200, 200);
     String qrCodeFilename = "qrCode-" + receipt.getId();
@@ -107,6 +111,6 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     ctx.setVariable("qrCode", qrCodeFilename);
 
-    return emailTemplateEngine().process("receipt.html", ctx);
+    return this.templateEngine.process("receipt.html", ctx);
   }
 }
