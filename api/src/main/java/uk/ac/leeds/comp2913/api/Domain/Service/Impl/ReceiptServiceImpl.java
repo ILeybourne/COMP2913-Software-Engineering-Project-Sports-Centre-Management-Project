@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 
+import ch.qos.logback.classic.pattern.EnsureExceptionHandling;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.licensekey.LicenseKey;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.*;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
@@ -22,6 +25,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Locale;
 
 @Service
 public class ReceiptServiceImpl implements ReceiptService {
@@ -94,8 +98,9 @@ public class ReceiptServiceImpl implements ReceiptService {
     javaMailSender.send(mimeMessage);
   }
 
+
   public String createInvoiceHtmlTemplate(Receipt receipt) {
-    final Context ctx = new Context(locale);
+    final Context ctx = new Context();
     ctx.setVariable("receiptId", receipt.getId());
     ctx.setVariable("sales", receipt.getSales());
     ctx.setVariable("transactionId", receipt.getTransactionId());
