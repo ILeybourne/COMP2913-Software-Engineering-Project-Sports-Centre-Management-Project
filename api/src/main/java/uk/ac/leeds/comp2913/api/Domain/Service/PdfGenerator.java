@@ -20,6 +20,10 @@ public class PdfGenerator {
             outputPath = oP + ".pdf";
     }
 
+    public static void main(String[] args) throws IOException {
+
+    }
+
     public void createDocument() {
         // Create pdf writer instance
         try {
