@@ -57,7 +57,12 @@ public class ReceiptServiceImpl implements ReceiptService {
     receipt.invoice();
 
     String htmlContent = createInvoiceHtmlTemplate(receipt);
-    String pdfFilePath = createPdfFromHtml(htmlContent, customer);
+    String pdfFilePath = null;
+    try {
+      pdfFilePath = createPdfFromHtml(htmlContent, customer);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     String s3Path = uploadReceiptPdfToS3(pdfFilePath);
 
     receipt.setPdfLocation(s3Path);
