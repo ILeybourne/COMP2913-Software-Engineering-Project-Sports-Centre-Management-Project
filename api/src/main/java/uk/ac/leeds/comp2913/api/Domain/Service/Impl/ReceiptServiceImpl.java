@@ -4,11 +4,18 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.licensekey.LicenseKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.templateresolver.StringTemplateResolver;
 import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
@@ -22,6 +29,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 
 @Service
 public class ReceiptServiceImpl implements ReceiptService {
@@ -94,8 +102,61 @@ public class ReceiptServiceImpl implements ReceiptService {
     javaMailSender.send(mimeMessage);
   }
 
+
+  public ResourceBundleMessageSource emailMessageSource() {
+    final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+    messageSource.setBasename("mail/MailMessages");
+    return messageSource;
+  }
+
+  public TemplateEngine emailTemplateEngine() {
+    final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+    // Resolver for TEXT emails
+    templateEngine.addTemplateResolver(textTemplateResolver());
+    // Resolver for HTML emails (except the editable one)
+    templateEngine.addTemplateResolver(htmlTemplateResolver());
+    // Resolver for HTML editable emails (which will be treated as a String)
+    templateEngine.addTemplateResolver(stringTemplateResolver());
+    // Message source, internationalization specific to emails
+    templateEngine.setTemplateEngineMessageSource(emailMessageSource());
+    return templateEngine;
+  }
+
+  private ITemplateResolver textTemplateResolver() {
+    final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+    templateResolver.setOrder(Integer.valueOf(1));
+    templateResolver.setResolvablePatterns(Collections.singleton("text/*"));
+    templateResolver.setPrefix("/mail/");
+    templateResolver.setSuffix(".txt");
+    templateResolver.setTemplateMode(TemplateMode.TEXT);
+    templateResolver.setCharacterEncoding("UTF-8");
+    templateResolver.setCacheable(false);
+    return templateResolver;
+  }
+
+  private ITemplateResolver htmlTemplateResolver() {
+    final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+    templateResolver.setOrder(Integer.valueOf(2));
+    templateResolver.setResolvablePatterns(Collections.singleton("html/*"));
+    templateResolver.setPrefix("/mail/");
+    templateResolver.setSuffix(".html");
+    templateResolver.setTemplateMode(TemplateMode.HTML);
+    templateResolver.setCharacterEncoding("UTF-8");
+    templateResolver.setCacheable(false);
+    return templateResolver;
+  }
+
+  private ITemplateResolver stringTemplateResolver() {
+    final StringTemplateResolver templateResolver = new StringTemplateResolver();
+    templateResolver.setOrder(Integer.valueOf(3));
+    // No resolvable pattern, will simply process as a String template everything not previously matched
+    templateResolver.setTemplateMode("HTML5");
+    templateResolver.setCacheable(false);
+    return templateResolver;
+  }
+
   public String createInvoiceHtmlTemplate(Receipt receipt) {
-    final Context ctx = new Context(locale);
+    final Context ctx = new Context();
     ctx.setVariable("receiptId", receipt.getId());
     ctx.setVariable("sales", receipt.getSales());
     ctx.setVariable("transactionId", receipt.getTransactionId());
@@ -106,6 +167,6 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     ctx.setVariable("qrCode", qrCodeFilename);
 
-    return this.templateEngine.process("receipt.html", ctx);
+    return emailTemplateEngine().process("receipt.html", ctx);
   }
 }
