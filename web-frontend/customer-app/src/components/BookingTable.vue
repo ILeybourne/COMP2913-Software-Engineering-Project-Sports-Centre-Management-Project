@@ -285,7 +285,7 @@ export default {
         "__slot:actions"
       ],
       // headerFields: ["Account", "Booking Time", "Booking Reference", "Receipt"],
-      data: dummyData.slice(0, 10),
+
       itemsPerPageCss: {
         select: "item-per-page-dropdown"
       },
@@ -312,7 +312,8 @@ export default {
       sort: "asc",
       itemsPerPage: 10,
       listItemsPerPage: [5, 10, 20, 50, 100],
-      currentPage: 1
+      currentPage: 1,
+      totalItems: "this.bookings.length"
     };
   },
   computed: {},
@@ -321,7 +322,7 @@ export default {
     async getBooking() {
       const token = await this.$auth.getTokenSilently();
 
-      const { data } = await this.$http.get(`/bookings`, {
+      const { data } = await this.$http.get(`/bookingsc18eda`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

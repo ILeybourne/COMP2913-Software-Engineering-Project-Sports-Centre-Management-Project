@@ -1,3 +1,3 @@
-describe("TestTest", () => {
+describe("TestAbout", () => {
   throw new Error("Test incomplete");
 });
