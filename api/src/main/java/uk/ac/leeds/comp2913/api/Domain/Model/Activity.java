@@ -3,11 +3,14 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import com.fasterxml.jackson.annotation.*;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -37,11 +40,19 @@ public class Activity {
     this.resource = resource;
   }
 
+  //Constructor for auto posting regular sessions
+  public Activity(Date startTime, Date endTime, Activity activity) {
+    this.startTime = startTime;
+    this.endTime = endTime;
+    this.activityType = activity.getActivityType();
+    this.name = activity.getName();
+    this.cost = activity.getCost();
+    this.resource = activity.getResource();
+  }
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
 
   /**
    * Social, when true the activity is open for individual members to book onto
@@ -53,10 +64,6 @@ public class Activity {
   private Boolean social;
 
   private String name;
-
-  @JsonIgnore
-  @Column(name = "current_capacity")
-  private Integer currentCapacity;
 
   @Column(name = "start_time")
   private Date startTime;
@@ -93,7 +100,15 @@ public class Activity {
   @UpdateTimestamp
   private Date updated_at;
 
+  @Formula("(SELECT SUM(b.participants) FROM sports_centre_management.booking b where b.activity_id = id)")
+  private Integer currentCapacity;
+
   private BigDecimal cost;
+
+  //IF an activity is a regular session, then it will hold the ID of the regular session
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "regular_session_id")
+  private RegularSession  regularSession;
 
   public Long getId() {
     return id;
@@ -175,5 +190,29 @@ public class Activity {
 
   public void setActivityType(ActivityType activityType) {
     this.activityType = activityType;
+  }
+
+  @JsonIgnoreProperties({"activities"})
+  public RegularSession getRegularSession() {
+    return regularSession;
+  }
+
+  public void setRegularSession(RegularSession regularSession) {
+    this.regularSession = regularSession;
+  }
+
+  public static Activity createFromLastScheduled(Activity last_scheduled) {
+    RegularSession regularsession = last_scheduled.getRegularSession();
+    Integer interval = regularsession.getInterval();
+    Date start = addIntervalToDate(last_scheduled.getStartTime(), interval);
+    Date end = addIntervalToDate(last_scheduled.getEndTime(), interval);
+    Activity activity = new Activity(start, end, last_scheduled);
+    return activity;
+  }
+
+  public static Date addIntervalToDate(Date date, Integer interval){
+    Date oldDate = date;
+    Date newDate = new Date(oldDate.getTime()+(interval*(24*60*60*1000))); //Math at the end converts a day into milliseconds
+    return newDate;
   }
 }

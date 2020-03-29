@@ -29,9 +29,10 @@ public class CustomActivityRepositoryImpl implements CustomActivityRepository {
         "       activity_type_id as activityType, " +
         "       cost, " +
         "       social, " +
-        "       resource_id as resource, " +
+      //  "       resource_id as resource, " +
         "       SUM(booking.participants) as currentCapacity " +
         "FROM sports_centre_management.activity " +
+   //     "         join sports_centre_management.resource on activity.resource_id = resource.id"+
         "         LEFT OUTER JOIN sports_centre_management.booking on activity.id = booking.activity_id " +
         "WHERE activity.id = :activityId " +
         "GROUP BY activity.id")

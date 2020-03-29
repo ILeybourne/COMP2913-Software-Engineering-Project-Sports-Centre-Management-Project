@@ -12,12 +12,9 @@ import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
-import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 
 import javax.validation.Valid;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class ActivityController {
@@ -47,13 +44,14 @@ public class ActivityController {
    * @return a page of Activities
    */
   @GetMapping("/activities")
-  public List<ActivityDTO> getActivities(Pageable pageable) {
-    List<ActivityDTO> activityDTOList = new LinkedList<>();
-    this.activityService.getActivities(pageable).map(activity -> {
-      ActivityDTO activityDTO = activityService.getCapacityForActivityId(activity.getId());
-      return activityDTOList.add(activityDTO);
-    });
-    return activityDTOList;
+  public Page<Activity> getActivities(Pageable pageable) {
+return    activityRepository.findAll(pageable);
+//    List<ActivityDTO> activityDTOList = new LinkedList<>();
+//    this.activityService.getActivities(pageable).map(activity -> {
+//      ActivityDTO activityDTO = activityService.getCapacityForActivityId(activity.getId());
+//      return activityDTOList.add(activityDTO);
+//    });
+//    return activityDTOList;
   }
 
   //get scheduled activities by resource ID
@@ -83,6 +81,8 @@ public class ActivityController {
           activity.setStartTime(activityRequest.getStartTime());
           activity.setEndTime(activityRequest.getEndTime());
           activity.setCurrentCapacity(activityRequest.getCurrentCapacity());
+          activity.setRegularSession(activityRequest.getRegularSession());
+
 //                    TODO: Others
           return activityRepository.save(activity);
         }).orElseThrow(() -> new ResourceNotFoundException("Activity not found with ID " + activity_id));

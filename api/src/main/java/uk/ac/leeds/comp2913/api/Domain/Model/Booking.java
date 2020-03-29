@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -30,8 +31,23 @@ public class Booking extends Sale {
   @JoinColumn(name = "activity_id")
   private Activity activity;
 
+
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  private RegularSession regularSession;
+
+
   public Booking() {
   }
+
+  public Booking(BigDecimal amount, Account account, Integer participants, Activity activity, RegularSession regularSession) {
+    this.activity = activity;
+    this.participants = participants;
+    this.regularSession = regularSession;
+    this.account = account;
+    this.setAmount(amount);
+  }
+
 
   public Date getCreatedAt() {
     return created_at;
@@ -72,5 +88,22 @@ public class Booking extends Sale {
 
   public void setParticipants(int participants) {
     this.participants = participants;
+  }
+
+  public RegularSession getRegularSession() {
+    return regularSession;
+  }
+
+  public void setRegularSession(RegularSession regularSession) {
+    this.regularSession = regularSession;
+  }
+
+  public static Booking createBookingFromRegularSession(Activity activity, Booking booking){
+    Integer participants = 1;
+    BigDecimal cost = activity.getCost().multiply(new BigDecimal(0.3));
+    Account account = booking.getAccount();
+    RegularSession regularSession = activity.getRegularSession();
+    Booking newBooking = new Booking(cost, account, participants, activity, regularSession);
+    return newBooking;
   }
 }
