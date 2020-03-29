@@ -27,5 +27,5 @@
 // IMPORTANT : Cypress client needs to be restarted to recognise new commands
 
 Cypress.Commands.add("navigateToHome", () => {
-   cy.visit('/')
+  cy.visit("/");
 });

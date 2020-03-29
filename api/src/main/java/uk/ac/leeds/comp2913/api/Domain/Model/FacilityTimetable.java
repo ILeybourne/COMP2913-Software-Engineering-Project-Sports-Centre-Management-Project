@@ -15,7 +15,7 @@ import java.util.List;
 public class FacilityTimetable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -27,9 +27,9 @@ public class FacilityTimetable {
     private List<Resource> resources;
 
     @CreationTimestamp
-    private Date created_at;
+    private Date createdAt;
     @UpdateTimestamp
-    private Date updated_at;
+    private Date updatedAt;
 
     public String getName() {
         return name;
@@ -53,5 +53,25 @@ public class FacilityTimetable {
 
     public void setCentre(Centre centre) {
         this.centre = centre;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

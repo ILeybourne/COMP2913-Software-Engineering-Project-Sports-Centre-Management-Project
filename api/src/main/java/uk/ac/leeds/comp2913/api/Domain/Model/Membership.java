@@ -5,21 +5,14 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
-//Membership data, including account number & membership type chosen
-//Start date and end date (based on duration of chosen membership)
+/**
+ * Membership data, including account number & membership type chosen
+ * Start date and end date (based on duration of chosen membership)
+*/
 @Entity
-public class Membership {
-
-    @Id
-    @GeneratedValue
-    private long id;
+public class Membership extends Sale {
 
     @CreationTimestamp
     private Date created_at;
@@ -36,16 +29,11 @@ public class Membership {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
+    @Column(name = "start_date")
+    private Date startDate;
 
-    private Date StartDate;
-    private Date EndDate;
-
-    public Long getId() {
-        return id;
-
-    }public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "end_date")
+    private Date endDate;
 
     public Date getCreatedAt() {
         return created_at;
@@ -92,5 +80,20 @@ public class Membership {
     public MembershipType getMembershipType() {
         return membershipType;
     }
-    
+
+    public Date getStartDate() {
+      return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+      this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+      return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+      this.endDate = endDate;
+    }
 }

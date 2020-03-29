@@ -41,7 +41,13 @@ export default {
   props: { activity: Object },
   data() {
     return {
-      link: { name: "BookingPage", query: { activityId: this.activity.id } }
+      link: {
+        name: "BookingPage",
+        query: {
+          facilityId: this.activity.resource.id,
+          activityId: this.activity.id
+        }
+      }
     };
   },
   computed: {}

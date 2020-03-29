@@ -8,36 +8,35 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-//storing details of membership types (eg, annual, monthly)
-// stores: name, duration, cost...
+/**
+ * Storing details of membership types (eg, annual, monthly)
+ * stores: name, duration, cost...
+ */
 @Entity
 public class MembershipType {
 
     @JsonProperty
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @CreationTimestamp
-    private Date created_at;
+    @Column(name = "created_at")
+    private Date createdAt;
+
     @UpdateTimestamp
-    private Date updated_at;
+    @Column(name = "updated_at")
+    private Date updatedAt;
 
-    //need to add a center relationship
-
+    // TODO: 16/03/2020 need to add a center relationship
 
     private String name;
 
     private int duration;
 
     private BigDecimal cost;
-
-    // for deserialisation
-   // public MembershipType() {}
 
     public long getId() {
         return id;
@@ -47,20 +46,20 @@ public class MembershipType {
         this.id = id;
     }
 
-    public Date getCreated_at() {
-        return created_at;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(Date created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Date created_at) {
+        this.createdAt = created_at;
     }
 
-    public Date getUpdated_at() {
-        return updated_at;
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(Date updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(Date updated_at) {
+        this.updatedAt = updated_at;
     }
 
     public String getName() {

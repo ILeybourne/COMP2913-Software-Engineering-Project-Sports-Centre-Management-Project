@@ -3,51 +3,121 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 public class Receipt {
 
-    @Id
-    @GeneratedValue
-    private long id;
+  @Id
+  @GeneratedValue
+  private long id;
 
-    @CreationTimestamp
-    private Date created_at;
+  @CreationTimestamp
+  @Column(name = "created_at")
+  private Date createdAt;
 
-    private String product_description;
-
-    private int cost_gbp_pence;
-
-    public long getId() {
-        return id;
+  @OneToMany(
+    fetch = FetchType.LAZY,
+    mappedBy = "receipt",
+    cascade = {
+      CascadeType.MERGE,
+      CascadeType.PERSIST
     }
+  )
+  private Set<Sale> sales;
 
-    public void setId(long id) {
-        this.id = id;
-    }
+  @Column(
+    nullable = true,
+    name = "pdf_location",
+    unique = true
+  )
+  @Size(max = 255)
+  private String pdfLocation;
 
-    public Date getCreated_at() {
-        return created_at;
-    }
+  @Column(nullable = true, name = "product_description")
+  private String productDescription;
 
-    public void setCreated_at(Date created_at) {
-        this.created_at = created_at;
-    }
+  @Column(name = "total")
+  private BigInteger total;
 
-    public int getCost_gbp_pence() {
-        return cost_gbp_pence;
-    }
+  @ManyToOne
+  @JoinColumn(name = "customer_id")
+  private Customer customer;
 
-    public void setCost_gbp_pence(int cost_gbp_pence) {
-        this.cost_gbp_pence = cost_gbp_pence;
-    }
+  public Receipt() {
 
-    public String getProduct_description() {
-        return product_description;
-    }
+  }
 
-    public void setProduct_description(String product_description) {
-        this.product_description = product_description;
-    }
+  public Receipt(Collection<Sale> sales, String transactionId) {
+    setSales(Set.copyOf(sales));
+  }
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Date created_at) {
+    this.createdAt = created_at;
+  }
+
+  public BigInteger getTotal() {
+    return total;
+  }
+
+  public void setTotal(BigInteger cost_gbp_pence) {
+    this.total = cost_gbp_pence;
+  }
+
+  public String getProductDescription() {
+    return productDescription;
+  }
+
+  public void setProductDescription(String product_description) {
+    this.productDescription = product_description;
+  }
+
+  public Set<Sale> getSales() {
+    return sales;
+  }
+
+  public void setSales(Set<Sale> sales) {
+    this.sales = sales;
+  }
+
+  public Customer getCustomer() {
+    return customer;
+  }
+
+  public void setCustomer(Customer customer) {
+    this.customer = customer;
+  }
+
+  public void invoice() {
+  }
+
+  public String getPdfLocation() {
+    return pdfLocation;
+  }
+
+  public void setPdfLocation(String pdfLocation) {
+    this.pdfLocation = pdfLocation;
+  }
+
+  public String generateFilename(){
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d-MM-yyyy");
+    return id + "-" + simpleDateFormat.format(createdAt);
+  }
 }

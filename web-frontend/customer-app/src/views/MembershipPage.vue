@@ -1,5 +1,5 @@
 <template>
-  <div class="booking-container">
+  <div class="payment-container">
     <div class="padding-div">
       <button
         type="button"

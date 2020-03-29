@@ -53,7 +53,7 @@ export default {
           name: "Five-a-Side football",
           totalCapacity: 10,
           price: 8,
-          resources: [3]
+          resources: [1, 2]
         },
         {
           name: "Squash Match",
@@ -136,8 +136,6 @@ export default {
       });
       popover.$mount();
 
-      console.log(event);
-      console.log(eventInfo);
       let capacity = "";
       if (options.totalCapacity !== null) {
         capacity = ` - ${currentCapacity}/${totalCapacity}`;
@@ -146,14 +144,13 @@ export default {
     },
     activityClick(eventInfo) {
       const { event } = eventInfo;
-      const { extendedProps: options } = event;
-      console.log(options);
-      this.previewActivity = this.activities.find(activity => activity.id === Number(event.id));
+      // const { extendedProps: options } = event;
+      this.previewActivity = this.activities.find(
+        activity => activity.id === Number(event.id)
+      );
       this.$bvModal.show("preview-activity-modal");
     },
-    onEventTimeChange(a) {
-      console.log(a);
-    },
+    onEventTimeChange() {},
     onSelect(event) {
       const s = event.start.toISOString();
       this.selectedActivityForm.startTime = s.substring(0, s.length - 1);
@@ -166,39 +163,34 @@ export default {
     async submitNewActivity(event) {
       event.preventDefault();
       let activityType = this.selectedActivityForm.activityType;
-      debugger;
       const activity = this.activityTypes.find(a => a.name === activityType);
-      console.log(activity);
 
-      try {
-        /* TODO: Validate and check server response */
-        this.selectedActivityForm.name = activityType;
-        const token = await this.$auth.getTokenSilently();
-        const body = {
-          ...this.selectedActivityForm,
-          ...activity,
-          currentCapacity: 0
-        };
-        console.log(body);
-        const { data } = await this.$http.post(
-          `/resources/${this.selectedActivityForm.resourceId}/activities`,
-          body,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+      /* TODO: Validate and check server response */
+      this.selectedActivityForm.name = activityType;
+      const token = await this.$auth.getTokenSilently();
+      const body = {
+        ...this.selectedActivityForm,
+        ...activity,
+        currentCapacity: 0
+      };
+      const { data } = await this.$http.post(
+        `/resources/${this.selectedActivityForm.resourceId}/activities`,
+        body,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-        );
+        }
+      );
 
-        console.log(data);
-
-        await this.$router.push({
-          name: "BookingPage",
-          query: { activityId: data.id }
-        });
-      } catch (e) {
-        console.error(e);
-      }
+      await this.$router.push({
+        name: "BookingPage",
+        params: {
+          facility: String,
+          activity: String
+        },
+        query: { facilityId: data.resource.id, activityId: data.id }
+      });
     },
     async getActivities() {
       const token = await this.$auth.getTokenSilently();
@@ -208,7 +200,6 @@ export default {
           Authorization: `Bearer ${token}`
         }
       });
-
       this.activities = data;
     },
     async getResources() {
@@ -278,7 +269,6 @@ export default {
             id="startTimeInput"
             v-model="selectedActivityForm.startTime"
             type="datetime-local"
-            readonly
             required
           ></b-form-input>
         </b-form-group>

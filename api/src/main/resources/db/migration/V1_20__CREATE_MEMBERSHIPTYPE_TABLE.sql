@@ -1,6 +1,6 @@
 create table sports_centre_management.membership_type
 (
-    id              int8 not null,
+    id              bigserial not null,
     name            varchar(255),
     created_at      timestamp,
     updated_at      timestamp,

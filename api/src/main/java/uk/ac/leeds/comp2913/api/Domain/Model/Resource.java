@@ -1,13 +1,15 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
+
+import javax.persistence.*;
 
 
 /**
@@ -17,7 +19,7 @@ import java.util.Set;
 public class Resource {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -31,10 +33,18 @@ public class Resource {
     @OneToMany(mappedBy = "resource", fetch = FetchType.EAGER)
     private Set<Activity> activities;
 
+    /**
+     * List of activities held at the resource
+     */
+    @JsonProperty
+    @OneToMany(mappedBy = "resource", fetch = FetchType.EAGER)
+    private Set<ActivityType> activityTypes;
+
     @CreationTimestamp
-    private Date created_at;
+    private Date createdAt;
+
     @UpdateTimestamp
-    private Date updated_at;
+    private Date updatedAt;
 
     public String getName() {
         return name;
@@ -44,7 +54,7 @@ public class Resource {
         this.name = name;
     }
 
-    @JsonIgnore()
+    @JsonIgnoreProperties("activityType")
     public Set<Activity> getActivities() {
         return activities;
     }
@@ -55,5 +65,24 @@ public class Resource {
 
     public Long getId() {
         return id;
+    }
+
+    @JsonIgnoreProperties("resource")
+    public Set<ActivityType> getActivityTypes() {
+        return activityTypes;
+    }
+
+    public void setActivityTypes(Set<ActivityType> activityTypes) {
+        this.activityTypes = activityTypes;
+    }
+
+    public void addActivityType(ActivityType type) {
+      activityTypes.add(type);
+      type.setResource(this);
+    }
+
+    public void removeActivityType(ActivityType type) {
+      activityTypes.remove(type);
+      type.setResource(null);
     }
 }

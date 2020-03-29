@@ -1,7 +1,7 @@
 create table sports_centre_management.facility_timetable_resources
 (
-    facility_timetable_id int8 not null,
-    resources_id          int8 not null
+    facility_timetable_id bigserial not null,
+    resources_id          int8                  not null
 );
 alter table if exists sports_centre_management.facility_timetable_resources
     add constraint UK_1f65pw0gxnckhfjs0bmcxykoj unique (resources_id);
