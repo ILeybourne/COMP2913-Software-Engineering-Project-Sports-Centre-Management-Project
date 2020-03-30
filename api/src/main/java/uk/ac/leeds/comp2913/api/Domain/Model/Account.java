@@ -28,7 +28,7 @@ public class Account {
     @OneToOne(mappedBy = "account",fetch = FetchType.EAGER)
     private Membership Memberships;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 

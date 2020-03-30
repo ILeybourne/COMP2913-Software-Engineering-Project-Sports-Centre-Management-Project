@@ -12,7 +12,7 @@ import javax.persistence.*;
  * Start date and end date (based on duration of chosen membership)
 */
 @Entity
-public class Membership extends Sale {
+ public class Membership extends Sale {
 
     @CreationTimestamp
     private Date created_at;
@@ -95,5 +95,10 @@ public class Membership extends Sale {
 
     public void setEndDate(Date endDate) {
       this.endDate = endDate;
+    }
+
+    @Override
+    public String getName() {
+        return "Membership " + this.getMembershipType();
     }
 }
