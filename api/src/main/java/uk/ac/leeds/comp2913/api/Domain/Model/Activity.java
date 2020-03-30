@@ -48,6 +48,7 @@ public class Activity {
     this.name = activity.getName();
     this.cost = activity.getCost();
     this.resource = activity.getResource();
+    this.regularSession = activity.getRegularSession();
   }
 
   @Id
@@ -204,6 +205,8 @@ public class Activity {
   public static Activity createFromLastScheduled(Activity last_scheduled) {
     RegularSession regularsession = last_scheduled.getRegularSession();
     Integer interval = regularsession.getInterval();
+    //Date start1 = last_scheduled.getStartTime();
+    //Date end2 = last_scheduled.getEndTime();
     Date start = addIntervalToDate(last_scheduled.getStartTime(), interval);
     Date end = addIntervalToDate(last_scheduled.getEndTime(), interval);
     Activity activity = new Activity(start, end, last_scheduled);
@@ -211,8 +214,8 @@ public class Activity {
   }
 
   public static Date addIntervalToDate(Date date, Integer interval){
-    Date oldDate = date;
-    Date newDate = new Date(oldDate.getTime()+(interval*(24*60*60*1000))); //Math at the end converts a day into milliseconds
+    //Date oldDate = date;
+    Date newDate = new Date(date.getTime()+((24*60*60*1000) * interval)); //Math at the end converts a day into milliseconds
     return newDate;
   }
 }

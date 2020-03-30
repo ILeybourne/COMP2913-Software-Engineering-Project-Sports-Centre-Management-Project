@@ -9,5 +9,9 @@ import java.util.Optional;
 
 public interface ActivityService {
   Page<Activity> getActivities(Pageable pageable);
-  ActivityDTO getCapacityForActivityId(Long activityId);
+
+ // ActivityDTO getCapacityForActivityId(Long activityId);
+
+  void schedule();
+
 }

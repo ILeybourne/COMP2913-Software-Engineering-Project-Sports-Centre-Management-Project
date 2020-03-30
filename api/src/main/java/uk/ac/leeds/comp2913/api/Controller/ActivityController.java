@@ -61,6 +61,12 @@ return    activityRepository.findAll(pageable);
   }
 
 
+  @GetMapping("/activities/test")
+  public List<Activity> getActivitiesWithReg() {
+    return activityRepository.findAllWithRegularSession();
+  }
+
+
   //schedule an activity
   //Pulls data from activity type, only start and end type is pulled from json
   //need to look at deducting current capacity when bookings are made...

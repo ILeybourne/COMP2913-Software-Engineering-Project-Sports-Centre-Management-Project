@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
@@ -19,7 +20,6 @@ import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 @Service
 public class ActivityServiceImpl implements ActivityService {
   private final ActivityRepository activityRepository;
@@ -38,15 +38,15 @@ public class ActivityServiceImpl implements ActivityService {
     return activityRepository.findAll(pageable);
   }
 
-  @Override
-  public ActivityDTO getCapacityForActivityId(Long activityId) {
-    return activityRepository.calculateCurrentCapacity(activityId);
-  }
+ //@Override
+ //public ActivityDTO getCapacityForActivityId(Long activityId) {
+ //  return activityRepository.calculateCurrentCapacity(activityId);
+ //}
 
   //*TODO daiy*/
-  @Scheduled(cron = "0 0 1 * * MON") //Every Monday at 1am
-  //@Scheduled(fixedRate = 5000)
-  //Transactional
+  //@Scheduled(cron = "0 0 1 * * MON") //Every Monday at 1am
+  @Scheduled(fixedDelay=5000)  //
+  @Transactional
   public void schedule() {
     // // Log to stdout
     List<RegularSession> regularSessions = regularSessionRepository.findAll(); //Find all currently running regular sessions
@@ -58,11 +58,13 @@ public class ActivityServiceImpl implements ActivityService {
         this.activityRepository.save(new_activity);
 
         Set<Booking> last_activity_bookings = activity.getBookings();
+        if (last_activity_bookings != null){
         for (Booking booking : last_activity_bookings) {
           if (booking.getRegularSession() != (null)) {
             Booking new_booking = Booking.createBookingFromRegularSession(new_activity, booking);
             this.bookingRepository.save(new_booking);
           }
+        }
         }
       }
     }

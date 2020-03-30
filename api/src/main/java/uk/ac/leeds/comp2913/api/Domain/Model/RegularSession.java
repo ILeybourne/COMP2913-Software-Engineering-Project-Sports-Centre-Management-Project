@@ -18,6 +18,11 @@ public class RegularSession {
     activity.setRegularSession(this);
   }
 
+  public RegularSession(Activity activity, Integer interval){
+    activity.setRegularSession(this);
+    this.interval = interval;
+  }
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
