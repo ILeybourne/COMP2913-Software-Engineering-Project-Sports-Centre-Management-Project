@@ -108,7 +108,7 @@ public class Activity {
 
   //IF an activity is a regular session, then it will hold the ID of the regular session
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "regular_session_id")
+  @JoinColumn(name = "regular_session_id", nullable = true)
   private RegularSession  regularSession;
 
   public Long getId() {

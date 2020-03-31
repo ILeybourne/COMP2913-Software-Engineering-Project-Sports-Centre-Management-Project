@@ -1,6 +1,8 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -32,12 +34,25 @@ public class Booking extends Sale {
   private Activity activity;
 
 
-
   @ManyToOne(fetch = FetchType.EAGER)
-  private RegularSession regularSession;
+  @JoinColumn(name = "regular_session_id", nullable = true)
+  private RegularSession  regularSession;
 
 
   public Booking() {
+  }
+
+  @JsonCreator
+  public Booking(@JsonProperty("account") Account account,
+                  @JsonProperty("regularSession") RegularSession regularSession,
+                  @JsonProperty("activity") Activity activity,
+                  @JsonProperty("participants") Integer participants,
+                 @JsonProperty("amount") BigDecimal amount) {
+    this.account = account;
+    this.regularSession = regularSession;
+    this.activity = activity;
+    this.participants = participants;
+    this.setAmount(amount);
   }
 
   public Booking(BigDecimal amount, Account account, Integer participants, Activity activity, RegularSession regularSession) {
@@ -47,7 +62,6 @@ public class Booking extends Sale {
     this.account = account;
     this.setAmount(amount);
   }
-
 
   public Date getCreatedAt() {
     return created_at;
@@ -65,6 +79,7 @@ public class Booking extends Sale {
     this.updated_at = updated_at;
   }
 
+  @JsonIgnoreProperties("bookings")
   public Account getAccount() {
     return account;
   }
@@ -90,6 +105,7 @@ public class Booking extends Sale {
     this.participants = participants;
   }
 
+  @JsonIgnoreProperties("activities")
   public RegularSession getRegularSession() {
     return regularSession;
   }
@@ -100,7 +116,7 @@ public class Booking extends Sale {
 
   public static Booking createBookingFromRegularSession(Activity activity, Booking booking){
     Integer participants = 1;
-    BigDecimal cost = activity.getCost().multiply(new BigDecimal(0.3));
+    BigDecimal cost = activity.getCost().multiply(new BigDecimal(0.7));
     Account account = booking.getAccount();
     RegularSession regularSession = activity.getRegularSession();
     Booking newBooking = new Booking(cost, account, participants, activity, regularSession);

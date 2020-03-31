@@ -45,13 +45,7 @@ public class ActivityController {
    */
   @GetMapping("/activities")
   public Page<Activity> getActivities(Pageable pageable) {
-return    activityRepository.findAll(pageable);
-//    List<ActivityDTO> activityDTOList = new LinkedList<>();
-//    this.activityService.getActivities(pageable).map(activity -> {
-//      ActivityDTO activityDTO = activityService.getCapacityForActivityId(activity.getId());
-//      return activityDTOList.add(activityDTO);
-//    });
-//    return activityDTOList;
+    return activityRepository.findAll(pageable);
   }
 
   //get scheduled activities by resource ID

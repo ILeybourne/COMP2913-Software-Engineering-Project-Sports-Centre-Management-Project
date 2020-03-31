@@ -19,17 +19,13 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, Custo
   @Query("select a from Activity a inner join fetch a.resource r")
   Collection<Activity> findAllWithResources();
 
- // @Query("select a.regularSession.id as regular_session_id, MAX(a.startTime) from Activity a " +
- //     //"         LEFT OUTER JOIN RegularSession on Activity.regularSession.id = RegularSession.id " +
- //     "group by a.regularSession")
- // List<Activity> findAllWithRegularSession();
-
   @Query("select a from Activity a " +
       "where a.startTime = (SELECT MAX(aa.startTime)" +
       "from Activity aa where aa.regularSession.id = a.regularSession.id)")
   List<Activity> findAllWithRegularSession();
 
 
-
+  //@Query("update Activity set RegularSession = null where RegularSession.id = :regular_session_id")
+  //void removeRegularSessionsFromActivity(Long regular_session_id);
 
 }

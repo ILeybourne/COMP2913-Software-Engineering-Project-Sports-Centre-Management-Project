@@ -38,14 +38,13 @@ public class ActivityServiceImpl implements ActivityService {
     return activityRepository.findAll(pageable);
   }
 
- //@Override
- //public ActivityDTO getCapacityForActivityId(Long activityId) {
- //  return activityRepository.calculateCurrentCapacity(activityId);
- //}
+  /**
+   * Scheduled method to automatically create and post regular sessions and their bookings
+   * Currently disabled during development
+   */
 
-  //*TODO daiy*/
   //@Scheduled(cron = "0 0 1 * * MON") //Every Monday at 1am
-  @Scheduled(fixedDelay=5000)  //
+  @Scheduled(fixedDelay=5000)  // EVERY 5 Seconds: Used for testing
   @Transactional
   public void schedule() {
     // // Log to stdout
