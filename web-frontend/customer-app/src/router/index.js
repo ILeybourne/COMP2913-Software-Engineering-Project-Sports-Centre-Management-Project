@@ -11,6 +11,7 @@ import { authGuard } from "../auth/helpers/auth.guard";
 import ExampleServerSide from "../views/ExampleServerSide";
 import BookingsTablePage from "../views/BookingsTablePage";
 import ActivitiesTablePage from "../views/ActivitiesTablePage";
+import WeeklyUsagePage from "../views/WeeklyUsagePage";
 
 Vue.use(VueRouter);
 
@@ -85,6 +86,12 @@ const routes = [
     path: "/activitiestable",
     name: "ActivitiesTable",
     component: ActivitiesTablePage,
+    beforeEnter: authGuard
+  },
+  {
+    path: "/weeklyusage",
+    name: "WeeklyUsageGraph",
+    component: WeeklyUsagePage,
     beforeEnter: authGuard
   }
 ];

@@ -4,7 +4,7 @@
     <v-data-table
       v-model="selected"
       :headers="headers"
-      :items="bookings"
+      :items="formattedData"
       :single-select="true"
       item-key="name"
       show-select
@@ -40,9 +40,7 @@ const addZero = value => ("0" + value).slice(-2);
 const formatDate = value => {
   if (value) {
     const dt = new Date(value);
-    return `${addZero(dt.getDate())}/${addZero(
-      dt.getMonth() + 1
-    )}/${dt.getFullYear()}`;
+    return `${addZero(dt.getHours())}:${addZero(dt.getMinutes())}`;
   }
   return "";
 };
@@ -62,6 +60,8 @@ export default {
       updatedAt: 1584288692000
       * */
       bookings: [],
+      singleSelect: false,
+      selected: [],
       headers: [
         {
           value: "id",
@@ -69,10 +69,9 @@ export default {
           sortable: true
         },
         {
-          value: "createdAt",
+          value: "formattedStartTime",
           text: "Booking Time",
-          sortable: true,
-          format: formatDate
+          sortable: true
         },
         {
           value: "activity.name",
@@ -94,12 +93,19 @@ export default {
           text: "Receipt",
           sortable: false
         }
-      ],
-      singleSelect: false,
-      selected: []
+      ]
     };
   },
-  computed: {},
+  computed: {
+    formattedData() {
+      return this.bookings.map(booking => {
+        return {
+          ...booking,
+          formattedStartTime: formatDate(booking.activity.startTime)
+        };
+      });
+    }
+  },
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     async getBooking() {

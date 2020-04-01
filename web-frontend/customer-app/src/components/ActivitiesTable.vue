@@ -1,6 +1,24 @@
 <template>
   <div id="app">
     <h3 class="title">Activities Table</h3>
+    <v-data-table
+      v-model="selected"
+      :headers="headers"
+      :items="formattedData"
+      :single-select="true"
+      item-key="name"
+      show-select
+      class="elevation-1"
+    >
+      <template v-slot:top>
+        <v-switch
+          v-model="singleSelect"
+          label="Single select"
+          class="pa-3"
+        ></v-switch>
+      </template>
+    </v-data-table>
+
     <b-modal id="edit-Activity-modal" title="Create Activity" hide-footer>
       <div class="d-flex justify-content-between">
         <b-button
@@ -16,27 +34,19 @@
 
 <style scoped></style>
 <script>
-import orderBy from "lodash.orderby";
-
 const addZero = value => ("0" + value).slice(-2);
 
 const formatDate = value => {
   if (value) {
     const dt = new Date(value);
-    return `${addZero(dt.getDate())}/${addZero(
-      dt.getMonth() + 1
-    )}/${dt.getFullYear()}`;
+    return `${addZero(dt.getHours())}:${addZero(dt.getMinutes())}`;
   }
   return "";
 };
 
-const dummyData = [];
-
 export default {
   name: "ActivitiesTable",
-  components: {
-
-  },
+  components: {},
   // ItemsPerPageDropdown
   data: function() {
     return {
@@ -49,20 +59,19 @@ export default {
         updatedAt: 1584288692000
         * */
       activities: [],
-      headerFields: [
+      headers: [
         {
           value: "id",
           text: "Booking reference",
           sortable: true
         },
         {
-          value: "createdAt",
+          value: "formattedStartAt",
           text: "Activity Time",
-          sortable: true,
-          format: formatDate
+          sortable: true
         },
         {
-          value: "activity",
+          value: "name",
           text: "Activity",
           sortable: true
         },
@@ -70,17 +79,22 @@ export default {
           value: "receipt",
           text: "Receipt",
           sortable: false
-        },
-        "__slot:actions"
+        }
       ],
-      // headerFields: ["Account", "Activity Time", "Activity Reference", "Receipt"],
-      data: dummyData.slice(0, 10),
-      itemsPerPageCss: {
-        select: "item-per-page-dropdown"
-      }
+      singleSelect: false,
+      selected: []
     };
   },
-  computed: {},
+  computed: {
+    formattedData() {
+      return this.activities.map(activity => {
+        return {
+          ...activity,
+          formattedStartAt: formatDate(activity.startTime)
+        };
+      });
+    }
+  },
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     async getActivity() {
@@ -92,33 +106,6 @@ export default {
         }
       });
       this.activities = data.content;
-    },
-    dtUpdateSort: function({ sortField, sort }) {
-      const sortedData = orderBy(dummyData, [sortField], [sort]);
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = this.currentPage * this.itemsPerPage;
-      this.data = sortedData.slice(start, end);
-      console.log("load data based on new sort", this.currentPage);
-    },
-    updateItemsPerPage: function(itemsPerPage) {
-      this.itemsPerPage = itemsPerPage;
-      if (itemsPerPage >= dummyData.length) {
-        this.data = dummyData;
-      } else {
-        this.data = dummyData.slice(0, itemsPerPage);
-      }
-      console.log("load data with new items per page number", itemsPerPage);
-    },
-    changePage: function(currentPage) {
-      this.currentPage = currentPage;
-      const start = (currentPage - 1) * this.itemsPerPage;
-      const end = currentPage * this.itemsPerPage;
-      this.data = dummyData.slice(start, end);
-      console.log("load data for the new page", currentPage);
-    },
-    updateCurrentPage: function(currentPage) {
-      this.currentPage = currentPage;
-      console.log("update current page without need to load data", currentPage);
     },
     showCancel() {
       this.$bvModal.show("edit-Activity-modal");
