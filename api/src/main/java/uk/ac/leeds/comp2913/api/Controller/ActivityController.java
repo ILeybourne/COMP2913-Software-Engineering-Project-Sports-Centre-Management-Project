@@ -7,11 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityTypeRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
+import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.RegularSessionRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -21,19 +21,16 @@ public class ActivityController {
 
   private final ActivityRepository activityRepository;
 
-  private final ActivityTypeRepository activityTypeRepository;
-
-  private final BookingRepository bookingRepository;
-
   private final ActivityService activityService;
+
+  private final RegularSessionRepository regularSessionRepository;
 
 
   @Autowired
-  public ActivityController(ActivityRepository activityRepository, ActivityTypeRepository activityTypeRepository, BookingRepository bookingRepository, ActivityService activityService) {
+  public ActivityController(ActivityRepository activityRepository,  ActivityService activityService, RegularSessionRepository regularSessionRepository) {
     this.activityRepository = activityRepository;
-    this.activityTypeRepository = activityTypeRepository;
-    this.bookingRepository = bookingRepository;
     this.activityService = activityService;
+    this.regularSessionRepository = regularSessionRepository;
   }
 
 
@@ -54,19 +51,11 @@ public class ActivityController {
     return activityRepository.findByResourceId(resource_id);
   }
 
-
-  @GetMapping("/activities/test")
-  public List<Activity> getActivitiesWithReg() {
-    return activityRepository.findAllWithRegularSession();
-  }
-
-
-  //schedule an activity
-  //Pulls data from activity type, only start and end type is pulled from json
-  //need to look at deducting current capacity when bookings are made...
-  @PostMapping("/activities")
-  public Activity createActivity(@Valid @RequestBody Activity activity) {
-    return activityRepository.save(activity);
+  //schedule an activity and/or make into a regular session
+  @PostMapping("/activities/{activity_type_id}")
+  public Activity createActivity(@Valid @RequestBody ActivityDTO activity, @PathVariable Long activity_type_id) {
+    Activity a = new Activity();
+    return activityService.createNewActivity(a, activity_type_id, activity);
   }
 
 
@@ -91,14 +80,19 @@ public class ActivityController {
   //delete scheduled activity
   @DeleteMapping("/activities/{activity_id}")
   public ResponseEntity<?> deleteActivity(@PathVariable Long activity_id) {
+  return activityService.deleteActivity(activity_id);
+  }
 
+  //delete regular session, therefore stop activities from repeating
+  @DeleteMapping("/activities/cancelregularsession/{regular_session_id}")
+  public ResponseEntity<?> deleteRegularSession(@PathVariable Long regular_session_id) {
     try {
-      activityRepository.deleteById(activity_id);
+      regularSessionRepository.deleteById(regular_session_id);
       return ResponseEntity
           .noContent()
           .build();
     } catch (EmptyResultDataAccessException e) {
-      throw new ResourceNotFoundException("Activity not found with that ID " + activity_id);
+      throw new ResourceNotFoundException("Regular Session not found with that ID " + regular_session_id);
     }
   }
 }

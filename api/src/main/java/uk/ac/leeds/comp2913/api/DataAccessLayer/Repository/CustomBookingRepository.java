@@ -7,5 +7,5 @@ import java.util.Collection;
 
 public interface CustomBookingRepository {
 
- void removeRegularSessionFromAccountBookings(Long regular_session_id, Long account_id);
+ void unsubscribeFromRegularSession(Long regular_session_id, Long account_id);
 }

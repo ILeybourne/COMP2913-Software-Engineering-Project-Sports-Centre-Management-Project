@@ -23,6 +23,4 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, CustomB
   @Override
   void deleteById(Long aLong);
 
-  //@Query("update Booking set regularSession.id = null where regularSession.id = :regular_session_id and account.id = :account_id")
-  //void removeRegularSessionFromAccountBookings(Long regular_session_id, Long account_id);
 }

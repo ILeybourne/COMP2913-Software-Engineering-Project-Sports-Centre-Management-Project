@@ -33,34 +33,34 @@ public class Booking extends Sale {
   @JoinColumn(name = "activity_id")
   private Activity activity;
 
-
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "regular_session_id", nullable = true)
   private RegularSession  regularSession;
 
-
   public Booking() {
   }
 
-  @JsonCreator
-  public Booking(@JsonProperty("account") Account account,
-                  @JsonProperty("regularSession") RegularSession regularSession,
-                  @JsonProperty("activity") Activity activity,
-                  @JsonProperty("participants") Integer participants,
-                 @JsonProperty("amount") BigDecimal amount) {
-    this.account = account;
-    this.regularSession = regularSession;
-    this.activity = activity;
-    this.participants = participants;
-    this.setAmount(amount);
+  public static Booking createBookingFromRegularSession(Activity activity, Booking booking){
+    Booking b = new Booking();
+    b.setActivity(activity);
+    b.setRegularSession(booking.getRegularSession());
+    b.setParticipants(booking.getParticipants());
+    b.setAccount(booking.getAccount());
+    b.amount = booking.getAmount();
+    return b;
   }
 
-  public Booking(BigDecimal amount, Account account, Integer participants, Activity activity, RegularSession regularSession) {
-    this.activity = activity;
-    this.participants = participants;
-    this.regularSession = regularSession;
-    this.account = account;
-    this.setAmount(amount);
+  @Override
+  public void setAmount(BigDecimal amount){
+    if(regularSession != null){
+      this.amount = (calculateRegularSessionAmount(amount));
+    } else {
+      this.amount = (amount);
+    }
+  }
+
+  public BigDecimal calculateRegularSessionAmount(BigDecimal originalAmount){
+    return originalAmount.multiply(BigDecimal.valueOf(0.7));
   }
 
   public Date getCreatedAt() {
@@ -112,14 +112,5 @@ public class Booking extends Sale {
 
   public void setRegularSession(RegularSession regularSession) {
     this.regularSession = regularSession;
-  }
-
-  public static Booking createBookingFromRegularSession(Activity activity, Booking booking){
-    Integer participants = 1;
-    BigDecimal cost = activity.getCost().multiply(new BigDecimal(0.7));
-    Account account = booking.getAccount();
-    RegularSession regularSession = activity.getRegularSession();
-    Booking newBooking = new Booking(cost, account, participants, activity, regularSession);
-    return newBooking;
   }
 }

@@ -7,14 +7,9 @@ import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
-
 import javax.persistence.*;
-
 
 /**
  * This class represents scheduled activities available to the members of the sports center that they can book onto
@@ -24,31 +19,8 @@ import javax.persistence.*;
  */
 @Entity
 public class Activity {
+
   public Activity() {
-  }
-
-  @JsonCreator
-  public Activity(@JsonProperty("startTime") Date startTime,
-                  @JsonProperty("endTimes") Date endTime,
-                  @JsonProperty("activityType") ActivityType activityType,
-                  @JsonProperty("resource") Resource resource) {
-    this.startTime = startTime;
-    this.endTime = endTime;
-    this.activityType = activityType;
-    this.name = activityType.getName();
-    this.cost = activityType.getCost();
-    this.resource = resource;
-  }
-
-  //Constructor for auto posting regular sessions
-  public Activity(Date startTime, Date endTime, Activity activity) {
-    this.startTime = startTime;
-    this.endTime = endTime;
-    this.activityType = activity.getActivityType();
-    this.name = activity.getName();
-    this.cost = activity.getCost();
-    this.resource = activity.getResource();
-    this.regularSession = activity.getRegularSession();
   }
 
   @Id
@@ -57,10 +29,7 @@ public class Activity {
 
   /**
    * Social, when true the activity is open for individual members to book onto
-   * When false, the activity is private to the booker.
-   * For example, squash court has a total capacity of 4, when booking a one hour session and social is true
-   * 4 members can book on
-   * when false, one member can book the full squash court for the one hour session
+   * When false, the activity is private to the booker (like booking out a full squash court)
    */
   private Boolean social;
 
@@ -79,14 +48,12 @@ public class Activity {
   @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER)
   private Set<Booking> bookings;
 
-
   /**
    * Which resource the activity needs to take place
    */
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "resource_id", nullable = false)
   private Resource resource;
-
 
   /**
    * Which activity type the activity belongs to
@@ -110,6 +77,37 @@ public class Activity {
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "regular_session_id", nullable = true)
   private RegularSession  regularSession;
+
+
+  //Method used within the automatic posting of regular sessions
+  public static Activity createFromLastScheduled(Activity last_scheduled) {
+    Activity activity = new Activity();
+    Integer interval = last_scheduled.getRegularSession().getInterval();
+    activity.setRegularSession(last_scheduled.getRegularSession());
+    activity.setActivityType(last_scheduled.getActivityType());
+    activity.setStartTime(addIntervalToDate(last_scheduled.getStartTime(), interval));
+    activity.setEndTime(addIntervalToDate(last_scheduled.getEndTime(), interval));
+    activity.setCost(last_scheduled.getCost());
+    activity.setResource(last_scheduled.getResource());
+    return activity;
+  }
+
+  public static Date addIntervalToDate(Date date, Integer interval){
+    Date newDate = new Date(date.getTime()+((24*60*60*1000) * interval)); //Math at the end converts a day into milliseconds
+    return newDate;
+  }
+
+  //Clones data from activity_type to this activity
+  public void setActivityType(ActivityType activityType) {
+    this.activityType = activityType;
+    this.name = activityType.getName();
+    this.resource = activityType.getResource();
+    this.cost = activityType.getCost();
+  }
+
+  public ActivityType getActivityType() {
+    return activityType;
+  }
 
   public Long getId() {
     return id;
@@ -185,14 +183,6 @@ public class Activity {
     this.social = social;
   }
 
-  public ActivityType getActivityType() {
-    return activityType;
-  }
-
-  public void setActivityType(ActivityType activityType) {
-    this.activityType = activityType;
-  }
-
   @JsonIgnoreProperties({"activities"})
   public RegularSession getRegularSession() {
     return regularSession;
@@ -202,20 +192,4 @@ public class Activity {
     this.regularSession = regularSession;
   }
 
-  public static Activity createFromLastScheduled(Activity last_scheduled) {
-    RegularSession regularsession = last_scheduled.getRegularSession();
-    Integer interval = regularsession.getInterval();
-    //Date start1 = last_scheduled.getStartTime();
-    //Date end2 = last_scheduled.getEndTime();
-    Date start = addIntervalToDate(last_scheduled.getStartTime(), interval);
-    Date end = addIntervalToDate(last_scheduled.getEndTime(), interval);
-    Activity activity = new Activity(start, end, last_scheduled);
-    return activity;
-  }
-
-  public static Date addIntervalToDate(Date date, Integer interval){
-    //Date oldDate = date;
-    Date newDate = new Date(date.getTime()+((24*60*60*1000) * interval)); //Math at the end converts a day into milliseconds
-    return newDate;
-  }
 }
