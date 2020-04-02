@@ -84,4 +84,6 @@ public abstract class Sale {
   public void setReceipt(Receipt receipt) {
     this.receipt = receipt;
   }
+
+  public abstract String getName();
 }

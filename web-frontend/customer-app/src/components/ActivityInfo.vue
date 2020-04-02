@@ -40,8 +40,6 @@ export default {
   name: "ActivityInfo",
   props: { activity: Object },
   data() {
-    console.log("this");
-    console.log(this);
     return {
       link: {
         name: "BookingPage",

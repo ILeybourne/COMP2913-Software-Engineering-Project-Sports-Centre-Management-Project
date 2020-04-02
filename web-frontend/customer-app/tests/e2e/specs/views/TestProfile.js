@@ -1,3 +1,1 @@
-describe("TestProfile", () => {
-
-});
+describe("TestProfile", () => {});

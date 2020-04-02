@@ -125,6 +125,7 @@ label {
 
 <script>
 import axios from "axios";
+// import { getInstance } from "../services/auth.service";
 
 export default {
   name: "BookingInformation",
@@ -155,27 +156,28 @@ export default {
   },
   computed: {},
   methods: {
-    setFormDefaults(e) {
-      console.log("form load");
-      console.log(e);
-    },
+    setFormDefaults() {},
 
     getUserType(e) {
       this.userType = e.toElement.name;
     },
 
-    validateFacility(){
-      this.facilityValid = !(this.$data.selectedFacility == null ||
-        this.$data.selectedFacility === "Please Select");
+    validateFacility() {
+      this.facilityValid = !(
+        this.$data.selectedFacility == null ||
+        this.$data.selectedFacility === "Please Select"
+      );
     },
-    validateActivity(){
-      this.activitiesValid = !(this.$data.selectedActivity == null ||
-        this.$data.selectedActivity === "Please Select");
+    validateActivity() {
+      this.activitiesValid = !(
+        this.$data.selectedActivity == null ||
+        this.$data.selectedActivity === "Please Select"
+      );
     },
-    validateDate(){
+    validateDate() {
       this.dateValid = this.$data.date != null;
     },
-    validateTime(){
+    validateTime() {
       this.timeValid = this.$data.selectedTime != null;
     },
 
@@ -188,13 +190,9 @@ export default {
 
     submitForm(e) {
       //TODO Validate before showing 2nd form
-      console.log("e");
-      console.log(e);
       e.preventDefault();
       this.componentWidth = 60;
       //TODO send array of data to parent
-      console.log("this.$data");
-      console.log(this.$data);
       if (
         !(
           this.$data.selectedFacility == null ||
@@ -219,36 +217,17 @@ export default {
     },
 
     async getFacilities() {
-      const token = await this.$auth.getTokenSilently();
-      const { data } = await axios.get(
-        "http://localhost:8000/resources",
-
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      const { data } = await this.$http.get("/resources");
       return data;
     },
 
     async getActivitiesForFacility() {
-      try {
-        const token = await this.$auth.getTokenSilently();
-        const facilityId = this.$route.query.facilityId;
+      const facilityId = this.$route.query.facilityId;
 
-        const { data } = await axios.get(
-          "http://localhost:8000/resources/" + facilityId + "/activities",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-        return data;
-      } catch (e) {
-        console.log(e);
-      }
+      const { data } = await axios.get(
+        "/resources/" + facilityId + "/activities"
+      );
+      return data;
     },
 
     isEmpty(obj) {
@@ -269,55 +248,45 @@ export default {
       let facilities = [];
       let activities = [];
       if (!this.isEmpty(this.$route.query)) {
-        try {
-          await axios
-            .all([this.getFacilities(), this.getActivitiesForFacility()])
-            .then(responseArray => {
-              //this will be executed only when all requests are complete
-              facilities = responseArray[0];
-              activities = responseArray[1];
-              this.activities = activities;
-            });
+        await axios
+          .all([this.getFacilities(), this.getActivitiesForFacility()])
+          .then(responseArray => {
+            //this will be executed only when all requests are complete
+            facilities = responseArray[0];
+            activities = responseArray[1];
+            this.activities = activities;
+          });
 
-          this.selectedFacility = facilities.content.find(
-            x => x.id == facilityId
-          ).name;
-          this.setActivitiesArray();
+        this.selectedFacility = facilities.content.find(
+          x => x.id == facilityId
+        ).name;
+        this.setActivitiesArray();
 
-          this.selectedActivity = activities.find(x => x.id == activityId).name;
-          this.selectedActivityId = activityId;
+        this.selectedActivity = activities.find(x => x.id == activityId).name;
+        this.selectedActivityId = activityId;
 
-          let selectedDateUnix = activities.find(x => x.id == activityId)
-            .startTime;
+        let selectedDateUnix = activities.find(x => x.id == activityId)
+          .startTime;
 
-          let selectedDate = new Date(selectedDateUnix);
-          const year = selectedDate.getFullYear();
-          const month = "0" + parseInt(selectedDate.getMonth() + 1).toString();
-          const date = "0" + selectedDate.getDate();
-          const hours = "0" + selectedDate.getHours();
-          const mins = "0" + selectedDate.getMinutes();
-          var formattedDate =
-            year + "-" + month.substr(-2) + "-" + date.substr(-2);
-          var forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
-          this.date = formattedDate;
+        let selectedDate = new Date(selectedDateUnix);
+        const year = selectedDate.getFullYear();
+        const month = "0" + parseInt(selectedDate.getMonth() + 1).toString();
+        const date = "0" + selectedDate.getDate();
+        const hours = "0" + selectedDate.getHours();
+        const mins = "0" + selectedDate.getMinutes();
+        var formattedDate =
+          year + "-" + month.substr(-2) + "-" + date.substr(-2);
+        var forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
+        this.date = formattedDate;
 
-          //TODO loop through same named activities in same facility and append times to time array
-          this.time.push(forrmattedTime);
-          this.selectedTime = forrmattedTime;
-        } catch (e) {
-          console.log(e);
-        }
+        //TODO loop through same named activities in same facility and append times to time array
+        this.time.push(forrmattedTime);
+        this.selectedTime = forrmattedTime;
       }
     },
 
     async getResourceContent() {
-      const token = await this.$auth.getTokenSilently();
-
-      const { data } = await axios.get("http://localhost:8000/resources", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const { data } = await this.$http.get("/resources");
 
       const content = data.content;
       const facilities = this.facility;
@@ -331,28 +300,18 @@ export default {
     },
 
     async getActivities() {
-      const token = await this.$auth.getTokenSilently();
-      const { data } = await axios.get("http://localhost:8000/activities", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const { data } = await this.$http.get("/activities");
       this.activities = data.content;
     },
 
     setActivitiesArray() {
       let activities = this.activities;
       let activityArray = [{ value: null, text: "Please Select" }];
-      try {
-        for (const activity of activities) {
-          if (activity.resource.name == this.selectedFacility) {
-            activityArray.push({ value: activity.id, text: activity.name });
-          }
+      for (const activity of activities) {
+        if (activity.resource.name == this.selectedFacility) {
+          activityArray.push({ value: activity.id, text: activity.name });
         }
-      } catch (e) {
-        console.log(e);
       }
-      console.log(activityArray);
       this.activity = activityArray;
     },
 
@@ -389,6 +348,7 @@ export default {
     }
   },
   async mounted() {
+    await this.$auth.created;
     await this.getResourceContent();
     this.fillByQuery();
     this.getActivities();

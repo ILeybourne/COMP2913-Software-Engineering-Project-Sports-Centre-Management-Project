@@ -183,12 +183,8 @@ export default {
 
     submitCustomerDetails(e) {
       //TODO Validate before showing 2nd form
-      console.log("e");
-      console.log(e);
       e.preventDefault();
       //TODO send array of data to parent
-      console.log("this.$data");
-      console.log(this.$data);
       if (
         this.$data.name !== "" &&
         this.$data.cardType !== "" &&

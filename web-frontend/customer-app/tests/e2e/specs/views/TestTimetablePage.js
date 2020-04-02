@@ -1,3 +1,1 @@
-describe("TestTimetablePage", () => {
-
-});
+describe("TestTimetablePage", () => {});

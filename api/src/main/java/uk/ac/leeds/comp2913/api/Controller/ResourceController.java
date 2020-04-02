@@ -1,64 +1,80 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ResourceRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
-import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.Domain.Service.ResourceService;
 
+/**
+ * TODO: @CHORE, annotate with Swagger API documentation
+ * TODO: @CHORE, move domain logic into a service
+ * TODO: @CHORE, add HAL to all endpoints, with links to where the client can find
+ * *          the associated resource, account and activity  for the booking
+ * TODO: @CHORE, add hasAuthority checks to all endpoints
+ * <p>
+ * TODO: @FEATURE, file upload for image of facility
+ */
 @RestController
 @RequestMapping("/resources")
-@CrossOrigin(value = "http://localhost:8080")
 public class ResourceController {
 
-    private final ResourceRepository resourceRepository;
+    Logger logger = LoggerFactory.getLogger(ResourceController.class);
 
-    public ResourceController(ResourceRepository resourceRepository) {
-        this.resourceRepository = resourceRepository;
+    private final ResourceService resourceService;
+
+    public ResourceController(ResourceService resourceService) {
+        this.resourceService = resourceService;
     }
 
     //Get Resources
     @GetMapping("")
-    public Page<Resource> getResources( Pageable pageable) {
-        return resourceRepository.findAll(pageable);
+//    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
+    public Page<Resource> getResources(Pageable pageable) {
+        return resourceService.findAll(pageable);
     }
 
     @GetMapping("/{resource_id}")
-    public Resource indexResource(@PathVariable Long resource_id){
-      return resourceRepository.findById(resource_id)
-        .orElseThrow(() -> new ResourceNotFoundException("Resource not found with ID " + resource_id));
+    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
+    public Resource indexResource(@PathVariable Long resource_id) {
+        return resourceService.findById(resource_id);
     }
 
     //Post new resource
-    @PostMapping("/")
+    @PostMapping("")
+    @PreAuthorize("hasAuthority('SCOPE_create:resource')")
     public Resource createResource(@Valid @RequestBody Resource resource) {
-        return resourceRepository.save(resource);
+        return resourceService.create(resource);
     }
 
     //update resource
     @PutMapping("/{resource_id}")
+    @PreAuthorize("hasAuthority('SCOPE_update:resource')")
     public Resource updateResource(@PathVariable Long resource_id, @Valid @RequestBody Resource resourceRequest) {
-        return resourceRepository.findById(resource_id)
-                .map(resource -> {
-                    resource.setName(resourceRequest.getName());
-                    resource.setActivities(resourceRequest.getActivities());
-                    return resourceRepository.save(resource);
-                }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
+        return resourceService.update(resource_id, resourceRequest);
     }
 
     //delete resource
     @DeleteMapping("/{resource_id}")
+    @PreAuthorize("hasAuthority('SCOPE_delete:resource')")
     public ResponseEntity<?> deleteResource(@PathVariable Long resource_id) {
-        return resourceRepository.findById(resource_id)
-                .map(resource -> {
-                    resourceRepository.delete(resource);
-                    return ResponseEntity.ok().build();
-                }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
-        }
+        resourceService.deleteById(resource_id);
+        return ResponseEntity.ok()
+                .build();
+    }
 }
 

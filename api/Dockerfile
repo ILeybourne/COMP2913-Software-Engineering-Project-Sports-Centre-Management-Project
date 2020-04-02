@@ -16,24 +16,26 @@ COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-# Intall dependencies but don't package JAR
-RUN ./mvnw install -DskipTests
+## Intall dependencies but don't package JAR
+#RUN ./mvnw install -DskipTests
+#
+#ENV LOCATION=$BUILD_LOCATION/target/dependency
+#
+#RUN mkdir -p $LOCATION && (cd $LOCATION; jar -xf ../*.jar)
 
-ENV LOCATION=$BUILD_LOCATION/target/dependency
-
-RUN mkdir -p $LOCATION && (cd $LOCATION; jar -xf ../*.jar)
+RUN ./mvnw package -DskipTests
 
 # We can attah a debugger if we need via environemnt variables
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app/$ARTIFACT_NAME" ]
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app/target/$ARTIFACT_NAME" ]
 
 
 
 ########################################### PRODUCTION ENVIRONMENT
 
 
-FROM openjdk:11-jdk-alpine AS production
+FROM openjdk:11-jdk-slim AS production
 COPY --from=build /app /app
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app/app.jar" ]
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app/target/$ARTIFACT_NAME" ]
 # Set classpath and Class to run
 #ENTRYPOINT ["java","--classpath","app:app/lib/*","uk.ac.leeds.comp2913.api.ApiApplication"]
 

@@ -5,6 +5,7 @@ import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import interactionPlugin from "@fullcalendar/interaction";
 import { BPopover } from "bootstrap-vue";
 import ActivityInfo from "@/components/ActivityInfo.vue";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "Timetable",
@@ -68,7 +69,6 @@ export default {
           resources: [4]
         }
       ],
-      facilities: [],
       activities: [],
       previewActivity: {},
       selectedActivityForm: {
@@ -81,6 +81,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("facilities", ["facilities"]),
     resources() {
       return this.facilities.map(r => {
         return {
@@ -114,6 +115,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions("facilities", ["getFacilities"]),
     drawEvent(eventInfo) {
       const { event } = eventInfo;
       const { extendedProps: options } = event;
@@ -136,8 +138,6 @@ export default {
       });
       popover.$mount();
 
-      console.log(event);
-      console.log(eventInfo);
       let capacity = "";
       if (options.totalCapacity !== null) {
         capacity = ` - ${currentCapacity}/${totalCapacity}`;
@@ -146,16 +146,13 @@ export default {
     },
     activityClick(eventInfo) {
       const { event } = eventInfo;
-      const { extendedProps: options } = event;
-      console.log(options);
+      // const { extendedProps: options } = event;
       this.previewActivity = this.activities.find(
         activity => activity.id === Number(event.id)
       );
       this.$bvModal.show("preview-activity-modal");
     },
-    onEventTimeChange(a) {
-      console.log(a);
-    },
+    onEventTimeChange() {},
     onSelect(event) {
       const s = event.start.toISOString();
       this.selectedActivityForm.startTime = s.substring(0, s.length - 1);
@@ -169,70 +166,36 @@ export default {
       event.preventDefault();
       let activityType = this.selectedActivityForm.activityType;
       const activity = this.activityTypes.find(a => a.name === activityType);
-      console.log("activity");
-      console.log(activity);
 
-      try {
-        /* TODO: Validate and check server response */
-        this.selectedActivityForm.name = activityType;
-        const token = await this.$auth.getTokenSilently();
-        const body = {
-          ...this.selectedActivityForm,
-          ...activity,
-          currentCapacity: 0
-        };
-        console.log(body);
-        const { data } = await this.$http.post(
-          `/resources/${this.selectedActivityForm.resourceId}/activities`,
-          body,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
+      /* TODO: Validate and check server response */
+      this.selectedActivityForm.name = activityType;
+      const body = {
+        ...this.selectedActivityForm,
+        ...activity,
+        currentCapacity: 0
+      };
+      const { data } = await this.$http.post(
+        `/facilities/${this.selectedActivityForm.resourceId}/activities`,
+        body
+      );
 
-        console.log(data);
-
-        await this.$router.push({
-          name: "BookingPage",
-          params: {
-            facility: String,
-            activity: String
-          },
-          query: { facilityId: data.resource.id, activityId: data.id }
-        });
-      } catch (e) {
-        console.error(e);
-      }
+      await this.$router.push({
+        name: "BookingPage",
+        params: {
+          facility: String,
+          activity: String
+        },
+        query: { facilityId: data.resource.id, activityId: data.id }
+      });
     },
     async getActivities() {
-      const token = await this.$auth.getTokenSilently();
-
-      const { data } = await this.$http.get(`/timetable`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log("data");
-      console.log(data);
+      const { data } = await this.$http.get(`/timetable`);
       this.activities = data;
-    },
-    async getResources() {
-      const token = await this.$auth.getTokenSilently();
-
-      const { data } = await this.$http.get("/resources", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      this.facilities = data.content;
     }
   },
   async mounted() {
     await this.getActivities();
-    await this.getResources();
+    await this.getFacilities();
     // await timetableService.read();
   }
 };

@@ -103,7 +103,6 @@ h1 {
 </style>
 
 <script>
-import axios from "axios";
 import BookingInformation from "@/components/BookingInformation.vue";
 import GuestInformation from "@/components/GuestInformation.vue";
 import BillingInformation from "@/components/BillingInformation.vue";
@@ -161,44 +160,25 @@ export default {
   },
   methods: {
     async postAllFormData() {
-      try {
-        /* TODO: Validate and check server response */
-        const token = await this.$auth.getTokenSilently();
-        let activities = this.activitiesFromServer;
-        console.log(activities);
-        let bookedActivity = this.activitiesFromServer.find(
-          activity => activity.id == this.selectedActivityId
-        );
+      /* TODO: Validate and check server response */
+      // let activities = this.activitiesFromServer;
+      let bookedActivity = this.activitiesFromServer.find(
+        activity => activity.id == this.selectedActivityId
+      );
 
-        const body = {
-          //TODO PASS USER
-          // account: parseInt(this.$auth._uid),
-          activity: bookedActivity
-        };
-        const { data } = await this.$http.post(
-          `/bookings/`,
+      const body = {
+        // account: parseInt(this.$auth._uid),
+        activity: bookedActivity
+      };
 
-          body,
+      await this.$http.post(`/bookings/`, body);
 
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-        console.log("data");
-        console.log(data);
-
-        await this.$router.push({
-          name: "BookingPage",
-          query: { status: "success" }
-        });
-      } catch (e) {
-        console.log(e);
-      }
+      await this.$router.push({
+        name: "BookingPage",
+        query: { status: "success" }
+      });
     },
     fillPaymentInfo(value) {
-      console.log(value);
       this.nameCard = value.nameCard;
       this.cardType = value.cardType;
       this.cardNumber = value.cardNumber;
@@ -236,7 +216,6 @@ export default {
     showGuestInfo(value) {
       if (value.userType == "guest") {
         this.showGuestInfoComponent = true;
-        console.log(this.showGuestInfoComponent);
         this.selectedFacility = value.selectedFacility;
         this.selectedActivity = value.selectedActivity;
         this.selectedActivityId = value.selectedActivityId;
@@ -250,32 +229,12 @@ export default {
     },
 
     async getBookings() {
-      const token = await this.$auth.getTokenSilently();
-      const { data } = await axios.get(
-        "http://localhost:8000/bookings",
-
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      console.log("bbokings");
-      console.log(data);
+      const { data } = await this.$http.get("/bookings");
       this.bookings = data;
     },
 
     async getActivities() {
-      const token = await this.$auth.getTokenSilently();
-      const { data } = await axios.get(
-        "http://localhost:8000/activities",
-
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      const { data } = await this.$http.get("/activities");
       this.activitiesFromServer = data.content;
     }
   },

@@ -42,6 +42,7 @@ public class ActivityType {
     private Integer totalCapacity;
 
     /**
+     * TODO: shouldn't eager load
      * Which resource the activity needs to take place
      */
     @ManyToOne(fetch = FetchType.EAGER)
