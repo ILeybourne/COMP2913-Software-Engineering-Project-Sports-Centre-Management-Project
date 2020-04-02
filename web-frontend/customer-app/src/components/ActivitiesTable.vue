@@ -4,7 +4,7 @@
     <v-data-table
       v-model="selected"
       :headers="headers"
-      :items="formattedData"
+      :items="sessions"
       :single-select="true"
       item-key="name"
       show-select
@@ -34,15 +34,7 @@
 
 <style scoped></style>
 <script>
-const addZero = value => ("0" + value).slice(-2);
-
-const formatDate = value => {
-  if (value) {
-    const dt = new Date(value);
-    return `${addZero(dt.getHours())}:${addZero(dt.getMinutes())}`;
-  }
-  return "";
-};
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "ActivitiesTable",
@@ -50,15 +42,6 @@ export default {
   // ItemsPerPageDropdown
   data: function() {
     return {
-      /*
-        account: null
-        activity: null
-        createdAt: 1584288689000
-        id: 1
-        receipt: null
-        updatedAt: 1584288692000
-        * */
-      activities: [],
       headers: [
         {
           value: "id",
@@ -86,27 +69,13 @@ export default {
     };
   },
   computed: {
-    formattedData() {
-      return this.activities.map(activity => {
-        return {
-          ...activity,
-          formattedStartAt: formatDate(activity.startTime)
-        };
-      });
-    }
+    ...mapGetters("timetable", ["sessions"])
   },
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
-    async getActivity() {
-      const token = await this.$auth.getTokenSilently();
-
-      const { data } = await this.$http.get(`/activities`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      this.activities = data.content;
-    },
+    ...mapActions("timetable", {
+      getActivity: "getAllSessions"
+    }),
     showCancel() {
       this.$bvModal.show("edit-Activity-modal");
     }

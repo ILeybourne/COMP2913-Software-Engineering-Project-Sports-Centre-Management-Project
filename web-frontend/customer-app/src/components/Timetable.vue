@@ -4,19 +4,14 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import interactionPlugin from "@fullcalendar/interaction";
 import { BPopover } from "bootstrap-vue";
-import ActivityInfo from "@/components/ActivityInfo.vue";
 import { mapActions, mapGetters } from "vuex";
+import ActivityInfo from "@/components/ActivityInfo.vue";
 
 export default {
   name: "Timetable",
   components: {
     FullCalendar,
     ActivityInfo
-  },
-  props: {
-    eventData: {
-      type: Array
-    }
   },
   data() {
     return {
@@ -30,46 +25,6 @@ export default {
         center: "title",
         right: "resourceTimelineDay,resourceTimelineWeek"
       },
-      /* TODO: pull from server */
-      activityTypes: [
-        {
-          name: "Private Squash Match",
-          totalCapacity: 4,
-          price: 4.0,
-          resources: [1]
-        },
-        {
-          name: "Private Squash Coaching",
-          totalCapacity: 1,
-          price: 35.0,
-          resources: [1]
-        },
-        {
-          name: "Private Tennis Match",
-          totalCapacity: 4,
-          price: 4.0,
-          resources: [4]
-        },
-        {
-          name: "Five-a-Side football",
-          totalCapacity: 10,
-          price: 8,
-          resources: [1, 2]
-        },
-        {
-          name: "Squash Match",
-          totalCapacity: 4,
-          price: 4.0,
-          resources: [3]
-        },
-        {
-          name: "1-on-1 Tennis Coaching",
-          totalCapacity: 1,
-          price: 35.0,
-          resources: [4]
-        }
-      ],
-      activities: [],
       previewActivity: {},
       selectedActivityForm: {
         startTime: null,
@@ -81,7 +36,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("facilities", ["facilities"]),
+    ...mapGetters("facilities", ["facilities", "activities"]),
+    ...mapGetters("timetable", ["sessions"]),
     resources() {
       return this.facilities.map(r => {
         return {
@@ -93,7 +49,7 @@ export default {
     events() {
       /* TODO: make adapter */
       /*Transform the server format into full calendar format*/
-      return this.activities.map(activity => {
+      return this.sessions.map(activity => {
         return {
           id: activity.id,
           resourceId: activity.resource.id,
@@ -106,16 +62,15 @@ export default {
       });
     },
     activityTypeOptions() {
-      const filter = activity => {
-        return activity.resources.includes(
-          Number(this.selectedActivityForm.resourceId)
-        );
-      };
-      return this.activityTypes.filter(filter).map(a => a.name);
+      const filter = activity =>
+        activity.resource.id === Number(this.selectedActivityForm.resourceId);
+
+      return this.activities.filter(filter).map(a => a.name);
     }
   },
   methods: {
-    ...mapActions("facilities", ["getFacilities"]),
+    ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
+    ...mapActions("timetable", ["getAllSessions"]),
     drawEvent(eventInfo) {
       const { event } = eventInfo;
       const { extendedProps: options } = event;
@@ -174,6 +129,7 @@ export default {
         ...activity,
         currentCapacity: 0
       };
+
       const { data } = await this.$http.post(
         `/facilities/${this.selectedActivityForm.resourceId}/activities`,
         body
@@ -187,15 +143,13 @@ export default {
         },
         query: { facilityId: data.resource.id, activityId: data.id }
       });
-    },
-    async getActivities() {
-      const { data } = await this.$http.get(`/timetable`);
-      this.activities = data;
     }
   },
   async mounted() {
-    await this.getActivities();
-    await this.getFacilities();
+    // await this.geTimetableForRange(this.start, this.end);
+    await this.getAllActivities();
+    await this.getAllFacilities();
+    await this.getAllSessions();
     // await timetableService.read();
   }
 };
