@@ -125,6 +125,7 @@ label {
 
 <script>
 import axios from "axios";
+// import { getInstance } from "../services/auth.service";
 
 export default {
   name: "BookingInformation",
@@ -216,30 +217,15 @@ export default {
     },
 
     async getFacilities() {
-      const token = await this.$auth.getTokenSilently();
-      const { data } = await axios.get(
-        "http://localhost:8000/resources",
-
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      const { data } = await this.$http.get("/resources");
       return data;
     },
 
     async getActivitiesForFacility() {
-      const token = await this.$auth.getTokenSilently();
       const facilityId = this.$route.query.facilityId;
 
       const { data } = await axios.get(
-        "http://localhost:8000/resources/" + facilityId + "/activities",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+        "/resources/" + facilityId + "/activities"
       );
       return data;
     },
@@ -300,13 +286,7 @@ export default {
     },
 
     async getResourceContent() {
-      const token = await this.$auth.getTokenSilently();
-
-      const { data } = await axios.get("http://localhost:8000/resources", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const { data } = await this.$http.get("/resources");
 
       const content = data.content;
       const facilities = this.facility;
@@ -320,12 +300,7 @@ export default {
     },
 
     async getActivities() {
-      const token = await this.$auth.getTokenSilently();
-      const { data } = await axios.get("http://localhost:8000/activities", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const { data } = await this.$http.get("/activities");
       this.activities = data.content;
     },
 
@@ -373,6 +348,7 @@ export default {
     }
   },
   async mounted() {
+    await this.$auth.created;
     await this.getResourceContent();
     this.fillByQuery();
     this.getActivities();

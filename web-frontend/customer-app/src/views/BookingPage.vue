@@ -103,7 +103,6 @@ h1 {
 </style>
 
 <script>
-import axios from "axios";
 import BookingInformation from "@/components/BookingInformation.vue";
 import GuestInformation from "@/components/GuestInformation.vue";
 import BillingInformation from "@/components/BillingInformation.vue";
@@ -162,28 +161,17 @@ export default {
   methods: {
     async postAllFormData() {
       /* TODO: Validate and check server response */
-      const token = await this.$auth.getTokenSilently();
       // let activities = this.activitiesFromServer;
       let bookedActivity = this.activitiesFromServer.find(
         activity => activity.id == this.selectedActivityId
       );
 
       const body = {
-        //TODO PASS USER
         // account: parseInt(this.$auth._uid),
         activity: bookedActivity
       };
-      await this.$http.post(
-        `/bookings/`,
 
-        body,
-
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      await this.$http.post(`/bookings/`, body);
 
       await this.$router.push({
         name: "BookingPage",
@@ -241,30 +229,12 @@ export default {
     },
 
     async getBookings() {
-      const token = await this.$auth.getTokenSilently();
-      const { data } = await axios.get(
-        "http://localhost:8000/bookings",
-
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      const { data } = await this.$http.get("/bookings");
       this.bookings = data;
     },
 
     async getActivities() {
-      const token = await this.$auth.getTokenSilently();
-      const { data } = await axios.get(
-        "http://localhost:8000/activities",
-
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      const { data } = await this.$http.get("/activities");
       this.activitiesFromServer = data.content;
     }
   },
