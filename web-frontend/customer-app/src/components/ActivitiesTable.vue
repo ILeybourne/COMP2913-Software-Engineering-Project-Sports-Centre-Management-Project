@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h3 class="title">Bookings Table</h3>
+    <h3 class="title">Activities Table</h3>
     <v-data-table
       v-model="selected"
       :headers="headers"
@@ -19,12 +19,12 @@
       </template>
     </v-data-table>
 
-    <b-modal id="edit-booking-modal" title="Create Activity" hide-footer>
+    <b-modal id="edit-Activity-modal" title="Create Activity" hide-footer>
       <div class="d-flex justify-content-between">
         <b-button
           type="reset"
           variant="danger"
-          @click="$bvModal.hide('edit-booking-modal')"
+          @click="$bvModal.hide('edit-Activity-modal')"
           >Delete
         </b-button>
       </div>
@@ -33,7 +33,6 @@
 </template>
 
 <style scoped></style>
-
 <script>
 const addZero = value => ("0" + value).slice(-2);
 
@@ -46,22 +45,20 @@ const formatDate = value => {
 };
 
 export default {
-  name: "BookingTable",
+  name: "ActivitiesTable",
   components: {},
   // ItemsPerPageDropdown
   data: function() {
     return {
       /*
-      account: null
-      activity: null
-      createdAt: 1584288689000
-      id: 1
-      receipt: null
-      updatedAt: 1584288692000
-      * */
-      bookings: [],
-      singleSelect: false,
-      selected: [],
+        account: null
+        activity: null
+        createdAt: 1584288689000
+        id: 1
+        receipt: null
+        updatedAt: 1584288692000
+        * */
+      activities: [],
       headers: [
         {
           value: "id",
@@ -69,23 +66,13 @@ export default {
           sortable: true
         },
         {
-          value: "formattedStartTime",
-          text: "Booking Time",
+          value: "formattedStartAt",
+          text: "Activity Time",
           sortable: true
         },
         {
-          value: "activity.name",
+          value: "name",
           text: "Activity",
-          sortable: true
-        },
-        {
-          value: "account",
-          text: "Account",
-          sortable: true
-        },
-        {
-          value: "email",
-          text: "Email",
           sortable: true
         },
         {
@@ -93,38 +80,40 @@ export default {
           text: "Receipt",
           sortable: false
         }
-      ]
+      ],
+      singleSelect: false,
+      selected: []
     };
   },
   computed: {
     formattedData() {
-      return this.bookings.map(booking => {
+      return this.activities.map(activity => {
         return {
-          ...booking,
-          formattedStartTime: formatDate(booking.activity.startTime)
+          ...activity,
+          formattedStartAt: formatDate(activity.startTime)
         };
       });
     }
   },
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
-    async getBooking() {
+    async getActivity() {
       const token = await this.$auth.getTokenSilently();
 
-      const { data } = await this.$http.get(`/bookings`, {
+      const { data } = await this.$http.get(`/activities`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      this.bookings = data.content;
+      this.activities = data.content;
     },
     showCancel() {
-      this.$bvModal.show("edit-booking-modal");
+      this.$bvModal.show("edit-Activity-modal");
     }
   },
 
-  async mounted() {
-    await this.getBooking();
+  mounted: async function() {
+    await this.getActivity();
   }
 };
 </script>

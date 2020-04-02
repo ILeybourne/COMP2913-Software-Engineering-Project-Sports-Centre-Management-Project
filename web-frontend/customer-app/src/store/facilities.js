@@ -1,7 +1,7 @@
 import axios from "@/services/auth-http.service";
 
 const state = {
-    facilities: []
+  facilities: []
 };
 
 const getters = {

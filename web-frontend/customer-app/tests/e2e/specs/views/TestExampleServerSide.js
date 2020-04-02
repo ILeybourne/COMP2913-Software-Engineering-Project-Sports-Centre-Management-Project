@@ -1,3 +1,1 @@
-describe("TestExampleServerSide", () => {
-
-});
+describe("TestExampleServerSide", () => {});

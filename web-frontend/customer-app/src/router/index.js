@@ -7,19 +7,21 @@ import Facility from "@/views/Facilities";
 import BookingInformation from "@/views/BookingPage";
 import MembershipPage from "@/views/MembershipPage";
 import Profile from "@/views/Profile";
-import {authGuard} from "@/auth/helpers/auth.guard";
+import { authGuard } from "@/auth/helpers/auth.guard";
 import BookingsTablePage from "@/views/BookingsTablePage";
 import Test from "@/views/Test";
+import ActivitiesTablePage from "@/views/ActivitiesTablePage";
+import WeeklyUsagePage from "@/views/WeeklyUsagePage";
 
 Vue.use(VueRouter);
 
 const routes = [
-    {
-        path: "/",
-        name: "Home",
-        component: Home
-    },
-    {
+  {
+    path: "/",
+    name: "Home",
+    component: Home
+  },
+  {
     path: "/about",
     name: "About",
     // route level code-splitting
@@ -37,34 +39,34 @@ const routes = [
   {
     path: "/timetable",
     name: "Resource Timetable",
-      component: TimetablePage
+    component: TimetablePage
   },
   {
-      path: "/timetable/:facilityName",
-      name: "Resource Timetable",
-      component: TimetableSinglePage,
-      props: true
+    path: "/timetable/:facilityName",
+    name: "Resource Timetable",
+    component: TimetableSinglePage,
+    props: true
   },
-    {
-        path: "/facilities",
-        name: "Facilities",
-        component: Facility
-    },
-    {
-        path: "/test",
-        name: "Test",
-        component: Test
-    },
-    // {
-    //   path: "/bookings?activityId=:",
-    //   name: "BookingPageByActivityId",
-    //   component: BookingInformation,
-    //   beforeEnter: authGuard
-    // },
-    {
-        path: "/bookings",
-        name: "BookingPage",
-        component: BookingInformation
+  {
+    path: "/facilities",
+    name: "Facilities",
+    component: Facility
+  },
+  {
+    path: "/test",
+    name: "Test",
+    component: Test
+  },
+  // {
+  //   path: "/bookings?activityId=:",
+  //   name: "BookingPageByActivityId",
+  //   component: BookingInformation,
+  //   beforeEnter: authGuard
+  // },
+  {
+    path: "/bookings",
+    name: "BookingPage",
+    component: BookingInformation
   },
   {
     path: "/membership",
@@ -74,7 +76,19 @@ const routes = [
   {
     path: "/bookingtable",
     name: "BookingTable",
-      component: BookingsTablePage
+    component: BookingsTablePage
+  },
+  {
+    path: "/activitiestable",
+    name: "ActivitiesTable",
+    component: ActivitiesTablePage,
+    beforeEnter: authGuard
+  },
+  {
+    path: "/weeklyusage",
+    name: "WeeklyUsageGraph",
+    component: WeeklyUsagePage,
+    beforeEnter: authGuard
   }
 ];
 
