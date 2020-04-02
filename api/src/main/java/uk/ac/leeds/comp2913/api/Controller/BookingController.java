@@ -88,7 +88,9 @@ public class BookingController {
   @PostMapping("/{activity_id}/{account_id}")
   public Booking createBooking(@Valid @RequestBody BookingDTO booking, @PathVariable Long activity_id, @PathVariable Long account_id) {
     Booking b = new Booking();
-    return bookingService.createNewBookingForActivity(b, activity_id, account_id, booking);
+    boolean regularBooking = booking.isRegularBooking();
+    b.setParticipants(booking.getParticipants());
+    return bookingService.createNewBookingForActivity(b, activity_id, account_id, regularBooking);
   }
 
   @PutMapping("/{booking_id}")

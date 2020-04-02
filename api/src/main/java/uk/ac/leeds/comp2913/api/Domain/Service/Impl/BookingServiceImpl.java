@@ -35,7 +35,7 @@ public class BookingServiceImpl implements BookingService {
   //Posts a new booking for an activity. The customer can pass a boolean to create automatic bookings for repeating sessions
   //at a reduced rate
   @Override
-  public Booking createNewBookingForActivity(Booking booking, Long activity_id, Long account_id, BookingDTO bookingDto) {
+  public Booking createNewBookingForActivity(Booking booking, Long activity_id, Long account_id, Boolean regularBooking){
     Activity a = activityRepository.findById(activity_id)
         .orElseThrow(() -> new ResourceNotFoundException("Activity not found for ID" + activity_id));
 
@@ -43,8 +43,7 @@ public class BookingServiceImpl implements BookingService {
             .orElseThrow(() -> new ResourceNotFoundException("Account not found for ID" + account_id));
     booking.setAccount(account);
     booking.setActivity(a);
-    booking.setParticipants(bookingDto.getParticipants());
-    if(bookingDto.isRegularBooking()){
+    if(regularBooking){
       booking.setRegularSession(a.getRegularSession());
     }
     booking.setAmount(a.getCost());

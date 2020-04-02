@@ -42,20 +42,13 @@ public class ActivityServiceImpl implements ActivityService {
 
   //Creates new activity from activityDTO object, activity_type_id is passed through path variable
   @Override
-  public Activity createNewActivity(Activity activity, Long activity_type_id, ActivityDTO activityDTO){
+  public Activity createNewActivity(Activity activity, Long activity_type_id, RegularSession regularSession){
     ActivityType activityType = activityTypeRepository.findById(activity_type_id)
         .orElseThrow(() -> new ResourceNotFoundException("Activity type not found for ID" + activity_type_id));
 
     activity.setActivityType(activityType);
-    activity.setStartTime(activityDTO.getStartTime());
-    activity.setEndTime(activityDTO.getEndTime());
-    activity.setSocial(activityDTO.isSocial());
 
-    //If the activity is regular session then the boolean from activityDTO will be true
-    //If true then create a regular session which will allow the activity to be repeated
-    if(activityDTO.isRegularSession()){
-      RegularSession regularSession = new RegularSession();
-      regularSession.setInterval(activityDTO.getInterval());
+    if (regularSession != null){
       regularSessionRepository.save(regularSession);
       activity.setRegularSession(regularSession);
     }

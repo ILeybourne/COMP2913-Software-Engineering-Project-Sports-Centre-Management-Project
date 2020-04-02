@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.RegularSessionRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
+import uk.ac.leeds.comp2913.api.Domain.Model.RegularSession;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
@@ -33,7 +34,6 @@ public class ActivityController {
     this.regularSessionRepository = regularSessionRepository;
   }
 
-
   /**
    * Get all scheduled activities in the database
    *
@@ -51,11 +51,20 @@ public class ActivityController {
     return activityRepository.findByResourceId(resource_id);
   }
 
-  //schedule an activity and/or make into a regular session
+  //schedule an activity. Create a one time activity or regular session
   @PostMapping("/activities/{activity_type_id}")
   public Activity createActivity(@Valid @RequestBody ActivityDTO activity, @PathVariable Long activity_type_id) {
     Activity a = new Activity();
-    return activityService.createNewActivity(a, activity_type_id, activity);
+    RegularSession regularSession = new RegularSession();
+    a.setStartTime(activity.getStartTime());
+    a.setEndTime(activity.getEndTime());
+    a.setSocial(activity.isSocial());
+    if(activity.isRegularSession()){
+      regularSession.setInterval(activity.getInterval());
+    }else{
+      regularSession = null;
+    }
+    return activityService.createNewActivity(a, activity_type_id, regularSession);
   }
 
 
