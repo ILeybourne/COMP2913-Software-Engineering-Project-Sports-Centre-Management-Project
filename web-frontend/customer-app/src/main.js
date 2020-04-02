@@ -51,7 +51,7 @@ const vm = new Vue({
         this.$auth.$watch("loading", loading => {
             if (loading === false) {
                 if (this.$auth.error) {
-                    debugger;
+                    // debugger;
                 }
                 // When the auth0 client loads, we can unblock the UI
                 // debugger;
