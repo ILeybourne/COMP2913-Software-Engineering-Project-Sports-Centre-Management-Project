@@ -1,7 +1,7 @@
 export const ServicesPlugin = {
-    install(Vue, {services}) {
-        Vue.prototype.$services = services;
-    }
+  install(Vue, { services }) {
+    Vue.prototype.$services = services;
+  }
 };
 
 export default ServicesPlugin;

@@ -4,7 +4,7 @@ export class TimetableService {
   async create() {}
 
   async read() {
-      const {data} = await authHttp.get("/timetable");
+    const { data } = await authHttp.get("/timetable");
     return data;
   }
   update() {}

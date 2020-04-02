@@ -7,12 +7,12 @@ import FacilitiesModule from "@/store/facilities";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-    state: {},
-    mutations: {},
-    actions: {},
-    modules: {
-        loading: LoadingModule,
-        auth: AuthModule,
-        facilities: FacilitiesModule
-    }
+  state: {},
+  mutations: {},
+  actions: {},
+  modules: {
+    loading: LoadingModule,
+    auth: AuthModule,
+    facilities: FacilitiesModule
+  }
 });
