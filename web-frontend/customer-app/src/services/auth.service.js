@@ -97,7 +97,8 @@ export const useAuth0 = ({
         // If the user is returning to the app after authentication..
         if (
           window.location.search.includes("code=") &&
-          window.location.search.includes("state=")
+            window.location.search.includes("state=") || window.location.search.includes("code=") &&
+            window.location.search.includes("state=")
         ) {
           // handle the redirect and retrieve tokens
           const { appState } = await this.auth0Client.handleRedirectCallback();

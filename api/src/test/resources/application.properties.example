@@ -1,0 +1,43 @@
+############################## CONFIGURATION WHILE APP IS UNDER UNIT TEST #########################################
+## For unit environment this file is loaded into the classpath and overwrites the standard one
+## TODO: we add the test data folder to class path to seed the database
+#spring.flyway.locations=classpath:db/migration,db/vendor/{vendor},db/seed
+## TODO: use H2 in memory
+spring.datasource.url=jdbc:postgresql://localhost:5432/comp2913
+spring.datasource.username=comp2913
+spring.datasource.password=
+spring.main.banner-mode=off
+########################################################## FLYWAY
+spring.flyway.enabled=false
+spring.flyway.schemas=sports_centre_management
+########################################################## JPA
+spring.jpa.generate-ddl=true
+spring.jpa.properties.hibernate.hbm2ddl.auto=validate
+spring.jpa.properties.hibernate.default_schema=sports_centre_management
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.show-sql=true
+########################################################## HIKARI
+spring.datasource.hikari.connectionTimeout=20000
+spring.datasource.hikari.maximumPoolSize=5
+spring.jpa.open-in-view=false
+spring.jpa.properties.hibernate.generate_statistics=true
+logging.level.org.hibernate.type=debug
+########################################################## MAIL
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://prod-comp2931.eu.auth0.com/.well-known/jwks.json
+spring.security.oauth2.resourceserver.jwt.issuer-uri=https://prod-comp2931.eu.auth0.com/
+logging.level.org.springframework.security=DEBUG
+endpoints.cors.allowed-origins=http://localhost:8080
+########################################################## MAIL
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=c2913sportscentre@gmail.com
+spring.mail.password=
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.connectiontimeout=5000
+spring.mail.properties.mail.smtp.timeout=5000
+spring.mail.properties.mail.smtp.writetimeout=5000
+spring.mail.properties.mail.smtp.starttls.enable=true
+########################################################## COMP
+COMP2913.iTextLicensePath=classpath:licenses/iTextKey.xml
+########################################################## JACKSON
+spring.jackson.date-format=com.fasterxml.jackson.databind.util.ISO8601DateFormat

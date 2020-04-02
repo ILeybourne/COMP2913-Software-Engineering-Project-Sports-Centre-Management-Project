@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<h1 th:text="|${receipt.id} Receipt Number|"></h1>
+<h1 th:text="|${transactionId} Transaction Number|"></h1>
+<table>
+    <thead>
+    <tr>
+        <th>Item</th>
+        <th>Amount</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="sale : ${receipt.sales}">
+        <td><span th:text="${sale.name}"></span></td>
+        <td><span th:text="${sale.amount}"></span></td>
+    </tr>
+    </tbody>
+</table>
+<img src="${qrCode}" alt="Receipt QR Code">
+</body>
+</html>

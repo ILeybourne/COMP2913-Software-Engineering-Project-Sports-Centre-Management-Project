@@ -26,12 +26,6 @@ class MembershipTest {
     }
 
     @Test
-    void getId() {
-        long testId = membership.getId();
-        assertTrue(testId > 0);
-    }
-
-    @Test
     void getCreatedAt() {
         Date testDateSet = new Date(random.nextLong());
         membership.setCreatedAt(testDateSet);

@@ -22,6 +22,12 @@ import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
 
+/**
+ * TODO: @CHORE, annotate with Swagger API documentation
+ * TODO: @CHORE, move domain logic into a service @DEPENDENCY for Testing
+ * TODO: @CHORE, add HAL to all endpoints
+ * TODO: @CHORE, add hasAuthority checks to all endpoints
+ */
 @RestController
 @RequestMapping("/activitytypes")
 public class ActivityTypeController {
@@ -68,10 +74,10 @@ public class ActivityTypeController {
 
         return activityTypeRepository.findById(activity_type_id)
                 .map(activityType -> {
+//                    TODO: @Chore Cleanup, let JsonCretor take care
                     activityType.setName(activityTypeRequest.getName());
                     activityType.setTotalCapacity(activityTypeRequest.getTotalCapacity());
                     activityType.setCost(activityTypeRequest.getCost());
-//                    TODO: Others
                     return activityTypeRepository.save(activityType);
                 }).orElseThrow(() -> new ResourceNotFoundException("Activity Type not found with ID " + activity_type_id));
     }

@@ -1,96 +1,68 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ReceiptRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
+import uk.ac.leeds.comp2913.api.Domain.Service.CustomerService;
+import uk.ac.leeds.comp2913.api.Domain.Service.ReceiptService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.validation.Valid;
-
+/**
+ * TODO: @RESEARCH how we can move the regular booking and memberships into scheduled service
+ */
+@PreAuthorize("hasAuthority('SCOPE_customer')")
+@RestController
+@RequestMapping("/receipts")
 public class ReceiptController {
 
-    private final JavaMailSender javaMailSender;
     private final ReceiptRepository receiptRepository;
+    private ReceiptService receiptService;
 
-    public ReceiptController(JavaMailSender javaMailSender, ReceiptRepository receiptRepository) {
-      this.javaMailSender = javaMailSender;
-      this.receiptRepository = receiptRepository;
+
+    public ReceiptController(ReceiptRepository receiptRepository, ReceiptService receiptService, CustomerService customerService) {
+        this.receiptRepository = receiptRepository;
+        this.receiptService = receiptService;
     }
 
+    /**
+     * Get all receipts generated in this application
+     *
+     * @param pageable
+     * @return
+     */
     @GetMapping("")
     public Page<Receipt> getReceipts(Pageable pageable) {
         return receiptRepository.findAll(pageable);
     }
 
-    @PostMapping("/")
-    public Receipt createResource(@Valid @RequestBody Receipt receipt) {
-        Receipt newReceipt = receiptRepository.save(receipt);
-
-        // Send email receipt
-        // To address
-        final String EMAIL_ADDRESS = "tom_oddy@live.co.uk";
-
-        // Subject
-        final String EMAIL_SUBJECT = "Your Sports Centre email receipt";
-
-        // Body (can be HTML)
-        final String EMAIL_BODY = "Thank you for your purchase from the Sport Centre. Your receipt is attached.\n" +
-                "Do not respond to this email.";
-
-        // Name of attached file
-        final String EMAIL_ATTACHMENT_NAME = "receipt.pdf"; //todo make dynamic with receipt pdf member
-
-        // Path of file to attach
-        final String EMAIL_ATTACHMENT_PATH = "info/bookings/receipt/receipt_123"; //todo make dynamic
-
-        // Create message object
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = null;
-
-        try {
-            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-
-            // Set address, subject, and body
-            mimeMessageHelper.setTo(EMAIL_ADDRESS);
-            mimeMessageHelper.setSubject(EMAIL_SUBJECT);
-            mimeMessageHelper.setText(EMAIL_BODY);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-        // Add attachment to email
-        // mimeMessageHelper.addAttachment(EMAIL_ATTACHMENT_NAME, new File(EMAIL_ATTACHMENT_PATH));
-
-        // Send email
-        try {
-            javaMailSender.send(mimeMessage);
-        } catch (MailException e) {
-            e.printStackTrace();
-        }
-        return newReceipt;
-    }
-
-    @PutMapping("/{receipt_id}")
-    public Receipt updateResource(@PathVariable Long receipt_id, @Valid @RequestBody Receipt receiptRequest) {
+    /**
+     * TODO: add endpoint that return file download of the receipt PDF
+     *
+     * @param receipt_id
+     * @return
+     */
+    @GetMapping("/{receipt_id}")
+    public Receipt getReceipt(@PathVariable Long receipt_id) {
         return receiptRepository.findById(receipt_id)
-                .map(receipt -> {
-                    receipt.setProductDescription(receiptRequest.getProductDescription());
-                    receipt.setTotal(receiptRequest.getTotal());
-                    receipt.setSales(receiptRequest.getSales());
-                    //todo add setPayments
-                    return receiptRepository.save(receipt);
-                }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + receipt_id));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Receipt not found with id " + receipt_id)
+                );
     }
 
+
+    /**
+     * @param receipt_id
+     * @return
+     */
     @DeleteMapping("/{receipt_id}")
     public ResponseEntity<?> deleteReceipt(@PathVariable Long receipt_id) {
         return receiptRepository.findById(receipt_id)

@@ -4,6 +4,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -13,111 +14,120 @@ import java.util.Set;
 @Entity
 public class Receipt {
 
-  @Id
-  @GeneratedValue
-  private long id;
+    @Id
+    @GeneratedValue
+    private long id;
 
-  @CreationTimestamp
-  @Column(name = "created_at")
-  private Date createdAt;
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Date createdAt;
 
-  @OneToMany(
-    fetch = FetchType.LAZY,
-    mappedBy = "receipt",
-    cascade = {
-      CascadeType.MERGE,
-      CascadeType.PERSIST
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "receipt",
+            cascade = {
+                    CascadeType.MERGE,
+                    CascadeType.PERSIST
+            }
+    )
+    private Set<Sale> sales;
+
+    @Column(
+            nullable = true,
+            name = "pdf_location",
+            unique = true
+    )
+    @Size(max = 255)
+    private String pdfLocation;
+
+    @Column(nullable = true, name = "product_description")
+    private String productDescription;
+
+    @Column(name = "total")
+    private BigInteger total;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    public Receipt() {
+
     }
-  )
-  private Set<Sale> sales;
 
-  @Column(
-    nullable = true,
-    name = "pdf_location",
-    unique = true
-  )
-  @Size(max = 255)
-  private String pdfLocation;
+    public Receipt(Collection<Sale> sales, String transactionId) {
 
-  @Column(nullable = true, name = "product_description")
-  private String productDescription;
+        this.setSales(Set.copyOf(sales));
+        this.total = BigInteger.valueOf(0);
+        for (Sale sale : sales) {
+            /*TODO: fix types misalignment*/
+            total = total.add(sale.getAmount().toBigInteger());
+            sale.setReceipt(this);
+//            sale.setTransactionId(transactionId);
+        }
+    }
 
-  @Column(name = "total")
-  private BigInteger total;
+    public long getId() {
+        return id;
+    }
 
-  @ManyToOne
-  @JoinColumn(name = "customer_id")
-  private Customer customer;
+    public void setId(long id) {
+        this.id = id;
+    }
 
-  public Receipt() {
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 
-  }
+    public void setCreatedAt(Date created_at) {
+        this.createdAt = created_at;
+    }
 
-  public Receipt(Collection<Sale> sales, String transactionId) {
-    setSales(Set.copyOf(sales));
-  }
+    public BigInteger getTotal() {
+        return total;
+    }
 
-  public long getId() {
-    return id;
-  }
+    public void setTotal(BigInteger cost_gbp_pence) {
+        this.total = cost_gbp_pence;
+    }
 
-  public void setId(long id) {
-    this.id = id;
-  }
+    public String getProductDescription() {
+        return productDescription;
+    }
 
-  public Date getCreatedAt() {
-    return createdAt;
-  }
+    public void setProductDescription(String product_description) {
+        this.productDescription = product_description;
+    }
 
-  public void setCreatedAt(Date created_at) {
-    this.createdAt = created_at;
-  }
+    public Set<Sale> getSales() {
+        return sales;
+    }
 
-  public BigInteger getTotal() {
-    return total;
-  }
+    public void setSales(Set<Sale> sales) {
+        this.sales = sales;
+    }
 
-  public void setTotal(BigInteger cost_gbp_pence) {
-    this.total = cost_gbp_pence;
-  }
+    public Customer getCustomer() {
+        return customer;
+    }
 
-  public String getProductDescription() {
-    return productDescription;
-  }
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
-  public void setProductDescription(String product_description) {
-    this.productDescription = product_description;
-  }
+    public void invoice() {
 
-  public Set<Sale> getSales() {
-    return sales;
-  }
+    }
 
-  public void setSales(Set<Sale> sales) {
-    this.sales = sales;
-  }
+    public String getPdfLocation() {
+        return pdfLocation;
+    }
 
-  public Customer getCustomer() {
-    return customer;
-  }
+    public void setPdfLocation(String pdfLocation) {
+        this.pdfLocation = pdfLocation;
+    }
 
-  public void setCustomer(Customer customer) {
-    this.customer = customer;
-  }
-
-  public void invoice() {
-  }
-
-  public String getPdfLocation() {
-    return pdfLocation;
-  }
-
-  public void setPdfLocation(String pdfLocation) {
-    this.pdfLocation = pdfLocation;
-  }
-
-  public String generateFilename(){
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d-MM-yyyy");
-    return id + "-" + simpleDateFormat.format(createdAt);
-  }
+    public String generateFilename() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d-MM-yyyy");
+        return id + "-" + simpleDateFormat.format(createdAt);
+    }
 }

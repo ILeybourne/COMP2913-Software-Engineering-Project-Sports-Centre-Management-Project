@@ -13,6 +13,8 @@ import javax.persistence.*;
 
 
 /**
+ * TODO: @CHORE Rename this entity to 'resource' as it fits more with spec
+ * <p>
  * Represents a resource available inside the sports center. eg Astro Turf, Squash Court, Swimming Pool etc.
  */
 @Entity

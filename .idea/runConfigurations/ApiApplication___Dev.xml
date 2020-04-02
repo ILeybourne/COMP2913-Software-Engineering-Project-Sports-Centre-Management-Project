@@ -5,6 +5,10 @@
     <option name="HIDE_BANNER" value="true" />
     <option name="ACTIVE_PROFILES" value="development" />
     <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
+    <envs>
+      <env name="SERVER_PORT" value="9000" />
+    </envs>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
