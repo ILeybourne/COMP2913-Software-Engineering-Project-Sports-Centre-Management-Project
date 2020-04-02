@@ -34,11 +34,4 @@ class ReceiptControllerTest {
     void tearDown() {
     }
 
-    @Test
-    @WithMockUser(username = "test@comp2913.com")
-    void booking() throws Exception {
-        mockMvc.perform(get("/receipt")
-                .contentType("application/json"))
-                .andExpect(status().isOk());
-    }
 }

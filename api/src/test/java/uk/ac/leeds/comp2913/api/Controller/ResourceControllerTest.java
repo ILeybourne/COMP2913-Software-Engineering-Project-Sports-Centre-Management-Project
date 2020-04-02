@@ -64,11 +64,8 @@ class ResourceControllerTest {
     void createResourceWithCorrectAuthorities() throws Exception {
         final Resource resource = new Resource();
         resource.setName(TENNIS_COURT);
-        Resource result = new Resource();
         when(resourceServiceMock.create(any()))
                 .thenReturn(resource);
-
-
         mockMvc.perform(post("/resources")
                 .with(jwt(jwt -> jwt.subject("ch4mpy").claim("scope", "resource:create")))
                 .contentType("application/json")
@@ -78,11 +75,9 @@ class ResourceControllerTest {
     }
 
     @Test
-    @Disabled
     void createResourceWithoutCorrectAuthorities() throws Exception {
         final Resource resource = new Resource();
         resource.setName(TENNIS_COURT);
-        Resource result = new Resource();
         when(resourceServiceMock.create(any()))
                 .thenReturn(resource);
 
@@ -115,17 +110,16 @@ class ResourceControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "test@comp2913.com")
+    @WithMockUser(username = "test@comp2913.com", authorities = {"SCOPE_update:resource"})
     void updateResource() throws Exception {
         mockMvc.perform(put("/resources/{resource_id}", 1)
                 .contentType("application/json")
-                //.param("", "")
                 .content(objectMapper.writeValueAsBytes(new Resource())))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(username = "test@comp2913.com")
+    @WithMockUser(username = "test@comp2913.com", authorities = {"SCOPE_delete:resource"})
     void deleteResource() throws Exception {
         mockMvc.perform(delete("/resources/{resource_id}", 1)
                 .contentType("application/json"))
