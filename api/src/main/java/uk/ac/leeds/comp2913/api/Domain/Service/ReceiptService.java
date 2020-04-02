@@ -10,11 +10,12 @@ import java.util.Collection;
 public interface ReceiptService {
 
   /**
-   * TODO: generate PDF, email PDF, upload PDF to S3
    *
    * @param sales list of sales to create a new receipt
    * @return receipt generated from sales
    */
   @Transactional
   public Receipt invoice(String transactionId, Collection<Sale> sales, Customer customer);
+
+  public void delete(Long receiptId);
 }

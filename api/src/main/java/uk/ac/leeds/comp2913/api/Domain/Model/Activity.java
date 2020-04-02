@@ -15,8 +15,12 @@ import javax.persistence.*;
 
 
 /**
+ * TODO: @CHORE Rename this entity to 'session' as it fits more with spec
+ * TODO: @CHORE Add JSR303 validations to the model, check the constraints match the database
+ * TODO: @CHORE Fix eager loading and JSON serialisation
+ * <p>
  * This class represents scheduled activities available to the members of the sports center that they can book onto
- *
+ * <p>
  * These activities can only be created by the staff at the sports center by selecting a timeslot in the timetable
  * and should be displayed on the weekly timetable for booking
  */

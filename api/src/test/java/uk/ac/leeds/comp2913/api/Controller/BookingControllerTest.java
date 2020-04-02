@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -35,8 +36,9 @@ class BookingControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "test@comp2913.com")
     void booking() throws Exception {
-        mockMvc.perform(get("/booking")
+        mockMvc.perform(get("/bookings")
                 .contentType("application/json"))
                 .andExpect(status().isOk());
     }

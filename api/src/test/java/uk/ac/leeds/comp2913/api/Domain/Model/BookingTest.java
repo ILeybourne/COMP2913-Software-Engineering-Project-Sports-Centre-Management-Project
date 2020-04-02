@@ -25,12 +25,6 @@ class BookingTest {
     }
 
     @Test
-    void getId() {
-        long testId = booking.getId();
-        assertTrue(testId > 0);
-    }
-
-    @Test
     void getCreatedAt() {
         Date testDateSet = new Date(random.nextLong());
         booking.setCreatedAt(testDateSet);

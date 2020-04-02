@@ -1,17 +1,17 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
-import TimetablePage from "../views/TimetablePage";
-import TimetableSinglePage from "../views/TimetableSinglePage";
-import Facility from "../views/Facilities";
-import BookingInformation from "../views/BookingPage";
-import MembershipPage from "../views/MembershipPage";
-import Profile from "../views/Profile";
-import { authGuard } from "../auth/helpers/auth.guard";
-import ExampleServerSide from "../views/ExampleServerSide";
-import BookingsTablePage from "../views/BookingsTablePage";
-import ActivitiesTablePage from "../views/ActivitiesTablePage";
-import WeeklyUsagePage from "../views/WeeklyUsagePage";
+import Home from "@/views/Home.vue";
+import TimetablePage from "@/views/TimetablePage";
+import TimetableSinglePage from "@/views/TimetableSinglePage";
+import Facility from "@/views/Facilities";
+import BookingInformation from "@/views/BookingPage";
+import MembershipPage from "@/views/MembershipPage";
+import Profile from "@/views/Profile";
+import { authGuard } from "@/auth/helpers/auth.guard";
+import BookingsTablePage from "@/views/BookingsTablePage";
+import Test from "@/views/Test";
+import ActivitiesTablePage from "@/views/ActivitiesTablePage";
+import WeeklyUsagePage from "@/views/WeeklyUsagePage";
 
 Vue.use(VueRouter);
 
@@ -39,8 +39,7 @@ const routes = [
   {
     path: "/timetable",
     name: "Resource Timetable",
-    component: TimetablePage,
-    beforeEnter: authGuard
+    component: TimetablePage
   },
   {
     path: "/timetable/:facilityName",
@@ -53,6 +52,11 @@ const routes = [
     name: "Facilities",
     component: Facility
   },
+  {
+    path: "/test",
+    name: "Test",
+    component: Test
+  },
   // {
   //   path: "/bookings?activityId=:",
   //   name: "BookingPageByActivityId",
@@ -62,8 +66,7 @@ const routes = [
   {
     path: "/bookings",
     name: "BookingPage",
-    component: BookingInformation,
-    beforeEnter: authGuard
+    component: BookingInformation
   },
   {
     path: "/membership",
@@ -71,16 +74,9 @@ const routes = [
     component: MembershipPage
   },
   {
-    path: "/exampleapi",
-    name: "ExampleAPI",
-    component: ExampleServerSide,
-    beforeEnter: authGuard
-  },
-  {
     path: "/bookingtable",
     name: "BookingTable",
-    component: BookingsTablePage,
-    beforeEnter: authGuard
+    component: BookingsTablePage
   },
   {
     path: "/activitiestable",

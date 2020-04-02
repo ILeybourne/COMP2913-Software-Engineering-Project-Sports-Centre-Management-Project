@@ -63,4 +63,9 @@ public class Booking extends Sale {
   public void setActivity(Activity activity) {
     this.activity = activity;
   }
+
+    @Override
+    public String getName() {
+        return "Booking on " + getCreatedAt();
+    }
 }
