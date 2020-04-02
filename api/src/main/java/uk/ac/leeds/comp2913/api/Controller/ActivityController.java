@@ -9,13 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.RegularSessionRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityTypeRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ResourceRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.RegularSession;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
-import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
-import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 
@@ -36,14 +32,12 @@ public class ActivityController {
     private final ActivityRepository activityRepository;
     private final ActivityService activityService;
     private final RegularSessionRepository regularSessionRepository;
-    private final ActivityTypeRepository activityTypeRepository;
 
     @Autowired
-    public ActivityController(ActivityRepository activityRepository, ActivityTypeRepository activityTypeRepository, ResourceRepository resourceRepository) {
+    public ActivityController(ActivityRepository activityRepository, ActivityService activityService, RegularSessionRepository regularSessionRepository) {
         this.activityRepository = activityRepository;
         this.activityService = activityService;
         this.regularSessionRepository = regularSessionRepository;
-        this.activityTypeRepository = activityTypeRepository;
     }
 
     /**
@@ -67,23 +61,19 @@ public class ActivityController {
     //Pulls data from activity type, only start and end type is pulled from json via JsonCreator
     //schedule an activity. Create a one time activity or regular session
     @PostMapping("activitytype/{activity_type_id}")
-    public Activity createActivity(@Valid @RequestBody ActivityDTO activity, @PathVariable Long activity_type_id) {
-        ActivityType activityType = activityTypeRepository.findById(activity_type_id)
-                .orElseThrow(() -> new ResourceNotFoundException("The Activity Type " + resource_id + " could not be found"));
-        Activity a = new Activity();
+    public Activity createActivity(@Valid @RequestBody ActivityDTO activityDTO, @PathVariable Long activity_type_id) {
+        Activity activity = new Activity();
         RegularSession regularSession = new RegularSession();
-        a.setStartTime(activity.getStartTime());
-        a.setEndTime(activity.getEndTime());
-        a.setSocial(activity.isSocial());
-        if (activity.isRegularSession()) {
-            regularSession.setInterval(activity.getInterval());
+        activity.setStartTime(activityDTO.getStartTime());
+        activity.setEndTime(activityDTO.getEndTime());
+        activity.setSocial(activityDTO.isSocial());
+        if (activityDTO.isRegularSession()) {
+            regularSession.setInterval(activityDTO.getInterval());
         } else {
             regularSession = null;
         }
-        return activityService.createNewActivity(a, activity_type_id, regularSession);
+        return activityService.createNewActivity(activity, activity_type_id, regularSession);
     }
-    return activityService.createNewActivity(a,activity_type_id,regularSession);
-}
 
 
     //update details of scheduled activity
@@ -108,7 +98,6 @@ public class ActivityController {
     public ResponseEntity<?> deleteActivity(@PathVariable Long activity_id) {
         return activityService.deleteActivity(activity_id);
     }
-
 
     //delete regular session, therefore stop activities from repeating
     @DeleteMapping("/activities/cancelregularsession/{regular_session_id}")

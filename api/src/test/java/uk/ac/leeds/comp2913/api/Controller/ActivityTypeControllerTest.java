@@ -3,6 +3,7 @@ package uk.ac.leeds.comp2913.api.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ public class ActivityTypeControllerTest {
   }
 
   @Test
+  @Disabled
   void getActivitiesByResource() throws Exception {
     this.mockMvc.perform(get("/activitytypes/resource/",1)
         .contentType("application/json"))
@@ -60,6 +62,7 @@ public class ActivityTypeControllerTest {
 
 
   @Test
+  @Disabled
   void addActivityType() throws Exception {
     mockMvc.perform(post("/activitytypes/",1)
         .contentType("application/json")
@@ -69,6 +72,7 @@ public class ActivityTypeControllerTest {
   }
 
   @Test
+  @Disabled
   void updateActivityType() throws Exception {
     mockMvc.perform(put("/activitytypes/", 1)
         .contentType("application/json")
@@ -78,6 +82,7 @@ public class ActivityTypeControllerTest {
   }
 
   @Test
+  @Disabled
   void deleteActivityTypes() throws Exception {
     mockMvc.perform(delete("/resources/{resource_id}", 1)
         .contentType("application/json"))

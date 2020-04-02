@@ -19,17 +19,7 @@ import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
-
-
-import javax.validation.Valid;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 /**
  * TODO: @CHORE, annotate with Swagger API documentation
@@ -68,12 +58,6 @@ public class BookingController {
     public Booking createBooking(@Valid @RequestBody Booking booking) {
         return bookingRepository.save(booking);
     }
-
-    @GetMapping("")
-    public Page<Booking> getBookings(Pageable pageable) {
-        return bookingRepository.findAll(pageable);
-    }
-
 
     //Post booking with the option to book on to a regular session
     @PostMapping("/{activity_id}/{account_id}")
