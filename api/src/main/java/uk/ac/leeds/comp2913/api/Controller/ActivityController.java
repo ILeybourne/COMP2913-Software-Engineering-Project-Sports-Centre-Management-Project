@@ -8,12 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityTypeRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ResourceRepository;
+import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.RegularSessionRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
-import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
-import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
+import uk.ac.leeds.comp2913.api.Domain.Model.RegularSession;
+import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 
 import javax.validation.Valid;
 
@@ -30,12 +30,14 @@ import java.util.List;
 public class ActivityController {
 
     private final ActivityRepository activityRepository;
-    private final ActivityTypeRepository activityTypeRepository;
+    private final ActivityService activityService;
+    private final RegularSessionRepository regularSessionRepository;
 
     @Autowired
-    public ActivityController(ActivityRepository activityRepository, ActivityTypeRepository activityTypeRepository, ResourceRepository resourceRepository) {
+    public ActivityController(ActivityRepository activityRepository, ActivityService activityService, RegularSessionRepository regularSessionRepository) {
         this.activityRepository = activityRepository;
-        this.activityTypeRepository = activityTypeRepository;
+        this.activityService = activityService;
+        this.regularSessionRepository = regularSessionRepository;
     }
 
     /**
@@ -57,18 +59,22 @@ public class ActivityController {
 
     //schedule an activity
     //Pulls data from activity type, only start and end type is pulled from json via JsonCreator
+    //schedule an activity. Create a one time activity or regular session
     @PostMapping("activitytype/{activity_type_id}")
-    public Activity createActivity(@PathVariable Long resource_id, @PathVariable Long activity_type_id, @Valid @RequestBody Activity activity) {
-        ActivityType activityType = activityTypeRepository.findById(activity_type_id)
-                .orElseThrow(() -> new ResourceNotFoundException("The Activity Type " + resource_id + " could not be found"));
-
-        activity.setCost(activityType.getCost());
-        activity.setCurrentCapacity(activityType.getTotalCapacity());
-        activity.setName(activityType.getName());
-        activity.setResource(activityType.getResource());
-
-        return activityRepository.save(activity);
+    public Activity createActivity(@Valid @RequestBody ActivityDTO activityDTO, @PathVariable Long activity_type_id) {
+        Activity activity = new Activity();
+        RegularSession regularSession = new RegularSession();
+        activity.setStartTime(activityDTO.getStartTime());
+        activity.setEndTime(activityDTO.getEndTime());
+        activity.setSocial(activityDTO.isSocial());
+        if (activityDTO.isRegularSession()) {
+            regularSession.setInterval(activityDTO.getInterval());
+        } else {
+            regularSession = null;
+        }
+        return activityService.createNewActivity(activity, activity_type_id, regularSession);
     }
+
 
     //update details of scheduled activity
     @PutMapping("/{activity_id}")
@@ -82,6 +88,7 @@ public class ActivityController {
         activity.setStartTime(activityRequest.getStartTime());
         activity.setEndTime(activityRequest.getEndTime());
         activity.setCurrentCapacity(activityRequest.getCurrentCapacity());
+        activity.setRegularSession(activityRequest.getRegularSession());
 
         return activityRepository.save(activity);
     }
@@ -89,14 +96,19 @@ public class ActivityController {
     //delete scheduled activity
     @DeleteMapping("/{activity_id}")
     public ResponseEntity<?> deleteActivity(@PathVariable Long activity_id) {
+        return activityService.deleteActivity(activity_id);
+    }
 
+    //delete regular session, therefore stop activities from repeating
+    @DeleteMapping("/activities/cancelregularsession/{regular_session_id}")
+    public ResponseEntity<?> deleteRegularSession(@PathVariable Long regular_session_id) {
         try {
-            activityRepository.deleteById(activity_id);
+            regularSessionRepository.deleteById(regular_session_id);
             return ResponseEntity
                     .noContent()
                     .build();
         } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException("Activity not found with that ID " + activity_id);
+            throw new ResourceNotFoundException("Regular Session not found with that ID " + regular_session_id);
         }
     }
 }

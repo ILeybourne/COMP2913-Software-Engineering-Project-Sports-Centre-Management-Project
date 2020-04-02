@@ -32,8 +32,13 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -108,6 +113,7 @@ class ResourceControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[*].name", Matchers.contains(TENNIS_COURT)));
     }
+
 
     @Test
     @WithMockUser(username = "test@comp2913.com", authorities = {"SCOPE_update:resource"})

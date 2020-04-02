@@ -14,11 +14,13 @@ class ActivityTest {
 
     Activity activity;
     Random random;
+    Resource resource;
 
     @BeforeEach
     void setUp() {
         activity = new Activity();
         random = new Random();
+        resource = new Resource();
     }
 
     @AfterEach
@@ -74,8 +76,16 @@ class ActivityTest {
     }
 
     @Test
-    @Disabled
     void getResource() {
-        // TODO Not implemented
+        activity.setResource(resource);
+        Resource testGetResource = activity.getResource();
+        assertEquals(resource, testGetResource);
+    }
+
+    @Test
+    void setResource() {
+        activity.setResource(resource);
+        Resource testGetResource = activity.getResource();
+        assertEquals(resource, testGetResource);
     }
 }

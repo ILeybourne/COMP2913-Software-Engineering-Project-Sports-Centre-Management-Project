@@ -17,7 +17,9 @@ import javax.validation.Valid;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
+import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
 
 /**
  * TODO: @CHORE, annotate with Swagger API documentation
@@ -33,10 +35,12 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 @RequestMapping("/bookings")
 public class BookingController {
     private final BookingRepository bookingRepository;
+    private final BookingService bookingService;
 
     @Autowired
-    public BookingController(BookingRepository bookingRepository) {
+    public BookingController(BookingRepository bookingRepository, BookingService bookingServiceImpl) {
         this.bookingRepository = bookingRepository;
+        this.bookingService = bookingServiceImpl;
     }
 
     @GetMapping("")
@@ -55,6 +59,15 @@ public class BookingController {
         return bookingRepository.save(booking);
     }
 
+    //Post booking with the option to book on to a regular session
+    @PostMapping("/{activity_id}/{account_id}")
+    public Booking createBooking(@Valid @RequestBody BookingDTO booking, @PathVariable Long activity_id, @PathVariable Long account_id) {
+        Booking b = new Booking();
+        boolean regularBooking = booking.isRegularBooking();
+        b.setParticipants(booking.getParticipants());
+        return bookingService.createNewBookingForActivity(b, activity_id, account_id, regularBooking);
+    }
+
     @PutMapping("/{booking_id}")
     public Booking updateBooking(@PathVariable Long booking_id, @Valid @RequestBody Booking bookingRequest) {
         return bookingRepository.findById(booking_id).map(booking -> {
@@ -64,11 +77,18 @@ public class BookingController {
         }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
     }
 
+    //unsubscribe from regular session auto bookings
+    @PutMapping("/cancel/{activity_id}/{account_id}")
+    public void cancelRegularSessionBooking(@PathVariable Long activity_id,
+                                            @PathVariable Long account_id) {
+        bookingService.cancelRegularSession(activity_id, account_id);
+    }
+
     @DeleteMapping("/{booking_id}")
-    public ResponseEntity<?> deleteBooking(@PathVariable Long booking_id) {
-        return bookingRepository.findById(booking_id).map(booking -> {
+    public ResponseEntity<?> deleteBooking(@PathVariable Long bookingId) {
+        return bookingRepository.findById(bookingId).map(booking -> {
             bookingRepository.delete(booking);
             return ResponseEntity.ok().build();
-        }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
+        }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + bookingId));
     }
 }

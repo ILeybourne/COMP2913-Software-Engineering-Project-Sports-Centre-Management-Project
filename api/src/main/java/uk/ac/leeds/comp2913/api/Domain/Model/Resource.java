@@ -69,6 +69,12 @@ public class Resource {
         return id;
     }
 
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
     @JsonIgnoreProperties("resource")
     public Set<ActivityType> getActivityTypes() {
         return activityTypes;

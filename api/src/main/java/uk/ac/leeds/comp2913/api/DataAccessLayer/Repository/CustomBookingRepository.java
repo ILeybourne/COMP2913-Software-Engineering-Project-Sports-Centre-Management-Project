@@ -6,4 +6,6 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import java.util.Collection;
 
 public interface CustomBookingRepository {
+
+ void unsubscribeFromRegularSession(Long regular_session_id, Long account_id);
 }

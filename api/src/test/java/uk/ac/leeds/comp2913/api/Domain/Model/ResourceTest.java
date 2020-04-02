@@ -23,6 +23,7 @@ class ResourceTest {
     void tearDown() {
     }
 
+
     @Test
     void getName() {
         String testNameSet = "test" + random.nextInt();
@@ -53,5 +54,21 @@ class ResourceTest {
         resource.setActivities(testActivitiesSet);
         Set<Activity> testActivitiesGet = resource.getActivities();
         assertTrue(testActivitiesGet.size() == 1);
+    }
+    @Test
+
+    void getActivityTypes() {
+        Set<ActivityType> testActivityTypesSet = Collections.singleton(new ActivityType());
+        resource.setActivityTypes(testActivityTypesSet);
+        Set<ActivityType> testActivityTypesGet = resource.getActivityTypes();
+        assertTrue(testActivityTypesGet.size() == 1);
+    }
+
+    @Test
+    void setActivityTypes() {
+        Set<ActivityType> testActivityTypesSet = Collections.singleton(new ActivityType());
+        resource.setActivityTypes(testActivityTypesSet);
+        Set<ActivityType> testActivityTypesGet = resource.getActivityTypes();
+        assertTrue(testActivityTypesGet.size() == 1);
     }
 }
