@@ -7,7 +7,6 @@
 <script>
   export default {
     name: "Centre Price Listing",
-    props: { centre: Object },
     data() {
       return {
 

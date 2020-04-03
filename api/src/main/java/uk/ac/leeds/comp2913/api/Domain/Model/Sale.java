@@ -31,10 +31,10 @@ public abstract class Sale {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  protected long id;
 
   @Column(name = "amount", nullable = false)
-  private BigDecimal amount;
+  protected BigDecimal amount;
 
   /**
    * The Receipt in which the payment was sent out on
@@ -46,8 +46,7 @@ public abstract class Sale {
    */
   @ManyToOne
   @JoinColumn(name = "receipt_id")
-  private Receipt receipt;
-
+  protected Receipt receipt;
 
   /**
    * The Transaction ID verifying the payment
@@ -85,4 +84,6 @@ public abstract class Sale {
   public void setReceipt(Receipt receipt) {
     this.receipt = receipt;
   }
+
+  public abstract String getName();
 }

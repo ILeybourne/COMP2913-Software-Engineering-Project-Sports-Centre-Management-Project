@@ -27,12 +27,6 @@ class FacilityTimetableTest {
     }
 
     @Test
-    void getId() {
-        Long testId = facilityTimetable.getId();
-        assertTrue(testId > 0);
-    }
-
-    @Test
     void getCreatedAt() {
         Date testDateSet = new Date(random.nextLong());
         facilityTimetable.setCreatedAt(testDateSet);

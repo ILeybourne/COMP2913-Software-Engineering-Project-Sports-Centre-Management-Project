@@ -27,12 +27,6 @@ class CentreTest {
     }
 
     @Test
-    void getId() {
-        Long testId = centre.getId();
-        assertTrue(testId > 0);
-    }
-
-    @Test
     void getCreatedAt() {
         Date testDateSet = new Date(random.nextLong());
         centre.setCreatedAt(testDateSet);

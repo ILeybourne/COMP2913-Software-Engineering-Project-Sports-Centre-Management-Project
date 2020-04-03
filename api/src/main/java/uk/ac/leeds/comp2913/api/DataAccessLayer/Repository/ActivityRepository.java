@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @Repository
-public interface ActivityRepository extends JpaRepository<Activity, Long> {
+public interface ActivityRepository extends JpaRepository<Activity, Long>, CustomActivityRepository {
   List<Activity> findByResourceId(Long resource_id);
 
   @Override
@@ -18,4 +18,14 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
   @Query("select a from Activity a inner join fetch a.resource r")
   Collection<Activity> findAllWithResources();
+
+
+  //Query used in the scheduler to automatically post activities that are a regular session and place bookings
+  //locate last activity made with a regular session id (meaning its a regular session)
+  @Query("select a from Activity a " +
+      "where a.startTime = (SELECT MAX(aa.startTime)" +
+      "from Activity aa where aa.regularSession.id = a.regularSession.id)")
+  List<Activity> findAllWithRegularSession();
+
+
 }

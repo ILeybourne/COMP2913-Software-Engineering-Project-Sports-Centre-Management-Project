@@ -27,12 +27,6 @@ class ReceiptTest {
     }
 
     @Test
-    void getId() {
-        long testId = receipt.getId();
-        assertTrue(testId > 0);
-    }
-
-    @Test
     void getCreatedAt() {
         Date testDateSet = new Date(random.nextLong());
         receipt.setCreatedAt(testDateSet);
