@@ -31,6 +31,7 @@ export default {
         endTime: null,
         resourceId: null,
         activityType: null,
+        activityTypeId: null,
         name: null
       }
     };
@@ -65,12 +66,22 @@ export default {
       const filter = activity =>
         activity.resource.id === Number(this.selectedActivityForm.resourceId);
 
-      return this.activities.filter(filter).map(a => a.name);
+      let filteredActivities = this.activities.filter(filter);
+      console.log(filteredActivities)
+      let activityArray = [{ value: null, text: "Please Select" }];
+      for (const activity of filteredActivities) {
+          activityArray.push({ value: activity.id, text: activity.name });
+      }
+
+      return activityArray;
     }
   },
   methods: {
     ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
+    setActivityTypeId(e){
+      this.selectedActivityForm.activityTypeId = e
+    },
     drawEvent(eventInfo) {
       const { event } = eventInfo;
       const { extendedProps: options } = event;
@@ -120,7 +131,7 @@ export default {
     async submitNewActivity(event) {
       event.preventDefault();
       let activityType = this.selectedActivityForm.activityType;
-      const activity = this.activityTypes.find(a => a.name === activityType);
+      const activity = this.activities.find(a => a.name === activityType);
 
       /* TODO: Validate and check server response */
       this.selectedActivityForm.name = activityType;
@@ -130,8 +141,8 @@ export default {
         currentCapacity: 0
       };
 
-      const { data } = await this.$http.post(
-        `/facilities/${this.selectedActivityForm.resourceId}/activities`,
+      await this.$http.post(
+              `/activities/activitytype/${this.selectedActivityForm.activityTypeId}`,
         body
       );
 
@@ -141,7 +152,7 @@ export default {
           facility: String,
           activity: String
         },
-        query: { facilityId: data.resource.id, activityId: data.id }
+        query: { facilityId: this.selectedActivityForm.resourceId , activityId: this.selectedActivityForm.activityTypeId }
       });
     }
   },
@@ -191,6 +202,7 @@ export default {
             v-model="selectedActivityForm.activityType"
             :options="activityTypeOptions"
             required
+            @change="setActivityTypeId($event)"
           ></b-select>
         </b-form-group>
         <b-form-group
