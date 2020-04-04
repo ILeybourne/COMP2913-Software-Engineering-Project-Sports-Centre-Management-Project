@@ -4,7 +4,7 @@
     <v-data-table
       v-model="selected"
       :headers="headers"
-      :items="sessions"
+      :items="activities"
       :single-select="true"
       item-key="name"
       show-select
@@ -49,11 +49,6 @@ export default {
           sortable: true
         },
         {
-          value: "formattedStartAt",
-          text: "Activity Time",
-          sortable: true
-        },
-        {
           value: "name",
           text: "Activity",
           sortable: true
@@ -69,12 +64,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("timetable", ["sessions"])
+    ...mapGetters("facilities", ["activities"])
   },
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
-    ...mapActions("timetable", {
-      getActivity: "getAllSessions"
+    ...mapActions("facilities", {
+      getActivity: "getAllActivities"
     }),
     showCancel() {
       this.$bvModal.show("edit-Activity-modal");

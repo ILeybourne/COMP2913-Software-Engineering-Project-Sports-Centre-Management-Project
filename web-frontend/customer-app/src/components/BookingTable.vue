@@ -35,15 +35,7 @@
 <style scoped></style>
 
 <script>
-const addZero = value => ("0" + value).slice(-2);
-
-const formatDate = value => {
-  if (value) {
-    const dt = new Date(value);
-    return `${addZero(dt.getHours())}:${addZero(dt.getMinutes())}`;
-  }
-  return "";
-};
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "BookingTable",
@@ -97,17 +89,14 @@ export default {
     };
   },
   computed: {
-    formattedData() {
-      return this.bookings.map(booking => {
-        return {
-          ...booking,
-          formattedStartTime: formatDate(booking.activity.startTime)
-        };
-      });
-    }
+    ...mapGetters("timetable", ["sessions"])
   },
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
+    ...mapActions("timetable", {
+      getActivity: "getAllSessions"
+    }),
+    /*
     async getBooking() {
       const token = await this.$auth.getTokenSilently();
 
@@ -118,6 +107,7 @@ export default {
       });
       this.bookings = data.content;
     },
+    */
     showCancel() {
       this.$bvModal.show("edit-booking-modal");
     }

@@ -20,6 +20,7 @@ spring.datasource.hikari.maximumPoolSize=5
 spring.jpa.open-in-view=false
 ########################################################## SECURITY
 spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://prod-comp2931.eu.auth0.com/.well-known/jwks.json
+spring.security.oauth2.resourceserver.jwt.issuer-uri=https://prod-comp2931.eu.auth0.com/
 ########################################################## MAIL
 spring.mail.host=smtp.gmail.com
 spring.mail.port=587
