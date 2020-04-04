@@ -1,22 +1,22 @@
 <template>
-  <div class="price-table">
-
+  <div>
+    <ul>
+      <li v-for="(activity) in facility.activities" :key="activity.id">
+        <p>{{ activity.name }} : {{ activity.cost }}</p>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-  export default {
-    name: "Centre Price Listing",
-    data() {
-      return {
+import { mapGetters } from "vuex";
 
-      }
-    }
+export default {
+  name: "CentrePriceListing",
+  computed: {
+    ...mapGetters("facilities", ["facilities"])
   }
+}
 </script>
 
-<style scoped>
-  .price-table {
-    width: 100%
-  }
-</style>
+<style scoped></style>
