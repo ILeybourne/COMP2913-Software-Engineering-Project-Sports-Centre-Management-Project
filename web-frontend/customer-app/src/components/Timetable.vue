@@ -140,7 +140,7 @@ export default {
         currentCapacity: 0
       };
 
-      await this.$http.post(
+      const { data } = await this.$http.post(
               `/activities/activitytype/${this.selectedActivityForm.activityTypeId}`,
         body
       );
@@ -151,7 +151,7 @@ export default {
           facility: String,
           activity: String
         },
-        query: { facilityId: this.selectedActivityForm.resourceId , activityId: this.selectedActivityForm.activityTypeId }
+        query: { facilityId: this.selectedActivityForm.resourceId , activityTypeId: this.selectedActivityForm.activityTypeId,  activityId: data.id }
       });
     }
   },

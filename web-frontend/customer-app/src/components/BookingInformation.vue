@@ -8,7 +8,7 @@
         <div class="form-row">
           <label for="facility">Facility:</label>
           <b-form-select
-            v-model="selectedFacility"
+            v-model="selectedFacilityId"
             :options="facilityOptions"
             name="facility"
             id="facility"
@@ -22,11 +22,11 @@
         <div class="form-row">
           <label for="activity">Activity:</label>
           <b-form-select
-            v-model="selectedActivity"
+            v-model="selectedActivityId"
             :options="activityOptions"
             name="activity"
             id="activity"
-            @change="[validateActivity()]"
+            @change="[selectActivity($event),validateActivity()]"
             v-bind:state="activitiesValid"
             required
           >
@@ -137,26 +137,29 @@ export default {
       facilityOptions: [],
       activityOptions: [],
 
-      message: [],
-      contents: this.facilities,
-      activitie: this.activities,
-
-      facility: ["Please Select"],
-      activity: ["Please Select"],
-      time: ["Please select"],
-      price: 10.0,
-      date: new Date(),
-      selectedFacility: "Please Select",
-      selectedActivity: null,
-      selectedActivityName: null,
       selectedActivityId: null,
+      selectedFacilityId: null,
+
+      selectedActivityName: null,
       selectedTime: null,
       userType: null,
       componentWidth: 90,
       facilityValid: null,
       activitiesValid: null,
       dateValid: null,
-      timeValid: null
+      timeValid: null,
+
+      // message: [],
+      // contents: this.facilities,
+      // activitie: this.activities,
+
+      // facility: ["Please Select"],
+      // activity: ["Please Select"],
+      time: ["Please select"],
+      price: 10.0,
+      date: new Date(),
+      // selectedActivity: null,
+
     };
   },
   computed: {
@@ -205,8 +208,9 @@ export default {
     },
     validateActivity() {
       this.activitiesValid = !(
-        this.$data.selectedActivity == null ||
-        this.$data.selectedActivity === "Please Select"
+        this.$data.selectedActivityId == null
+        // ||
+        // this.$data.selectedActivity === "Please Select"
       );
     },
     validateDate() {
@@ -281,24 +285,15 @@ export default {
       this.setFacilityOptions();
       this.setActivityTypeOptions(null);
       const facilityId = this.$route.query.facilityId;
+      const activityTypeId = this.$route.query.activityTypeId;
       const activityId = this.$route.query.activityId;
-      let facilities = this.facilities;
-      let activities = this.activities;
       if (!this.isEmpty(this.$route.query)) {
+        //If query isn't empty fill ids, date and time
+        this.selectedFacilityId = facilityId
+        this.selectedActivityId = activityTypeId;
+        this.selectedActivityName = this.activities.find(x => x.id == activityTypeId).name;
 
-        console.log(this.facilities)
-        console.log(facilityId)
-
-        this.selectedFacility = facilities.find(
-          x => x.id == facilityId
-        ).name;
-        this.setActivityTypeOptions(facilityId);
-
-
-        this.selectedActivity = activities.find(x => x.id == activityId).name;
-        this.selectedActivityId = activityId;
-
-        let selectedDateUnix = activities.find(x => x.id == activityId)
+        let selectedDateUnix = this.sessions.find(x => x.id == activityId)
           .startTime;
         let selectedDate = new Date(selectedDateUnix);
         const year = selectedDate.getFullYear();
@@ -309,6 +304,7 @@ export default {
         var formattedDate =
           year + "-" + month.substr(-2) + "-" + date.substr(-2);
         var forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
+
         this.date = formattedDate;
 
         //TODO loop through same named activities in same facility and append times to time array
@@ -316,69 +312,48 @@ export default {
         this.selectedTime = forrmattedTime;
       }
     },
-
-    //     async getResourceContent() {
-    //       const { data } = await this.$http.get("/resources");
-    //
-    //       const content = data.content;
-    //       const facilities = this.facility;
-    //
-    //       for (const facility of content) {
-    //         facilities.push(facility.name);
-    //       }
-    //
-    //       this.facility = facilities;
-    //       this.contents = content;
-    //     },
-    //
-    //     async getActivities() {
-    //       const { data } = await this.$http.get("/activities");
-    //       this.activities = data.content;
-    //     },
-    //
-    //     setActivitiesOptions(e) {
-    //       this.selectFacilityId = e;
-    // console.log("setActivitiesOptions")
-    //       let activities = this.activities;
-    //       let activityArray = [{ value: null, text: "Please Select" }];
-    //       for (const activity of activities) {
-    //         if (activity.resource.name == this.selectedFacility) {
-    //           activityArray.push({ value: activity.id, text: activity.name });
-    //         }
-    //       }
-    //       this.activityOptions = activityArray;
-    //     },
-    //
         getTimes(event) {
-          const activities = this.activities;
-          let timeArray = ["Please Select"];
+      console.log(this.date)
+      if((this.selectedFacilityId != null) && (this.selectedActivityId != null)) {
+        console.log(this.date)
 
-          for (const activity of activities) {
-            let selectedTime = new Date(activity.startTime);
-            const year = selectedTime.getFullYear();
-            const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))
-              .toString()
-              .substr(-2);
-            const date = ("0" + selectedTime.getDate()).substr(-2);
-            const hours = ("0" + selectedTime.getHours()).substr(-2);
-            const mins = ("0" + selectedTime.getMinutes()).substr(-2);
-            let formattedDate = year + "-" + month + "-" + date;
-            this.selectedActivityName = this.activity.find(
-              a => a.value == this.selectedActivity
-            ).text;
-            if (
-              activity.name == this.selectedActivityName &&
-              formattedDate == event.target.value
-            ) {
-              let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
-              timeArray.push(formattedTime);
-            }
+        // const activities = this.activities;
+        let timeArray = ["Please Select"];
+
+        for (const activity of this.sessions) {
+          console.log(activity)
+          let selectedTime = new Date(activity.startTime);
+          const year = selectedTime.getFullYear();
+          const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))
+                  .toString()
+                  .substr(-2);
+          const date = ("0" + selectedTime.getDate()).substr(-2);
+          const hours = ("0" + selectedTime.getHours()).substr(-2);
+          const mins = ("0" + selectedTime.getMinutes()).substr(-2);
+          let formattedDate = year + "-" + month + "-" + date;
+          // this.selectedActivityName = this.activities.find(
+          //         a => a.value == this.selectedActivityId
+          // ).text;
+          console.log( activity.name + "=="  + this.selectedActivityName)
+          console.log( formattedDate + "==" + event.target.value)
+          if (
+                  activity.name == this.selectedActivityName &&
+                  formattedDate == event.target.value
+          ) {
+            let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
+            timeArray.push(formattedTime);
           }
-          this.time = timeArray;
+        }
+        this.time = timeArray;
+      }
         },
     //
-    //     selectActivity(event) {
-    //       this.selectedActivityId = event;
+        selectActivity() {
+          if(this.selectedActivityId != null)
+          this.selectedActivityName = this.activities.find(x => x.id === this.selectedActivityId).name;
+        },
+    //     selectFacility(event) {
+    //       this.selectedFacilityId = event;
     //     }
   },
   async mounted() {
