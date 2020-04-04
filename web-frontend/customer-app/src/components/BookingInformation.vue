@@ -9,10 +9,10 @@
           <label for="facility">Facility:</label>
           <b-form-select
             v-model="selectedFacility"
-            :options="facility"
+            :options="facilityOptions"
             name="facility"
             id="facility"
-            @change="[setActivitiesArray(), validateFacility()]"
+            @change="[setActivityTypeOptions($event), validateFacility()]"
             @load="setFormDefaults($event)"
             v-bind:state="facilityValid"
             required
@@ -23,10 +23,10 @@
           <label for="activity">Activity:</label>
           <b-form-select
             v-model="selectedActivity"
-            :options="activity"
+            :options="activityOptions"
             name="activity"
             id="activity"
-            @change="[selectActivity($event), validateActivity()]"
+            @change="[validateActivity()]"
             v-bind:state="activitiesValid"
             required
           >
@@ -124,20 +124,25 @@ label {
 </style>
 
 <script>
-import axios from "axios";
-// import { getInstance } from "../services/auth.service";
-
+// import axios from "axios";
+import { mapActions, mapGetters } from "vuex";
 export default {
+  ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
+  ...mapActions("timetable", ["getAllSessions"]),
   name: "BookingInformation",
   // props: ["content", "facilities"],
   // props:
   data() {
     return {
+      facilityOptions: [],
+      activityOptions: [],
+
       message: [],
-      contents: [],
+      contents: this.facilities,
+      activitie: this.activities,
+
       facility: ["Please Select"],
       activity: ["Please Select"],
-      activities: [],
       time: ["Please select"],
       price: 10.0,
       date: new Date(),
@@ -154,8 +159,38 @@ export default {
       timeValid: null
     };
   },
-  computed: {},
+  computed: {
+    ...mapGetters("facilities", ["facilities", "activities"]),
+    ...mapGetters("timetable", ["sessions"])
+  },
   methods: {
+    ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
+    ...mapActions("timetable", ["getAllSessions"]),
+
+    setActivityTypeOptions(e) {
+      let activityArray = [{ value: null, text: "Please Select" }];
+      let activities = this.activities;
+
+      if (!(e == null)) {
+        const filter = activity => activity.resource.id === e;
+        activities = this.activities.filter(filter);
+      }
+
+      for (const activity of activities) {
+        activityArray.push({ value: activity.id, text: activity.name });
+      }
+
+      this.activityOptions = activityArray;
+    },
+
+    setFacilityOptions() {
+      let facilities = this.facilities;
+      let facilityArray = [{ value: null, text: "Please Select" }];
+      for (const facility of facilities) {
+        facilityArray.push({ value: facility.id, text: facility.name });
+      }
+      this.facilityOptions = facilityArray;
+    },
     setFormDefaults() {},
 
     getUserType(e) {
@@ -216,19 +251,19 @@ export default {
       }
     },
 
-    async getFacilities() {
-      const { data } = await this.$http.get("/resources");
-      return data;
-    },
-
-    async getActivitiesForFacility() {
-      const facilityId = this.$route.query.facilityId;
-
-      const { data } = await axios.get(
-        "/resources/" + facilityId + "/activities"
-      );
-      return data;
-    },
+    // async getFacilities() {
+    //   const { data } = await this.$http.get("/resources");
+    //   return data;
+    // },
+    //
+    // async getActivitiesForFacility() {
+    //   const facilityId = this.$route.query.facilityId;
+    //
+    //   const { data } = await axios.get(
+    //     "/resources/" + facilityId + "/activities"
+    //   );
+    //   return data;
+    // },
 
     isEmpty(obj) {
       if (Object.keys(obj).length === 0) {
@@ -243,31 +278,28 @@ export default {
     },
 
     async fillByQuery() {
+      this.setFacilityOptions();
+      this.setActivityTypeOptions(null);
       const facilityId = this.$route.query.facilityId;
       const activityId = this.$route.query.activityId;
-      let facilities = [];
-      let activities = [];
+      let facilities = this.facilities;
+      let activities = this.activities;
       if (!this.isEmpty(this.$route.query)) {
-        await axios
-          .all([this.getFacilities(), this.getActivitiesForFacility()])
-          .then(responseArray => {
-            //this will be executed only when all requests are complete
-            facilities = responseArray[0];
-            activities = responseArray[1];
-            this.activities = activities;
-          });
 
-        this.selectedFacility = facilities.content.find(
+        console.log(this.facilities)
+        console.log(facilityId)
+
+        this.selectedFacility = facilities.find(
           x => x.id == facilityId
         ).name;
-        this.setActivitiesArray();
+        this.setActivityTypeOptions(facilityId);
+
 
         this.selectedActivity = activities.find(x => x.id == activityId).name;
         this.selectedActivityId = activityId;
 
         let selectedDateUnix = activities.find(x => x.id == activityId)
           .startTime;
-
         let selectedDate = new Date(selectedDateUnix);
         const year = selectedDate.getFullYear();
         const month = "0" + parseInt(selectedDate.getMonth() + 1).toString();
@@ -285,74 +317,79 @@ export default {
       }
     },
 
-    async getResourceContent() {
-      const { data } = await this.$http.get("/resources");
+    //     async getResourceContent() {
+    //       const { data } = await this.$http.get("/resources");
+    //
+    //       const content = data.content;
+    //       const facilities = this.facility;
+    //
+    //       for (const facility of content) {
+    //         facilities.push(facility.name);
+    //       }
+    //
+    //       this.facility = facilities;
+    //       this.contents = content;
+    //     },
+    //
+    //     async getActivities() {
+    //       const { data } = await this.$http.get("/activities");
+    //       this.activities = data.content;
+    //     },
+    //
+    //     setActivitiesOptions(e) {
+    //       this.selectFacilityId = e;
+    // console.log("setActivitiesOptions")
+    //       let activities = this.activities;
+    //       let activityArray = [{ value: null, text: "Please Select" }];
+    //       for (const activity of activities) {
+    //         if (activity.resource.name == this.selectedFacility) {
+    //           activityArray.push({ value: activity.id, text: activity.name });
+    //         }
+    //       }
+    //       this.activityOptions = activityArray;
+    //     },
+    //
+        getTimes(event) {
+          const activities = this.activities;
+          let timeArray = ["Please Select"];
 
-      const content = data.content;
-      const facilities = this.facility;
-
-      for (const facility of content) {
-        facilities.push(facility.name);
-      }
-
-      this.facility = facilities;
-      this.contents = content;
-    },
-
-    async getActivities() {
-      const { data } = await this.$http.get("/activities");
-      this.activities = data.content;
-    },
-
-    setActivitiesArray() {
-      let activities = this.activities;
-      let activityArray = [{ value: null, text: "Please Select" }];
-      for (const activity of activities) {
-        if (activity.resource.name == this.selectedFacility) {
-          activityArray.push({ value: activity.id, text: activity.name });
-        }
-      }
-      this.activity = activityArray;
-    },
-
-    getTimes(event) {
-      const activities = this.activities;
-      let timeArray = ["Please Select"];
-
-      for (const activity of activities) {
-        let selectedTime = new Date(activity.startTime);
-        const year = selectedTime.getFullYear();
-        const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))
-          .toString()
-          .substr(-2);
-        const date = ("0" + selectedTime.getDate()).substr(-2);
-        const hours = ("0" + selectedTime.getHours()).substr(-2);
-        const mins = ("0" + selectedTime.getMinutes()).substr(-2);
-        let formattedDate = year + "-" + month + "-" + date;
-        this.selectedActivityName = this.activity.find(
-          a => a.value == this.selectedActivity
-        ).text;
-        if (
-          activity.name == this.selectedActivityName &&
-          formattedDate == event.target.value
-        ) {
-          let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
-          timeArray.push(formattedTime);
-        }
-      }
-      this.time = timeArray;
-    },
-
-    selectActivity(event) {
-      this.selectedActivityId = event;
-    }
+          for (const activity of activities) {
+            let selectedTime = new Date(activity.startTime);
+            const year = selectedTime.getFullYear();
+            const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))
+              .toString()
+              .substr(-2);
+            const date = ("0" + selectedTime.getDate()).substr(-2);
+            const hours = ("0" + selectedTime.getHours()).substr(-2);
+            const mins = ("0" + selectedTime.getMinutes()).substr(-2);
+            let formattedDate = year + "-" + month + "-" + date;
+            this.selectedActivityName = this.activity.find(
+              a => a.value == this.selectedActivity
+            ).text;
+            if (
+              activity.name == this.selectedActivityName &&
+              formattedDate == event.target.value
+            ) {
+              let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
+              timeArray.push(formattedTime);
+            }
+          }
+          this.time = timeArray;
+        },
+    //
+    //     selectActivity(event) {
+    //       this.selectedActivityId = event;
+    //     }
   },
   async mounted() {
-    await this.$auth.created;
-    await this.getResourceContent();
+    await this.getAllActivities();
+    await this.getAllFacilities();
+    await this.getAllSessions();
+    // await this.$auth.created;
+    // await this.getResourceContent();
     this.fillByQuery();
-    this.getActivities();
-    this.setActivitiesArray(this.activities);
+    // this.getActivities();
+    // this.setActivitiesOptions(this.activities);
   }
 };
 </script>

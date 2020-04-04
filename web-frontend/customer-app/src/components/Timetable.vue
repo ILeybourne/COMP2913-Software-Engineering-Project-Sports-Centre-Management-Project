@@ -67,7 +67,6 @@ export default {
         activity.resource.id === Number(this.selectedActivityForm.resourceId);
 
       let filteredActivities = this.activities.filter(filter);
-      console.log(filteredActivities)
       let activityArray = [{ value: null, text: "Please Select" }];
       for (const activity of filteredActivities) {
           activityArray.push({ value: activity.id, text: activity.name });
