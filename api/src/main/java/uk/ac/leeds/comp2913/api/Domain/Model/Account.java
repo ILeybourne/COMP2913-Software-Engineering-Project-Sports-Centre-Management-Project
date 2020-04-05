@@ -61,7 +61,6 @@ public class Account extends RepresentationModel {
         this.updated_at = updated_at;
     }
 
-
     @JsonIgnore
     public Centre getCentre() {
         return centre;

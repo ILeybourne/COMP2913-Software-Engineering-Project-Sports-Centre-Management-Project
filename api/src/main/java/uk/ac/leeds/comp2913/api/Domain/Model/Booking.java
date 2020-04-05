@@ -1,6 +1,7 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,8 +17,11 @@ import java.util.Date;
 @Entity
 public class Booking extends Sale {
 
+    @JsonIgnore
     @CreationTimestamp
     private Date created_at;
+
+    @JsonIgnore
     @UpdateTimestamp
     private Date updated_at;
 
@@ -26,13 +30,14 @@ public class Booking extends Sale {
     /**
      * The account associated with the booking
      */
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
     /**
      * The Activity associated with the booking
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id")
     private Activity activity;
 
@@ -66,6 +71,7 @@ public class Booking extends Sale {
         return originalAmount.multiply(BigDecimal.valueOf(0.7));
     }
 
+    @JsonIgnore
     public Date getCreatedAt() {
         return created_at;
     }
@@ -74,6 +80,7 @@ public class Booking extends Sale {
         this.created_at = created_at;
     }
 
+    @JsonIgnore
     public Date getUpdatedAt() {
         return updated_at;
     }
@@ -82,7 +89,6 @@ public class Booking extends Sale {
         this.updated_at = updated_at;
     }
 
-    @JsonIgnoreProperties({"customer", "bookings"})
     public Account getAccount() {
         return account;
     }
@@ -91,7 +97,7 @@ public class Booking extends Sale {
         this.account = account;
     }
 
-    @JsonIgnoreProperties("bookings")
+    @JsonIgnore
     public Activity getActivity() {
         return activity;
     }
@@ -113,7 +119,7 @@ public class Booking extends Sale {
         this.participants = participants;
     }
 
-    @JsonIgnoreProperties("activities")
+    @JsonIgnore
     public RegularSession getRegularSession() {
         return regularSession;
     }

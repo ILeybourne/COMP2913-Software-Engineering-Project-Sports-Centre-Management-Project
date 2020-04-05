@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.RegularSessionReposit
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
+import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
@@ -41,10 +43,23 @@ public class BookingServiceImpl implements BookingService {
 
 
   @Override
+  @Transactional
   public Booking findById(Long booking_id){
     return bookingRepository.findById(booking_id)
             .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
 }
+
+
+  @Override
+  @Transactional
+  public Account findAccountFromBooking(Long booking_id){
+    Booking booking = bookingRepository.findById(booking_id)
+            .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
+    Account account = booking.getAccount();
+    Hibernate.initialize(account);
+    return account;
+  }
+
 
   @Transactional
   @Override

@@ -64,7 +64,6 @@ public class AccountController {
        return customer;
    }
 
-
    @GetMapping("/{account_id}/bookings")
      public List<Booking> getAccountBookings (@PathVariable Long account_id){
          return accountService.getAccountBookings(account_id);

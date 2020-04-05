@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -35,14 +36,15 @@ public class Resource extends RepresentationModel<Resource> {
     /**
      * List of activities ever booked for the resource
      */
-    @OneToMany(mappedBy = "resource", fetch = FetchType.EAGER)
+    @JsonIgnore
+    @OneToMany(mappedBy = "resource", fetch = FetchType.LAZY)
     private Set<Activity> activities;
 
     /**
      * List of activities held at the resource
      */
-    @JsonProperty
-    @OneToMany(mappedBy = "resource", fetch = FetchType.EAGER)
+    @JsonIgnore
+    @OneToMany(mappedBy = "resource", fetch = FetchType.LAZY)
     private Set<ActivityType> activityTypes;
 
     @CreationTimestamp

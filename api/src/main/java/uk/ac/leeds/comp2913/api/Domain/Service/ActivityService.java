@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Collection;
 import java.util.List;
 
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
@@ -29,4 +30,5 @@ public interface ActivityService {
 
   ResponseEntity<?> deleteRegularSession(Long regular_session_id);
 
-  }
+    Collection<Activity> findAllWithResources();
+}

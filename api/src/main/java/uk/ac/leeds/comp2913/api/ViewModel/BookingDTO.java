@@ -11,6 +11,7 @@ public class BookingDTO {
   @Range(min = 1)
   private Integer participants;
   private boolean regularBooking;
+  private Long accountId;
 
   public BookingDTO() {
   }
@@ -18,12 +19,14 @@ public class BookingDTO {
   @JsonCreator
   public BookingDTO(@JsonProperty("participants") Integer participants,
                     @JsonProperty("amount") BigDecimal amount,
+                    @JsonProperty("accountId") Long accountId,
                     @JsonProperty(value = "regularBooking") Boolean regularBooking) {
     if (regularBooking == null) {
       regularBooking = false;
     }
     this.regularBooking = (boolean) regularBooking;
     this.participants = participants;
+    this.accountId = accountId;
   }
 
   public Integer getParticipants() {
@@ -41,4 +44,13 @@ public class BookingDTO {
   public void setRegularBooking(boolean regularBooking) {
     this.regularBooking = regularBooking;
   }
+
+  public Long getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(Long accountId) {
+    this.accountId = accountId;
+  }
+
 }

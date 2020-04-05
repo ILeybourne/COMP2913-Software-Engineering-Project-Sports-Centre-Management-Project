@@ -15,13 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.logging.LogManager;
 
 import javax.validation.Valid;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
+import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
+import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
@@ -56,47 +60,54 @@ public class BookingController {
         for (Booking booking : allBookings) {
             Long bookingId = booking.getId();
             Link selfLink = linkTo(BookingController.class).slash(bookingId).withSelfRel();
-            Link deleteLink = linkTo(BookingController.class).slash("delete").slash(bookingId).withRel("Delete");
-            Link updateLink = linkTo(BookingController.class).slash(bookingId).withRel("Update");
-            booking.add(selfLink, deleteLink, updateLink);
-               if (booking.getRegularSession()!=null){
-                Long activityId = booking.getActivity().getId();
-                Long accountId = booking.getAccount().getId();
-                Link cancelRegularSessionLink = linkTo(BookingController.class).slash("cancel").slash(activityId).slash(accountId).withRel("Unsubscribe from Regular Session");
-                booking.add(cancelRegularSessionLink);
-               }
+            booking.add(selfLink);
         }
-
         Link viewAllBookings = linkTo(BookingController.class).withSelfRel();
         CollectionModel<Booking> result = new CollectionModel<>(allBookings, viewAllBookings);
         return result;
     }
 
     @GetMapping("/{booking_id}")
-    public Booking getBookings(@PathVariable long booking_id) {
-        return bookingService.findById(booking_id);
+    public Booking getBookingById(@PathVariable Long booking_id) {
+        Booking booking = bookingService.findById(booking_id);
+        Link deleteLink = linkTo(BookingController.class).slash("delete").slash(booking_id).withRel("Delete");
+        Link updateLink = linkTo(BookingController.class).slash(booking_id).withRel("Update");
+        //Link receiptLink = linkTo(ReceiptController.class).slash(booking.getReceipt().getId()).slash("receipt").withRel("Receipt");
+        Link accountLink = linkTo(AccountController.class).slash(booking.getAccount().getId()).withRel("Account");
+        Link activityLink = linkTo(ActivityController.class).slash(booking.getActivity().getId()).withRel("Activity");
+        booking.add(deleteLink, updateLink, accountLink, activityLink);
+        if (booking.getRegularSession()!=null){
+            Link cancelRegularSessionLink = linkTo(BookingController.class).slash("cancel").slash(booking.getActivity().getId()).slash(booking.getAccount().getId()).withRel("Unsubscribe from Regular Session");
+            booking.add(cancelRegularSessionLink);
+        }
+        return booking;
     }
 
     @GetMapping("/account/{account_id}")
-    public List<Booking> getBookingsByAccount(@PathVariable long account_id) {
+    public List<Booking> getBookingsByAccount(@PathVariable Long account_id) {
         return bookingRepository.findByAccountId(account_id);
     }
 
     @GetMapping("/activity/{activity_id}")
-    public List<Booking> getBookingsByActivity(@PathVariable long activity_id) {
-        return bookingRepository.findByActivityId(activity_id);
-    }
-
-    @PostMapping("")
-    public Booking createBooking(@Valid @RequestBody Booking booking) {
-        return bookingService.save(booking);
+    public CollectionModel<Booking> getBookingsByActivity(@PathVariable Long activity_id) {
+        List<Booking> activityBookings = bookingRepository.findByActivityId(activity_id);
+        for (Booking booking : activityBookings) {
+            Long bookingId = booking.getId();
+            Link selfLink = linkTo(BookingController.class).slash(bookingId).withSelfRel();
+            booking.add(selfLink);
+        }
+        Link selfLink = linkTo(ActivityController.class).slash("activity").slash(activity_id).withSelfRel();
+        Link activityLink = linkTo(ActivityController.class).slash(activity_id).withRel("Activity");
+        CollectionModel<Booking> result = new CollectionModel<>(activityBookings, selfLink, activityLink);
+        return result;
     }
 
     //Post booking with the option to book on to a regular session
-    @PostMapping("/{activity_id}/{account_id}")
-    public Booking createBooking(@Valid @RequestBody BookingDTO booking, @PathVariable Long activity_id, @PathVariable Long account_id) {
+    @PostMapping("/{activity_id}")
+    public Booking createBooking(@Valid @RequestBody BookingDTO booking, @PathVariable Long activity_id) {
         Booking b = new Booking();
         boolean regularBooking = booking.isRegularBooking();
+        Long account_id = booking.getAccountId();
         b.setParticipants(booking.getParticipants());
         return bookingService.createNewBookingForActivity(b, activity_id, account_id, regularBooking);
     }

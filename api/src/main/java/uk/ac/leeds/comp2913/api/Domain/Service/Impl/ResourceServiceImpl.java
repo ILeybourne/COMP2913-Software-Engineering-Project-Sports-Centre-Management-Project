@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ResourceRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 import uk.ac.leeds.comp2913.api.Domain.Service.ResourceService;
@@ -28,8 +30,8 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Page<Resource> findAll(Pageable pageable) {
-        return this.resourceRepository.findAll(pageable);
+    public List<Resource> findAll() {
+        return this.resourceRepository.findAll();
     }
 
     @Override

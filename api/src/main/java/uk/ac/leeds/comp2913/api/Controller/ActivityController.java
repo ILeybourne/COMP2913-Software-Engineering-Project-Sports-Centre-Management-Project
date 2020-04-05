@@ -54,19 +54,11 @@ public class ActivityController {
         for (Activity activity : allActivities) {
             Long activityId = activity.getId();
             Link selfLink = linkTo(ActivityController.class).slash(activityId).withSelfRel();
-            Link updateLink = linkTo(ActivityController.class).slash(activityId).slash("update").withRel("update");
-            Link deleteLink = linkTo(ActivityController.class).slash(activityId).slash("delete").withRel("delete");
-            activity.add(selfLink, updateLink, deleteLink);
-            if (activity.getRegularSession() != null) {
-                Long regularSessionId = activity.getRegularSession().getId();
-                Link stopRegularSessionLink = linkTo(ActivityController.class).slash("cancelregularsession")
-                        .slash(regularSessionId).withRel("Stop Regular Session");
-                activity.add(stopRegularSessionLink);
-            }
+            activity.add(selfLink);
         }
         Link viewAllActivities = linkTo(ActivityController.class).withSelfRel();
-        //  Link createActivity = linkTo(ActivityController.class).withRel("create new activity");
-        CollectionModel<Activity> result = new CollectionModel<>(allActivities, viewAllActivities);
+        Link createActivity = linkTo(ActivityController.class).withSelfRel();
+        CollectionModel<Activity> result = new CollectionModel<>(allActivities, viewAllActivities, createActivity);
         return result;
     }
 
@@ -76,7 +68,10 @@ public class ActivityController {
         Activity activity = activityService.findActivityById(activity_id);
         Link deleteLink = linkTo(ActivityController.class).slash(activity_id).slash("delete").withRel("delete");
         Link updateLink = linkTo(ActivityController.class).slash(activity_id).slash("update").withRel("update");
-        activity.add(updateLink, deleteLink);
+        Link viewBookingsLink = linkTo(BookingController.class).slash("activity").slash(activity_id).withRel("Bookings");
+        Link placeBookingLink = linkTo(BookingController.class).slash(activity_id).withRel("Place Booking");
+        Link createNewActivityLink = linkTo(ActivityController.class).withRel("Create New Activity");
+        activity.add(updateLink, deleteLink, viewBookingsLink, placeBookingLink, createNewActivityLink);
         if (activity.getRegularSession() != null) {
             Long regularSessionId = activity.getRegularSession().getId();
             Link stopRegularSessionLink = linkTo(ActivityController.class).slash("cancelregularsession")
@@ -95,10 +90,11 @@ public class ActivityController {
     //schedule an activity
     //Pulls data from activity type, only start and end type is pulled from json via JsonCreator
     //schedule an activity. Create a one time activity or regular session
-    @PostMapping("{activity_type_id}")
-    public Activity createActivity(@Valid @RequestBody ActivityDTO activityDTO, @PathVariable Long activity_type_id) {
+    @PostMapping("")
+    public Activity createActivity(@Valid @RequestBody ActivityDTO activityDTO) {
         Activity activity = new Activity();
         RegularSession regularSession = new RegularSession();
+        Long activity_type_id = activityDTO.getActivityTypeId();
         activity.setStartTime(activityDTO.getStartTime());
         activity.setEndTime(activityDTO.getEndTime());
         activity.setSocial(activityDTO.isSocial());

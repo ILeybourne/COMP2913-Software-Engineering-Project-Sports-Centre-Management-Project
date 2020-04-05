@@ -50,7 +50,7 @@ public class Activity extends CollectionModel<Activity> {
    * The bookings that have been made against the activity
    */
   @JsonIgnore
-  @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY)
   private Set<Booking> bookings;
 
   /**
@@ -64,7 +64,7 @@ public class Activity extends CollectionModel<Activity> {
    * Which activity type the activity belongs to
    */
   @JsonIgnore
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "activity_type_id", nullable = false)
   private ActivityType activityType;
 

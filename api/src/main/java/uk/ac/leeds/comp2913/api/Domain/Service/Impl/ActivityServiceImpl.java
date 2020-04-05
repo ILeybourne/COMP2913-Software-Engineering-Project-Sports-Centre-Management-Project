@@ -17,6 +17,8 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 
 import javax.transaction.Transactional;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -50,6 +52,12 @@ public class ActivityServiceImpl implements ActivityService {
   public  List<Activity> findByResourceId(Long resource_id){
     return activityRepository.findByResourceId(resource_id);
   }
+
+  @Override
+  public Collection<Activity> findAllWithResources(){
+    return activityRepository.findAllWithResources();
+  }
+
 
   //Creates new activity from activityDTO object, activity_type_id is passed through path variable
   @Override

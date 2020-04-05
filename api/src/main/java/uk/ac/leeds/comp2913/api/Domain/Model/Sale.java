@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.hibernate.validator.constraints.Length;
@@ -45,7 +46,8 @@ public abstract class Sale extends CollectionModel {
    * Hence if we need to get the time of payment, we get the created_at
    * timestamp from the receipt
    */
-  @ManyToOne
+  @JsonIgnore
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "receipt_id")
   protected Receipt receipt;
 
@@ -54,6 +56,7 @@ public abstract class Sale extends CollectionModel {
    * <p>
    * In case of card handling system eg Stripe, or Random Transaction ID if cash payment
    */
+  @JsonIgnore
   @Column(name = "transaction_id", nullable = true, unique = true)
   @Length(max = 255)
   private String transactionId;
