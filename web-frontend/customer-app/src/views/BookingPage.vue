@@ -1,10 +1,6 @@
 <template>
   <div class="page-container">
-    <div class="padding-div">
-      <button type="button" class="btn btn-outline-secondary">
-        Back
-      </button>
-    </div>
+    <div class="padding-div"></div>
     <div class="heading-div">
       <h1>Bookings</h1>
     </div>
@@ -142,7 +138,7 @@ export default {
       activitiesFromServer: [],
       loading: false,
       amount: 1000,
-      publishableKey: "pk_test_crv9Zb7tvQtSJ82FhQwrnb8k00v3eIOvj8",
+      // publishableKey: "pk_test_crv9Zb7tvQtSJ82FhQwrnb8k00v3eIOvj8",
       token: null,
       charge: null,
 
@@ -308,23 +304,20 @@ export default {
           if (error) {
             // console.error(error);
           }
-        })
-        // .catch(err => console.log(err));
+        });
+      // .catch(err => console.log(err));
 
       //uses client secret from  payment intent to make payment
       // eslint-disable-next-line no-undef
-      await this.stripe.confirmCardPayment(
-        axiosPaymentIntent.client_secret,
-        {
-          payment_method: {
-            // card: this.card,
-            card: token.card,
-            billing_details: {
-              name: "Jenny Rosen"
-            }
+      await this.stripe.confirmCardPayment(axiosPaymentIntent.client_secret, {
+        payment_method: {
+          // card: this.card,
+          card: token.card,
+          billing_details: {
+            name: "Jenny Rosen"
           }
         }
-      );
+      });
       // console.log(token);
       // console.log(result);
     },
@@ -437,14 +430,11 @@ export default {
 
     async getActivities() {
       const token = await this.$auth.getTokenSilently();
-      const { data } = await axios.get(
-        "http://localhost:8000/activities",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      const { data } = await axios.get("http://localhost:8000/activities", {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
       this.activitiesFromServer = data.content;
     }
   },

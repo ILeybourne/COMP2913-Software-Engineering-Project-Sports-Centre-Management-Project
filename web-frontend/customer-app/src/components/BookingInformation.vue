@@ -81,7 +81,7 @@
             type="button"
             class="btn btn-outline-primary"
             name="account"
-            @click="getUserType($event)"
+            @click="[getUserType($event), getKey()]"
           >
             Checkout With Account
           </button>
@@ -163,6 +163,14 @@ export default {
   methods: {
     ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
+
+    async getKey(){
+      let key = await this.$http.get(
+              `/payments/stripe-key/`
+      )
+      console.log("key")
+      console.log(key)
+    },
 
     getPrice(e) {
       console.log(e);
