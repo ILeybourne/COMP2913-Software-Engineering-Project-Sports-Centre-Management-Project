@@ -25,7 +25,7 @@ import javax.persistence.*;
     private MembershipType membershipType;
 
     //foreign key, account id to link user
-    @OneToOne (fetch = FetchType.EAGER)
+    @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 

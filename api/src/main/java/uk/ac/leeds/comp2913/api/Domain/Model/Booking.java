@@ -82,6 +82,7 @@ public class Booking extends Sale {
         this.updated_at = updated_at;
     }
 
+    @JsonIgnoreProperties({"customer", "bookings"})
     public Account getAccount() {
         return account;
     }

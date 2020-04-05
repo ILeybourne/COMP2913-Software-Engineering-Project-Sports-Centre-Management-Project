@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -22,7 +23,7 @@ import javax.persistence.*;
  * and should be displayed on the weekly timetable for booking
  */
 @Entity
-public class Activity {
+public class Activity extends CollectionModel<Activity> {
 
   public Activity() {
   }
@@ -187,7 +188,7 @@ public class Activity {
     this.social = social;
   }
 
-  @JsonIgnoreProperties({"activities"})
+  @JsonIgnoreProperties({"activities", "bookings"})
   public RegularSession getRegularSession() {
     return regularSession;
   }

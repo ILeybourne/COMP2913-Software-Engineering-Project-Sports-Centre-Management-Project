@@ -3,6 +3,8 @@ package uk.ac.leeds.comp2913.api.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,13 +15,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
+import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * TODO: @CHORE, annotate with Swagger API documentation
@@ -43,20 +50,46 @@ public class BookingController {
         this.bookingService = bookingServiceImpl;
     }
 
-    @GetMapping("")
-    public Page<Booking> getBookings(Pageable pageable) {
-        return bookingRepository.findAll(pageable);
+    @GetMapping
+    public CollectionModel<Booking> getBookings() {
+        List <Booking> allBookings = bookingService.findAll();
+        for (Booking booking : allBookings) {
+            Long bookingId = booking.getId();
+            Link selfLink = linkTo(BookingController.class).slash(bookingId).withSelfRel();
+            Link deleteLink = linkTo(BookingController.class).slash("delete").slash(bookingId).withRel("Delete");
+            Link updateLink = linkTo(BookingController.class).slash(bookingId).withRel("Update");
+            booking.add(selfLink, deleteLink, updateLink);
+               if (booking.getRegularSession()!=null){
+                Long activityId = booking.getActivity().getId();
+                Long accountId = booking.getAccount().getId();
+                Link cancelRegularSessionLink = linkTo(BookingController.class).slash("cancel").slash(activityId).slash(accountId).withRel("Unsubscribe from Regular Session");
+                booking.add(cancelRegularSessionLink);
+               }
+        }
+
+        Link viewAllBookings = linkTo(BookingController.class).withSelfRel();
+        CollectionModel<Booking> result = new CollectionModel<>(allBookings, viewAllBookings);
+        return result;
     }
 
     @GetMapping("/{booking_id}")
-    public Booking getBookings(@PathVariable long booking_id, Pageable pageable) {
-        return bookingRepository.findById(booking_id)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
+    public Booking getBookings(@PathVariable long booking_id) {
+        return bookingService.findById(booking_id);
+    }
+
+    @GetMapping("/account/{account_id}")
+    public List<Booking> getBookingsByAccount(@PathVariable long account_id) {
+        return bookingRepository.findByAccountId(account_id);
+    }
+
+    @GetMapping("/activity/{activity_id}")
+    public List<Booking> getBookingsByActivity(@PathVariable long activity_id) {
+        return bookingRepository.findByActivityId(activity_id);
     }
 
     @PostMapping("")
     public Booking createBooking(@Valid @RequestBody Booking booking) {
-        return bookingRepository.save(booking);
+        return bookingService.save(booking);
     }
 
     //Post booking with the option to book on to a regular session
@@ -84,7 +117,7 @@ public class BookingController {
         bookingService.cancelRegularSession(activity_id, account_id);
     }
 
-    @DeleteMapping("/{booking_id}")
+    @DeleteMapping("/delete/{booking_id}")
     public ResponseEntity<?> deleteBooking(@PathVariable Long bookingId) {
         return bookingRepository.findById(bookingId).map(booking -> {
             bookingRepository.delete(booking);

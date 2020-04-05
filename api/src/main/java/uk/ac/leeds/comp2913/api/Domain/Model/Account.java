@@ -1,9 +1,11 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.List;
 import javax.persistence.*;
 
 @Entity
-public class Account {
+public class Account extends RepresentationModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,13 +27,17 @@ public class Account {
     @ManyToOne
     private Centre centre;
 
-    @OneToOne(mappedBy = "account",fetch = FetchType.EAGER)
-    private Membership Memberships;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "account",fetch = FetchType.EAGER)
+    private List<Membership> memberships;
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "account")
     private List<Booking> bookings;
 
@@ -65,15 +71,7 @@ public class Account {
         this.centre = centre;
     }
 
-    @JsonIgnore
-    public Membership getMemberships() {
-        return Memberships;
-    }
-
-    public void setMemberships(Membership memberships) {
-        Memberships = memberships;
-    }
-
+    @JsonIgnoreProperties({"Account", "receipts"})
     public Customer getCustomer() {
         return customer;
     }
@@ -95,4 +93,13 @@ public class Account {
     public void setBookings(List<Booking> bookings) {
       this.bookings = bookings;
     }
+
+    public List<Membership> getMemberships() {
+        return memberships;
+    }
+
+    public void setMemberships(List<Membership> memberships) {
+        this.memberships = memberships;
+    }
+
 }

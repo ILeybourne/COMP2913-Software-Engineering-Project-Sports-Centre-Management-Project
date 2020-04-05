@@ -3,6 +3,7 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.hateoas.CollectionModel;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -27,7 +28,7 @@ import java.math.BigDecimal;
 })
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
-public abstract class Sale {
+public abstract class Sale extends CollectionModel {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

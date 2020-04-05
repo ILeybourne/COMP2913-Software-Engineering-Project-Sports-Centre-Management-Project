@@ -19,7 +19,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, Custo
   @Query("select a from Activity a inner join fetch a.resource r")
   Collection<Activity> findAllWithResources();
 
-
   //Query used in the scheduler to automatically post activities that are a regular session and place bookings
   //locate last activity made with a regular session id (meaning its a regular session)
   @Query("select a from Activity a " +

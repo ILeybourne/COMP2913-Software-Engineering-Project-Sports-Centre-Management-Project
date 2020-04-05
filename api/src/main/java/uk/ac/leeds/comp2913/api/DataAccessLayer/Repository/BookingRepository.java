@@ -9,6 +9,7 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Model.RegularSession;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,10 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Booking, Long>, CustomBookingRepository {
   @Override
   Optional<Booking> findById(Long aLong);
+
+  List<Booking> findByAccountId(Long account_id);
+
+  List<Booking> findByActivityId(Long account_id);
 
   @Override
   void delete(Booking booking);

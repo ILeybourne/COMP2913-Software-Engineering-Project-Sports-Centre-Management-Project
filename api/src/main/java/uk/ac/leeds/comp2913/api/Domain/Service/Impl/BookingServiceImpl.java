@@ -3,6 +3,8 @@ package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
@@ -30,6 +32,24 @@ public class BookingServiceImpl implements BookingService {
     this.bookingRepository = bookingRepository;
     this.activityRepository = activityRepository;
     this.accountRepository = accountRepository;
+  }
+
+  @Override
+  public List<Booking> findAll(){
+    return bookingRepository.findAll();
+  }
+
+
+  @Override
+  public Booking findById(Long booking_id){
+    return bookingRepository.findById(booking_id)
+            .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
+}
+
+  @Transactional
+  @Override
+  public Booking save(Booking booking){
+    return bookingRepository.save(booking);
   }
 
   //Posts a new booking for an activity. The customer can pass a boolean to create automatic bookings for repeating sessions

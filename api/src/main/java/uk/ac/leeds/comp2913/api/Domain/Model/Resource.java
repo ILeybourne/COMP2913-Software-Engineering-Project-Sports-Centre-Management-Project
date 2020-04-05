@@ -5,11 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 
 /**
@@ -18,12 +20,13 @@ import javax.persistence.*;
  * Represents a resource available inside the sports center. eg Astro Turf, Squash Court, Swimming Pool etc.
  */
 @Entity
-public class Resource {
+public class Resource extends RepresentationModel<Resource> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty
     private String name;
 
     @ManyToOne
@@ -75,7 +78,7 @@ public class Resource {
     }
 
 
-    @JsonIgnoreProperties("resource")
+    @JsonIgnoreProperties({"resource", "bookings"})
     public Set<ActivityType> getActivityTypes() {
         return activityTypes;
     }

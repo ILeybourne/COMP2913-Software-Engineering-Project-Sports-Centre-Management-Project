@@ -1,5 +1,9 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import org.springframework.hateoas.RepresentationModel;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 @Entity
-public class Customer {
+public class Customer extends RepresentationModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +24,7 @@ public class Customer {
     @Column(name = "email_address", nullable = false)
     private String emailAddress;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "customer")
     private List<Receipt> receipts = new LinkedList<>();
 
@@ -45,6 +50,7 @@ public class Customer {
         this.receipts = receipts;
     }
 
+    @JsonIgnore
     public List<uk.ac.leeds.comp2913.api.Domain.Model.Account> getAccount() {
         return Account;
     }
