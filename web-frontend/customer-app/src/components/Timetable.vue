@@ -217,6 +217,7 @@ export default {
             id="startTimeInput"
             v-model="selectedActivityForm.startTime"
             type="datetime-local"
+            readonly
             required
           ></b-form-input>
         </b-form-group>

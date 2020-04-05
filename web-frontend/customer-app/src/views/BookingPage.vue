@@ -225,7 +225,7 @@ export default {
       //
       //   }
       // });
-      console.log(token);
+      // console.log(token);
       this.sendTokenToServer(token);
     },
     async sendTokenToServer(token) {
@@ -295,25 +295,25 @@ export default {
         card: card,
         token_from_stripe: token.id
       };
-      console.log(request);
+      // console.log(request);
 
       //gets payment intent from api which is retrieved from stripe.com
       const axiosPaymentIntent = await axios
         .post("http://localhost:8000/payments/intent/", request)
         .then(res => {
           var error = res.data.error;
-          var charge = res.data.charge;
-          console.log("charge");
-          console.log(charge);
+          // var charge = res.data.charge;
+          // console.log("charge");
+          // console.log(charge);
           if (error) {
-            console.error(error);
+            // console.error(error);
           }
         })
-        .catch(err => console.log(err));
+        // .catch(err => console.log(err));
 
       //uses client secret from  payment intent to make payment
       // eslint-disable-next-line no-undef
-      const result = await this.stripe.confirmCardPayment(
+      await this.stripe.confirmCardPayment(
         axiosPaymentIntent.client_secret,
         {
           payment_method: {
@@ -325,12 +325,12 @@ export default {
           }
         }
       );
-      console.log(token);
-      console.log(result);
+      // console.log(token);
+      // console.log(result);
     },
 
     tokenCreated(token) {
-      console.log(token);
+      // console.log(token);
       this.card = token.card;
       this.token = token;
       // for additional charge objects go to https://stripe.com/docs/api/charges/object
@@ -340,7 +340,7 @@ export default {
         currency: "gbp",
         description: this.description
       };
-      console.log(this.charge + " sent to server");
+      // console.log(this.charge + " sent to server");
       // const stripe = new Stripe("sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX");
       this.sendTokenToServer(token);
     },
@@ -382,23 +382,23 @@ export default {
         //console.log(e);
       }
     },
-    fillPaymentInfo(value) {
-      this.nameCard = value.nameCard;
-      this.cardType = value.cardType;
-      this.cardNumber = value.cardNumber;
-      this.expiryDate = value.date;
-      this.secureCode = value.secureCode;
-      this.postAllFormData();
-    },
-    showPaymentInfo(value) {
-      this.name = value.name;
-      this.emailBilling = value.email;
-      this.houseNumber = value.houseNumber;
-      this.streetName = value.streetName;
-      this.city = value.city;
-      this.postCode = value.postCode;
-      this.hidePayment = false;
-    },
+    // fillPaymentInfo(value) {
+    //   this.nameCard = value.nameCard;
+    //   this.cardType = value.cardType;
+    //   this.cardNumber = value.cardNumber;
+    //   this.expiryDate = value.date;
+    //   this.secureCode = value.secureCode;
+    //   this.postAllFormData();
+    // },
+    // showPaymentInfo(value) {
+    //   this.name = value.name;
+    //   this.emailBilling = value.email;
+    //   this.houseNumber = value.houseNumber;
+    //   this.streetName = value.streetName;
+    //   this.city = value.city;
+    //   this.postCode = value.postCode;
+    //   this.hidePayment = false;
+    // },
     showBillingInfo(value) {
       this.firstName = value.name;
       this.surname = value.surname;
@@ -439,7 +439,6 @@ export default {
       const token = await this.$auth.getTokenSilently();
       const { data } = await axios.get(
         "http://localhost:8000/activities",
-
         {
           headers: {
             Authorization: `Bearer ${token}`
