@@ -156,7 +156,7 @@ export default {
       // facility: ["Please Select"],
       // activity: ["Please Select"],
       time: ["Please select"],
-      price: 10.0,
+      price: null,
       date: null,
       // selectedActivity: null,
 
@@ -281,11 +281,12 @@ export default {
     },
     async fillByQuery() {
       this.setFacilityOptions();
-      this.setActivityTypeOptions(null);
+      this.activityOptions = [];
       const facilityId = this.$route.query.facilityId;
       const activityTypeId = this.$route.query.activityTypeId;
       const activityId = this.$route.query.activityId;
       if (!this.isEmpty(this.$route.query)) {
+        this.setActivityTypeOptions(null);
         //If query isn't empty fill ids, date and time
         this.selectedFacilityId = facilityId
         this.selectedActivityId = activityTypeId;

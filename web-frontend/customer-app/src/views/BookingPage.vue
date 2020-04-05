@@ -25,7 +25,10 @@
           <form id="payment-form">
             <div id="cardDiv">
             <div id="card-element"></div>
-              <button type="button" class="btn-btn-primary" @click="submit($event)">Pay ${{ amount / 100 }}</button>
+              <div id="buttonDiv">
+
+                <button type="button" class="btn-btn-primary" id="paymentButton" @click="submitPayment($event)">Pay ${{ amount / 100 }}</button>
+              </div>
             </div>
           </form>
         </div>
@@ -72,6 +75,18 @@
     text-align: center;
   }
 
+  #buttonDiv{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+  #paymentButton{
+
+    margin-top: 3%;
+    width: 50%;
+  }
+
   #cardDiv {
     padding: 5%;
     border: 3px solid #3183e5;
@@ -99,7 +114,7 @@
         selectedActivityId: null,
         date: new Date(),
         selectedTime: null,
-        price: 10.0,
+        price: null,
         userType: null,
         firstName: "",
         surname: "",
@@ -164,7 +179,7 @@
       },
 
       //To test stripe use the card: 4242 4242 4242 4242 and any postcode/cvc
-      async submit(e) {
+      async submitPayment(e) {
         e.preventDefault();
         // eslint-disable-next-line no-undef
         const token = await this.stripe.createToken(this.card);
@@ -429,8 +444,6 @@
     },
     mounted() {
       this.getActivities();
-      // card = elements.create('card');
-      // card.mount(this.$refs.card);
       this.includeStripe(
               "js.stripe.com/v3/",
               function() {
