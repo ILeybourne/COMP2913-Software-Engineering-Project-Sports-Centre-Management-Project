@@ -23,11 +23,6 @@ class ReceiptTest {
 
     @Disabled
     @Test
-    void invoice() {
-    }
-
-    @Disabled
-    @Test
     void generateFilename() {
     }
 }

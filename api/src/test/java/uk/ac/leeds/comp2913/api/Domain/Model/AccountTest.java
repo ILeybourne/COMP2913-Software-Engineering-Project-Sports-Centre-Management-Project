@@ -19,14 +19,4 @@ class AccountTest {
     @AfterEach
     void tearDown() {
     }
-
-    @Disabled
-    @Test
-    void buyMembership() {
-    }
-
-    @Disabled
-    @Test
-    void cancelMembership() {
-    }
 }
