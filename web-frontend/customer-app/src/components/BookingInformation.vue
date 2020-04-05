@@ -26,7 +26,14 @@
             :options="activityOptions"
             name="activity"
             id="activity"
-            @change="[selectActivity(),validateActivity(), getPrice($event), getTimes()]"
+            @change="
+              [
+                selectActivity(),
+                validateActivity(),
+                getPrice($event),
+                getTimes()
+              ]
+            "
             v-bind:state="activitiesValid"
             required
           >
@@ -38,7 +45,7 @@
             type="date"
             id="date"
             name="date"
-            v-model="date"
+            v-model="selectedDate"
             @change="getTimes($event)"
             required
           />
@@ -47,7 +54,7 @@
           <label for="time">Time:</label>
           <b-form-select
             v-model="selectedTime"
-            :options="time"
+            :options="timeOptions"
             name="time"
             id="time"
             v-bind:state="timeValid"
@@ -88,11 +95,6 @@
 .form-row {
   padding: 5px;
 }
-
-/*.booking-info {*/
-/*  padding-top: 5%;*/
-/*  padding-bottom: 5%;*/
-/*}*/
 
 .booking-container {
   margin: auto;
@@ -136,30 +138,22 @@ export default {
     return {
       facilityOptions: [],
       activityOptions: [],
+      timeOptions: ["Please select"],
 
       selectedActivityId: null,
       selectedFacilityId: null,
-
       selectedActivityName: null,
       selectedTime: null,
+      price: null,
+      selectedDate: null,
+
       userType: null,
       componentWidth: 90,
+
       facilityValid: null,
       activitiesValid: null,
       dateValid: null,
-      timeValid: null,
-
-      // message: [],
-      // contents: this.facilities,
-      // activitie: this.activities,
-
-      // facility: ["Please Select"],
-      // activity: ["Please Select"],
-      time: ["Please select"],
-      price: null,
-      date: null,
-      // selectedActivity: null,
-
+      timeValid: null
     };
   },
   computed: {
@@ -170,11 +164,11 @@ export default {
     ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
 
-    getPrice(e){
-      console.log(e)
-      console.log(this.activities.find( x => x.id == e))
-      let selectedActivity = this.activities.find( x => x.id == e)
-      this.price = selectedActivity.cost
+    getPrice(e) {
+      console.log(e);
+      console.log(this.activities.find(x => x.id == e));
+      let selectedActivity = this.activities.find(x => x.id == e);
+      this.price = selectedActivity.cost;
     },
 
     setActivityTypeOptions(e) {
@@ -205,20 +199,14 @@ export default {
 
     getUserType(e) {
       this.userType = e.toElement.name;
-      this.submitForm(1)
+      this.submitForm(1);
     },
 
     validateFacility() {
-      this.facilityValid = !(
-        this.$data.selectedFacilityId == null
-      );
+      this.facilityValid = !(this.$data.selectedFacilityId == null);
     },
     validateActivity() {
-      this.activitiesValid = !(
-        this.$data.selectedActivityId == null
-        // ||
-        // this.$data.selectedActivity === "Please Select"
-      );
+      this.activitiesValid = !(this.$data.selectedActivityId == null);
     },
     validateDate() {
       this.dateValid = this.$data.date != null;
@@ -235,37 +223,30 @@ export default {
     },
 
     submitForm(e) {
-      console.log(e)
-      console.log(this.$data)
+      console.log(e);
+      console.log(this.$data);
       //TODO Validate before showing 2nd form
       // e.preventDefault();
       //TODO send array of data to parent
       if (
-        !(
-          this.$data.selectedFacilityId == null
-        ) &&
-        !(
-          this.$data.selectedActivityId == null
-        ) &&
+        !(this.$data.selectedFacilityId == null) &&
+        !(this.$data.selectedActivityId == null) &&
         this.$data.date != null &&
         this.$data.selectedTime != null
       ) {
-        debugger
         this.facilityValid = true;
         this.activitiesValid = true;
         this.dateValid = true;
         this.timeValid = true;
         this.$emit("getUserType", this.$data);
         this.componentWidth = 60;
-
       } else {
         //Dont pass data and call validators
         this.callValidation();
-        console.log(this.$data.selectedFacilityId)
-        console.log(this.$data.selectedActivity)
-        console.log(this.$data.date)
-        console.log(this.$data.selectedTime)
-
+        console.log(this.$data.selectedFacilityId);
+        console.log(this.$data.selectedActivity);
+        console.log(this.$data.date);
+        console.log(this.$data.selectedTime);
       }
     },
     isEmpty(obj) {
@@ -287,10 +268,12 @@ export default {
       const activityId = this.$route.query.activityId;
       if (!this.isEmpty(this.$route.query)) {
         this.setActivityTypeOptions(null);
-        //If query isn't empty fill ids, date and time
-        this.selectedFacilityId = facilityId
+        //If query isn't empty fill ids, selectedDate and timeOptions
+        this.selectedFacilityId = facilityId;
         this.selectedActivityId = activityTypeId;
-        this.selectedActivityName = this.activities.find(x => x.id == activityTypeId).name;
+        this.selectedActivityName = this.activities.find(
+          x => x.id == activityTypeId
+        ).name;
 
         let selectedDateUnix = this.sessions.find(x => x.id == activityId)
           .startTime;
@@ -304,58 +287,51 @@ export default {
           year + "-" + month.substr(-2) + "-" + date.substr(-2);
         var forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
 
-        this.date = formattedDate;
+        this.selectedDate = formattedDate;
 
-        //TODO loop through same named activities in same facility and append times to time array
-        this.time.push(forrmattedTime);
+        //TODO loop through same named activities in same facility and append times to timeOptions array
+        this.timeOptions.push(forrmattedTime);
         this.selectedTime = forrmattedTime;
       }
     },
-        getTimes() {
-          if(this.date != null) {
-            if ((this.selectedFacilityId != null) && (this.selectedActivityId != null)) {
-              // console.log(this.date)
+    getTimes() {
+      if (this.selectedDate != null) {
+        if (
+          this.selectedFacilityId != null &&
+          this.selectedActivityId != null
+        ) {
+          let timeArray = ["Please Select"];
 
-              // const activities = this.activities;
-              let timeArray = ["Please Select"];
-
-              for (const activity of this.sessions) {
-                // console.log(activity)
-                let selectedTime = new Date(activity.startTime);
-                const year = selectedTime.getFullYear();
-                const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))
-                        .toString()
-                        .substr(-2);
-                const date = ("0" + selectedTime.getDate()).substr(-2);
-                const hours = ("0" + selectedTime.getHours()).substr(-2);
-                const mins = ("0" + selectedTime.getMinutes()).substr(-2);
-                let formattedDate = year + "-" + month + "-" + date;
-                // this.selectedActivityName = this.activities.find(
-                //         a => a.value == this.selectedActivityId
-                // // ).text;
-                // console.log( activity.name + "=="  + this.selectedActivityName)
-                // console.log( formattedDate + "==" + event.target.value)
-                if (
-                        activity.name == this.selectedActivityName &&
-                        // formattedDate == event.target.value
-                        formattedDate == this.date
-                ) {
-                  let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
-                  timeArray.push(formattedTime);
-                }
-              }
-              this.time = timeArray;
+          for (const activity of this.sessions) {
+            // console.log(activity)
+            let selectedTime = new Date(activity.startTime);
+            const year = selectedTime.getFullYear();
+            const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))
+              .toString()
+              .substr(-2);
+            const date = ("0" + selectedTime.getDate()).substr(-2);
+            const hours = ("0" + selectedTime.getHours()).substr(-2);
+            const mins = ("0" + selectedTime.getMinutes()).substr(-2);
+            let formattedDate = year + "-" + month + "-" + date;
+            if (
+              activity.name == this.selectedActivityName &&
+              // formattedDate == event.target.value
+              formattedDate == this.selectedDate
+            ) {
+              let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
+              timeArray.push(formattedTime);
             }
           }
-        },
-    //
-        selectActivity() {
-          if(this.selectedActivityId != null)
-          this.selectedActivityName = this.activities.find(x => x.id === this.selectedActivityId).name;
-        },
-    //     selectFacility(event) {
-    //       this.selectedFacilityId = event;
-    //     }
+          this.timeOptions = timeArray;
+        }
+      }
+    },
+    selectActivity() {
+      if (this.selectedActivityId != null)
+        this.selectedActivityName = this.activities.find(
+          x => x.id === this.selectedActivityId
+        ).name;
+    }
   },
   async mounted() {
     await this.getAllActivities();

@@ -69,7 +69,7 @@ export default {
       let filteredActivities = this.activities.filter(filter);
       let activityArray = [{ value: null, text: "Please Select" }];
       for (const activity of filteredActivities) {
-          activityArray.push({ value: activity.id, text: activity.name });
+        activityArray.push({ value: activity.id, text: activity.name });
       }
 
       return activityArray;
@@ -78,8 +78,8 @@ export default {
   methods: {
     ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
-    setActivityTypeId(e){
-      this.selectedActivityForm.activityTypeId = e
+    setActivityTypeId(e) {
+      this.selectedActivityForm.activityTypeId = e;
     },
     drawEvent(eventInfo) {
       const { event } = eventInfo;
@@ -141,7 +141,7 @@ export default {
       };
 
       const { data } = await this.$http.post(
-              `/activities/activitytype/${this.selectedActivityForm.activityTypeId}`,
+        `/activities/activitytype/${this.selectedActivityForm.activityTypeId}`,
         body
       );
 
@@ -151,7 +151,11 @@ export default {
           facility: String,
           activity: String
         },
-        query: { facilityId: this.selectedActivityForm.resourceId , activityTypeId: this.selectedActivityForm.activityTypeId,  activityId: data.id }
+        query: {
+          facilityId: this.selectedActivityForm.resourceId,
+          activityTypeId: this.selectedActivityForm.activityTypeId,
+          activityId: data.id
+        }
       });
     }
   },

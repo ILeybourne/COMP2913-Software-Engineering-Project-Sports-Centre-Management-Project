@@ -20,7 +20,7 @@ describe("TestTimetable", () => {
     cy.get('button[class="fc-next-button fc-button fc-button-primary"]');
   });
 
-  it("Check resource and time labels exist", () => {
+  it("Check resource and timeOptions labels exist", () => {
     cy.get('span[class="fc-cell-text"]').contains("Resources");
     cy.get('th[class="fc-widget-header"]')
       .get("div")
@@ -105,7 +105,7 @@ describe("TestTimetable", () => {
       .should("not.exist");
   });
 
-  it("Check current date is correct", () => {
+  it("Check current selectedDate is correct", () => {
     const currentDate = Cypress.moment().format("MMMM DD, YYYY");
     cy.get('div[class="fc-center"]')
       .get("h2")
