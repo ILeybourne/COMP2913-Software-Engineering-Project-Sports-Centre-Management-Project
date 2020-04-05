@@ -4,7 +4,7 @@
     <v-data-table
       v-model="selected"
       :headers="headers"
-      :items="formattedData"
+      :items="sessions"
       :single-select="true"
       item-key="name"
       show-select
@@ -61,13 +61,13 @@ export default {
           sortable: true
         },
         {
-          value: "formattedStartTime",
+          value: "formattedStartAt",
           text: "Booking Time",
           sortable: true
         },
         {
-          value: "activity.name",
-          text: "Activity",
+          value: "name",
+          text: "Booking",
           sortable: true
         },
         {
@@ -96,25 +96,13 @@ export default {
     ...mapActions("timetable", {
       getActivity: "getAllSessions"
     }),
-    /*
-    async getBooking() {
-      const token = await this.$auth.getTokenSilently();
-
-      const { data } = await this.$http.get(`/bookings`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      this.bookings = data.content;
-    },
-    */
     showCancel() {
       this.$bvModal.show("edit-booking-modal");
     }
   },
 
   async mounted() {
-    await this.getBooking();
+    await this.getActivity();
   }
 };
 </script>

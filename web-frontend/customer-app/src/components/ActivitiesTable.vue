@@ -10,13 +10,6 @@
       show-select
       class="elevation-1"
     >
-      <template v-slot:top>
-        <v-switch
-          v-model="singleSelect"
-          label="Single select"
-          class="pa-3"
-        ></v-switch>
-      </template>
     </v-data-table>
 
     <b-modal id="edit-Activity-modal" title="Create Activity" hide-footer>
@@ -54,9 +47,14 @@ export default {
           sortable: true
         },
         {
-          value: "receipt",
-          text: "Receipt",
-          sortable: false
+          value: "totalCapacity",
+          text: "Capacity",
+          sortable: true
+        },
+        {
+          value: "resource.name",
+          text: "Facility",
+          sortable: true
         }
       ],
       singleSelect: false,

@@ -1,5 +1,6 @@
 import axios from "@/services/auth-http.service";
 
+
 const state = {
   facilities: [],
   /*
@@ -10,12 +11,13 @@ const state = {
     receipt: null
     updatedAt: 1584288692000
     * */
-  activities: []
+  activities: [],
 };
 
 const getters = {
   facilities: state => state.facilities,
-  activities: state => state.activities
+  activities: state => state.activities,
+
 };
 
 const mutations = {
