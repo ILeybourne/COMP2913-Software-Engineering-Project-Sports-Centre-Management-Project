@@ -81,7 +81,7 @@
             type="button"
             class="btn btn-outline-primary"
             name="account"
-            @click="[getUserType($event), getKey()]"
+            @click="getUserType($event)"
           >
             Checkout With Account
           </button>
@@ -164,13 +164,7 @@ export default {
     ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
 
-    async getKey(){
-      let key = await this.$http.get(
-              `/payments/stripe-key/`
-      )
-      console.log("key")
-      console.log(key)
-    },
+
 
     getPrice(e) {
       console.log(e);
@@ -182,7 +176,7 @@ export default {
     },
 
     setActivityTypeOptions(e) {
-      console.log(e)
+      console.log(e);
       let activityArray = [{ value: null, text: "Please Select" }];
       let activities = this.activities;
 
@@ -193,11 +187,10 @@ export default {
         for (const activity of activities) {
           activityArray.push({ value: activity.id, text: activity.name });
         }
-      }else {
+      } else {
         this.activityOptions = activityArray;
-        this.selectedActivityName = "Please Select"
+        this.selectedActivityName = "Please Select";
       }
-
 
       this.activityOptions = activityArray;
       this.selectedTime = "Please Select";

@@ -16,7 +16,8 @@
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
           ></GuestInformation> </b-col
-        ><b-col v-bind:class="{ 'd-none': hideBilling }">
+        ><b-col>
+          <!--        v-bind:class="{ 'd-none': hideBilling }"-->
           <div>
             <form id="payment-form">
               <div id="cardDiv">
@@ -95,7 +96,6 @@ h1 {
 </style>
 
 <script>
-import axios from "axios";
 import BookingInformation from "@/components/BookingInformation.vue";
 import GuestInformation from "@/components/GuestInformation.vue";
 
@@ -150,23 +150,6 @@ export default {
     };
   },
   methods: {
-    includeStripe(URL, callback) {
-      let documentTag = document,
-        tag = "script",
-        object = documentTag.createElement(tag),
-        scriptTag = documentTag.getElementsByTagName(tag)[0];
-      object.src = "//" + URL;
-      if (callback) {
-        object.addEventListener(
-          "load",
-          function(e) {
-            callback(null, e);
-          },
-          false
-        );
-      }
-      scriptTag.parentNode.insertBefore(object, scriptTag);
-    },
     configureStripe() {
       // eslint-disable-next-line no-undef
       this.stripe = Stripe("pk_test_crv9Zb7tvQtSJ82FhQwrnb8k00v3eIOvj8");
@@ -180,146 +163,60 @@ export default {
     //To test stripe use the card: 4242 4242 4242 4242 and any postcode/cvc
     async submitPayment(e) {
       e.preventDefault();
+      // Talk to our server to get encrpyted prices
       // eslint-disable-next-line no-undef
-      const token = await this.stripe.createToken(this.card);
-
-      // eslint-disable-next-line no-undef
-      // this.stripe
-      //   .confirmCardPayment(clientSecret, {
-      //     payment_method: {
-      //       card: card,
-      //       billing_details: {
-      //         name: "Jenny Rosen"
-      //       }
-      //     }
-      //   })
-      //   .then(function(result) {
-      //     if (result.error) {
-      //       // Show error to your customer (e.g., insufficient funds)
-      //       console.log(result.error.message);
-      //     } else {
-      //       // The payment has been processed!
-      //       if (result.paymentIntent.status === "succeeded") {
-      //       }
-      //     }
-      //   });
-
-      // .then(function(result) {
-      //   if (result.error) {
-      //     // Show error to your customer (e.g., insufficient funds)
-      //     console.log(result.error.message);
-      //   } else {
-      //     // The payment has been processed!
-      //     // if (result.paymentIntent2.status === "succeeded") {
-      //     //   // Show a success message to your customer
-      //     //   // There's a risk of the customer closing the window before callback
-      //     //   // execution. Set up a webhook or plugin to listen for the
-      //     //   // payment_intent.succeeded event that handles any business critical
-      //     //   // post-payment actions.
-      //     // }
-      //     console.log(result);
-      //
-      //   }
-      // });
-      // console.log(token);
-      this.sendTokenToServer(token);
+      const token = await this.$http.post(`/payments/intent`, {
+        // TODO
+      });
+      console.log(token);
+      this.sendTokenToServer(token.data.clientSecret);
     },
-    async sendTokenToServer(token) {
-      // const paymentIntent2 = {
-      //   id: "pi_1EUmyo2x6R10KRrhUuJXu9m0",
-      //   object: "payment_intent",
-      //   amount: 1099,
-      //   amount_capturable: 0,
-      //   amount_received: 0,
-      //   application: null,
-      //   application_fee_amount: null,
-      //   canceled_at: null,
-      //   cancellation_reason: null,
-      //   capture_method: "automatic",
-      //   charges: {
-      //     object: "list",
-      //     data: [],
-      //     has_more: false,
-      //     url: "/v1/charges?payment_intent=pi_1EUmyo2x6R10KRrhUuJXu9m0"
-      //   },
-      //   client_secret:
-      //     "pi_1EUmyo2x6R10KRrhUuJXu9m0_secret_gNO9XQm9qLiPuJQoFZSDiqnPL",
-      //   confirmation_method: "automatic",
-      //   created: 1556596206,
-      //   currency: "gbp",
-      //   customer: null,
-      //   description: null,
-      //   invoice: null,
-      //   last_payment_error: null,
-      //   livemode: false,
-      //   metadata: {},
-      //   next_action: null,
-      //   on_behalf_of: null,
-      //   payment_method: null,
-      //   payment_method_options: {},
-      //   payment_method_types: ["card"],
-      //   receipt_email: null,
-      //   review: null,
-      //   setup_future_usage: null,
-      //   shipping: null,
-      //   statement_descriptor: null,
-      //   statement_descriptor_suffix: null,
-      //   status: "requires_payment_method",
-      //   transfer_data: null,
-      //   transfer_group: null
+    async sendTokenToServer(client_secret) {
+      // let card = {
+      //   number: "4242424242424242",
+      //   cvc: "123",
+      //   exp_month: "01",
+      //   exp_year: "21"
       // };
 
-      let card = {
-        number: "4242424242424242",
-        cvc: "123",
-        exp_month: "01",
-        exp_year: "21"
-      };
-
-      let request = {
-        name: this.name,
-        email: this.email,
-        engravingText: this.engravingText,
-        address:
-          this.houseNumber +
-          " " +
-          this.streetName +
-          " " +
-          this.city +
-          " " +
-          this.postCode,
-        card: card,
-        token_from_stripe: token.id
-      };
-      // console.log(request);
-
-      //gets payment intent from api which is retrieved from stripe.com
-      const axiosPaymentIntent = await axios
-        .post("http://localhost:8000/payments/intent/", request)
-        .then(res => {
-          var error = res.data.error;
-          // var charge = res.data.charge;
-          // console.log("charge");
-          // console.log(charge);
-          if (error) {
-            // console.error(error);
-          }
-        });
-      // .catch(err => console.log(err));
+      // let request = {
+      //   name: this.name,
+      //   email: this.email,
+      //   engravingText: this.engravingText,
+      //   address:
+      //     this.houseNumber +
+      //     " " +
+      //     this.streetName +
+      //     " " +
+      //     this.city +
+      //     " " +
+      //     this.postCode,
+      //   card: card,
+      //   token_from_stripe: token.id
+      // };
 
       //uses client secret from  payment intent to make payment
       // eslint-disable-next-line no-undef
-      await this.stripe.confirmCardPayment(axiosPaymentIntent.client_secret, {
+      const result = await this.stripe.confirmCardPayment(client_secret, {
         payment_method: {
           // card: this.card,
-          card: token.card,
+          card: this.card,
           billing_details: {
             name: "Jenny Rosen"
           }
         }
       });
-      // console.log(token);
-      // console.log(result);
+
+      if (result.error) {
+        // Show error to your customer (e.g., insufficient funds)
+        console.log(result.error.message);
+      } else {
+        // The payment has been processed!
+        if (result.paymentIntent.status === "succeeded") {
+          console.log("success");
+          // await  this.postAllFormData()
+        }
+      }
     },
 
     tokenCreated(token) {
@@ -354,7 +251,6 @@ export default {
           activity: 1,
           account: 1
         };
-        // const { data } =+
         await this.$http.post(
           `/bookings`,
 
@@ -415,37 +311,18 @@ export default {
     },
 
     async getBookings() {
-      const token = await this.$auth.getTokenSilently();
-      const { data } = await axios.get(
-        "http://localhost:8000/bookings",
-
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      const { data } = await this.$http.get("http://localhost:8000/bookings");
       this.bookings = data;
     },
 
     async getActivities() {
-      const token = await this.$auth.getTokenSilently();
-      const { data } = await axios.get("http://localhost:8000/activities", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const { data } = await this.$http.get("http://localhost:8000/activities");
       this.activitiesFromServer = data.content;
     }
   },
   mounted() {
     this.getActivities();
-    this.includeStripe(
-      "js.stripe.com/v3/",
-      function() {
-        this.configureStripe();
-      }.bind(this)
-    );
+    this.configureStripe();
   }
 };
 </script>
