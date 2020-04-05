@@ -167,24 +167,32 @@ export default {
     getPrice(e) {
       console.log(e);
       console.log(this.activities.find(x => x.id == e));
-      let selectedActivity = this.activities.find(x => x.id == e);
-      this.price = selectedActivity.cost;
+      if (this.selectedActivityId != null) {
+        let selectedActivity = this.activities.find(x => x.id == e);
+        this.price = selectedActivity.cost;
+      }
     },
 
     setActivityTypeOptions(e) {
+      console.log(e)
       let activityArray = [{ value: null, text: "Please Select" }];
       let activities = this.activities;
 
       if (!(e == null)) {
         const filter = activity => activity.resource.id === e;
         activities = this.activities.filter(filter);
+
+        for (const activity of activities) {
+          activityArray.push({ value: activity.id, text: activity.name });
+        }
+      }else {
+        this.activityOptions = activityArray;
+        this.selectedActivityName = "Please Select"
       }
 
-      for (const activity of activities) {
-        activityArray.push({ value: activity.id, text: activity.name });
-      }
 
       this.activityOptions = activityArray;
+      this.selectedTime = "Please Select";
     },
 
     setFacilityOptions() {
@@ -327,10 +335,13 @@ export default {
       }
     },
     selectActivity() {
-      if (this.selectedActivityId != null)
+      if (this.selectedActivityId != null) {
         this.selectedActivityName = this.activities.find(
           x => x.id === this.selectedActivityId
         ).name;
+      } else {
+        this.selectedActivityName = "Please Select";
+      }
     }
   },
   async mounted() {
