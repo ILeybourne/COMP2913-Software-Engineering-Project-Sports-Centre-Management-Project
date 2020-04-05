@@ -12,61 +12,21 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AccountTest {
-
-    Account account;
-    Random random;
-
     @BeforeEach
     void setUp() {
-        account = new Account();
-        random = new Random();
     }
 
     @AfterEach
     void tearDown() {
     }
 
-    @Test
-    void getCreatedAt() {
-        Date testDateSet = new Date(random.nextLong());
-        account.setCreatedAt(testDateSet);
-        Date testDateGet = account.getCreatedAt();
-        assertEquals(testDateSet, testDateGet);
-    }
-
-    @Test
-    void setCreatedAt() {
-        Date testDateSet = new Date(random.nextLong());
-        account.setCreatedAt(testDateSet);
-        Date testDateGet = account.getCreatedAt();
-        assertEquals(testDateSet, testDateGet);
-    }
-
-    @Test
-    void getUpdatedAt() {
-        Date testDateSet = new Date(random.nextLong());
-        account.setUpdatedAt(testDateSet);
-        Date testDateGet = account.getUpdatedAt();
-        assertEquals(testDateSet, testDateGet);
-    }
-
-    @Test
-    void setUpdatedAt() {
-        Date testDateSet = new Date(random.nextLong());
-        account.setUpdatedAt(testDateSet);
-        Date testDateGet = account.getUpdatedAt();
-        assertEquals(testDateSet, testDateGet);
-    }
-
-    @Test
     @Disabled
+    @Test
     void buyMembership() {
-        // TODO Not implemented
     }
 
-    @Test
     @Disabled
+    @Test
     void cancelMembership() {
-        // TODO Not implemented
     }
 }
