@@ -1,44 +1,54 @@
 <template>
-  <v-card class="mx-auto text-center" color="green" dark max-width="600">
-    <v-card-text>
-      <v-sheet color="rgba(0, 0, 0, .12)">
-        <v-sparkline
-          :value="value"
-          color="rgba(255, 255, 255, .7)"
-          height="100"
-          padding="24"
-          stroke-linecap="round"
-          smooth
-        >
-          <template v-slot:label="item"> ${{ item.value }} </template>
-        </v-sparkline>
-      </v-sheet>
-    </v-card-text>
-  </v-card></template
->
+  <div>
+    <graph-line
+      :width="600"
+      :height="400"
+      :shape="'normal'"
+      :axis-min="0"
+      :axis-max="50"
+      :axis-full-mode="true"
+      :labels="['1Q', '2Q', '3Q', '4Q']"
+      :names="names"
+      :values="values"
+    >
+      <note :text="'Line Chart'"></note>
+      <tooltip :names="names" :position="'right'"></tooltip>
+      <legends :names="names"></legends>
+      <guideline :tooltip-y="true"></guideline>
+    </graph-line>
+  </div
+></template>
 
 <style scoped></style>
 <script>
+
+import { mapActions, mapGetters } from "vuex";
+
 export default {
-  data: () => ({
-    value: [423, 446, 675, 510, 590, 610, 760]
-  }),
-  computed: {},
+  data: function() {
+    return {
+      names: ["MS", "Apple", "Google"],
+      values: [
+        [10, 5, 5, 5],
+        [40, 10, 10, 10],
+        [30, 30, 30, 30]
+      ]
+    };
+  },
+  computed: {
+    ...mapGetters("facilities", ["activities"])
+  },
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
-    async getBooking() {
-      const token = await this.$auth.getTokenSilently();
-
-      const { data } = await this.$http.get(`/bookings`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      this.bookings = data.content;
-    },
+    ...mapActions("facilities", {
+      getActivity: "getAllActivities"
+    }),
     showCancel() {
-      this.$bvModal.show("edit-booking-modal");
+      this.$bvModal.show("edit-Activity-modal");
     }
+  },
+  mounted: async function() {
+    await this.getActivity();
   }
 };
 </script>

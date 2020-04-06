@@ -1,6 +1,6 @@
 <template>
   <div class="activitiestable">
-    <h1></h1>
+    <h1>Activity Types</h1>
     <ActivitiesTable></ActivitiesTable>
   </div>
 </template>

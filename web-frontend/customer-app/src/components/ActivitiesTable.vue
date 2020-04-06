@@ -1,28 +1,27 @@
 <template>
-  <div id="app">
-    <h3 class="title">Activities Table</h3>
-    <v-data-table
-      v-model="selected"
+  <v-data-table
       :headers="headers"
       :items="activities"
-      :single-select="true"
-      item-key="name"
-      show-select
-      class="elevation-1"
-    >
-    </v-data-table>
-
-    <b-modal id="edit-Activity-modal" title="Create Activity" hide-footer>
-      <div class="d-flex justify-content-between">
-        <b-button
-          type="reset"
-          variant="danger"
-          @click="$bvModal.hide('edit-Activity-modal')"
-          >Delete
-        </b-button>
-      </div>
-    </b-modal>
-  </div>
+      >
+    <template v-slot:top>
+      <v-toolbar flat color="white">
+        <v-spacer></v-spacer>
+        <v-dialog  max-width="500px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+          </template>
+        </v-dialog>
+      </v-toolbar>
+    </template>
+    <template v-slot:item.actions="{ item }">
+      <v-icon small class="mr-2" @click="editItem(item)">
+        mdi-pencil
+      </v-icon>
+      <v-icon small @click="deleteItem(item)">
+        mdi-delete
+      </v-icon>
+    </template>
+  </v-data-table>
 </template>
 
 <style scoped></style>
@@ -37,11 +36,6 @@ export default {
     return {
       headers: [
         {
-          value: "id",
-          text: "Booking reference",
-          sortable: true
-        },
-        {
           value: "name",
           text: "Activity",
           sortable: true
@@ -53,17 +47,24 @@ export default {
         },
         {
           value: "resource.name",
-          text: "Facility",
-          sortable: true
+          text: "Facility"
+        },
+        {
+          value: "actions",
+          text: "Actions",
+          sortable: false
         }
-      ],
-      singleSelect: false,
-      selected: []
+      ]
+
     };
   },
   computed: {
-    ...mapGetters("facilities", ["activities"])
+    ...mapGetters("facilities", ["activities"]),
+    formTitle() {
+      return this.editedIndex === -1 ? "New Item" : "Edit Item";
+    }
   },
+
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("facilities", {
@@ -71,6 +72,16 @@ export default {
     }),
     showCancel() {
       this.$bvModal.show("edit-Activity-modal");
+    },
+    editItem(item) {
+      this.editedIndex = this.activities.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+    deleteItem(item) {
+      const index = this.activities.indexOf(item);
+      confirm("Are you sure you want to delete this item?") &&
+        this.activities.splice(index, 1);
     }
   },
 
