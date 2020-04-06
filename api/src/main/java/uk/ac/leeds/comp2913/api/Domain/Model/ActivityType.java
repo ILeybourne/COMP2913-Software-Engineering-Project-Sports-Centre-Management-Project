@@ -15,6 +15,8 @@ import java.util.Date;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 /**
  * Represents types of activities available in a resource. to be used by the
@@ -37,7 +39,8 @@ public class ActivityType extends CollectionModel {
     @UpdateTimestamp
     private Date updated_at;
 
-    @NotBlank(message = "name is mandatory")
+    @NotEmpty(message = "name is required")
+    @Size(min = 3, max = 20)
     private String name;
 
     @Range(min = 1)

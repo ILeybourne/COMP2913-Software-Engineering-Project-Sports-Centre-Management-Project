@@ -1,8 +1,14 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import org.hibernate.validator.constraints.Range;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
 import java.util.Set;
 
 /**
@@ -19,15 +25,17 @@ public class RegularSession {
   private Long id;
 
   //Activities that are regular sessions
-  @OneToMany(mappedBy = "regularSession", fetch = FetchType.EAGER)
+  @NotEmpty(message = "activity is required to schedule regular session")
+  @OneToMany(mappedBy = "regularSession", fetch = FetchType.LAZY)
   private Set<Activity> activities;
 
   //Regular session bookings
-  @OneToMany(mappedBy = "regularSession", fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "regularSession", fetch = FetchType.LAZY)
   private Set<Booking> bookings;
 
   //Measured in days (an interval of 7 is weekly activities)
-  @Column(name = "interval")
+  @Range(min = 1)
+  @Column(name = "interval", nullable = false)
   private Integer interval;
 
   public Long getId() {
@@ -54,7 +62,7 @@ public class RegularSession {
     this.interval = interval;
   }
 
-  @JsonIgnoreProperties({"activity", "regularSession"})
+  @JsonIgnore
   public Set<Booking> getBookings() {
     return bookings;
   }

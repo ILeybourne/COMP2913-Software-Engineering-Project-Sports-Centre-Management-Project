@@ -6,11 +6,15 @@ import org.hibernate.validator.constraints.Range;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotBlank;
+
 //Used to deserialize json passed from front end, allows boolean to be passed to create regular bookings
 public class BookingDTO {
   @Range(min = 1)
   private Integer participants;
   private boolean regularBooking;
+
+  @NotBlank(message = "Account Id is required")
   private Long accountId;
 
   public BookingDTO() {

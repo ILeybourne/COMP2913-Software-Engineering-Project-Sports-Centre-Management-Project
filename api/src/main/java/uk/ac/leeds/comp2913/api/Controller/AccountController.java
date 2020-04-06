@@ -14,6 +14,8 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.info.Info;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
@@ -36,6 +38,8 @@ public class AccountController {
 
 
     @GetMapping
+    @Operation(summary = "Get all accounts",
+            description = "Get list of all accounts")
     public CollectionModel<Account> getAccounts() {
         List<Account> accounts = accountService.getAccounts();
         for (Account account : accounts){
@@ -49,6 +53,8 @@ public class AccountController {
     }
 
     @GetMapping("/{account_id}")
+    @Operation(summary = "Get specific account",
+            description = "Get a specific account, links to view their customer details, bookings, membership")
     public Account getAccountById (@PathVariable Long account_id){
         Account account = accountService.getAccountById(account_id);
         Link accountCustomerDetailsLink = linkTo(AccountController.class).slash(account_id).slash("details").withRel("Customer Details");
@@ -59,6 +65,8 @@ public class AccountController {
     }
 
    @GetMapping("/{account_id}/details")
+    @Operation(summary = "View customer details",
+           description = "View customer details for a particular account")
    public Customer getAccountCustomerDetails (@PathVariable Long account_id){
         Customer customer = accountService.getCustomerAccountDetails(account_id);
        Link accountLink = linkTo(AccountController.class).slash(account_id).withRel("Account");
@@ -67,11 +75,15 @@ public class AccountController {
    }
 
    @GetMapping("/{account_id}/bookings")
+   @Operation(summary = "view bookings for an account",
+           description = "Get list of all bookings linked to a specific account")
      public List<Booking> getAccountBookings (@PathVariable Long account_id){
          return accountService.getAccountBookings(account_id);
      }
 
     @GetMapping("/{account_id}/membership")
+    @Operation(summary = "Get memberships for an account",
+            description = "Get list of all memberships associated with an account")
     public List<Membership> getAccountMemberships (@PathVariable Long account_id){
         return accountService.getAccountMembership(account_id);
     }

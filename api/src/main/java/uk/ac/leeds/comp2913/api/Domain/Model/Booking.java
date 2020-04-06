@@ -7,8 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
 
@@ -24,6 +26,7 @@ public class Booking extends Sale {
     @UpdateTimestamp
     private Date updated_at;
 
+    @Range(min = 1)
     private int participants;
 
     /**
@@ -35,6 +38,7 @@ public class Booking extends Sale {
     /**
      * The Activity associated with the booking
      */
+    @NotBlank(message = "Activity is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id")
     private Activity activity;

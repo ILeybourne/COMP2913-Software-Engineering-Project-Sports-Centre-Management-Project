@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import io.swagger.v3.oas.annotations.Operation;
 import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
@@ -54,6 +55,8 @@ public class ResourceController {
 
     //Get Resources
     @GetMapping("")
+    @Operation(summary = "Get all facilities",
+            description = "Get a list of all facilities with basic information")
 //    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
     public CollectionModel<Resource> getResources() {
         List<Resource> allResources = resourceService.findAll();
@@ -70,6 +73,8 @@ public class ResourceController {
     }
 
     @GetMapping("/{resource_id}")
+    @Operation(summary = "Get a specific facility",
+            description = "Get a specific facility with more information and links")
   //  @PreAuthorize("hasAuthority('SCOPE_read:resource')")
     public Resource indexResource(@PathVariable Long resource_id) {
         Resource resource = resourceService.findById(resource_id);
@@ -85,6 +90,8 @@ public class ResourceController {
 
     //Post new resource
     @PostMapping("")
+    @Operation(summary = "Create a new facility",
+            description = "Create a new facility")
     @PreAuthorize("hasAuthority('SCOPE_create:resource')")
     public Resource createResource(@Valid @RequestBody Resource resource) {
         return resourceService.create(resource);
@@ -92,6 +99,8 @@ public class ResourceController {
 
     //update resource
     @PutMapping("/{resource_id}")
+    @Operation(summary = "Update a facility",
+            description = "Update the details of a facility")
     @PreAuthorize("hasAuthority('SCOPE_update:resource')")
     public Resource updateResource(@PathVariable Long resource_id, @Valid @RequestBody Resource resourceRequest) {
         return resourceService.update(resource_id, resourceRequest);
@@ -99,6 +108,8 @@ public class ResourceController {
 
     //delete resource
     @DeleteMapping("/{resource_id}")
+    @Operation(summary = "delete a facility",
+            description = "Delete a facility")
     @PreAuthorize("hasAuthority('SCOPE_delete:resource')")
     public ResponseEntity<?> deleteResource(@PathVariable Long resource_id) {
         resourceService.deleteById(resource_id);

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.v3.oas.annotations.Operation;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
@@ -37,6 +39,8 @@ public class TimetableController {
 
     //View timetable for all facilities
     @GetMapping("")
+    @Operation(summary = "Get Timetable",
+            description = "Get list of all activities for all facilities #1")
     public CollectionModel<Activity> getTimetable() {
         Collection<Activity> timetabledActivities = activityService.findAllWithResources();
 
@@ -59,6 +63,8 @@ public class TimetableController {
 
     //view timetable by specified facility
    @GetMapping("{resource_id}")
+   @Operation(summary = "Get Timetable for a facility",
+           description = "Get list of all activities for a particular facilities #2")
    public CollectionModel<Activity> getTimetableByResource(@PathVariable Long resource_id) {
        Collection<Activity> timetabledActivitiesByResource = activityService.findByResourceId(resource_id);
        //unique links for each activity

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipTypeRepository;
@@ -35,13 +37,14 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public Page<Membership> findAllMembers(Pageable pageable){
-      return membershipRepository.findAll(pageable);
+    @Transactional
+    public List<Membership> findAllMembers(){
+      return membershipRepository.findAll();
     }
 
     @Override
-    public Page<MembershipType> findAllMembershipTypes(Pageable pageable){
-        return membershipTypeRepository.findAll(pageable);
+    public List<MembershipType> findAllMembershipTypes(){
+        return membershipTypeRepository.findAll();
     }
 
     @Override

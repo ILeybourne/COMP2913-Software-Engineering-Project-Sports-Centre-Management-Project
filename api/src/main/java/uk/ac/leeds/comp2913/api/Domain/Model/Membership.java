@@ -32,10 +32,10 @@ import javax.persistence.*;
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private Date startDate;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     private Date endDate;
 
     @Column(name = "repeating_payment")

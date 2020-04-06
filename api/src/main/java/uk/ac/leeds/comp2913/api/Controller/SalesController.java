@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import io.swagger.v3.oas.annotations.Operation;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.SalesRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
@@ -40,6 +42,8 @@ public class SalesController {
      * @return list of all sales in the system
      */
     @GetMapping("/")
+    @Operation(summary = "Returns a list of sales. INCOMPLETE",
+            description = "Returns a list of all sales (bookings and memberships)")
     public Page<Sale> sales(Pageable pageable) {
         return salesRepository.findAll(pageable);
     }
@@ -49,12 +53,16 @@ public class SalesController {
      * @return Receipt for transaction
      */
     @PostMapping("/checkout")
+    @Operation(summary = "Mark a sale paid INCOMPLETE",
+            description = "Marks a sale as paid and add to invoice")
     public Receipt checkout(@Valid @RequestBody List<Sale> sale){
         // TODO: 17/03/2020 mark sale as paid and add to invoice
         return null;
     }
 
     @DeleteMapping("/refund/{sale_id}")
+    @Operation(summary = "Cancel a sale",
+            description = "Cancels a sale")
     public ResponseEntity<?> deletePayment(@PathVariable Long sale_id) {
 
         try {

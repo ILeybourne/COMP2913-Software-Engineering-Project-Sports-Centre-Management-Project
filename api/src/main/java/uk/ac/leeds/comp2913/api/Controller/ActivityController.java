@@ -11,6 +11,7 @@ import org.springframework.hateoas.LinkRelation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.RegularSessionRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
@@ -49,6 +50,8 @@ public class ActivityController {
      * @return a page of Activities
      */
     @GetMapping
+    @Operation(summary = "List all scheduled activities",
+            description = "Get List of all scheduled activities and links to view the activitys details")
     public CollectionModel<Activity> getActivities() {
         List<Activity> allActivities = activityService.getActivities();
         for (Activity activity : allActivities) {
@@ -64,6 +67,8 @@ public class ActivityController {
 
     //get single activity
     @GetMapping("/{activity_id}")
+    @Operation(summary = "Get specific scheduled activity",
+            description = "Get a specific scheduled activity, and links to relevant operations")
     public CollectionModel<Activity> getActivitiesByActivityId(@PathVariable Long activity_id) {
         Activity activity = activityService.findActivityById(activity_id);
         Link deleteLink = linkTo(ActivityController.class).slash(activity_id).slash("delete").withRel("delete");
@@ -83,6 +88,8 @@ public class ActivityController {
 
     //get scheduled activities for a given resource
     @GetMapping("/resource/{resource_id}")
+    @Operation(summary = "Get scheduled activities for a given resource",
+            description = "Get list of all scheduled activities for a particular facility#2")
     public List<Activity> getActivitiesByResourceId(@PathVariable Long resource_id) {
         return activityService.findByResourceId(resource_id);
     }
@@ -91,6 +98,8 @@ public class ActivityController {
     //Pulls data from activity type, only start and end type is pulled from json via JsonCreator
     //schedule an activity. Create a one time activity or regular session
     @PostMapping("")
+    @Operation(summary = "create a new scheduled activity",
+            description = "create a new scheduled activity, using activity type. Has the option to make regular session #12")
     public Activity createActivity(@Valid @RequestBody ActivityDTO activityDTO) {
         Activity activity = new Activity();
         RegularSession regularSession = new RegularSession();
@@ -108,18 +117,24 @@ public class ActivityController {
 
     //update details of scheduled activity
     @PutMapping("/{activity_id}/update")
+    @Operation(summary = "Update a scheduled activity",
+            description = "Update the details of a scheduled activity #2")
     public Activity updateActivity(@PathVariable Long activity_id, @Valid @RequestBody Activity activityRequest) {
         return activityService.editActivity(activity_id, activityRequest);
     }
 
     //delete scheduled activity
     @DeleteMapping("/{activity_id}/delete")
+    @Operation(summary = "Delete a scheduled activity",
+            description = "delete a specific activity from the timetable/database #2")
     public ResponseEntity<?> deleteActivity(@PathVariable Long activity_id) {
         return activityService.deleteActivity(activity_id);
     }
 
     //delete regular session, therefore stop activities from repeating
     @DeleteMapping("/cancelregularsession/{regular_session_id}")
+    @Operation(summary = "Delete regular session",
+            description = "Removes a regular session (which allows a scheduled activity to repeat) #2")
     public ResponseEntity<?> deleteRegularSession(@PathVariable Long regular_session_id) {
         return activityService.deleteRegularSession(regular_session_id);
     }

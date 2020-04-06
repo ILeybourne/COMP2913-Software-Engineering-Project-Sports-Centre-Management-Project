@@ -14,6 +14,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Customer extends RepresentationModel {
@@ -21,16 +24,18 @@ public class Customer extends RepresentationModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message = "email is required")
+    @Size(min = 3, max = 20)
     @Column(name = "email_address", nullable = false)
     private String emailAddress;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "customer")
     private List<Receipt> receipts = new LinkedList<>();
 
     @OneToMany(mappedBy = "customer")
     private List<Account> Account;
 
+    @NotBlank(message = "date of birth required")
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
@@ -42,6 +47,7 @@ public class Customer extends RepresentationModel {
         this.dateOfBirth = dateOfBirth;
     }
 
+    @JsonIgnore
     public List<Receipt> getReceipts() {
         return receipts;
     }

@@ -5,13 +5,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
 //Used by manager to create activities, can pass a regular session boolean to create a regular session
 public class ActivityDTO {
+  @NotBlank(message = "start time is required")
   private Date startTime;
+
+  @NotBlank(message = "end time is required")
   private Date endTime;
   private boolean regularSession;
   private boolean social;
   private Integer interval;
+
+  @NotBlank(message = "activity type is required")
   private Long activityTypeId;
 
   public ActivityDTO (){

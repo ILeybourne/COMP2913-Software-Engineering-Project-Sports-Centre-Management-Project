@@ -7,6 +7,9 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.CollectionModel;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
 import java.math.BigDecimal;
 
 /**
@@ -35,6 +38,7 @@ public abstract class Sale extends CollectionModel {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   protected long id;
 
+  @NotBlank(message = "amount is required")
   @Column(name = "amount", nullable = false)
   protected BigDecimal amount;
 
@@ -46,7 +50,6 @@ public abstract class Sale extends CollectionModel {
    * Hence if we need to get the time of payment, we get the created_at
    * timestamp from the receipt
    */
-  @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "receipt_id")
   protected Receipt receipt;
@@ -56,7 +59,6 @@ public abstract class Sale extends CollectionModel {
    * <p>
    * In case of card handling system eg Stripe, or Random Transaction ID if cash payment
    */
-  @JsonIgnore
   @Column(name = "transaction_id", nullable = true, unique = true)
   @Length(max = 255)
   private String transactionId;
@@ -73,6 +75,7 @@ public abstract class Sale extends CollectionModel {
     this.amount = cost;
   }
 
+  @JsonIgnore
   public String getTransactionId() {
     return transactionId;
   }
@@ -81,6 +84,7 @@ public abstract class Sale extends CollectionModel {
     this.transactionId = transactionId;
   }
 
+  @JsonIgnore
   public Receipt getReceipt() {
     return receipt;
   }

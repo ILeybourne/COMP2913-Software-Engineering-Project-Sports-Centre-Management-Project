@@ -31,7 +31,7 @@ public class Account extends RepresentationModel {
     @OneToMany(mappedBy = "account",fetch = FetchType.LAZY)
     private List<Membership> memberships;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "customer_id", unique=true)
     private Customer customer;
 
@@ -82,6 +82,7 @@ public class Account extends RepresentationModel {
     public void cancelMembership() {
     }
 
+    @JsonIgnore
     public List<Booking> getBookings() {
       return bookings;
     }

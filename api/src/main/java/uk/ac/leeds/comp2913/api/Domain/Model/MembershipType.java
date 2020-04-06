@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 /**
  * Storing details of membership types (eg, annual, monthly)
@@ -35,8 +37,10 @@ public class MembershipType extends CollectionModel<MembershipType> {
 
     private String name;
 
+    @NotBlank(message = "duration of membership required")
     private int duration;
 
+    @Range(min = 0)
     private BigDecimal cost;
 
     public long getId() {

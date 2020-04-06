@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 
 /**
@@ -27,7 +28,8 @@ public class Resource extends RepresentationModel<Resource> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty
+    @NotEmpty(message = "name is required")
+    @Size(min = 3, max = 20)
     private String name;
 
     @ManyToOne
@@ -36,14 +38,12 @@ public class Resource extends RepresentationModel<Resource> {
     /**
      * List of activities ever booked for the resource
      */
-    @JsonIgnore
     @OneToMany(mappedBy = "resource", fetch = FetchType.LAZY)
     private Set<Activity> activities;
 
     /**
      * List of activities held at the resource
      */
-    @JsonIgnore
     @OneToMany(mappedBy = "resource", fetch = FetchType.LAZY)
     private Set<ActivityType> activityTypes;
 
@@ -61,7 +61,7 @@ public class Resource extends RepresentationModel<Resource> {
         this.name = name;
     }
 
-    @JsonIgnoreProperties("activityType")
+    @JsonIgnore
     public Set<Activity> getActivities() {
         return activities;
     }
@@ -80,7 +80,7 @@ public class Resource extends RepresentationModel<Resource> {
     }
 
 
-    @JsonIgnoreProperties({"resource", "bookings"})
+    @JsonIgnore
     public Set<ActivityType> getActivityTypes() {
         return activityTypes;
     }
