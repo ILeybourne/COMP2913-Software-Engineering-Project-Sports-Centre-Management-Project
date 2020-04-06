@@ -7,12 +7,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 /**
  * Represents types of activities available in a resource. to be used by the
@@ -35,18 +37,22 @@ public class ActivityType extends CollectionModel {
     @UpdateTimestamp
     private Date updated_at;
 
+    @NotBlank(message = "name is mandatory")
     private String name;
 
+    @Range(min = 1)
     private BigDecimal cost;
 
-    @Column(name = "total_capacity")
+    @Range(min = 1)
+    @Column(name = "total_capacity", nullable = false)
     private Integer totalCapacity;
 
     /**
      * TODO: shouldn't eager load
      * Which resource the activity needs to take place
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @NotBlank(message = "resource is mandatory")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
 
@@ -98,7 +104,7 @@ public class ActivityType extends CollectionModel {
         this.totalCapacity = totalCapacity;
     }
 
-    @JsonIgnoreProperties({ "activities", "activityTypes" })
+    @JsonIgnore
     public Resource getResource() {
         return resource;
     }

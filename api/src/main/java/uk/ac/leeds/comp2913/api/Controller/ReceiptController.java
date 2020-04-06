@@ -41,7 +41,7 @@ public class ReceiptController {
      */
     @GetMapping("")
     public Page<Receipt> getReceipts(Pageable pageable) {
-        return receiptRepository.findAll(pageable);
+        return receiptService.findAll(pageable);
     }
 
     /**
@@ -52,10 +52,7 @@ public class ReceiptController {
      */
     @GetMapping("/{receipt_id}")
     public Receipt getReceipt(@PathVariable Long receipt_id) {
-        return receiptRepository.findById(receipt_id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Receipt not found with id " + receipt_id)
-                );
+        return receiptService.findById(receipt_id);
     }
 
 
@@ -65,11 +62,9 @@ public class ReceiptController {
      */
     @DeleteMapping("/{receipt_id}")
     public ResponseEntity<?> deleteReceipt(@PathVariable Long receipt_id) {
-        return receiptRepository.findById(receipt_id)
-                .map(receipt -> {
-                    receiptRepository.delete(receipt);
-                    return ResponseEntity.ok().build();
-                }).orElseThrow(() -> new ResourceNotFoundException("Receipt not found with id " + receipt_id));
+        receiptService.delete(receipt_id);
+        return ResponseEntity.ok()
+                .build();
     }
 
 }

@@ -5,6 +5,8 @@ import com.itextpdf.licensekey.LicenseKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
 import uk.ac.leeds.comp2913.api.Domain.Service.QrCodeGenerator;
 import uk.ac.leeds.comp2913.api.Domain.Service.ReceiptService;
+import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -85,6 +88,19 @@ public class ReceiptServiceImpl implements ReceiptService {
     @Override
     public void delete(Long receiptId) {
         this.receiptRepository.deleteById(receiptId);
+    }
+
+    @Override
+    public Receipt findById(Long receiptId) {
+        return receiptRepository.findById(receiptId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Receipt not found with id " + receiptId)
+        );
+    }
+
+    @Override
+    public Page<Receipt> findAll(Pageable pageable){
+        return receiptRepository.findAll(pageable);
     }
 
     private String uploadReceiptPdfToS3(String localPdfFilePath) {

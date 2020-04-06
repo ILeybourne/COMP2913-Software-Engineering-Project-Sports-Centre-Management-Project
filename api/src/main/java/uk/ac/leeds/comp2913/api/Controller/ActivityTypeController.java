@@ -56,14 +56,24 @@ public class ActivityTypeController {
         for (ActivityType activityType : allActivityTypes) {
             Long activityTypeId = activityType.getId();
             Link selfLink = linkTo(ActivityTypeController.class).slash(activityTypeId).withSelfRel();
-            Link updateLink = linkTo(ActivityTypeController.class).slash(activityTypeId).slash("update").withRel("update");
-            Link deleteLink = linkTo(ActivityTypeController.class).slash(activityTypeId).slash("delete").withRel("delete");
-            Link createNewActivity = linkTo(ActivityController.class).slash(activityTypeId).withRel("Create New Scheduled Activity");
-            activityType.add(selfLink, updateLink, deleteLink, createNewActivity);
+            activityType.add(selfLink);
         }
         Link viewAllActivityTypes = linkTo(ActivityTypeController.class).withSelfRel();
         CollectionModel<ActivityType> result = new CollectionModel<>(allActivityTypes, viewAllActivityTypes);
         return result;
+    }
+
+    //Get activity types for a resource
+    @GetMapping("/{activity_type_id}")
+    public ActivityType getActivityTypeId(@PathVariable Long activity_type_id) {
+        ActivityType activityType = activityTypeService.findById(activity_type_id);
+        Link selfLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withSelfRel();
+        Link updateLink = linkTo(ActivityTypeController.class).slash(activity_type_id).slash("update").withRel("update");
+        Link deleteLink = linkTo(ActivityTypeController.class).slash(activity_type_id).slash("delete").withRel("delete");
+        Link resourceLink = linkTo(ResourceController.class).slash(activityType.getResource().getId()).withRel("Resource");
+        Link createNewActivity = linkTo(ActivityController.class).slash(activity_type_id).withRel("Create New Scheduled Activity from this template");
+        activityType.add(selfLink, updateLink, deleteLink, resourceLink, createNewActivity);
+        return activityType;
     }
 
     //Get activity types for a resource

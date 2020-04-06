@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -15,7 +16,7 @@ import javax.persistence.*;
  * stores: name, duration, cost...
  */
 @Entity
-public class MembershipType {
+public class MembershipType extends CollectionModel<MembershipType> {
 
     @JsonProperty
     @Id

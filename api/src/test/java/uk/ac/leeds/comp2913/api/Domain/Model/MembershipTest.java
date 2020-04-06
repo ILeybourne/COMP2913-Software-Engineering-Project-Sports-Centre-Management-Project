@@ -90,37 +90,6 @@ class MembershipTest {
     }
 
     @Test
-    void getStartDate() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setStartDate(testDateSet);
-        Date testGetStartDate = membership.getStartDate();
-        assertEquals(testDateSet, testGetStartDate);
-    }
-    @Test
-    void setStartDate() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setStartDate(testDateSet);
-        Date testGetStartDate = membership.getStartDate();
-        assertEquals(testDateSet, testGetStartDate);
-    }
-
-    @Test
-    void setEndDate() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setEndDate(testDateSet);
-        Date testGetEndDate = membership.getEndDate();
-        assertEquals(testDateSet, testGetEndDate);
-    }
-    @Test
-    void endEndDate() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setEndDate(testDateSet);
-        Date testGetEndDate = membership.getEndDate();
-        assertEquals(testDateSet, testGetEndDate);
-    }
-
-
-    @Test
     @Disabled
     void makePayment() {
     }

@@ -60,7 +60,9 @@ public class BookingController {
         for (Booking booking : allBookings) {
             Long bookingId = booking.getId();
             Link selfLink = linkTo(BookingController.class).slash(bookingId).withSelfRel();
-            booking.add(selfLink);
+            Link accountLink = linkTo(AccountController.class).slash(booking.getAccount().getId()).withRel("Account");
+            Link activityLink = linkTo(ActivityController.class).slash(booking.getActivity().getId()).withRel("Activity");
+            booking.add(selfLink, accountLink, activityLink);
         }
         Link viewAllBookings = linkTo(BookingController.class).withSelfRel();
         CollectionModel<Booking> result = new CollectionModel<>(allBookings, viewAllBookings);

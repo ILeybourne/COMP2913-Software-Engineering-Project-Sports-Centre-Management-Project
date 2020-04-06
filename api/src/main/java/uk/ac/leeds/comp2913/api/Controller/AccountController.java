@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
@@ -32,8 +34,8 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+
     @GetMapping
-    @Transactional
     public CollectionModel<Account> getAccounts() {
         List<Account> accounts = accountService.getAccounts();
         for (Account account : accounts){

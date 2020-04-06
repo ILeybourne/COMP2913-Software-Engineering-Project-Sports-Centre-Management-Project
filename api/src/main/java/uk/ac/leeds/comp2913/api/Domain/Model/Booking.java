@@ -17,7 +17,6 @@ import java.util.Date;
 @Entity
 public class Booking extends Sale {
 
-    @JsonIgnore
     @CreationTimestamp
     private Date created_at;
 
@@ -30,7 +29,6 @@ public class Booking extends Sale {
     /**
      * The account associated with the booking
      */
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
@@ -89,6 +87,7 @@ public class Booking extends Sale {
         this.updated_at = updated_at;
     }
 
+    @JsonIgnore
     public Account getAccount() {
         return account;
     }

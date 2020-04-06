@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.hateoas.CollectionModel;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 /**
  * TODO: @CHORE Rename this entity to 'session' as it fits more with spec
@@ -38,24 +40,27 @@ public class Activity extends CollectionModel<Activity> {
    */
   private Boolean social;
 
+  @NotBlank(message = "Name is mandatory")
   private String name;
 
+  @NotBlank(message = "Start time is mandatory")
   @Column(name = "start_time")
   private Date startTime;
 
+  @NotBlank(message = "end time is mandatory")
   @Column(name = "end_time")
   private Date endTime;
 
   /**
    * The bookings that have been made against the activity
    */
-  @JsonIgnore
   @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY)
   private Set<Booking> bookings;
 
   /**
    * Which resource the activity needs to take place
    */
+  @NotBlank(message = "Resource is mandatory")
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "resource_id", nullable = false)
   private Resource resource;
@@ -63,7 +68,7 @@ public class Activity extends CollectionModel<Activity> {
   /**
    * Which activity type the activity belongs to
    */
-  @JsonIgnore
+  @NotBlank(message = "activity type is mandatory")
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "activity_type_id", nullable = false)
   private ActivityType activityType;
@@ -76,6 +81,8 @@ public class Activity extends CollectionModel<Activity> {
   @Formula("(SELECT SUM(b.participants) FROM sports_centre_management.booking b where b.activity_id = id)")
   private Integer currentCapacity;
 
+  @Range(min = 0)
+  @NotBlank(message = "cost is mandatory")
   private BigDecimal cost;
 
   //IF an activity is a regular session, then it will hold the ID of the regular session
@@ -110,6 +117,7 @@ public class Activity extends CollectionModel<Activity> {
     this.cost = activityType.getCost();
   }
 
+  @JsonIgnore
   public ActivityType getActivityType() {
     return activityType;
   }
@@ -155,6 +163,7 @@ public class Activity extends CollectionModel<Activity> {
     this.currentCapacity = current_capacity;
   }
 
+  @JsonIgnore
   public Set<Booking> getBookings() {
     return bookings;
   }

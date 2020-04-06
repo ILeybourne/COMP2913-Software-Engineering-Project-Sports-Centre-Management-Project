@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 public class Account extends RepresentationModel {
@@ -27,17 +28,13 @@ public class Account extends RepresentationModel {
     @ManyToOne
     private Centre centre;
 
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "account",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "account",fetch = FetchType.LAZY)
     private List<Membership> memberships;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", unique=true)
     private Customer customer;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "account")
     private List<Booking> bookings;
 
@@ -70,7 +67,7 @@ public class Account extends RepresentationModel {
         this.centre = centre;
     }
 
-    @JsonIgnoreProperties({"Account", "receipts"})
+    @JsonIgnore
     public Customer getCustomer() {
         return customer;
     }
@@ -93,6 +90,7 @@ public class Account extends RepresentationModel {
       this.bookings = bookings;
     }
 
+    @JsonIgnore
     public List<Membership> getMemberships() {
         return memberships;
     }

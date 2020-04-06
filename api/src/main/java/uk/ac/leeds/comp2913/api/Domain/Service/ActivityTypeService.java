@@ -19,4 +19,5 @@ public interface ActivityTypeService {
 
     ResponseEntity<?> deleteActivityType(Long activity_type_id);
 
-    }
+    ActivityType findById(Long activity_type_id);
+}

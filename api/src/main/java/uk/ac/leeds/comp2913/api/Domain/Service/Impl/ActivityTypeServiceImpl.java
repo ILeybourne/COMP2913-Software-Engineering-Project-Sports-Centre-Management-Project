@@ -30,6 +30,12 @@ public class ActivityTypeServiceImpl implements ActivityTypeService{
     }
 
     @Override
+    public ActivityType findById(Long activity_type_id){
+        return activityTypeRepository.findById(activity_type_id)
+                .orElseThrow(() -> new ResourceNotFoundException("Activity Type not found with id " + activity_type_id));
+    }
+
+    @Override
     public List<ActivityType> findByResourceId(Long resource_id){
         return activityTypeRepository.findByResourceId(resource_id);
     }
