@@ -1,50 +1,51 @@
 <template>
-  <div class="table">
-    <thead>
-      <th scope="col">Activity</th>
-      <th scope="col">Member Cost</th>
-      <th scope="col">Non-Member Cost</th>
-    </thead>
-    <tbody>
-      <tr v-for="item in rowData" :key="item.id">
-        <th scope="row">{{ item.name }}</th>
-        <td scope="row">{{ item.memCost }}</td>
-        <td scope="row">{{ item.nonMemCost }}</td>
-      </tr>
-    </tbody>
+  <div>
+    <h1>All Facility Price Listings</h1>
+    <v-data-table
+      :headers="headers"
+      :items="activities"
+      class="elevation-1"
+      item-key="name"
+      show-select
+    ></v-data-table>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
-  name: "CentrePriceListing",
+  name: "FacilityPriceListing",
   data: function() {
     return {
-      rowData: []
+      rowData: [],
+      headers: [
+        {
+          value: "name",
+          text: "Activity Type",
+          sortable: true
+        },
+        {
+          value: "formattedCost",
+          text: "Cost",
+          sortable: true
+        },
+        {
+          value: "totalCapacity",
+          text: "Total Capacity",
+          sortable: true
+        }
+      ]
     };
   },
-  created: function() {
-    this.formatData();
+  computed: {
+    ...mapGetters("facilities", ["activities"])
   },
   methods: {
-    formatData: function() {
-      for (let resource in facilities) {
-        for (let activityType in resource) {
-          let object = {
-            id: activityType.id,
-            name: activityType.name,
-            memCost: activityType.cost,
-            nonMemCost: activityType.cost // TODO: differentiate member and non-member costs
-          };
-          this.rowData.push(object);
-        }
-      }
-    }
+    ...mapActions("facilities", ["getActivities"])
   },
-  computed: {
-    ...mapGetters("facilities", "[facilities]")
+  mounted() {
+    this.getActivities();
   }
 };
 </script>
