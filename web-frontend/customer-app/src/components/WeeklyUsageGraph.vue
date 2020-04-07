@@ -1,53 +1,71 @@
-<template>
-  <div>
-    <graph-line
-      :width="600"
-      :height="400"
-      :shape="'normal'"
-      :axis-min="0"
-      :axis-max="50"
-      :axis-full-mode="true"
-      :labels="['1Q', '2Q', '3Q', '4Q']"
-      :names="names"
-      :values="values"
-    >
-      <note :text="'Line Chart'"></note>
-      <tooltip :names="names" :position="'right'"></tooltip>
-      <legends :names="names"></legends>
-      <guideline :tooltip-y="true"></guideline>
-    </graph-line>
-  </div
-></template>
+<template
+  ><div class="small">
+    <line-chart :chart-data="datacollection"></line-chart>
+    <button @click="fillData()">Randomize</button>
+  </div>
+</template>
 
-<style scoped></style>
+<style scoped>
+.small {
+  max-width: 600px;
+  margin: 150px auto;
+}
+</style>
 <script>
-
 import { mapActions, mapGetters } from "vuex";
+import LineChart from "./LineChart.js";
 
 export default {
-  data: function() {
+  components: {
+    LineChart
+  },
+  data() {
     return {
-      names: ["MS", "Apple", "Google"],
-      values: [
-        [10, 5, 5, 5],
-        [40, 10, 10, 10],
-        [30, 30, 30, 30]
-      ]
+      datacollection: null
     };
   },
+
   computed: {
-    ...mapGetters("facilities", ["activities"])
+    ...mapGetters("timetable", ["sessions"])
   },
   methods: {
-    dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
-    ...mapActions("facilities", {
-      getActivity: "getAllActivities"
+    ...mapActions("timetable", {
+      getActivity: "getAllSessions"
     }),
-    showCancel() {
-      this.$bvModal.show("edit-Activity-modal");
+    fillData() {
+      this.datacollection = {
+        labels: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        datasets: [
+          {
+            label: "Data One",
+            backgroundColor: "#17a2b8",
+            data: [
+              this.getRandomInt(),
+              this.getRandomInt(),
+              this.getRandomInt(),
+              this.getRandomInt(),
+              this.getRandomInt(),
+              this.getRandomInt(),
+              this.getRandomInt()
+            ]
+          }
+        ]
+      };
+    },
+    getRandomInt() {
+      return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
     }
   },
-  mounted: async function() {
+  async mounted() {
+    this.fillData();
     await this.getActivity();
   }
 };
