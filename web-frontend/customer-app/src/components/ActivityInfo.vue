@@ -29,6 +29,9 @@
       <router-link :to="this.link" class="btn btn-primary"
         >Book Activity</router-link
       >
+      <b-button @click="deleteASession(e)">
+        Delete
+      </b-button>
     </div>
   </div>
 </template>
@@ -36,6 +39,8 @@
 <style scoped></style>
 <!--TODO: Cancel booking if already booked on-->
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "ActivityInfo",
   props: { activity: Object },
@@ -50,6 +55,12 @@ export default {
       }
     };
   },
-  computed: {}
+  computed: {},
+  methods: {
+    ...mapActions("timetable", ["deleteSession"]),
+    async deleteASession() {
+      await this.deleteSession(this.activity.id);
+    }
+  }
 };
 </script>
