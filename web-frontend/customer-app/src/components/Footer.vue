@@ -4,20 +4,23 @@
       <div class="col-md-3 text-left">
         <div class="line">
           <a href="/home" title="Home">
-            <img
-              src="../assets/logo.png"
-              style="height: 48px; width: 48px"
-            />
+            <img src="../assets/logo.png" style="height: 48px; width: 48px" />
           </a>
+        </div>
+        <div class="line">
+          <em>
+            "We're better than you, and we know it!"
+          </em>
         </div>
         <div class="line">
           <a>
-            "We're better than you, and we know it!"
+            Dedicated to your sporting experience.
           </a>
         </div>
         <div class="line">
+          <a>Learn more</a>
           <a href="/about" title="About">
-            About Us
+            about us
           </a>
         </div>
       </div>
