@@ -1,13 +1,17 @@
 <template>
-  <div>
-    <h1>All Facility Price Listings</h1>
-    <v-data-table
-      :headers="headers"
-      :items="activities"
-      class="elevation-1"
-      item-key="name"
-      show-select
-    ></v-data-table>
+  <div class="container">
+    <div class="row">
+      <h1>All Facility Price Listings</h1>
+      <div class="col-md-12">
+        <v-data-table
+          :headers="headers"
+          :items="activities"
+          class="elevation-1"
+          item-key="name"
+          items-per-page="10"
+        ></v-data-table>
+      </div>
+    </div>
   </div>
 </template>
 
