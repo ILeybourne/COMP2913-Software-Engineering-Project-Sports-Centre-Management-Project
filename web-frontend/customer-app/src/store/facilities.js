@@ -11,7 +11,8 @@ const getters = {
     state.activities.map(activity => {
       return {
         ...activity,
-        formattedCost: "£" + activity.cost
+        formattedCost:
+          "£" + activity.cost.toFixed(2)
       };
     })
 };
