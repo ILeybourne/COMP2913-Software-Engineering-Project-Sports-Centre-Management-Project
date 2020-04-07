@@ -64,7 +64,7 @@ public class BookingController {
         this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
-    @GetMapping
+    @GetMapping("")
     @Operation(summary = "Get a list of all bookings",
             description = "Get list of all bookings with basic information, self link provides more details")
     public PagedModel<Booking> getBookings(Pageable pageable) {
@@ -87,7 +87,7 @@ public class BookingController {
             description = "Get a specific booking with more details/links")
     public Booking getBookingById(@Parameter(description = "The id of the booking", required = true)@PathVariable Long booking_id) {
         Booking booking = bookingService.findById(booking_id);
-        Link deleteLink = linkTo(BookingController.class).slash("delete").slash(booking_id).withRel("Delete");
+        Link deleteLink = linkTo(BookingController.class).slash(booking_id).withRel("Delete");
         Link updateLink = linkTo(BookingController.class).slash(booking_id).withRel("Update");
         //Link receiptLink = linkTo(ReceiptController.class).slash(booking.getReceipt().getId()).slash("receipt").withRel("Receipt");
         Link accountLink = linkTo(AccountController.class).slash(booking.getAccount().getId()).withRel("Account");
@@ -161,7 +161,7 @@ public class BookingController {
         bookingService.cancelRegularSession(activity_id, account_id);
     }
 
-    @DeleteMapping("/delete/{booking_id}")
+    @DeleteMapping("/{booking_id}")
     @Operation(summary = "Cancel Booking #5",
             description = "Cancel a booking #5")
     public ResponseEntity<?> deleteBooking(@Parameter(description = "The Id of the booking in the path", required = true)@PathVariable Long bookingId) {

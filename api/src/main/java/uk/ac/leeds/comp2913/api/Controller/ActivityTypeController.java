@@ -84,10 +84,10 @@ public class ActivityTypeController {
     public ActivityType getActivityTypeId(@Parameter(description = "The ID of the activity type", required = true)@PathVariable Long activity_type_id) {
         ActivityType activityType = activityTypeService.findById(activity_type_id);
         Link selfLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withSelfRel();
-        Link updateLink = linkTo(ActivityTypeController.class).slash(activity_type_id).slash("update").withRel("update");
-        Link deleteLink = linkTo(ActivityTypeController.class).slash(activity_type_id).slash("delete").withRel("delete");
+        Link updateLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("update");
+        Link deleteLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("delete");
         Link resourceLink = linkTo(ResourceController.class).slash(activityType.getResource().getId()).withRel("Resource");
-        Link createNewActivity = linkTo(ActivityController.class).slash(activity_type_id).withRel("Create New Scheduled Activity from this template");
+        Link createNewActivity = linkTo(ActivityController.class).slash("activitytype").slash(activity_type_id).withRel("Create New Scheduled Activity from this template");
         activityType.add(selfLink, updateLink, deleteLink, resourceLink, createNewActivity);
         return activityType;
     }
@@ -121,7 +121,7 @@ public class ActivityTypeController {
     }
 
     //update activity type
-    @PutMapping("/{activity_type_id}/update")
+    @PutMapping("/{activity_type_id}")
     @Operation(summary = "Update activity type",
             description = "edit the details of an activity type #2")
     public ActivityType updateActivityType(@Parameter(description = "The ID of the activity type", required = true)@PathVariable Long activity_type_id,
@@ -130,7 +130,7 @@ public class ActivityTypeController {
     }
 
     //delete activity
-    @DeleteMapping("/{activity_type_id}/delete")
+    @DeleteMapping("/{activity_type_id}")
     @Operation(summary = "delete an activity type",
             description = "delete an activity type #2")
     public ResponseEntity<?> deleteActivityType(@Parameter(description = "The id of the activity type", required = true)@PathVariable Long activity_type_id) {

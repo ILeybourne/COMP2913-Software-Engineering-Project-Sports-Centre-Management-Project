@@ -68,8 +68,9 @@ public class MembershipController {
     public MembershipType getMembershipTypeById( @Parameter(description = "The ID of the membership type", required = true)@PathVariable Long membership_type_id) {
         MembershipType membershipType = membershipService.findMembershipTypeById(membership_type_id);
         Link selfLink = linkTo(MembershipController.class).slash("types").slash(membership_type_id).withSelfRel();
+        Link addMembership = linkTo(MembershipController.class).slash(membership_type_id).withRel("add membership of this type");
         Link membershipsWithType = linkTo(MembershipController.class).slash("members").slash("type").slash(membership_type_id).withRel("Memberships with this type");
-        membershipType.add(selfLink, membershipsWithType);
+        membershipType.add(selfLink, membershipsWithType, addMembership);
         return membershipType;
     }
 
@@ -98,11 +99,11 @@ public class MembershipController {
         Link selfLink = linkTo(MembershipController.class).slash("members").slash(membership.getId()).withSelfRel();
         Link accountLink = linkTo(AccountController.class).slash(membership.getAccount().getId()).withRel("Account Details");
         Link membershipTypeLink = linkTo(MembershipController.class).slash("types").slash(membership.getMembershipType().getId()).withRel("Membership Type");
-        Link updateLink = linkTo(MembershipController.class).slash("members").slash(membership.getId()).withRel("update");
-        Link deleteLink = linkTo(MembershipController.class).slash("members").slash(membership.getId()).withRel("delete");
+        Link updateLink = linkTo(MembershipController.class).slash(membership.getId()).withRel("update");
+        Link deleteLink = linkTo(MembershipController.class).slash(membership.getId()).withRel("delete");
         membership.add(selfLink, accountLink, membershipTypeLink, updateLink, deleteLink);
         if(membership.getRepeatingPayment() == true){
-            Link stopPaymentsLink = linkTo(MembershipController.class).slash("members").slash(membership.getId()).slash("stop").withRel("stop repeat payments");
+            Link stopPaymentsLink = linkTo(MembershipController.class).slash("members").slash(membership.getId()).slash("stop").withRel("stop auto renewal");
             membership.add(stopPaymentsLink);
         }
         return membership;
@@ -124,17 +125,18 @@ public class MembershipController {
 
 
     //Add a member, store membership with account Id and membership type id
-    @PostMapping("")
+    @PostMapping("/{membership_type_id}")
     @Operation(summary = "Take out a membership #3",
             description = "Purchase a membership, requires membership type, account and whether the payment should repeat")
-    public Membership addMembership( @Parameter(description = "A membership DTO Object", required = true)@Valid @RequestBody MembershipDTO membership){
+    public Membership addMembership( @Parameter(description = "A membership DTO Object", required = true)@Valid @RequestBody MembershipDTO membership,
+                                     @Parameter(description = "The membership type Id", required = true)@PathVariable Long membership_type_id){
         Membership m = new Membership();
         m.setRepeatingPayment(membership.isRepeatingPayment());
-        return membershipService.addMember(membership.getAccountId(), membership.getMembershipTypeId(), m);
+        return membershipService.addMember(membership.getAccountId(), membership_type_id, m);
     }
 
     // Upgrade/downgrade membership type
-    @PutMapping("/members/{membership_id}")
+    @PutMapping("/{membership_id}")
     @Operation(summary = "Edit the details of a membership",
             description = "Update the fields of a particular membership")
     public Membership updateMembership( @Parameter(description = "The Id of the membership", required = true)@PathVariable Long membership_id,
@@ -150,7 +152,7 @@ public class MembershipController {
     }
 
     //cancel membership
-    @DeleteMapping("/members/{membership_id}")
+    @DeleteMapping("/{membership_id}")
     @Operation(summary = "Cancel the membership",
             description = "Cancels a membership (removes from database/cancels sale")
     public ResponseEntity<?> deleteMembership( @Parameter(description = "The ID of the membership", required = true)@PathVariable Long membership_id) {

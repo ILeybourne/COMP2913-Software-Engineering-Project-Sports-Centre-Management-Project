@@ -10,21 +10,17 @@ public class MembershipDTO {
 
     @NotNull(message = "account id is required")
     private Long accountId;
-    @NotNull(message = "Membership Type is required")
-    private Long membershipTypeId;
     private boolean repeatingPayment;
 
     public MembershipDTO(){}
 
     @JsonCreator
-    public MembershipDTO(@JsonProperty("membershipTypeId") Long membershipTypeId,
-                         @JsonProperty("accountId") Long accountId,
+    public MembershipDTO(@JsonProperty("accountId") Long accountId,
                          @JsonProperty(value = "repeatingPayment") Boolean repeatingPayment){
         if (repeatingPayment == null) {
             repeatingPayment = false;
         }
         this.accountId = accountId;
-        this.membershipTypeId = membershipTypeId;
         this.repeatingPayment = (boolean) repeatingPayment;
     }
 
@@ -34,14 +30,6 @@ public class MembershipDTO {
 
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
-    }
-
-    public Long getMembershipTypeId() {
-        return membershipTypeId;
-    }
-
-    public void setMembershipTypeId(Long membershipTypeId) {
-        this.membershipTypeId = membershipTypeId;
     }
 
     public boolean isRepeatingPayment() {

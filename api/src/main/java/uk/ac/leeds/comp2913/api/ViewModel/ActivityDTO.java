@@ -20,8 +20,6 @@ public class ActivityDTO {
   private boolean social;
   private Integer interval;
 
-  @NotNull(message = "activity type is required")
-  private Long activityTypeId;
 
   public ActivityDTO (){
   }
@@ -31,8 +29,7 @@ public class ActivityDTO {
                      @JsonProperty("endTime") Date endTime,
                      @JsonProperty(value = "RegularSession") Boolean regularSession,
                      @JsonProperty(value = "social") Boolean social,
-                     @JsonProperty("interval") Integer interval,
-                     @JsonProperty("activityTypeId") Long activityTypeId) {
+                     @JsonProperty("interval") Integer interval) {
     if (regularSession == null) {
       regularSession = false;
     }
@@ -44,7 +41,6 @@ public class ActivityDTO {
     this.startTime = startTime;
     this.endTime = endTime;
     this.interval = interval;
-    this.activityTypeId = activityTypeId;
   }
 
   public Date getStartTime() {
@@ -87,11 +83,4 @@ public class ActivityDTO {
     this.interval = interval;
   }
 
-  public Long getActivityTypeId() {
-    return activityTypeId;
-  }
-
-  public void setActivityTypeId(Long activityTypeId) {
-    this.activityTypeId = activityTypeId;
-  }
 }

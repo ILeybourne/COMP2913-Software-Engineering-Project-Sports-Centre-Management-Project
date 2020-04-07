@@ -23,6 +23,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * TODO: @CHORE, annotate with Swagger API documentation
@@ -31,6 +32,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
  * TODO: @CHORE, add HAL to all endpoints
  * TODO: @CHORE, add hasAuthority checks to all endpoints
  * https://www.baeldung.com/spring-hateoas-tutorial?fbclid=IwAR2NW80nLYxRXVDCwtIvCa2-ntc6CzfK54qjf8KALi6_CWlX5jcz9YghPQo
+ *
+ * TODO: PAGINATION CONFIG FOR SORTING
  */
 @RestController
 @RequestMapping("/activities")
@@ -51,7 +54,7 @@ public class ActivityController {
      *
      * @return a page of Activities
      */
-    @GetMapping
+    @GetMapping("")
     @Operation(summary = "List all scheduled activities",
             description = "Get List of all scheduled activities and links to view the activitys details")
     public PagedModel<Activity> getActivities(Pageable pageable) {
@@ -62,9 +65,8 @@ public class ActivityController {
             activity.add(selfLink);
         }
         Link viewAllActivities = linkTo(ActivityController.class).withSelfRel();
-        Link createActivity = linkTo(ActivityController.class).withSelfRel();
         PagedModel<Activity> result = pagedResourcesAssembler.toModel(allActivities);
-        result.add(viewAllActivities, createActivity);
+        result.add(viewAllActivities);
         return result;
     }
 
@@ -74,12 +76,11 @@ public class ActivityController {
             description = "Get a specific scheduled activity, and links to relevant operations")
     public Activity getActivityByActivityId(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id) {
         Activity activity = activityService.findActivityById(activity_id);
-        Link deleteLink = linkTo(ActivityController.class).slash(activity_id).slash("delete").withRel("delete");
-        Link updateLink = linkTo(ActivityController.class).slash(activity_id).slash("update").withRel("update");
+        Link deleteLink = linkTo(ActivityController.class).slash(activity_id).withRel("delete");
+        Link updateLink = linkTo(ActivityController.class).slash(activity_id).withRel("update");
         Link viewBookingsLink = linkTo(BookingController.class).slash("activity").slash(activity_id).withRel("Bookings");
         Link placeBookingLink = linkTo(BookingController.class).slash(activity_id).withRel("Place Booking");
-        Link createNewActivityLink = linkTo(ActivityController.class).withRel("Create New Activity");
-        activity.add(updateLink, deleteLink, viewBookingsLink, placeBookingLink, createNewActivityLink);
+        activity.add(updateLink, deleteLink, viewBookingsLink, placeBookingLink);
         if (activity.getRegularSession() != null) {
             Long regularSessionId = activity.getRegularSession().getId();
             Link stopRegularSessionLink = linkTo(ActivityController.class).slash("cancelregularsession")
@@ -102,14 +103,13 @@ public class ActivityController {
     //schedule an activity
     //Pulls data from activity type, only start and end type is pulled from json via JsonCreator
     //schedule an activity. Create a one time activity or regular session
-    @PostMapping("")
+    @PostMapping("activitytype/{activity_type_id}")
     @Operation(summary = "create a new scheduled activity",
             description = "create a new scheduled activity, using activity type. Has the option to make regular session #12")
-    public Activity createActivity(@Parameter(description = "An ActivityDTO object, providing details needed to create an activity",
-            required = true) @Valid @RequestBody ActivityDTO activityDTO) {
+    public Activity createActivity(@Parameter(description = "An ActivityDTO object, providing details needed to create an activity", required = true) @Valid @RequestBody ActivityDTO activityDTO,
+                                   @Parameter(description = "An ActivityDTO object, providing details needed to create an activity", required = true) @PathVariable Long activity_type_id) {
         Activity activity = new Activity();
         RegularSession regularSession = new RegularSession();
-        Long activity_type_id = activityDTO.getActivityTypeId();
         activity.setStartTime(activityDTO.getStartTime());
         activity.setEndTime(activityDTO.getEndTime());
         activity.setSocial(activityDTO.isSocial());
@@ -122,7 +122,7 @@ public class ActivityController {
     }
 
     //update details of scheduled activity
-    @PutMapping("/{activity_id}/update")
+    @PutMapping("/{activity_id}")
     @Operation(summary = "Update a scheduled activity",
             description = "Update the details of a scheduled activity #2")
     public Activity updateActivity(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id, @Valid @RequestBody Activity activityRequest) {
@@ -130,7 +130,7 @@ public class ActivityController {
     }
 
     //delete scheduled activity
-    @DeleteMapping("/{activity_id}/delete")
+    @DeleteMapping("/{activity_id}")
     @Operation(summary = "Delete a scheduled activity",
             description = "delete a specific activity from the timetable/database #2")
     public ResponseEntity<?> deleteActivity(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id) {

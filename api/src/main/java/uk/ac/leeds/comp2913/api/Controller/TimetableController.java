@@ -64,10 +64,9 @@ public class TimetableController {
         }
         //Links that are for full page
         Link viewTimetable = linkTo(TimetableController.class).withSelfRel();
-        Link createNewResource = linkTo(TimetableController.class).withRel("Add New Resource");
-        Link createNewActivity = linkTo(ActivityController.class).withRel("Add New Activity");
+        Link createNewResource = linkTo(ResourceController.class).withRel("Add New Resource");
         PagedModel<Activity> result = pagedResourcesAssembler.toModel(timetabledActivities);
-        result.add(viewTimetable, createNewActivity, createNewResource);
+        result.add(viewTimetable, createNewResource);
         return result;
     }
 
@@ -81,19 +80,20 @@ public class TimetableController {
        for (Activity activity : timetabledActivitiesByResource) {
            Long activityId = activity.getId();
            Link activityLink = linkTo(ActivityController.class).slash(activityId).withRel("Activity");
+           Link viewActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for this resource");
            Link resourceLink = linkTo(ResourceController.class).slash(activity.getResource().getId()).withRel("Resource");
            Link bookingLink = linkTo(BookingController.class).slash(activity.getId()).withRel("Place Booking For This Activity");
-           activity.add(activityLink, resourceLink, bookingLink);
+           activity.add(activityLink, resourceLink, bookingLink, viewActivityTypes);
        }
        //Links for full page
        Link viewTimetable = linkTo(TimetableController.class).withRel("View timetable for all facilities");
        Link viewResourceTimetable = linkTo(TimetableController.class).slash(resource_id).withSelfRel();
-       Link createNewResource = linkTo(TimetableController.class).withRel("Add New Facility");
-       Link createNewActivity = linkTo(ActivityController.class).withRel("Add New Activity");
+       Link viewActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for this resource");
+       Link createNewResource = linkTo(ResourceController.class).withRel("Add New Facility");
        Link createNewActivityType = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("Create new Activity Type for Resource");
 
        PagedModel<Activity> result = pagedResourcesAssembler.toModel(timetabledActivitiesByResource);
-       result.add(viewTimetable, viewResourceTimetable, createNewActivity, createNewResource, createNewActivityType, viewResourceTimetable);
+       result.add(viewTimetable, viewResourceTimetable, createNewResource, createNewActivityType, viewResourceTimetable, viewActivityTypes);
        return result;
    }
 }

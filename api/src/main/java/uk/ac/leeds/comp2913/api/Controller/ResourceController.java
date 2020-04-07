@@ -82,16 +82,17 @@ public class ResourceController {
     @GetMapping("/{resource_id}")
     @Operation(summary = "Get a specific facility",
             description = "Get a specific facility with more information and links")
-  //  @PreAuthorize("hasAuthority('SCOPE_read:resource')")
+    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
     public Resource indexResource(@Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
         Resource resource = resourceService.findById(resource_id);
         Link selfLink = linkTo(ResourceController.class).slash(resource_id).withSelfRel();
+        Link createResource = linkTo(ResourceController.class).withRel("Create new resource");
         Link updateLink = linkTo(ResourceController.class).slash(resource_id).withRel("update");
         Link deleteLink = linkTo(ResourceController.class).slash(resource_id).withRel("delete");
-        Link viewActivities = linkTo(ActivityController.class).slash("resource").slash(resource_id).withRel("View Resources Scheduled Activities");
         Link viewActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for Resource");
         Link newActivityTypeLink = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("Create new Activity Type for Resource");
-        resource.add(selfLink, updateLink, deleteLink, viewActivities, viewActivityTypes, newActivityTypeLink);
+        Link viewResourceTimetable = linkTo(TimetableController.class).slash(resource_id).withRel("Facility Timetable");
+        resource.add(selfLink,createResource ,updateLink, deleteLink, viewActivityTypes, newActivityTypeLink, viewResourceTimetable);
         return resource;
     }
 
