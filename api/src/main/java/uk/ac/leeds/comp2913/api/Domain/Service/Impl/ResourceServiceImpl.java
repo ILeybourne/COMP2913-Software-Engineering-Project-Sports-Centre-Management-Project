@@ -30,8 +30,8 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Resource> findAll() {
-        return this.resourceRepository.findAll();
+    public Page<Resource> findAll(Pageable pageable) {
+        return this.resourceRepository.findAll(pageable);
     }
 
     @Override

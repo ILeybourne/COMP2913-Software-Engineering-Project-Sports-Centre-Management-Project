@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
@@ -24,6 +25,7 @@ import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
@@ -49,10 +51,13 @@ public class ResourceController {
 
     private final ResourceService resourceService;
     private final ActivityTypeService activityTypeService;
+    private final PagedResourcesAssembler pagedResourcesAssembler;
 
-    public ResourceController(ResourceService resourceService, ActivityTypeService activityTypeService) {
+
+    public ResourceController(ResourceService resourceService, ActivityTypeService activityTypeService, PagedResourcesAssembler pagedResourcesAssembler) {
         this.resourceService = resourceService;
         this.activityTypeService = activityTypeService;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
     //Get Resources
@@ -60,8 +65,8 @@ public class ResourceController {
     @Operation(summary = "Get all facilities",
             description = "Get a list of all facilities with basic information")
 //    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
-    public CollectionModel<Resource> getResources() {
-        List<Resource> allResources = resourceService.findAll();
+    public PagedModel<Resource> getResources(Pageable pageable) {
+        Page<Resource> allResources = resourceService.findAll(pageable);
         for(Resource resource : allResources) {
             Long resourceId = resource.getId();
             Link selfLink = linkTo(ResourceController.class).slash(resourceId).withSelfRel();
@@ -69,7 +74,7 @@ public class ResourceController {
         }
         Link createResource = linkTo(ResourceController.class).withRel("Create new resource");
         Link viewAllResources = linkTo(ResourceController.class).withSelfRel();
-        CollectionModel<Resource> result = new CollectionModel<>(allResources);
+        PagedModel<Resource> result = pagedResourcesAssembler.toModel(allResources);
         result.add(viewAllResources, createResource);
         return result;
     }

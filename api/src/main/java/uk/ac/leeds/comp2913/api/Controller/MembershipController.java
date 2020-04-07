@@ -24,6 +24,8 @@ import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import uk.ac.leeds.comp2913.api.Domain.Model.Account;
+import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
@@ -47,15 +49,16 @@ public class MembershipController {
     @Operation(summary = "Get all membership types",
             description = "Get list of all available membership types" +
                     "showing basic information")
-    public CollectionModel<MembershipType> getMembershipTypes() {
-        List<MembershipType> allMembershipTypes = membershipService.findAllMembershipTypes();
+    public PagedModel<MembershipType> getMembershipTypes(Pageable pageable) {
+        Page<MembershipType> allMembershipTypes = membershipService.findAllMembershipTypes(pageable);
         for(MembershipType membershipType : allMembershipTypes){
             Link selfLink = linkTo(MembershipController.class).slash("types").slash(membershipType.getId()).withSelfRel();
             Link membershipsLink = linkTo(MembershipController.class).slash("members").slash("type").slash(membershipType.getId()).withRel("All memberships with this type");
             membershipType.add(selfLink, membershipsLink);
         }
         Link allLink = linkTo(MembershipController.class).slash("types").withSelfRel();
-        CollectionModel<MembershipType> result = new CollectionModel<>(allMembershipTypes, allLink);
+        PagedModel<MembershipType> result = pagedResourcesAssembler.toModel(allMembershipTypes);
+        result.add(allLink);
         return result;
     }
 
@@ -108,14 +111,14 @@ public class MembershipController {
     @GetMapping("/members/type/{membership_type_id}")
     @Operation(summary = "Get Memberships by a particular membership type",
             description = "Get list a list of memberships for a particular type (all monthly memberships etc)")
-    public CollectionModel<Membership> findAllMembershipsWithType( @Parameter(description = "The ID of the membership type", required = true)@PathVariable Long membership_type_id){
-    List<Membership> allMembers = membershipService.findMembershipsByMembershipType(membership_type_id);
+    public PagedModel<Membership> findAllMembershipsWithType(Pageable pageable, @Parameter(description = "The ID of the membership type", required = true)@PathVariable Long membership_type_id){
+    Page<Membership> allMembers = membershipService.findMembershipsByMembershipType(pageable, membership_type_id);
         for(Membership membership : allMembers){
         Link selfLink = linkTo(MembershipController.class).slash("members").slash(membership.getId()).withSelfRel();
         Link membershipTypeLink = linkTo(MembershipController.class).slash("types").slash(membership.getMembershipType().getId()).withRel("Membership Type");
         membership.add(selfLink, membershipTypeLink);
-    }
-    CollectionModel<Membership> result = new CollectionModel<>(allMembers);
+        }
+        PagedModel<Membership> result = pagedResourcesAssembler.toModel(allMembers);
         return result;
     }
 

@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -42,8 +44,8 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public List<MembershipType> findAllMembershipTypes() {
-        return membershipTypeRepository.findAll();
+    public Page<MembershipType> findAllMembershipTypes(Pageable pageable) {
+        return membershipTypeRepository.findAll(pageable);
     }
 
     @Override
@@ -59,8 +61,8 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public List<Membership> findMembershipsByMembershipType(Long membership_type_id) {
-        return membershipRepository.findByMembershipTypeId(membership_type_id);
+    public Page<Membership> findMembershipsByMembershipType(Pageable pageable, Long membership_type_id) {
+        return membershipRepository.findByMembershipTypeId(pageable, membership_type_id);
     }
 
     @Override

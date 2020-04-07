@@ -13,6 +13,8 @@ import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.RegularSessionReposit
 import uk.ac.leeds.comp2913.api.Domain.Model.*;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import org.springframework.data.domain.PageImpl;
+
 
 import javax.transaction.Transactional;
 
@@ -54,7 +56,9 @@ public class ActivityServiceImpl implements ActivityService {
 
   @Override
   public Page<Activity> findAllWithResources(Pageable pageable){
-    return activityRepository.findAllWithResources(pageable);
+    List<Activity> activitiesWithResources = activityRepository.findAllWithResources();
+    Page<Activity> activities = new PageImpl<>(activitiesWithResources, pageable, activitiesWithResources.size());
+    return activities;
   }
 
 

@@ -1,5 +1,8 @@
 package uk.ac.leeds.comp2913.api.Domain.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -9,9 +12,9 @@ import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 
 public interface ActivityTypeService {
 
-    List<ActivityType> findAll();
+    Page<ActivityType> findAll(Pageable pageable);
 
-    List<ActivityType> findByResourceId(Long resource_id);
+    Page<ActivityType> findByResourceId(Pageable pageable, Long resource_id);
 
     ActivityType addActivityType(Long resource_id, ActivityType activityTypeRequest);
 

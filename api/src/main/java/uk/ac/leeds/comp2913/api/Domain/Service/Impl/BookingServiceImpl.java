@@ -2,6 +2,8 @@ package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,8 +39,18 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
-  public List<Booking> findAll(){
-    return bookingRepository.findAll();
+  public Page<Booking> findAll(Pageable pageable){
+    return bookingRepository.findAll(pageable);
+  }
+
+  @Override
+  public Page<Booking> findByAccountId(Pageable pageable, Long account_id){
+    return bookingRepository.findByAccountId(pageable, account_id);
+  }
+
+  @Override
+  public Page<Booking> findByActivityId(Pageable pageable, Long activity_id){
+    return bookingRepository.findByActivityId(pageable, activity_id);
   }
 
 

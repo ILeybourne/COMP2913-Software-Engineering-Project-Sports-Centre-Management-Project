@@ -1,6 +1,8 @@
 package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +27,8 @@ public class ActivityTypeServiceImpl implements ActivityTypeService{
     }
 
     @Override
-    public List<ActivityType> findAll(){
-        return activityTypeRepository.findAll();
+    public Page<ActivityType> findAll(Pageable pageable){
+        return activityTypeRepository.findAll(pageable);
     }
 
     @Override
@@ -36,8 +38,8 @@ public class ActivityTypeServiceImpl implements ActivityTypeService{
     }
 
     @Override
-    public List<ActivityType> findByResourceId(Long resource_id){
-        return activityTypeRepository.findByResourceId(resource_id);
+    public Page<ActivityType> findByResourceId(Pageable pageable, Long resource_id){
+        return activityTypeRepository.findByResourceId(pageable, resource_id);
     }
 
     @Override

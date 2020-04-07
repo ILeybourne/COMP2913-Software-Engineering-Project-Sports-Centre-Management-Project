@@ -19,7 +19,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long>, Custo
   void deleteById(Long aLong);
 
   @Query("select a from Activity a inner join fetch a.resource r")
-  Page<Activity> findAllWithResources(Pageable pageable);
+  List<Activity> findAllWithResources();
 
   //Query used in the scheduler to automatically post activities that are a regular session and place bookings
   //locate last activity made with a regular session id (meaning its a regular session)

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -25,11 +26,14 @@ import java.util.List;
 public class SalesController {
     private final SalesRepository salesRepository;
     private final SalesService salesService;
+    private final PagedResourcesAssembler pagedResourcesAssembler;
+
 
     @Autowired
-    public SalesController(SalesRepository salesRepository, SalesService salesService) {
+    public SalesController(SalesRepository salesRepository, SalesService salesService, PagedResourcesAssembler pagedResourcesAssembler) {
         this.salesRepository = salesRepository;
         this.salesService = salesService;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
     /**

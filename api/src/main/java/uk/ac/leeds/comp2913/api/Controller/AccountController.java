@@ -37,6 +37,7 @@ public class AccountController {
     private final PagedResourcesAssembler pagedResourcesAssembler;
 
 
+
     @Autowired
     public AccountController(AccountService accountService, PagedResourcesAssembler pagedResourcesAssembler) {
         this.accountService = accountService;
@@ -44,20 +45,21 @@ public class AccountController {
     }
 
 
-    @GetMapping
-    @Operation(summary = "Get all accounts",
-            description = "Get list of all accounts")
-    public PagedModel<Account> getAccounts(Pageable pageable) {
-        Page<Account> accounts = accountService.getAccounts(pageable);
-        for (Account account : accounts){
-            Long accountId = account.getId();
-            Link selfLink = linkTo(AccountController.class).slash(accountId).withSelfRel();
-            account.add(selfLink);
-        }
-        Link viewAllAccounts = linkTo(AccountController.class).withSelfRel();
-        PagedModel<Account> result = pagedResourcesAssembler.toModel(accounts, viewAllAccounts);
-        return result;
-    }
+   @GetMapping
+   @Operation(summary = "Get all accounts",
+           description = "Get list of all accounts")
+   public PagedModel<Account> getAccounts(Pageable pageable) {
+       Page<Account> accounts = accountService.getAccounts(pageable);
+       for (Account account : accounts){
+           Long accountId = account.getId();
+           Link selfLink = linkTo(AccountController.class).slash(accountId).withSelfRel();
+           account.add(selfLink);
+       }
+       Link viewAllAccounts = linkTo(AccountController.class).withSelfRel();
+       PagedModel<Account> result = pagedResourcesAssembler.toModel(accounts);
+       result.add(viewAllAccounts);
+       return result;
+   }
 
     @GetMapping("/{account_id}")
     @Operation(summary = "Get specific account",

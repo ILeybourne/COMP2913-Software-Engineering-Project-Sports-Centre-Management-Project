@@ -25,5 +25,5 @@ public interface ResourceService {
     @Transactional
     void deleteById(Long resource_id) throws ResourceNotFoundException;
 
-    List<Resource> findAll();
+    Page<Resource> findAll(Pageable pageable);
 }

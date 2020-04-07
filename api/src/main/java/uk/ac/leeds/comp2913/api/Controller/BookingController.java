@@ -3,8 +3,10 @@ package uk.ac.leeds.comp2913.api.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +28,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
+import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
@@ -51,18 +54,21 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class BookingController {
     private final BookingRepository bookingRepository;
     private final BookingService bookingService;
+    private final PagedResourcesAssembler pagedResourcesAssembler;
+
 
     @Autowired
-    public BookingController(BookingRepository bookingRepository, BookingService bookingServiceImpl) {
+    public BookingController(BookingRepository bookingRepository, BookingService bookingService, PagedResourcesAssembler pagedResourcesAssembler) {
         this.bookingRepository = bookingRepository;
-        this.bookingService = bookingServiceImpl;
+        this.bookingService = bookingService;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
     @GetMapping
     @Operation(summary = "Get a list of all bookings",
             description = "Get list of all bookings with basic information, self link provides more details")
-    public CollectionModel<Booking> getBookings() {
-        List <Booking> allBookings = bookingService.findAll();
+    public PagedModel<Booking> getBookings(Pageable pageable) {
+        Page <Booking> allBookings = bookingService.findAll(pageable);
         for (Booking booking : allBookings) {
             Long bookingId = booking.getId();
             Link selfLink = linkTo(BookingController.class).slash(bookingId).withSelfRel();
@@ -71,7 +77,8 @@ public class BookingController {
             booking.add(selfLink, accountLink, activityLink);
         }
         Link viewAllBookings = linkTo(BookingController.class).withSelfRel();
-        CollectionModel<Booking> result = new CollectionModel<>(allBookings, viewAllBookings);
+        PagedModel<Booking> result = pagedResourcesAssembler.toModel(allBookings);
+        result.add(viewAllBookings);
         return result;
     }
 
@@ -96,15 +103,17 @@ public class BookingController {
     @GetMapping("/account/{account_id}")
     @Operation(summary = "Get a list of bookings made by a specific account",
             description = "returns a list of bookings placed by a specific account")
-    public List<Booking> getBookingsByAccount(@Parameter(description = "The ID of the account", required = true)@PathVariable Long account_id) {
-        return bookingRepository.findByAccountId(account_id);
+    public PagedModel<Booking> getBookingsByAccount(Pageable pageable, @Parameter(description = "The ID of the account", required = true)@PathVariable Long account_id) {
+        Page<Booking> bookingsWithAccountId = bookingService.findByAccountId(pageable, account_id);
+        PagedModel<Booking> result = pagedResourcesAssembler.toModel(bookingsWithAccountId);
+        return result;
     }
 
     @GetMapping("/activity/{activity_id}")
     @Operation(summary = "Get a list of bookings for a specific activity",
             description = "Get list of bookings for a specific activity")
-    public CollectionModel<Booking> getBookingsByActivity(@Parameter(description = "The Id of the activity", required = true)@PathVariable Long activity_id) {
-        List<Booking> activityBookings = bookingRepository.findByActivityId(activity_id);
+    public PagedModel<Booking> getBookingsByActivity(Pageable pageable, @Parameter(description = "The Id of the activity", required = true)@PathVariable Long activity_id) {
+        Page<Booking> activityBookings = bookingService.findByActivityId(pageable, activity_id);
         for (Booking booking : activityBookings) {
             Long bookingId = booking.getId();
             Link selfLink = linkTo(BookingController.class).slash(bookingId).withSelfRel();
@@ -112,7 +121,8 @@ public class BookingController {
         }
         Link selfLink = linkTo(ActivityController.class).slash("activity").slash(activity_id).withSelfRel();
         Link activityLink = linkTo(ActivityController.class).slash(activity_id).withRel("Activity");
-        CollectionModel<Booking> result = new CollectionModel<>(activityBookings, selfLink, activityLink);
+        PagedModel<Booking> result = pagedResourcesAssembler.toModel(activityBookings);
+        result.add(selfLink, activityLink);
         return result;
     }
 

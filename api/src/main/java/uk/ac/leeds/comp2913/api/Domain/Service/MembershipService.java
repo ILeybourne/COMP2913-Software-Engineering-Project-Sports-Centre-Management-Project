@@ -3,6 +3,7 @@ package uk.ac.leeds.comp2913.api.Domain.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,13 +19,13 @@ import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 public interface MembershipService {
     Page<Membership> findAllMembers(Pageable pageable);
 
-    List<MembershipType> findAllMembershipTypes();
+    Page<MembershipType> findAllMembershipTypes(Pageable pageable);
 
     MembershipType findMembershipTypeById(Long membership_type_id);
 
     Membership findMembershipById(Long membership_id);
 
-    List<Membership> findMembershipsByMembershipType(Long membership_type_id);
+    Page<Membership> findMembershipsByMembershipType(Pageable pageable, Long membership_type_id);
 
     Membership addMember(Long account_id, Long membership_type_id, Membership membership);
 

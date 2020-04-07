@@ -2,6 +2,7 @@ package uk.ac.leeds.comp2913.api.Domain.Service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface BookingService {
 
   void cancelRegularSession(Long activity_id, Long account_id);
 
-  List<Booking> findAll();
+  Page<Booking> findAll(Pageable pageable);
 
   Booking findById(Long booking_id);
 
@@ -27,4 +28,7 @@ public interface BookingService {
 
   Account findAccountFromBooking(Long booking_id);
 
-  }
+  Page<Booking> findByAccountId(Pageable pageable, Long account_id);
+
+  Page<Booking> findByActivityId(Pageable pageable, Long activity_id);
+}

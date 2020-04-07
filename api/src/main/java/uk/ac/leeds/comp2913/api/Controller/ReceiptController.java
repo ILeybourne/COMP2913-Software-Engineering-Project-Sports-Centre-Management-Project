@@ -2,6 +2,7 @@ package uk.ac.leeds.comp2913.api.Controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,12 +28,14 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 public class ReceiptController {
 
     private final ReceiptRepository receiptRepository;
+    private final PagedResourcesAssembler pagedResourcesAssembler;
     private ReceiptService receiptService;
 
 
-    public ReceiptController(ReceiptRepository receiptRepository, ReceiptService receiptService, CustomerService customerService) {
+    public ReceiptController(ReceiptRepository receiptRepository, ReceiptService receiptService, CustomerService customerService, PagedResourcesAssembler pagedResourcesAssembler) {
         this.receiptRepository = receiptRepository;
         this.receiptService = receiptService;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
     /**
