@@ -19,24 +19,4 @@ class MembershipTest {
     @AfterEach
     void tearDown() {
     }
-
-    @Disabled
-    @Test
-    void makePayment() {
-    }
-
-    @Disabled
-    @Test
-    void emailReceipt() {
-    }
-
-    @Disabled
-    @Test
-    void printReceipt() {
-    }
-
-    @Disabled
-    @Test
-    void storeReceipt() {
-    }
 }
