@@ -1,6 +1,7 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.AfterEach;
@@ -8,9 +9,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,21 +23,47 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceTest {
 
-//    ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
+        objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
     }
 
     @AfterEach
     void tearDown() {
     }
 
-//    @Test
-//    void example() throws JsonProcessingException {
-//        String serialised = objectMapper.writeValueAsString(resource);
-//        assertFalse(serialised.contains("activityType"));
-//    }
+    @ParameterizedTest
+    @MethodSource("resourceJsonVal")
+    void resourceJson(String name, long id, String expectedOutput) throws JsonProcessingException {
+        // Create resource object
+        Resource resource = new Resource();
+        resource.setName(name);
+        resource.setActivities(new HashSet<>());
+        resource.setId(id);
+        resource.setActivityTypes(new HashSet<>());
+
+        // Create json and perform assertion
+        String actualOutput = objectMapper.writeValueAsString(resource);
+        assertEquals(expectedOutput, actualOutput);
+    }
+
+    static Stream<Arguments> resourceJsonVal() {
+        return Stream.of(
+                Arguments.of("TestResource1", 1,
+                        "{\"activities\":[],\"activityTypes\":[],\"id\":1,\"name\":\"TestResource1\"}"),
+                Arguments.of("TestResource2", 2,
+                        "{\"activities\":[],\"activityTypes\":[],\"id\":2,\"name\":\"TestResource2\"}"),
+                Arguments.of("TestResource3", 3,
+                        "{\"activities\":[],\"activityTypes\":[],\"id\":3,\"name\":\"TestResource3\"}"),
+                Arguments.of("TestResource4", 4,
+                        "{\"activities\":[],\"activityTypes\":[],\"id\":4,\"name\":\"TestResource4\"}"),
+                Arguments.of("TestResource5", 5,
+                        "{\"activities\":[],\"activityTypes\":[],\"id\":5,\"name\":\"TestResource5\"}")
+        );
+    }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3, 4, 5})

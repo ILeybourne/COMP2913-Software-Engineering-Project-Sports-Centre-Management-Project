@@ -85,6 +85,6 @@ import javax.persistence.*;
 
     @Override
     public String getName() {
-        return "Membership " + this.getMembershipType();
+        return "Membership " + this.getMembershipType().getName();
     }
 }
