@@ -9,6 +9,7 @@ import com.stripe.param.PaymentIntentCreateParams;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -118,6 +119,7 @@ public class PaymentController {
     @PostMapping(path = "/intent")
     // from https://blog.hackages.io/create-a-simple-payment-flow-with-stripe-b1d0f0f94337
     public PayResponseBody create() throws StripeException {
+        //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         PaymentIntent intent = null;
         PayResponseBody responseBody = new PayResponseBody();
