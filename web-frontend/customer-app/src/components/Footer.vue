@@ -19,7 +19,11 @@
         <a>
           "We're better than you, and we know it!"
         </a>
-        <a>Brief About Us</a>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">About us</a></li>
+          </ul>
+        </nav>
       </div>
       <div class="col-md-6 text-center">
         <h6>Find Us</h6>
