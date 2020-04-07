@@ -93,26 +93,26 @@ class ResourceControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-//   @Test
-//   @WithMockUser(username = "test@comp2913.com")
-//   void getResources() throws Exception {
+   @Test
+   @WithMockUser(username = "test@comp2913.com")
+   void getResources() throws Exception {
 
-//       Resource resource = new Resource();
-//       resource.setName(TENNIS_COURT);
-
-
-//       Pageable request = PageRequest.of(0, 10);
-//       Page<Resource> response = new PageImpl<>(List.of(resource), request, 1);
+       Resource resource = new Resource();
+       resource.setName(TENNIS_COURT);
 
 
-//       when(resourceServiceMock.findAll(any()))
-//               .thenReturn(response);
+       Pageable request = PageRequest.of(0, 10);
+       Page<Resource> response = new PageImpl<>(List.of(resource), request, 1);
 
-//       mockMvc.perform(get("/resources")
-//               .contentType("application/json"))
-//               .andExpect(status().isOk())
-//               .andExpect(jsonPath("$.content[*].name", Matchers.contains(TENNIS_COURT)));
-//   }
+
+       when(resourceServiceMock.findAll(any()))
+               .thenReturn(response);
+
+       mockMvc.perform(get("/resources")
+               .contentType("application/json"))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.content[*].name", Matchers.contains(TENNIS_COURT)));
+   }
 
 
     @Test
