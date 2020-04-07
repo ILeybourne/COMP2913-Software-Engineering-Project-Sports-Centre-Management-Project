@@ -163,12 +163,9 @@ export default {
   methods: {
     ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
-
-
-
     getPrice(e) {
-      console.log(e);
-      console.log(this.activities.find(x => x.id == e));
+      //console.log(e);
+      //console.log(this.activities.find(x => x.id == e));
       if (this.selectedActivityId != null) {
         let selectedActivity = this.activities.find(x => x.id == e);
         this.price = selectedActivity.cost;
@@ -176,14 +173,12 @@ export default {
     },
 
     setActivityTypeOptions(e) {
-      console.log(e);
       let activityArray = [{ value: null, text: "Please Select" }];
       let activities = this.activities;
 
       if (!(e == null)) {
-        const filter = activity => activity.resource.id === e;
+        const filter = activity => Number(activity.resource.id) === Number(e);
         activities = this.activities.filter(filter);
-
         for (const activity of activities) {
           activityArray.push({ value: activity.id, text: activity.name });
         }
@@ -231,16 +226,18 @@ export default {
       this.validateTime();
     },
 
+    // eslint-disable-next-line no-unused-vars
     submitForm(e) {
-      console.log(e);
-      console.log(this.$data);
+      //console.log(e);
+
+      //console.log(this.$data);
       //TODO Validate before showing 2nd form
       // e.preventDefault();
       //TODO send array of data to parent
       if (
         !(this.$data.selectedFacilityId == null) &&
         !(this.$data.selectedActivityId == null) &&
-        this.$data.date != null &&
+        this.$data.selectedDate != null &&
         this.$data.selectedTime != null
       ) {
         this.facilityValid = true;
@@ -252,10 +249,10 @@ export default {
       } else {
         //Dont pass data and call validators
         this.callValidation();
-        console.log(this.$data.selectedFacilityId);
-        console.log(this.$data.selectedActivity);
-        console.log(this.$data.date);
-        console.log(this.$data.selectedTime);
+        //console.log(this.$data.selectedFacilityId);
+        //console.log(this.$data.selectedActivity);
+        //console.log(this.$data.date);
+        //console.log(this.$data.selectedTime);
       }
     },
     isEmpty(obj) {
@@ -269,17 +266,19 @@ export default {
         }
       }
     },
-    async fillByQuery() {
+    fillByQuery() {
       this.setFacilityOptions();
       this.activityOptions = [];
       const facilityId = this.$route.query.facilityId;
       const activityTypeId = this.$route.query.activityTypeId;
+      console.log(activityTypeId)
       const activityId = this.$route.query.activityId;
       if (!this.isEmpty(this.$route.query)) {
-        this.setActivityTypeOptions(null);
         //If query isn't empty fill ids, selectedDate and timeOptions
         this.selectedFacilityId = facilityId;
-        this.selectedActivityId = activityTypeId;
+        this.setActivityTypeOptions(facilityId)
+        this.selectedActivityId  = activityTypeId
+        console.log(this.selectedActivityId )
         this.selectedActivityName = this.activities.find(
           x => x.id == activityTypeId
         ).name;
@@ -312,7 +311,7 @@ export default {
           let timeArray = ["Please Select"];
 
           for (const activity of this.sessions) {
-            // console.log(activity)
+            // //console.log(activity)
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
             const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))
