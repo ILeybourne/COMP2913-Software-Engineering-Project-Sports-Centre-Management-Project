@@ -2,6 +2,7 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
@@ -16,10 +17,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-public class Customer extends RepresentationModel {
+public class Customer extends PagedModel<Customer> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,7 +37,7 @@ public class Customer extends RepresentationModel {
     @OneToMany(mappedBy = "customer")
     private List<Account> Account;
 
-    @NotBlank(message = "date of birth required")
+    @NotNull(message = "date of birth required")
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 

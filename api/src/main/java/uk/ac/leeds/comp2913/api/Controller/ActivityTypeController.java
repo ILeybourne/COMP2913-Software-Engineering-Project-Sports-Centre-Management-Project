@@ -19,6 +19,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityTypeRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ResourceRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
@@ -31,6 +32,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * TODO: @CHORE, annotate with Swagger API documentation
+ * localhost:8000/swagger-ui.html
  * TODO: @CHORE, move domain logic into a service @DEPENDENCY for Testing
  * TODO: @CHORE, add HAL to all endpoints
  * TODO: @CHORE, add hasAuthority checks to all endpoints
@@ -70,7 +72,7 @@ public class ActivityTypeController {
     @GetMapping("/{activity_type_id}")
     @Operation(summary = "Get a specific activity type",
             description = "Get a specific activity type with links to its details/relevant operations #2")
-    public ActivityType getActivityTypeId(@PathVariable Long activity_type_id) {
+    public ActivityType getActivityTypeId(@Parameter(description = "The ID of the activity type", required = true)@PathVariable Long activity_type_id) {
         ActivityType activityType = activityTypeService.findById(activity_type_id);
         Link selfLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withSelfRel();
         Link updateLink = linkTo(ActivityTypeController.class).slash(activity_type_id).slash("update").withRel("update");
@@ -86,7 +88,7 @@ public class ActivityTypeController {
     @Operation(summary = "Get a list of activity types for a facility",
             description = "Get list of all activity types for a particular facilities" +
                     "used for scheduling activities #2")
-    public CollectionModel<ActivityType> getActivityTypesByResourceId(@PathVariable Long resource_id) {
+    public CollectionModel<ActivityType> getActivityTypesByResourceId(@Parameter(description = "The ID of the resource", required = true)@PathVariable Long resource_id) {
         List<ActivityType> allActivityTypes =  activityTypeService.findByResourceId(resource_id);
         for (ActivityType activityType : allActivityTypes) {
             Long activityTypeId = activityType.getId();
@@ -103,7 +105,8 @@ public class ActivityTypeController {
     @PostMapping("/resource/{resource_id}")
     @Operation(summary = "Create a new activity type that occurs for a resource",
             description = "create a new acitivity type for a particular resource #2")
-    public ActivityType addActivityType(@PathVariable Long resource_id, @Valid @RequestBody ActivityType activityType) {
+    public ActivityType addActivityType(@Parameter(description = "The ID of the resource", required = true) @PathVariable Long resource_id,
+                                        @Parameter(description = "An activity type object", required = true) @Valid @RequestBody ActivityType activityType) {
         return activityTypeService.addActivityType(resource_id, activityType);
     }
 
@@ -111,7 +114,8 @@ public class ActivityTypeController {
     @PutMapping("/{activity_type_id}/update")
     @Operation(summary = "Update activity type",
             description = "edit the details of an activity type #2")
-    public ActivityType updateActivityType(@PathVariable Long activity_type_id, @Valid @RequestBody ActivityType activityTypeRequest) {
+    public ActivityType updateActivityType(@Parameter(description = "The ID of the activity type", required = true)@PathVariable Long activity_type_id,
+                                           @Parameter(description = "An activity type object", required = true)@Valid @RequestBody ActivityType activityTypeRequest) {
         return activityTypeService.updateActivityType(activity_type_id, activityTypeRequest);
     }
 
@@ -119,7 +123,7 @@ public class ActivityTypeController {
     @DeleteMapping("/{activity_type_id}/delete")
     @Operation(summary = "delete an activity type",
             description = "delete an activity type #2")
-    public ResponseEntity<?> deleteActivityType(@PathVariable Long activity_type_id) {
+    public ResponseEntity<?> deleteActivityType(@Parameter(description = "The id of the activity type", required = true)@PathVariable Long activity_type_id) {
         return activityTypeService.deleteActivityType(activity_type_id);
     }
 }

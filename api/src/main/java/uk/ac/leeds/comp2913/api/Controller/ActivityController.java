@@ -1,33 +1,32 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.LinkRelation;
 
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.RegularSessionRepository;
+import io.swagger.v3.oas.annotations.Parameter;
+
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.RegularSession;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
-import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 
 import javax.validation.Valid;
-
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * TODO: @CHORE, annotate with Swagger API documentation
+ * localhost:8000/swagger-ui.html
  * TODO: @CHORE, move domain logic into a service @DEPENDENCY for Testing
  * TODO: @CHORE, add HAL to all endpoints
  * TODO: @CHORE, add hasAuthority checks to all endpoints
@@ -38,10 +37,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class ActivityController {
 
     private final ActivityService activityService;
+    private final PagedResourcesAssembler pagedResourcesAssembler;
+
 
     @Autowired
-    public ActivityController(ActivityService activityService) {
+    public ActivityController(ActivityService activityService, PagedResourcesAssembler pagedResourcesAssembler) {
         this.activityService = activityService;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
     /**
@@ -52,8 +54,8 @@ public class ActivityController {
     @GetMapping
     @Operation(summary = "List all scheduled activities",
             description = "Get List of all scheduled activities and links to view the activitys details")
-    public CollectionModel<Activity> getActivities() {
-        List<Activity> allActivities = activityService.getActivities();
+    public PagedModel<Activity> getActivities(Pageable pageable) {
+        Page<Activity> allActivities = activityService.getActivities(pageable);
         for (Activity activity : allActivities) {
             Long activityId = activity.getId();
             Link selfLink = linkTo(ActivityController.class).slash(activityId).withSelfRel();
@@ -61,7 +63,8 @@ public class ActivityController {
         }
         Link viewAllActivities = linkTo(ActivityController.class).withSelfRel();
         Link createActivity = linkTo(ActivityController.class).withSelfRel();
-        CollectionModel<Activity> result = new CollectionModel<>(allActivities, viewAllActivities, createActivity);
+        PagedModel<Activity> result = pagedResourcesAssembler.toModel(allActivities);
+        result.add(viewAllActivities, createActivity);
         return result;
     }
 
@@ -69,7 +72,7 @@ public class ActivityController {
     @GetMapping("/{activity_id}")
     @Operation(summary = "Get specific scheduled activity",
             description = "Get a specific scheduled activity, and links to relevant operations")
-    public CollectionModel<Activity> getActivitiesByActivityId(@PathVariable Long activity_id) {
+    public Activity getActivityByActivityId(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id) {
         Activity activity = activityService.findActivityById(activity_id);
         Link deleteLink = linkTo(ActivityController.class).slash(activity_id).slash("delete").withRel("delete");
         Link updateLink = linkTo(ActivityController.class).slash(activity_id).slash("update").withRel("update");
@@ -90,8 +93,10 @@ public class ActivityController {
     @GetMapping("/resource/{resource_id}")
     @Operation(summary = "Get scheduled activities for a given resource",
             description = "Get list of all scheduled activities for a particular facility#2")
-    public List<Activity> getActivitiesByResourceId(@PathVariable Long resource_id) {
-        return activityService.findByResourceId(resource_id);
+    public PagedModel<Activity> getActivitiesByResourceId(Pageable pageable, @Parameter(description = "The ID of the specific resource(facility)", required = true)@PathVariable Long resource_id) {
+        Page<Activity> activitiesByResource = activityService.findByResourceId(pageable, resource_id);
+        PagedModel<Activity> result = pagedResourcesAssembler.toModel(activitiesByResource);
+        return result;
     }
 
     //schedule an activity
@@ -100,7 +105,8 @@ public class ActivityController {
     @PostMapping("")
     @Operation(summary = "create a new scheduled activity",
             description = "create a new scheduled activity, using activity type. Has the option to make regular session #12")
-    public Activity createActivity(@Valid @RequestBody ActivityDTO activityDTO) {
+    public Activity createActivity(@Parameter(description = "An ActivityDTO object, providing details needed to create an activity",
+            required = true) @Valid @RequestBody ActivityDTO activityDTO) {
         Activity activity = new Activity();
         RegularSession regularSession = new RegularSession();
         Long activity_type_id = activityDTO.getActivityTypeId();
@@ -119,7 +125,7 @@ public class ActivityController {
     @PutMapping("/{activity_id}/update")
     @Operation(summary = "Update a scheduled activity",
             description = "Update the details of a scheduled activity #2")
-    public Activity updateActivity(@PathVariable Long activity_id, @Valid @RequestBody Activity activityRequest) {
+    public Activity updateActivity(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id, @Valid @RequestBody Activity activityRequest) {
         return activityService.editActivity(activity_id, activityRequest);
     }
 
@@ -127,7 +133,7 @@ public class ActivityController {
     @DeleteMapping("/{activity_id}/delete")
     @Operation(summary = "Delete a scheduled activity",
             description = "delete a specific activity from the timetable/database #2")
-    public ResponseEntity<?> deleteActivity(@PathVariable Long activity_id) {
+    public ResponseEntity<?> deleteActivity(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id) {
         return activityService.deleteActivity(activity_id);
     }
 
@@ -135,7 +141,8 @@ public class ActivityController {
     @DeleteMapping("/cancelregularsession/{regular_session_id}")
     @Operation(summary = "Delete regular session",
             description = "Removes a regular session (which allows a scheduled activity to repeat) #2")
-    public ResponseEntity<?> deleteRegularSession(@PathVariable Long regular_session_id) {
+    public ResponseEntity<?> deleteRegularSession(@Parameter(description = "The ID of the specific regular session", required = true)@PathVariable Long regular_session_id) {
         return activityService.deleteRegularSession(regular_session_id);
     }
+
 }

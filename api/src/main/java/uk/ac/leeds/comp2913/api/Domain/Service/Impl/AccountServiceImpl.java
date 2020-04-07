@@ -2,6 +2,8 @@ package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,8 +28,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAccounts(){
-        return accountRepository.findAll();
+    public Page<Account> getAccounts(Pageable pageable){
+        return accountRepository.findAll(pageable);
     }
 
     @Override

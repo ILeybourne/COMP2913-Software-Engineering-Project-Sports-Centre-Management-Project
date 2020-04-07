@@ -16,7 +16,7 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 
 public interface MembershipService {
-    List<Membership> findAllMembers();
+    Page<Membership> findAllMembers(Pageable pageable);
 
     List<MembershipType> findAllMembershipTypes();
 
@@ -33,4 +33,7 @@ public interface MembershipService {
     ResponseEntity<?> deleteMembership(Long membership_id);
 
     Membership stopRepeatPayment(Long membership_id);
+
+    void automatedMembershipRenewals();
+
 }

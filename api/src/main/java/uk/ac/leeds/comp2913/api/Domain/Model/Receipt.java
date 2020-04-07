@@ -1,6 +1,7 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.hateoas.PagedModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -12,7 +13,7 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
-public class Receipt {
+public class Receipt extends PagedModel<Receipt> {
 
     @Id
     @GeneratedValue

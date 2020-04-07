@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ReceiptRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Service.CustomerService;
@@ -56,7 +57,7 @@ public class ReceiptController {
     @GetMapping("/{receipt_id}")
     @Operation(summary = "Get a receipt",
             description = "Returns a specific receipt")
-    public Receipt getReceipt(@PathVariable Long receipt_id) {
+    public Receipt getReceipt( @Parameter(description = "The ID of the receipt", required = true)@PathVariable Long receipt_id) {
         return receiptService.findById(receipt_id);
     }
 
@@ -68,7 +69,7 @@ public class ReceiptController {
     @DeleteMapping("/{receipt_id}")
     @Operation(summary = "Delete a receipt",
             description = "Delete a receipt")
-    public ResponseEntity<?> deleteReceipt(@PathVariable Long receipt_id) {
+    public ResponseEntity<?> deleteReceipt( @Parameter(description = "The ID of the receipt", required = true)@PathVariable Long receipt_id) {
         receiptService.delete(receipt_id);
         return ResponseEntity.ok()
                 .build();

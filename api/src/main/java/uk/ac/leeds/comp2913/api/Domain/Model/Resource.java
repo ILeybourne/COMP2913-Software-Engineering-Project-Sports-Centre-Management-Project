@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
@@ -22,7 +23,7 @@ import javax.validation.constraints.Size;
  * Represents a resource available inside the sports center. eg Astro Turf, Squash Court, Swimming Pool etc.
  */
 @Entity
-public class Resource extends RepresentationModel<Resource> {
+public class Resource extends PagedModel<Resource> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

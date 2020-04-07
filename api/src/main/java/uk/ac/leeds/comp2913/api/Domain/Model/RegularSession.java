@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.hibernate.validator.constraints.Range;
+import org.springframework.hateoas.PagedModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import java.util.Set;
 
@@ -16,7 +18,7 @@ import java.util.Set;
  * Allows the activities to be scheduled automatically as well as placing bookings and payments automatically
  */
 @Entity
-public class RegularSession {
+public class RegularSession extends PagedModel<RegularSession> {
   public RegularSession(){
   }
 
@@ -35,6 +37,7 @@ public class RegularSession {
 
   //Measured in days (an interval of 7 is weekly activities)
   @Range(min = 1)
+  @NotNull
   @Column(name = "interval", nullable = false)
   private Integer interval;
 

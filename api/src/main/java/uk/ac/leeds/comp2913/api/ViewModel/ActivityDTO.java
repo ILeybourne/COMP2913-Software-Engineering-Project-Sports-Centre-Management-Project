@@ -7,6 +7,7 @@ import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 //Used by manager to create activities, can pass a regular session boolean to create a regular session
 public class ActivityDTO {
@@ -19,7 +20,7 @@ public class ActivityDTO {
   private boolean social;
   private Integer interval;
 
-  @NotBlank(message = "activity type is required")
+  @NotNull(message = "activity type is required")
   private Long activityTypeId;
 
   public ActivityDTO (){

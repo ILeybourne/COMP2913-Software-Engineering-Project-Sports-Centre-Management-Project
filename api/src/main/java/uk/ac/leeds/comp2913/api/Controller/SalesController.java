@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.SalesRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
@@ -63,7 +64,7 @@ public class SalesController {
     @DeleteMapping("/refund/{sale_id}")
     @Operation(summary = "Cancel a sale",
             description = "Cancels a sale")
-    public ResponseEntity<?> deletePayment(@PathVariable Long sale_id) {
+    public ResponseEntity<?> deletePayment(@Parameter(description = "The ID of the sale", required = true)@PathVariable Long sale_id) {
 
         try {
             salesRepository.deleteById(sale_id);

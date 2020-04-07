@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.hateoas.PagedModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 import java.util.Date;
 import java.util.List;
@@ -16,13 +18,13 @@ import java.util.List;
  * represents the timetable object unique to each facility on the database
  */
 @Entity
-public class FacilityTimetable {
+public class FacilityTimetable extends PagedModel<FacilityTimetable> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "name is required")
+    @NotEmpty(message = "name is required")
     private String name;
 
     @OneToOne

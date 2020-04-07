@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.lang.reflect.Member;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -42,6 +43,15 @@ import javax.persistence.*;
     private Boolean repeatingPayment;
 
     public Membership(){}
+
+    public static Membership renewMembership(Membership membership){
+        Membership renewedMembership = new Membership();
+        renewedMembership.setMembershipType(membership.getMembershipType());
+        renewedMembership.setStartDate(membership.getEndDate());
+        renewedMembership.setAccount(membership.getAccount());
+        renewedMembership.setRepeatingPayment(membership.getRepeatingPayment());
+        return renewedMembership;
+    }
 
     public Date getCreatedAt() {
         return created_at;
@@ -83,8 +93,8 @@ import javax.persistence.*;
       return startDate;
     }
 
-    public void setStartDate() {
-      this.startDate = new Date();
+    public void setStartDate(Date startDate) {
+      this.startDate = startDate;
       setEndDate(startDate);
     }
 
@@ -99,6 +109,14 @@ import javax.persistence.*;
     public Date calculateEndDate(Date startDate, Integer duration){
         Date endDate = new Date(startDate.getTime()+((24*60*60*1000) * duration)); //Math at the end converts a day into milliseconds
         return endDate;
+    }
+
+    public Boolean getRepeatingPayment() {
+        return repeatingPayment;
+    }
+
+    public void setRepeatingPayment(Boolean repeatingPayment) {
+        this.repeatingPayment = repeatingPayment;
     }
 
     @Override
@@ -116,14 +134,6 @@ import javax.persistence.*;
     }
 
     public void storeReceipt() {
-    }
-
-    public Boolean getRepeatingPayment() {
-        return repeatingPayment;
-    }
-
-    public void setRepeatingPayment(Boolean repeatingPayment) {
-        this.repeatingPayment = repeatingPayment;
     }
 
 }

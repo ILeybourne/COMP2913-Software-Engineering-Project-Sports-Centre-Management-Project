@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.PagedModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
@@ -32,13 +34,13 @@ import java.math.BigDecimal;
 })
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
-public abstract class Sale extends CollectionModel {
+public abstract class Sale extends PagedModel<Sale> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   protected long id;
 
-  @NotBlank(message = "amount is required")
+  @NotNull(message = "amount is required")
   @Column(name = "amount", nullable = false)
   protected BigDecimal amount;
 

@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.PagedModel;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -16,6 +17,7 @@ import java.util.Date;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -24,7 +26,7 @@ import javax.validation.constraints.Size;
  */
 
 @Entity
-public class ActivityType extends CollectionModel {
+public class ActivityType extends PagedModel<ActivityType> {
 
     @JsonProperty
     @Id
@@ -54,7 +56,7 @@ public class ActivityType extends CollectionModel {
      * TODO: shouldn't eager load
      * Which resource the activity needs to take place
      */
-    @NotBlank(message = "resource is mandatory")
+    @NotNull(message = "resource is mandatory")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;

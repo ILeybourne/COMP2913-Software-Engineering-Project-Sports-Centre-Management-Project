@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class MembershipDTO {
 
-    @NotBlank(message = "account id is required")
+    @NotNull(message = "account id is required")
     private Long accountId;
-    @NotBlank(message = "Membership Type is required")
+    @NotNull(message = "Membership Type is required")
     private Long membershipTypeId;
     private boolean repeatingPayment;
 

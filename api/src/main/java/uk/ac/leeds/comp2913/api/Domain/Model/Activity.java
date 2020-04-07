@@ -7,12 +7,15 @@ import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.PagedModel;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * TODO: @CHORE Rename this entity to 'session' as it fits more with spec
@@ -25,7 +28,7 @@ import javax.validation.constraints.NotBlank;
  * and should be displayed on the weekly timetable for booking
  */
 @Entity
-public class Activity extends CollectionModel<Activity> {
+public class Activity extends PagedModel<Activity> {
 
   public Activity() {
   }
@@ -40,14 +43,14 @@ public class Activity extends CollectionModel<Activity> {
    */
   private Boolean social;
 
-  @NotBlank(message = "Name is mandatory")
+  @NotEmpty(message = "Name is mandatory")
   private String name;
 
-  @NotBlank(message = "Start time is mandatory")
+  @NotNull(message = "Start time is mandatory")
   @Column(name = "start_time")
   private Date startTime;
 
-  @NotBlank(message = "end time is mandatory")
+  @NotNull(message = "end time is mandatory")
   @Column(name = "end_time")
   private Date endTime;
 
@@ -60,7 +63,7 @@ public class Activity extends CollectionModel<Activity> {
   /**
    * Which resource the activity needs to take place
    */
-  @NotBlank(message = "Resource is mandatory")
+  @NotNull(message = "Resource is mandatory")
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "resource_id", nullable = false)
   private Resource resource;
@@ -68,7 +71,7 @@ public class Activity extends CollectionModel<Activity> {
   /**
    * Which activity type the activity belongs to
    */
-  @NotBlank(message = "activity type is mandatory")
+  @NotNull(message = "activity type is mandatory")
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "activity_type_id", nullable = false)
   private ActivityType activityType;
@@ -82,7 +85,7 @@ public class Activity extends CollectionModel<Activity> {
   private Integer currentCapacity;
 
   @Range(min = 0)
-  @NotBlank(message = "cost is mandatory")
+  @NotNull(message = "cost is mandatory")
   private BigDecimal cost;
 
   //IF an activity is a regular session, then it will hold the ID of the regular session

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
@@ -14,7 +15,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
-public class Account extends RepresentationModel {
+public class Account extends PagedModel<Account> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

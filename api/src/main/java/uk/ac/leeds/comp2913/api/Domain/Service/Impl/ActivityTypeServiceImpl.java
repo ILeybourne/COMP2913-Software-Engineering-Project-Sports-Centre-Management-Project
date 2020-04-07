@@ -42,11 +42,10 @@ public class ActivityTypeServiceImpl implements ActivityTypeService{
 
     @Override
     public ActivityType addActivityType(Long resource_id, ActivityType activityType){
-        return resourceRepository.findById(resource_id)
-                .map(resource -> {
-                    activityType.setResource(resource);
-                    return activityTypeRepository.save(activityType);
-                }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
+        Resource resource = resourceRepository.findById(resource_id)
+                .orElseThrow(() -> new ResourceNotFoundException("resource not found with id " + resource_id));
+        activityType.setResource(resource);
+        return this.activityTypeRepository.save(activityType);
     }
 
     @Override

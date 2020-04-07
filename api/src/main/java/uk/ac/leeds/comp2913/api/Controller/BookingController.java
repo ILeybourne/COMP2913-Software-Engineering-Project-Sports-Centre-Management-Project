@@ -22,6 +22,7 @@ import java.util.logging.LogManager;
 import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
@@ -35,6 +36,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * TODO: @CHORE, annotate with Swagger API documentation
+ * localhost:8000/swagger-ui.html
  * TODO: @CHORE, move domain logic into a service
  * TODO: @CHORE, add HAL to all endpoints, with links to where the client can find
  * *          the associated resource, account and activity  for the booking
@@ -76,7 +78,7 @@ public class BookingController {
     @GetMapping("/{booking_id}")
     @Operation(summary = "Get a specific booking",
             description = "Get a specific booking with more details/links")
-    public Booking getBookingById(@PathVariable Long booking_id) {
+    public Booking getBookingById(@Parameter(description = "The id of the booking", required = true)@PathVariable Long booking_id) {
         Booking booking = bookingService.findById(booking_id);
         Link deleteLink = linkTo(BookingController.class).slash("delete").slash(booking_id).withRel("Delete");
         Link updateLink = linkTo(BookingController.class).slash(booking_id).withRel("Update");
@@ -94,14 +96,14 @@ public class BookingController {
     @GetMapping("/account/{account_id}")
     @Operation(summary = "Get a list of bookings made by a specific account",
             description = "returns a list of bookings placed by a specific account")
-    public List<Booking> getBookingsByAccount(@PathVariable Long account_id) {
+    public List<Booking> getBookingsByAccount(@Parameter(description = "The ID of the account", required = true)@PathVariable Long account_id) {
         return bookingRepository.findByAccountId(account_id);
     }
 
     @GetMapping("/activity/{activity_id}")
     @Operation(summary = "Get a list of bookings for a specific activity",
             description = "Get list of bookings for a specific activity")
-    public CollectionModel<Booking> getBookingsByActivity(@PathVariable Long activity_id) {
+    public CollectionModel<Booking> getBookingsByActivity(@Parameter(description = "The Id of the activity", required = true)@PathVariable Long activity_id) {
         List<Booking> activityBookings = bookingRepository.findByActivityId(activity_id);
         for (Booking booking : activityBookings) {
             Long bookingId = booking.getId();
@@ -119,7 +121,8 @@ public class BookingController {
     @Operation(summary = "Place booking",
             description = "Place a booking for a particular activity with the option to make it into a repeating booking" +
                     "if the activity is a regular session #21 #4")
-    public Booking createBooking(@Valid @RequestBody BookingDTO booking, @PathVariable Long activity_id) {
+    public Booking createBooking(@Parameter(description = "A Booking DTO object", required = true)@Valid @RequestBody BookingDTO booking,
+                                 @Parameter(description = "The activity ID", required = true)@PathVariable Long activity_id) {
         Booking b = new Booking();
         boolean regularBooking = booking.isRegularBooking();
         Long account_id = booking.getAccountId();
@@ -130,7 +133,8 @@ public class BookingController {
     @PutMapping("/{booking_id}")
     @Operation(summary = "Update Booking",
             description = "Edit a booking")
-    public Booking updateBooking(@PathVariable Long booking_id, @Valid @RequestBody Booking bookingRequest) {
+    public Booking updateBooking(@Parameter(description = "The ID of the booking", required = true)@PathVariable Long booking_id,
+                                 @Parameter(description = "A Booking object", required = true)@Valid @RequestBody Booking bookingRequest) {
         return bookingRepository.findById(booking_id).map(booking -> {
             booking.setActivity(bookingRequest.getActivity());
             booking.setAccount(bookingRequest.getAccount());
@@ -142,15 +146,15 @@ public class BookingController {
     @PutMapping("/cancel/{activity_id}/{account_id}")
     @Operation(summary = "unsubscribe from a regular session",
             description = "stop repeating bookings for a regular session")
-    public void cancelRegularSessionBooking(@PathVariable Long activity_id,
-                                            @PathVariable Long account_id) {
+    public void cancelRegularSessionBooking(@Parameter(description = "The ID of the regular session activity", required = true)@PathVariable Long activity_id,
+                                            @Parameter(description = "The ID of the account booked onto it", required = true)@PathVariable Long account_id) {
         bookingService.cancelRegularSession(activity_id, account_id);
     }
 
     @DeleteMapping("/delete/{booking_id}")
     @Operation(summary = "Cancel Booking #5",
             description = "Cancel a booking #5")
-    public ResponseEntity<?> deleteBooking(@PathVariable Long bookingId) {
+    public ResponseEntity<?> deleteBooking(@Parameter(description = "The Id of the booking in the path", required = true)@PathVariable Long bookingId) {
         return bookingRepository.findById(bookingId).map(booking -> {
             bookingRepository.delete(booking);
             return ResponseEntity.ok().build();

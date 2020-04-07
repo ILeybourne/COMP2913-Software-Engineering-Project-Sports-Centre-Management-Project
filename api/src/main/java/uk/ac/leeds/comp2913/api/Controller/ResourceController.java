@@ -23,6 +23,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
@@ -32,6 +33,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * TODO: @CHORE, annotate with Swagger API documentation
+ * localhost:8000/swagger-ui.html
  * TODO: @CHORE, move domain logic into a service
  * TODO: @CHORE, add HAL to all endpoints, with links to where the client can find
  * *          the associated resource, account and activity  for the booking
@@ -76,7 +78,7 @@ public class ResourceController {
     @Operation(summary = "Get a specific facility",
             description = "Get a specific facility with more information and links")
   //  @PreAuthorize("hasAuthority('SCOPE_read:resource')")
-    public Resource indexResource(@PathVariable Long resource_id) {
+    public Resource indexResource(@Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
         Resource resource = resourceService.findById(resource_id);
         Link selfLink = linkTo(ResourceController.class).slash(resource_id).withSelfRel();
         Link updateLink = linkTo(ResourceController.class).slash(resource_id).withRel("update");
@@ -93,7 +95,7 @@ public class ResourceController {
     @Operation(summary = "Create a new facility",
             description = "Create a new facility")
     @PreAuthorize("hasAuthority('SCOPE_create:resource')")
-    public Resource createResource(@Valid @RequestBody Resource resource) {
+    public Resource createResource(@Parameter(description = "The ID of the facility/resource", required = true)@Valid @RequestBody Resource resource) {
         return resourceService.create(resource);
     }
 
@@ -102,7 +104,8 @@ public class ResourceController {
     @Operation(summary = "Update a facility",
             description = "Update the details of a facility")
     @PreAuthorize("hasAuthority('SCOPE_update:resource')")
-    public Resource updateResource(@PathVariable Long resource_id, @Valid @RequestBody Resource resourceRequest) {
+    public Resource updateResource(@Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id,
+                                   @Parameter(description = "A Resource object", required = true)@Valid @RequestBody Resource resourceRequest) {
         return resourceService.update(resource_id, resourceRequest);
     }
 
@@ -111,7 +114,7 @@ public class ResourceController {
     @Operation(summary = "delete a facility",
             description = "Delete a facility")
     @PreAuthorize("hasAuthority('SCOPE_delete:resource')")
-    public ResponseEntity<?> deleteResource(@PathVariable Long resource_id) {
+    public ResponseEntity<?> deleteResource( @Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
         resourceService.deleteById(resource_id);
         return ResponseEntity.ok()
                 .build();
