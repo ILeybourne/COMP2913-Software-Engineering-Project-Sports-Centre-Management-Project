@@ -1,5 +1,5 @@
 <template>
-  <footer class="container">
+  <footer class="container" style="margin-top: 10px">
     <div class="row">
       <div class="col-4 text-left">
         <h6 class="text-uppercase">About Us</h6>
@@ -26,7 +26,7 @@
           </div>
         </div>
       </div>
-      <div class="col-2 text-left">
+      <div class="col-3 text-left">
         <h6 class="text-uppercase">Useful Links</h6>
         <div class="row">
           <div class="col">
