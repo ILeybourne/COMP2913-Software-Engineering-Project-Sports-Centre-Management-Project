@@ -69,11 +69,9 @@ public class Resource {
         return id;
     }
 
-
     public void setId(Long id) {
         this.id = id;
     }
-
 
     @JsonIgnoreProperties("resource")
     public Set<ActivityType> getActivityTypes() {
@@ -85,12 +83,12 @@ public class Resource {
     }
 
     public void addActivityType(ActivityType type) {
-      activityTypes.add(type);
-      type.setResource(this);
+        activityTypes.add(type);
+        type.setResource(this);
     }
 
     public void removeActivityType(ActivityType type) {
-      activityTypes.remove(type);
-      type.setResource(null);
+        activityTypes.remove(type);
+        type.setResource(null);
     }
 }
