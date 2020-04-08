@@ -1,7 +1,7 @@
 <template>
   <footer class="container" style="margin-top: 12px">
     <div class="row">
-      <div class="col-4 text-left" style="padding-right: 24px">
+      <div class="col-5 text-left" style="padding-right: 128px">
         <h6 class="text-uppercase">About Us</h6>
         <div class="row">
           <div class="col">
@@ -26,7 +26,7 @@
           </div>
         </div>
       </div>
-      <div class="col-3 text-left">
+      <div class="col-2 text-left" style="padding-left: 24px">
         <h6 class="text-uppercase">Useful Links</h6>
         <div class="row">
           <div class="col">
