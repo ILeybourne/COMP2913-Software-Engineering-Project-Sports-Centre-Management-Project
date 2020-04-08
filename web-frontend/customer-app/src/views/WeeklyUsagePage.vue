@@ -1,6 +1,6 @@
 <template>
   <div class="weeklyusagegraph">
-    <h1></h1>
+    <h1>Weekly Usage</h1>
     <WeeklyUsageGraph></WeeklyUsageGraph>
   </div>
 </template>
