@@ -82,12 +82,6 @@ public class Account {
         this.customer = customer;
     }
 
-    public void buyMembership() {
-    }
-
-    public void cancelMembership() {
-    }
-
     public List<Booking> getBookings() {
       return bookings;
     }
