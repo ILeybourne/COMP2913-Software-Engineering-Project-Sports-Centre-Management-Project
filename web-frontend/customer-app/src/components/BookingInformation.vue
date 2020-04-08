@@ -126,7 +126,6 @@ label {
 </style>
 
 <script>
-// import axios from "axios";
 import { mapActions, mapGetters } from "vuex";
 export default {
   ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
@@ -271,14 +270,14 @@ export default {
       this.activityOptions = [];
       const facilityId = this.$route.query.facilityId;
       const activityTypeId = this.$route.query.activityTypeId;
-      console.log(activityTypeId)
+      console.log(activityTypeId);
       const activityId = this.$route.query.activityId;
       if (!this.isEmpty(this.$route.query)) {
         //If query isn't empty fill ids, selectedDate and timeOptions
         this.selectedFacilityId = facilityId;
-        this.setActivityTypeOptions(facilityId)
-        this.selectedActivityId  = activityTypeId
-        console.log(this.selectedActivityId )
+        this.setActivityTypeOptions(facilityId);
+        this.selectedActivityId = activityTypeId;
+        console.log(this.selectedActivityId);
         this.selectedActivityName = this.activities.find(
           x => x.id == activityTypeId
         ).name;
@@ -291,9 +290,9 @@ export default {
         const date = "0" + selectedDate.getDate();
         const hours = "0" + selectedDate.getHours();
         const mins = "0" + selectedDate.getMinutes();
-        var formattedDate =
+        const formattedDate =
           year + "-" + month.substr(-2) + "-" + date.substr(-2);
-        var forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
+        const forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
 
         this.selectedDate = formattedDate;
 
