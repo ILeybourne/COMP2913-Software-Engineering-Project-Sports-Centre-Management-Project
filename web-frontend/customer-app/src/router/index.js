@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import store from "@/store";
 import Home from "@/views/Home.vue";
 import TimetablePage from "@/views/TimetablePage";
 import TimetableSinglePage from "@/views/TimetableSinglePage";
@@ -96,6 +97,12 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes
+});
+
+router.beforeEach((to, from, next) => {
+  store.dispatch("validation/clearValidationErrors");
+
+  next();
 });
 
 export default router;
