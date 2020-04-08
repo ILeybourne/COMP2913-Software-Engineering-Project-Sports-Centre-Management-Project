@@ -1,74 +1,110 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.*;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceTest {
 
-    Resource resource;
-    Random random;
+    ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        resource = new Resource();
-        random = new Random();
+        objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
     }
 
     @AfterEach
     void tearDown() {
     }
 
+    @ParameterizedTest
+    @MethodSource("resourceJsonVal")
+    void resourceJson(String name, long id, String expectedOutput) throws JsonProcessingException {
+        // Create resource object
+        Resource resource = new Resource();
+        resource.setName(name);
+        resource.setActivities(new HashSet<>());
+        resource.setId(id);
+        resource.setActivityTypes(new HashSet<>());
 
-    @Test
-    void getName() {
-        String testNameSet = "test" + random.nextInt();
-        resource.setName(testNameSet);
-        String testNameGet = resource.getName();
-        assertEquals(testNameSet, testNameGet);
+        // Create json and perform assertion
+        String actualOutput = objectMapper.writeValueAsString(resource);
+        assertEquals(expectedOutput, actualOutput);
     }
 
-    @Test
-    void setName() {
-        String testNameSet = "test" + random.nextInt();
-        resource.setName(testNameSet);
-        String testNameGet = resource.getName();
-        assertEquals(testNameSet, testNameGet);
+    static Stream<Arguments> resourceJsonVal() {
+        return Stream.of(
+                Arguments.of("TestResource1", 1,
+                        "{\"activities\":[],\"activityTypes\":[],\"id\":1,\"name\":\"TestResource1\"}"),
+                Arguments.of("TestResource2", 2,
+                        "{\"activities\":[],\"activityTypes\":[],\"id\":2,\"name\":\"TestResource2\"}"),
+                Arguments.of("TestResource3", 3,
+                        "{\"activities\":[],\"activityTypes\":[],\"id\":3,\"name\":\"TestResource3\"}"),
+                Arguments.of("TestResource4", 4,
+                        "{\"activities\":[],\"activityTypes\":[],\"id\":4,\"name\":\"TestResource4\"}"),
+                Arguments.of("TestResource5", 5,
+                        "{\"activities\":[],\"activityTypes\":[],\"id\":5,\"name\":\"TestResource5\"}")
+        );
     }
 
-    @Test
-    void getActivities() {
-        Set<Activity> testActivitiesSet = Collections.singleton(new Activity());
-        resource.setActivities(testActivitiesSet);
-        Set<Activity> testActivitiesGet = resource.getActivities();
-        assertTrue(testActivitiesGet.size() == 1);
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3, 4, 5})
+    void addActivityType(int id) {
+        // Create resource object
+        Resource resource = new Resource();
+        resource.setActivityTypes(new HashSet<>());
+
+        // Set activity type
+        ActivityType testActivityType = new ActivityType();
+        testActivityType.setId(id);
+        resource.addActivityType(testActivityType);
+
+        // Test activity type is stored
+        Set<ActivityType> activityTypes = resource.getActivityTypes();
+        assertTrue(activityTypes.contains(testActivityType));
+
+        // Test activity type resource is set
+        assertEquals(resource, testActivityType.getResource());
     }
 
-    @Test
-    void setActivities() {
-        Set<Activity> testActivitiesSet = Collections.singleton(new Activity());
-        resource.setActivities(testActivitiesSet);
-        Set<Activity> testActivitiesGet = resource.getActivities();
-        assertTrue(testActivitiesGet.size() == 1);
-    }
-    @Test
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3, 4, 5})
+    void removeActivityType(int id) {
+        // Create resource object
+        Resource resource = new Resource();
+        resource.setActivityTypes(new HashSet<>());
 
-    void getActivityTypes() {
-        Set<ActivityType> testActivityTypesSet = Collections.singleton(new ActivityType());
-        resource.setActivityTypes(testActivityTypesSet);
-        Set<ActivityType> testActivityTypesGet = resource.getActivityTypes();
-        assertTrue(testActivityTypesGet.size() == 1);
-    }
+        // Set activity type
+        ActivityType testActivityType = new ActivityType();
+        testActivityType.setId(id);
+        resource.addActivityType(testActivityType);
 
-    @Test
-    void setActivityTypes() {
-        Set<ActivityType> testActivityTypesSet = Collections.singleton(new ActivityType());
-        resource.setActivityTypes(testActivityTypesSet);
-        Set<ActivityType> testActivityTypesGet = resource.getActivityTypes();
-        assertTrue(testActivityTypesGet.size() == 1);
+        // Removed resource type
+        resource.removeActivityType(testActivityType);
+
+        // Test activity type is stored
+        Set<ActivityType> activityTypes = resource.getActivityTypes();
+        assertFalse(activityTypes.contains(testActivityType));
+
+        // Test activity type resource is set
+        assertNull(testActivityType.getResource());
     }
 }

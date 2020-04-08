@@ -77,12 +77,6 @@ public class Account extends PagedModel<Account> {
         this.customer = customer;
     }
 
-    public void buyMembership() {
-    }
-
-    public void cancelMembership() {
-    }
-
     @JsonIgnore
     public List<Booking> getBookings() {
       return bookings;

@@ -75,7 +75,6 @@ public class Resource extends PagedModel<Resource> {
         return id;
     }
 
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -91,12 +90,12 @@ public class Resource extends PagedModel<Resource> {
     }
 
     public void addActivityType(ActivityType type) {
-      activityTypes.add(type);
-      type.setResource(this);
+        activityTypes.add(type);
+        type.setResource(this);
     }
 
     public void removeActivityType(ActivityType type) {
-      activityTypes.remove(type);
-      type.setResource(null);
+        activityTypes.remove(type);
+        type.setResource(null);
     }
 }

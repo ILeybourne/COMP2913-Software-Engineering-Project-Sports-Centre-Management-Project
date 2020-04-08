@@ -78,7 +78,6 @@ import javax.persistence.*;
         this.account = account;
     }
 
-
     public void setMembershipType(MembershipType membershipType) {
         this.membershipType = membershipType;
         this.amount = membershipType.getCost();
@@ -121,19 +120,6 @@ import javax.persistence.*;
 
     @Override
     public String getName() {
-        return "Membership: " + membershipType.getName();
+        return "Membership " + this.getMembershipType().getName();
     }
-
-    public void makePayment() {
-    }
-
-    public void emailReceipt() {
-    }
-
-    public void printReceipt() {
-    }
-
-    public void storeReceipt() {
-    }
-
 }

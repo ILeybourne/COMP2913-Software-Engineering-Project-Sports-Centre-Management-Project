@@ -115,10 +115,6 @@ public class Receipt extends PagedModel<Receipt> {
         this.customer = customer;
     }
 
-    public void invoice() {
-
-    }
-
     public String getPdfLocation() {
         return pdfLocation;
     }
