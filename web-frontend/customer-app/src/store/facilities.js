@@ -2,6 +2,14 @@ import axios from "@/services/auth-http.service";
 
 const state = {
   facilities: [],
+  /*
+    account: null
+    activity: null
+    createdAt: 1584288689000
+    id: 1
+    receipt: null
+    updatedAt: 1584288692000
+    * */
   activities: []
 };
 
