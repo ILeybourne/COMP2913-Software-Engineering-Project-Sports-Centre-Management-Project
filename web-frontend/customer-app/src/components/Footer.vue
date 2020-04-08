@@ -1,11 +1,11 @@
 <template>
   <footer class="container" style="margin-top: 12px">
     <div class="row">
-      <div class="col-4 text-left">
+      <div class="col-4 text-left" style="padding-right: 24px">
         <h6 class="text-uppercase">About Us</h6>
         <div class="row">
           <div class="col">
-            <a class="text-muted">Brief about us paragraph.</a><br />
+            <a class="text-muted">Brief about us paragraph. #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### #### ####</a><br />
             <a class="text-muted">Learn more </a
             ><a href="/about" title="About">here</a>
           </div>
@@ -15,12 +15,12 @@
         <h6 class="text-uppercase">Contact</h6>
         <div class="row">
           <div class="col-3 text-left">
-            <p><a>Email</a></p>
-            <p><a>Email</a></p>
-            <p><a>Phone</a></p>
+            <p><a>Icon</a></p>
+            <p><a>Icon</a></p>
+            <p><a>Icon</a></p>
           </div>
           <div class="col-9 text-left">
-            <p><a class="text-muted">email</a></p>
+            <p><a class="text-muted">street+number, postcode</a></p>
             <p><a class="text-muted">email</a></p>
             <p><a class="text-muted">phone number</a></p>
           </div>
