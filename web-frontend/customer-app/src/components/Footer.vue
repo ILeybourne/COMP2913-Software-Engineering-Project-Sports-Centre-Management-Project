@@ -1,5 +1,5 @@
 <template>
-  <footer class="container" style="margin-top: 10px">
+  <footer class="container" style="margin-top: 12px">
     <div class="row">
       <div class="col-4 text-left">
         <h6 class="text-uppercase">About Us</h6>
