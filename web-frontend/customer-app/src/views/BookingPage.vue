@@ -67,7 +67,6 @@
 }
 
 .form-container {
-  /*TODO Display divs inline*/
   width: 100%;
   padding-top: 5%;
   padding-bottom: 5%;
@@ -167,7 +166,6 @@ export default {
       // eslint-disable-next-line no-undef
       const token = await this.$http.post(`/payments/intent`,
               // {
-        // TODO
       // }
       );
       //console.log(token);

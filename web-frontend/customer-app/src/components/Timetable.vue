@@ -48,7 +48,6 @@ export default {
       });
     },
     events() {
-      /* TODO: make adapter */
       /*Transform the server format into full calendar format*/
       return this.sessions.map(activity => {
         return {

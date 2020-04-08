@@ -228,12 +228,6 @@ export default {
 
     // eslint-disable-next-line no-unused-vars
     submitForm(e) {
-      //console.log(e);
-
-      //console.log(this.$data);
-      //TODO Validate before showing 2nd form
-      // e.preventDefault();
-      //TODO send array of data to parent
       if (
         !(this.$data.selectedFacilityId == null) &&
         !(this.$data.selectedActivityId == null) &&
@@ -249,10 +243,6 @@ export default {
       } else {
         //Dont pass data and call validators
         this.callValidation();
-        //console.log(this.$data.selectedFacilityId);
-        //console.log(this.$data.selectedActivity);
-        //console.log(this.$data.date);
-        //console.log(this.$data.selectedTime);
       }
     },
     isEmpty(obj) {
@@ -297,7 +287,6 @@ export default {
 
         this.selectedDate = formattedDate;
 
-        //TODO loop through same named activities in same facility and append times to timeOptions array
         this.timeOptions.push(forrmattedTime);
         this.selectedTime = forrmattedTime;
       }
