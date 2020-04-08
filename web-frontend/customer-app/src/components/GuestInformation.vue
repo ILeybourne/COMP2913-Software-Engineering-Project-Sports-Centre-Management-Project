@@ -76,7 +76,7 @@
         </div>
         <div class="button-container">
           <button
-                  id = "guestSubmitBtn"
+            id="guestSubmitBtn"
             type="submit"
             class="btn btn-outline-secondary"
             name="details"

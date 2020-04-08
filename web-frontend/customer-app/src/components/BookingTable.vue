@@ -1,49 +1,36 @@
 <template>
-  <div id="app">
-    <h3 class="title">Bookings Table</h3>
-    <v-data-table
-      v-model="selected"
-      :headers="headers"
-      :items="formattedData"
-      :single-select="true"
-      item-key="name"
-      show-select
-      class="elevation-1"
-    >
-      <template v-slot:top>
-        <v-switch
-          v-model="singleSelect"
-          label="Single select"
-          class="pa-3"
-        ></v-switch>
-      </template>
-    </v-data-table>
-
-    <b-modal id="edit-booking-modal" title="Create Activity" hide-footer>
-      <div class="d-flex justify-content-between">
-        <b-button
-          type="reset"
-          variant="danger"
-          @click="$bvModal.hide('edit-booking-modal')"
-          >Delete
-        </b-button>
-      </div>
-    </b-modal>
-  </div>
+  <v-data-table
+          :headers="headers"
+          :items="sessions"
+  >
+    <template v-slot:top>
+      <v-toolbar flat color="white">
+        <v-spacer></v-spacer>
+        <v-dialog  max-width="500px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
+          </template>
+        </v-dialog>
+      </v-toolbar>
+    </template>
+    <template v-slot:item.actions="{ item }">
+      <v-icon small class="mr-2" @click="editItem(item)">
+        mdi-pencil
+      </v-icon>
+      <v-icon small @click="deleteItem(item)">
+        mdi-delete
+      </v-icon>
+      <v-icon small class="mr-2" @click="printItem(item)">
+        midi-print
+      </v-icon>
+    </template>
+  </v-data-table>
 </template>
 
 <style scoped></style>
 
 <script>
-const addZero = value => ("0" + value).slice(-2);
-
-const formatDate = value => {
-  if (value) {
-    const dt = new Date(value);
-    return `${addZero(dt.getHours())}:${addZero(dt.getMinutes())}`;
-  }
-  return "";
-};
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "BookingTable",
@@ -69,62 +56,53 @@ export default {
           sortable: true
         },
         {
-          value: "formattedStartTime",
+          value: "formattedStartAt",
           text: "Booking Time",
           sortable: true
         },
         {
-          value: "activity.name",
-          text: "Activity",
+          value: "name",
+          text: "Booking",
           sortable: true
         },
         {
-          value: "account",
-          text: "Account",
+          value: "resource.name",
+          text: "Facility",
           sortable: true
         },
         {
-          value: "email",
-          text: "Email",
-          sortable: true
-        },
-        {
-          value: "receipt",
-          text: "Receipt",
+          value: "actions",
+          text: "Actions",
           sortable: false
         }
       ]
     };
   },
   computed: {
-    formattedData() {
-      return this.bookings.map(booking => {
-        return {
-          ...booking,
-          formattedStartTime: formatDate(booking.activity.startTime)
-        };
-      });
-    }
+    ...mapGetters("timetable", ["sessions"])
   },
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
-    async getBooking() {
-      const token = await this.$auth.getTokenSilently();
-
-      const { data } = await this.$http.get(`/bookings`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      this.bookings = data.content;
-    },
+    ...mapActions("timetable", {
+      getActivity: "getAllSessions"
+    }),
     showCancel() {
       this.$bvModal.show("edit-booking-modal");
+    },
+    editItem(item) {
+      this.editedIndex = this.sessions.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+    deleteItem(item) {
+      const index = this.sessions.indexOf(item);
+      confirm("Are you sure you want to delete this item?") &&
+        this.sessions.splice(index, 1);
     }
   },
 
   async mounted() {
-    await this.getBooking();
+    await this.getActivity();
   }
 };
 </script>

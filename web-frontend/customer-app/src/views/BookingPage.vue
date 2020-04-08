@@ -18,7 +18,7 @@
           ></GuestInformation> </b-col
         ><b-col v-bind:class="{ 'd-none': hideBilling }">
           <!--        v-bind:class="{ 'd-none': hideBilling }"-->
-          <div >
+          <div>
             <form id="payment-form">
               <div id="cardDiv">
                 <div id="card-element"></div>
@@ -164,9 +164,10 @@ export default {
       e.preventDefault();
       // Talk to our server to get encrpyted prices
       // eslint-disable-next-line no-undef
-      const token = await this.$http.post(`/payments/intent`,
-              // {
-      // }
+      const token = await this.$http.post(
+        `/payments/intent`
+        // {
+        // }
       );
       //console.log(token);
       this.sendTokenToServer(token.data.clientSecret);
@@ -195,14 +196,14 @@ export default {
           // await  this.postAllFormData()
           //TODO Set payment amount
           //TODO Redirect
-          successBol = true
+          successBol = true;
         }
       }
-      if (successBol ==true){
-      await this.$router.push({
-        name: "BookingPage",
-        query: {status: "success"}
-      })
+      if (successBol == true) {
+        await this.$router.push({
+          name: "BookingPage",
+          query: { status: "success" }
+        });
       }
     },
     async postAllFormData() {
@@ -219,14 +220,12 @@ export default {
         const body = {
           //TODO PASS USER
           // account: parseInt(this.$auth._uid),
-          id:1,
+          id: 1,
           activityId: 1,
           accountId: 1,
-          type:1
+          type: 1
         };
-        await this.$http.get(
-                `/bookings`
-        )
+        await this.$http.get(`/bookings`);
 
         await this.$http.post(
           `/bookings`,
@@ -266,7 +265,7 @@ export default {
     //   this.hidePayment = false;
     // },
     showBillingInfo(value) {
-      console.log(value)
+      console.log(value);
       this.firstName = value.firstName;
       this.surname = value.surname;
       this.email = value.email;
@@ -275,7 +274,7 @@ export default {
       this.hideBilling = false;
     },
     showGuestInfo(value) {
-      if (value.userType == "guest"  ) {
+      if (value.userType == "guest") {
         // debugger
         this.selectedFacility = value.selectedFacilityId;
         this.selectedActivity = value.selectedActivityName;
@@ -286,7 +285,7 @@ export default {
         //Shows guest component
         this.hideGuest = false;
       }
-      if (value.userType == "account"){
+      if (value.userType == "account") {
         this.hideGuest = false;
         //TODO autofill with account information
         // this.firstName =
@@ -295,7 +294,7 @@ export default {
         // this.phone =
       }
       // this.getBookings();
-    },
+    }
 
     // async getBookings() {
     //   const { data } = await this.$http.get("http://localhost:8000/bookings");

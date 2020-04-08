@@ -51,18 +51,6 @@ import javax.persistence.*;
         this.updated_at = updated_at;
     }
 
-    public void makePayment() {
-    }
-
-    public void emailReceipt() {
-    }
-
-    public void printReceipt() {
-    }
-
-    public void storeReceipt() {
-    }
-
     public Account getAccount() {
         return account;
     }
@@ -71,11 +59,9 @@ import javax.persistence.*;
         this.account = account;
     }
 
-
     public void setMembershipType(MembershipType membershipType) {
         this.membershipType = membershipType;
     }
-
 
     public MembershipType getMembershipType() {
         return membershipType;
@@ -99,6 +85,6 @@ import javax.persistence.*;
 
     @Override
     public String getName() {
-        return "Membership " + this.getMembershipType();
+        return "Membership " + this.getMembershipType().getName();
     }
 }

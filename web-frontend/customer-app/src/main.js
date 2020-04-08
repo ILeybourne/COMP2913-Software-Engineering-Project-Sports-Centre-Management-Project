@@ -14,6 +14,8 @@ import VueAxios from "vue-axios";
 import { mapActions, mapMutations } from "vuex";
 // import { ServicesPlugin } from "@/services/ServicesPlugin";
 import vuetify from "@/plugins/vuetify";
+import VueGraph from "vue-graph";
+Vue.use(VueGraph);
 
 Vue.use(Auth0Plugin, {
   domain,
