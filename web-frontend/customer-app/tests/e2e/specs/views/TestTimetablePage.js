@@ -5,7 +5,6 @@ describe("TestTimetablePage", () => {
   });
 
   it("should navigate to timetable page", function() {
-    // Navigate to homepage
     cy.visit("/timetable");
   });
 

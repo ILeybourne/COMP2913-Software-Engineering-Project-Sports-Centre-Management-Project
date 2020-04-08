@@ -5,7 +5,6 @@
       v-bind:style="{ width: this.componentWidth + '%' }"
     >
       <form @submit="[setPaymentInfoToParent]">
-        <!--        TODO Fill from customer details-->
         <div class="form-row">
           <label for="name">Name On Card:</label>
           <input
@@ -153,7 +152,6 @@ export default {
   computed: {},
   methods: {
     setPaymentInfoToParent() {
-      //TODO Validate before showing 2nd form
       this.componentWidth = 60;
       this.$emit("setPaymentInfoToParent", this.$data);
     },
@@ -182,9 +180,7 @@ export default {
     },
 
     submitCustomerDetails(e) {
-      //TODO Validate before showing 2nd form
       e.preventDefault();
-      //TODO send array of data to parent
       if (
         this.$data.name !== "" &&
         this.$data.cardType !== "" &&
