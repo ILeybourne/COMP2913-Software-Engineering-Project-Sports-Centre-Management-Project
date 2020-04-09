@@ -61,11 +61,14 @@ export default {
         };
       });
     },
-    activityTypeOptions() {
+    activitiesForFacility() {
       const filter = activity =>
         activity.resource.id === Number(this.selectedActivityForm.resourceId);
 
       return this.activities.filter(filter).map(a => a.name);
+    },
+    activitiesAvailable() {
+      return this.activitiesForFacility.length > 0;
     }
   },
   methods: {
@@ -189,8 +192,9 @@ export default {
           <b-select
             id="activitySelect"
             v-model="selectedActivityForm.activityType"
-            :options="activityTypeOptions"
+            :options="activitiesForFacility"
             required
+            :disabled="!activitiesAvailable"
           ></b-select>
         </b-form-group>
         <b-form-group
