@@ -128,7 +128,7 @@ label {
 <script>
 import { mapActions, mapGetters } from "vuex";
 export default {
-  ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
+  ...mapActions("facilities", ["getFacilities", "getActivities"]),
   ...mapActions("timetable", ["getAllSessions"]),
   name: "BookingInformation",
   // props: ["content", "facilities"],
@@ -160,11 +160,9 @@ export default {
     ...mapGetters("timetable", ["sessions"])
   },
   methods: {
-    ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
+    ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
     getPrice(e) {
-      //console.log(e);
-      //console.log(this.activities.find(x => x.id == e));
       if (this.selectedActivityId != null) {
         let selectedActivity = this.activities.find(x => x.id == e);
         this.price = selectedActivity.cost;
@@ -255,13 +253,14 @@ export default {
         }
       }
     },
+    // TODO, shouldn't access routes like this, use props and either inject with router or from booking page
     fillByQuery() {
       this.setFacilityOptions();
       this.activityOptions = [];
       const facilityId = this.$route.query.facilityId;
-      const activityTypeId = this.$route.query.activityTypeId;
+      const activityTypeId = this.$route.query.activityId;
       console.log(activityTypeId);
-      const activityId = this.$route.query.activityId;
+      const activityId = this.$route.query.sessionId;
       if (!this.isEmpty(this.$route.query)) {
         //If query isn't empty fill ids, selectedDate and timeOptions
         this.selectedFacilityId = facilityId;
@@ -333,8 +332,8 @@ export default {
     }
   },
   async mounted() {
-    await this.getAllActivities();
-    await this.getAllFacilities();
+    await this.getFacilities();
+    await this.getFacilities();
     await this.getAllSessions();
     this.fillByQuery();
   }

@@ -31,7 +31,6 @@ export default {
         endTime: null,
         resourceId: null,
         activityType: null,
-        activityTypeId: null,
         name: null
       }
     };
@@ -61,25 +60,27 @@ export default {
         };
       });
     },
-    activityTypeOptions() {
+    activitiesForFacility() {
       const filter = activity =>
         activity.resource.id === Number(this.selectedActivityForm.resourceId);
 
-      let filteredActivities = this.activities.filter(filter);
+      const filteredActivities = this.activities.filter(filter);
+
       let activityArray = [{ value: null, text: "Please Select" }];
+
       for (const activity of filteredActivities) {
         activityArray.push({ value: activity.id, text: activity.name });
       }
 
       return activityArray;
+    },
+    activitiesAvailable() {
+      return this.activitiesForFacility.length > 1;
     }
   },
   methods: {
-    ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
+    ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
-    setActivityTypeId(e) {
-      this.selectedActivityForm.activityTypeId = e;
-    },
     drawEvent(eventInfo) {
       const { event } = eventInfo;
       const { extendedProps: options } = event;
@@ -140,7 +141,7 @@ export default {
       };
 
       const { data } = await this.$http.post(
-        `/activities/activitytype/${this.selectedActivityForm.activityTypeId}`,
+        `/activities/activitytype/${activityType}`,
         body
       );
 
@@ -152,16 +153,16 @@ export default {
         },
         query: {
           facilityId: this.selectedActivityForm.resourceId,
-          activityTypeId: this.selectedActivityForm.activityTypeId,
-          activityId: data.id
+          activityId: this.selectedActivityForm.activityType,
+          sessionId: data.id
         }
       });
     }
   },
   async mounted() {
     // await this.geTimetableForRange(this.start, this.end);
-    await this.getAllActivities();
-    await this.getAllFacilities();
+    await this.getFacilities();
+    await this.getActivities();
     await this.getAllSessions();
     // await timetableService.read();
   }
@@ -202,9 +203,9 @@ export default {
           <b-select
             id="activitySelect"
             v-model="selectedActivityForm.activityType"
-            :options="activityTypeOptions"
+            :options="activitiesForFacility"
             required
-            @change="setActivityTypeId($event)"
+            :disabled="!activitiesAvailable"
           ></b-select>
         </b-form-group>
         <b-form-group

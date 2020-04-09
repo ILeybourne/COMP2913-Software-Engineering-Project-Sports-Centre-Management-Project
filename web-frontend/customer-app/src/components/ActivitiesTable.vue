@@ -68,7 +68,7 @@ export default {
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("facilities", {
-      getActivity: "getAllActivities"
+      getActivity: "getActivities"
     }),
     showCancel() {
       this.$bvModal.show("edit-Activity-modal");

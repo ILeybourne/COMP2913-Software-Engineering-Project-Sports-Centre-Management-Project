@@ -1,4 +1,4 @@
-import axios from "@/services/auth-http.service";
+import axios from "@/plugins/axios.plugin";
 
 const addZero = value => ("0" + value).slice(-2);
 
