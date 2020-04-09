@@ -114,10 +114,6 @@ public class Receipt {
         this.customer = customer;
     }
 
-    public void invoice() {
-
-    }
-
     public String getPdfLocation() {
         return pdfLocation;
     }

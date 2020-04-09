@@ -13,6 +13,7 @@ import BookingsTablePage from "@/views/BookingsTablePage";
 import Test from "@/views/Test";
 import ActivitiesTablePage from "@/views/ActivitiesTablePage";
 import WeeklyUsagePage from "@/views/WeeklyUsagePage";
+import FacilityPriceListing from "@/views/FacilityPriceListing";
 
 Vue.use(VueRouter);
 
@@ -90,6 +91,11 @@ const routes = [
     name: "WeeklyUsageGraph",
     component: WeeklyUsagePage,
     beforeEnter: authGuard
+  },
+  {
+    path: "/facilitypricelisting",
+    name: "FacilityPriceListing",
+    component: FacilityPriceListing
   }
 ];
 
