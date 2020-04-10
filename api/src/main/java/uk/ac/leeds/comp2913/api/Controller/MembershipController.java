@@ -29,6 +29,7 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.MembershipPagedResourcesAssembler;
 import uk.ac.leeds.comp2913.api.ViewModel.MembershipDTO;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -37,92 +38,44 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequestMapping("/membership")
 public class MembershipController {
     private final MembershipService membershipService;
-    private final PagedResourcesAssembler pagedResourcesAssembler;
+    private final PagedResourcesAssembler<Membership> pagedResourcesAssembler;
+    private final MembershipPagedResourcesAssembler membershipPagedResourcesAssembler;
 
     @Autowired
-    public MembershipController(MembershipService membershipService, PagedResourcesAssembler pagedResourcesAssembler) {
+    public MembershipController(MembershipService membershipService, PagedResourcesAssembler<Membership> pagedResourcesAssembler, MembershipPagedResourcesAssembler membershipPagedResourcesAssembler) {
       this.membershipService = membershipService;
       this.pagedResourcesAssembler = pagedResourcesAssembler;
+      this.membershipPagedResourcesAssembler = membershipPagedResourcesAssembler;
     }
 
-    //@GetMapping("/types")
-    //@Operation(summary = "Get all membership types",
-    //        description = "Get list of all available membership types" +
-    //                "showing basic information")
-    //public PagedModel<MembershipType> getMembershipTypes(Pageable pageable) {
-    //    Page<MembershipType> allMembershipTypes = membershipService.findAllMembershipTypes(pageable);
-    //    for(MembershipType membershipType : allMembershipTypes){
-    //        Link selfLink = linkTo(MembershipController.class).slash("types").slash(membershipType.getId()).withSelfRel();
-    //        Link membershipsLink = linkTo(MembershipController.class).slash("members").slash("type").slash(membershipType.getId()).withRel("All memberships with this type");
-    //        membershipType.add(selfLink, membershipsLink);
-    //    }
-    //    Link allLink = linkTo(MembershipController.class).slash("types").withSelfRel();
-    //    PagedModel<MembershipType> result = pagedResourcesAssembler.toModel(allMembershipTypes);
-    //    result.add(allLink);
-    //    return result;
-    //}
-//
-    //@GetMapping("/types/{membership_type_id}")
-    //@Operation(summary = "Get a specific membership type",
-    //        description = "Get particular membership type with a link to view all members with this type")
-    //public MembershipType getMembershipTypeById( @Parameter(description = "The ID of the membership type", required = true)@PathVariable Long membership_type_id) {
-    //    MembershipType membershipType = membershipService.findMembershipTypeById(membership_type_id);
-    //    Link selfLink = linkTo(MembershipController.class).slash("types").slash(membership_type_id).withSelfRel();
-    //    Link addMembership = linkTo(MembershipController.class).slash(membership_type_id).withRel("add membership of this type");
-    //    Link membershipsWithType = linkTo(MembershipController.class).slash("members").slash("type").slash(membership_type_id).withRel("Memberships with this type");
-    //    membershipType.add(selfLink, membershipsWithType, addMembership);
-    //    return membershipType;
-    //}
-//
-//
-  //// get all memberships
-    //@GetMapping("/members")
-    //@Operation(summary = "Get all members",
-    //        description = "Get a list of all purchased memberships with basic information" +
-    //                "REMOVE SORTING TO WORK")
-    //public PagedModel<Membership> getMembers(Pageable pageable) {
-    //    Page<Membership> allMembers = membershipService.findAllMembers(pageable);
-    //    for(Membership membership : allMembers){
-    //        Link selfLink = linkTo(MembershipController.class).slash("members").slash(membership.getId()).withSelfRel();
-    //        Link membershipTypeLink = linkTo(MembershipController.class).slash("types").slash(membership.getMembershipType().getId()).withRel("Membership Type");
-    //        membership.add(selfLink, membershipTypeLink);
-    //    }
-    //    PagedModel<Membership> result = pagedResourcesAssembler.toModel(allMembers);
-    //    return result;
-    //}
-//
-    //@GetMapping("/members/{membership_id}")
-    //@Operation(summary = "Get specific membership",
-    //        description = "Get a specific membership with details/links")
-    //public Membership getMembershipById( @Parameter(description = "The ID of the membership", required = true)@PathVariable Long membership_id) {
-    //    Membership membership = membershipService.findMembershipById(membership_id);
-    //    Link selfLink = linkTo(MembershipController.class).slash("members").slash(membership.getId()).withSelfRel();
-    //    Link accountLink = linkTo(AccountController.class).slash(membership.getAccount().getId()).withRel("Account Details");
-    //    Link membershipTypeLink = linkTo(MembershipController.class).slash("types").slash(membership.getMembershipType().getId()).withRel("Membership Type");
-    //    Link updateLink = linkTo(MembershipController.class).slash(membership.getId()).withRel("update");
-    //    Link deleteLink = linkTo(MembershipController.class).slash(membership.getId()).withRel("delete");
-    //    membership.add(selfLink, accountLink, membershipTypeLink, updateLink, deleteLink);
-    //    if(membership.getRepeatingPayment() == true){
-    //        Link stopPaymentsLink = linkTo(MembershipController.class).slash("members").slash(membership.getId()).slash("stop").withRel("stop auto renewal");
-    //        membership.add(stopPaymentsLink);
-    //    }
-    //    return membership;
-    //}
-//
-    //@GetMapping("/members/type/{membership_type_id}")
-    //@Operation(summary = "Get Memberships by a particular membership type",
-    //        description = "Get list a list of memberships for a particular type (all monthly memberships etc)")
-    //public PagedModel<Membership> findAllMembershipsWithType(Pageable pageable, @Parameter(description = "The ID of the membership type", required = true)@PathVariable Long membership_type_id){
-    //Page<Membership> allMembers = membershipService.findMembershipsByMembershipType(pageable, membership_type_id);
-    //    for(Membership membership : allMembers){
-    //    Link selfLink = linkTo(MembershipController.class).slash("members").slash(membership.getId()).withSelfRel();
-    //    Link membershipTypeLink = linkTo(MembershipController.class).slash("types").slash(membership.getMembershipType().getId()).withRel("Membership Type");
-    //    membership.add(selfLink, membershipTypeLink);
-    //    }
-    //    PagedModel<Membership> result = pagedResourcesAssembler.toModel(allMembers);
-    //    return result;
-    //}
-//
+  // get all memberships
+    @GetMapping("/members")
+    @Operation(summary = "Get all members",
+            description = "Get a list of all purchased memberships with basic information" +
+                    "REMOVE SORTING TO WORK")
+    public PagedModel<MembershipDTO> getMembers(Pageable pageable) {
+        Page<Membership> allMembers = membershipService.findAllMembers(pageable);
+        return pagedResourcesAssembler.toModel(allMembers, membershipPagedResourcesAssembler);
+    }
+
+    @GetMapping("/members/{membership_id}")
+    @Operation(summary = "Get specific membership",
+            description = "Get a specific membership with details/links")
+    public MembershipDTO getMembershipById( @Parameter(description = "The ID of the membership", required = true)@PathVariable Long membership_id) {
+        MembershipDTO membership =membershipPagedResourcesAssembler.toModel(membershipService.findMembershipById(membership_id));
+        membership.add(linkTo(MembershipController.class).slash(membership.getId()).withRel("update"));
+        membership.add(linkTo(MembershipController.class).slash(membership.getId()).withRel("delete"));
+        return membership;
+    }
+
+    @GetMapping("/members/type/{membership_type_id}")
+    @Operation(summary = "Get Memberships by a particular membership type",
+            description = "Get list a list of memberships for a particular type (all monthly memberships etc)")
+    public PagedModel<MembershipDTO> findAllMembershipsWithType(Pageable pageable, @Parameter(description = "The ID of the membership type", required = true)@PathVariable Long membership_type_id){
+    Page<Membership> allMembers = membershipService.findMembershipsByMembershipType(pageable, membership_type_id);
+        return pagedResourcesAssembler.toModel(allMembers, membershipPagedResourcesAssembler);
+    }
+
 
     //Add a member, store membership with account Id and membership type id
     @PostMapping("/{membership_type_id}")

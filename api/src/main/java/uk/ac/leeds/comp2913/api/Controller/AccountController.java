@@ -27,15 +27,12 @@ public class AccountController {
     private final AccountPagedResourcesAssembler accountPagedResourcesAssembler;
     private final PagedResourcesAssembler<Account> pagedResourcesAssembler;
 
-
-
     @Autowired
     public AccountController(AccountService accountService, AccountPagedResourcesAssembler accountPagedResourcesAssembler, PagedResourcesAssembler<Account> pagedResourcesAssembler) {
         this.accountService = accountService;
         this.accountPagedResourcesAssembler = accountPagedResourcesAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
-
 
    @GetMapping
    @Operation(summary = "Get all accounts",

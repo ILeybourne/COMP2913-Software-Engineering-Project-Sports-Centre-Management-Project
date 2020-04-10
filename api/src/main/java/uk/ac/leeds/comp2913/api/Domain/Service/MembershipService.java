@@ -19,10 +19,6 @@ import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 public interface MembershipService {
     Page<Membership> findAllMembers(Pageable pageable);
 
-    Page<MembershipType> findAllMembershipTypes(Pageable pageable);
-
-    MembershipType findMembershipTypeById(Long membership_type_id);
-
     Membership findMembershipById(Long membership_id);
 
     Page<Membership> findMembershipsByMembershipType(Pageable pageable, Long membership_type_id);
