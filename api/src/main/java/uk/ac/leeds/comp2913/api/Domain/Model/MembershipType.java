@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
  * stores: name, duration, cost...
  */
 @Entity
-public class MembershipType extends PagedModel<MembershipType> {
+public class MembershipType {
 
     @JsonProperty
     @Id

@@ -18,7 +18,7 @@ import java.util.List;
  * represents the timetable object unique to each facility on the database
  */
 @Entity
-public class FacilityTimetable extends PagedModel<FacilityTimetable> {
+public class FacilityTimetable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

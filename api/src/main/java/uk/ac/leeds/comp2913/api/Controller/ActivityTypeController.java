@@ -31,6 +31,10 @@ import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
+import uk.ac.leeds.comp2913.api.ViewModel.ActivityTypeDTO;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityPagedResourcesAssembler;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityTypePagedResourcesAssembler;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -47,13 +51,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class ActivityTypeController {
 
     private final ActivityTypeService activityTypeService;
-    private final PagedResourcesAssembler pagedResourcesAssembler;
+    private final PagedResourcesAssembler<ActivityType> pagedResourcesAssembler;
+    private final ActivityTypePagedResourcesAssembler activityTypePagedResourcesAssembler;
 
 
     @Autowired
-    public ActivityTypeController(ActivityTypeService activityTypeService, PagedResourcesAssembler pagedResourcesAssembler) {
+    public ActivityTypeController(ActivityTypeService activityTypeService, PagedResourcesAssembler<ActivityType> pagedResourcesAssembler, ActivityTypePagedResourcesAssembler activityTypePagedResourcesAssembler) {
         this.activityTypeService = activityTypeService;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.activityTypePagedResourcesAssembler = activityTypePagedResourcesAssembler;
     }
 
     /**
@@ -64,17 +70,17 @@ public class ActivityTypeController {
     @GetMapping("")
     @Operation(summary = "Get all activity types",
             description = "Get list all activity types (used as templates for scheduling activities) #2")
-    public PagedModel<ActivityType> getActivityTypes(Pageable pageable) {
+    public PagedModel<ActivityTypeDTO> getActivityTypes(Pageable pageable) {
         Page<ActivityType> allActivityTypes =  activityTypeService.findAll(pageable);
-        for (ActivityType activityType : allActivityTypes) {
-            Long activityTypeId = activityType.getId();
-            Link selfLink = linkTo(ActivityTypeController.class).slash(activityTypeId).withSelfRel();
-            activityType.add(selfLink);
-        }
-        Link viewAllActivityTypes = linkTo(ActivityTypeController.class).withSelfRel();
-        PagedModel<ActivityType> result = pagedResourcesAssembler.toModel(allActivityTypes);
-        result.add(viewAllActivityTypes);
-        return result;
+       // for (ActivityType activityType : allActivityTypes) {
+       //     Long activityTypeId = activityType.getId();
+       //     Link selfLink = linkTo(ActivityTypeController.class).slash(activityTypeId).withSelfRel();
+       //     activityType.add(selfLink);
+       // }
+       // Link viewAllActivityTypes = linkTo(ActivityTypeController.class).withSelfRel();
+       // PagedModel<ActivityType> result = pagedResourcesAssembler.toModel(allActivityTypes);
+       // result.add(viewAllActivityTypes);
+        return pagedResourcesAssembler.toModel(allActivityTypes, activityTypePagedResourcesAssembler);
     }
 
     //Get activity types for a resource
@@ -84,11 +90,12 @@ public class ActivityTypeController {
     public ActivityType getActivityTypeId(@Parameter(description = "The ID of the activity type", required = true)@PathVariable Long activity_type_id) {
         ActivityType activityType = activityTypeService.findById(activity_type_id);
         Link selfLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withSelfRel();
-        Link updateLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("update");
-        Link deleteLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("delete");
-        Link resourceLink = linkTo(ResourceController.class).slash(activityType.getResource().getId()).withRel("Resource");
-        Link createNewActivity = linkTo(ActivityController.class).slash("activitytype").slash(activity_type_id).withRel("Create New Scheduled Activity from this template");
-        activityType.add(selfLink, updateLink, deleteLink, resourceLink, createNewActivity);
+       // Link updateLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("update");
+       // Link deleteLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("delete");
+       // Link resourceLink = linkTo(ResourceController.class).slash(activityType.getResource().getId()).withRel("Resource");
+       // Link createNewActivity = linkTo(ActivityController.class).slash("activitytype").slash(activity_type_id).withRel("Create New Scheduled Activity from this template");
+       // activityType.add(selfLink, updateLink, deleteLink, resourceLink, createNewActivity);
+
         return activityType;
     }
 
@@ -97,17 +104,12 @@ public class ActivityTypeController {
     @Operation(summary = "Get a list of activity types for a facility",
             description = "Get list of all activity types for a particular facilities" +
                     "used for scheduling activities #2")
-    public PagedModel<ActivityType> getActivityTypesByResourceId(Pageable pageable, @Parameter(description = "The ID of the resource", required = true)@PathVariable Long resource_id) {
+    public PagedModel<ActivityTypeDTO> getActivityTypesByResourceId(Pageable pageable, @Parameter(description = "The ID of the resource", required = true)@PathVariable Long resource_id) {
         Page<ActivityType> allActivityTypes =  activityTypeService.findByResourceId(pageable, resource_id);
-        for (ActivityType activityType : allActivityTypes) {
-            Long activityTypeId = activityType.getId();
-            Link selfLink = linkTo(ActivityTypeController.class).slash(activityTypeId).withSelfRel();
-            activityType.add(selfLink);
-        }
         Link viewAllActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withSelfRel();
-        Link resourceLink = linkTo(ResourceController.class).slash(resource_id).withRel("resource");
-        PagedModel<ActivityType> result = pagedResourcesAssembler.toModel(allActivityTypes);
-        result.add(viewAllActivityTypes, resourceLink);
+        //Link resourceLink = linkTo(ResourceController.class).slash(resource_id).withRel("resource");
+        PagedModel<ActivityTypeDTO> result = pagedResourcesAssembler.toModel(allActivityTypes, activityTypePagedResourcesAssembler);
+        //result.add(viewAllActivityTypes, resourceLink);
         return result;
     }
 

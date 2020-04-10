@@ -18,6 +18,8 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.RegularSession;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
 import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityPagedResourcesAssembler;
+
 
 import javax.validation.Valid;
 import java.util.List;
@@ -40,13 +42,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ActivityController {
 
     private final ActivityService activityService;
-    private final PagedResourcesAssembler pagedResourcesAssembler;
+    private final PagedResourcesAssembler<Activity> pagedResourcesAssembler;
+    private final ActivityPagedResourcesAssembler activityPagedResourcesAssembler;
 
 
     @Autowired
-    public ActivityController(ActivityService activityService, PagedResourcesAssembler pagedResourcesAssembler) {
+    public ActivityController(ActivityService activityService, PagedResourcesAssembler<Activity> pagedResourcesAssembler, ActivityPagedResourcesAssembler activityPagedResourcesAssembler) {
         this.activityService = activityService;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.activityPagedResourcesAssembler = activityPagedResourcesAssembler;
     }
 
     /**
@@ -57,16 +61,9 @@ public class ActivityController {
     @GetMapping("")
     @Operation(summary = "List all scheduled activities",
             description = "Get List of all scheduled activities and links to view the activitys details")
-    public PagedModel<Activity> getActivities(Pageable pageable) {
+    public PagedModel<ActivityDTO> getActivities(Pageable pageable) {
         Page<Activity> allActivities = activityService.getActivities(pageable);
-        for (Activity activity : allActivities) {
-            Long activityId = activity.getId();
-            Link selfLink = linkTo(ActivityController.class).slash(activityId).withSelfRel();
-            activity.add(selfLink);
-        }
-        Link viewAllActivities = linkTo(ActivityController.class).withSelfRel();
-        PagedModel<Activity> result = pagedResourcesAssembler.toModel(allActivities);
-        result.add(viewAllActivities);
+        PagedModel<ActivityDTO> result = pagedResourcesAssembler.toModel(allActivities, activityPagedResourcesAssembler);
         return result;
     }
 
@@ -74,29 +71,29 @@ public class ActivityController {
     @GetMapping("/{activity_id}")
     @Operation(summary = "Get specific scheduled activity",
             description = "Get a specific scheduled activity, and links to relevant operations")
-    public Activity getActivityByActivityId(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id) {
-        Activity activity = activityService.findActivityById(activity_id);
+    public ActivityDTO getActivityByActivityId(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id) {
+        ActivityDTO activity = activityPagedResourcesAssembler.toModel(activityService.findActivityById(activity_id));
         Link deleteLink = linkTo(ActivityController.class).slash(activity_id).withRel("delete");
         Link updateLink = linkTo(ActivityController.class).slash(activity_id).withRel("update");
         Link viewBookingsLink = linkTo(BookingController.class).slash("activity").slash(activity_id).withRel("Bookings");
         Link placeBookingLink = linkTo(BookingController.class).slash(activity_id).withRel("Place Booking");
         activity.add(updateLink, deleteLink, viewBookingsLink, placeBookingLink);
-        if (activity.getRegularSession() != null) {
-            Long regularSessionId = activity.getRegularSession().getId();
-            Link stopRegularSessionLink = linkTo(ActivityController.class).slash("cancelregularsession")
-                    .slash(regularSessionId).withRel("Stop Regular Session");
-            activity.add(stopRegularSessionLink);
-        }
+    //    if (activity.getRegularSession() != null) {
+    //        Long regularSessionId = activity.getRegularSession().getId();
+    //        Link stopRegularSessionLink = linkTo(ActivityController.class).slash("cancelregularsession")
+    //                .slash(regularSessionId).withRel("Stop Regular Session");
+    //        activity.add(stopRegularSessionLink);
+    //    }
         return activity;
     }
-
+//
     //get scheduled activities for a given resource
     @GetMapping("/resource/{resource_id}")
     @Operation(summary = "Get scheduled activities for a given resource",
             description = "Get list of all scheduled activities for a particular facility#2")
-    public PagedModel<Activity> getActivitiesByResourceId(Pageable pageable, @Parameter(description = "The ID of the specific resource(facility)", required = true)@PathVariable Long resource_id) {
-        Page<Activity> activitiesByResource = activityService.findByResourceId(pageable, resource_id);
-        PagedModel<Activity> result = pagedResourcesAssembler.toModel(activitiesByResource);
+    public PagedModel<ActivityDTO> getActivitiesByResourceId(Pageable pageable, @Parameter(description = "The ID of the specific resource(facility)", required = true)@PathVariable Long resource_id) {
+        //Page<Activity> activitiesByResource = activityService.findByResourceId(pageable, resource_id);
+        PagedModel<ActivityDTO> result = pagedResourcesAssembler.toModel(activityService.findByResourceId(pageable, resource_id), activityPagedResourcesAssembler);
         return result;
     }
 

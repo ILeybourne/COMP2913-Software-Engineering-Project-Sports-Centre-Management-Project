@@ -15,7 +15,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
-public class Account extends PagedModel<Account> {
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

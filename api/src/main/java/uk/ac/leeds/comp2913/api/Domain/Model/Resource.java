@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
  * Represents a resource available inside the sports center. eg Astro Turf, Squash Court, Swimming Pool etc.
  */
 @Entity
-public class Resource extends PagedModel<Resource> {
+public class Resource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

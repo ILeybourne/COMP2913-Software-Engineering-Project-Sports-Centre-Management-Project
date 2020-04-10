@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
-public class Receipt extends PagedModel<Receipt> {
+public class Receipt {
 
     @Id
     @GeneratedValue

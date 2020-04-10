@@ -46,12 +46,12 @@ public class SalesController {
      * @param pageable pagination request
      * @return list of all sales in the system
      */
-    @GetMapping("/")
-    @Operation(summary = "Returns a list of sales. INCOMPLETE",
-            description = "Returns a list of all sales (bookings and memberships)")
-    public Page<Sale> sales(Pageable pageable) {
-        return salesRepository.findAll(pageable);
-    }
+ // @GetMapping("/")
+ // @Operation(summary = "Returns a list of sales. INCOMPLETE",
+ //         description = "Returns a list of all sales (bookings and memberships)")
+ // public Page<Sale> sales(Pageable pageable) {
+ //     return salesRepository.findAll(pageable);
+ // }
 
     /**
      * @param sale the sale to mark as paid

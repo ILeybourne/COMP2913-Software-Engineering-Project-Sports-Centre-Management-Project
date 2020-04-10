@@ -18,7 +18,7 @@ import java.util.Set;
  * Allows the activities to be scheduled automatically as well as placing bookings and payments automatically
  */
 @Entity
-public class RegularSession extends PagedModel<RegularSession> {
+public class RegularSession {
   public RegularSession(){
   }
 

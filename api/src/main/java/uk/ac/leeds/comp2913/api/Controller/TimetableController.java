@@ -47,54 +47,54 @@ public class TimetableController {
     }
 
     //View timetable for all facilities
-    @GetMapping("")
-    @Operation(summary = "Get Timetable",
-            description = "Get list of all activities for all facilities #1")
-    public PagedModel<Activity> getTimetable(Pageable pageable) {
-        Page<Activity> timetabledActivities = activityService.findAllWithResources(pageable);
+ // @GetMapping("")
+ // @Operation(summary = "Get Timetable",
+ //         description = "Get list of all activities for all facilities #1")
+ // public PagedModel<Activity> getTimetable(Pageable pageable) {
+ //     Page<Activity> timetabledActivities = activityService.findAllWithResources(pageable);
 
-        //Create unique links for each activity
-        for (Activity activity : timetabledActivities) {
-            Long activityId = activity.getId();
-            Link activityLink = linkTo(ActivityController.class).slash(activityId).withRel("Activity");
-            Link resourceLink = linkTo(ResourceController.class).slash(activity.getResource().getId()).withRel("Resource");
-            Link resourceTimetable = linkTo(TimetableController.class).slash(activity.getResource().getId()).withRel("View Timetable For Resource");
-            Link bookingLink = linkTo(BookingController.class).slash(activity.getId()).withRel("Place Booking For This Activity");
-            activity.add(activityLink, resourceLink, bookingLink, resourceTimetable);
-        }
-        //Links that are for full page
-        Link viewTimetable = linkTo(TimetableController.class).withSelfRel();
-        Link createNewResource = linkTo(ResourceController.class).withRel("Add New Resource");
-        PagedModel<Activity> result = pagedResourcesAssembler.toModel(timetabledActivities);
-        result.add(viewTimetable, createNewResource);
-        return result;
-    }
+ //     //Create unique links for each activity
+ //     for (Activity activity : timetabledActivities) {
+ //         Long activityId = activity.getId();
+ //         Link activityLink = linkTo(ActivityController.class).slash(activityId).withRel("Activity");
+ //         Link resourceLink = linkTo(ResourceController.class).slash(activity.getResource().getId()).withRel("Resource");
+ //         Link resourceTimetable = linkTo(TimetableController.class).slash(activity.getResource().getId()).withRel("View Timetable For Resource");
+ //         Link bookingLink = linkTo(BookingController.class).slash(activity.getId()).withRel("Place Booking For This Activity");
+ //         activity.add(activityLink, resourceLink, bookingLink, resourceTimetable);
+ //     }
+ //     //Links that are for full page
+ //     Link viewTimetable = linkTo(TimetableController.class).withSelfRel();
+ //     Link createNewResource = linkTo(ResourceController.class).withRel("Add New Resource");
+ //     PagedModel<Activity> result = pagedResourcesAssembler.toModel(timetabledActivities);
+ //     result.add(viewTimetable, createNewResource);
+ //     return result;
+ // }
 
-    //view timetable by specified facility
-   @GetMapping("{resource_id}")
-   @Operation(summary = "Get Timetable for a facility",
-           description = "Get list of all activities for a particular facilities #2")
-   public PagedModel<Activity> getTimetableByResource(Pageable pageable, @Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
-       Page<Activity> timetabledActivitiesByResource = activityService.findByResourceId(pageable, resource_id);
-       //unique links for each activity
-       for (Activity activity : timetabledActivitiesByResource) {
-           Long activityId = activity.getId();
-           Link activityLink = linkTo(ActivityController.class).slash(activityId).withRel("Activity");
-           Link viewActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for this resource");
-           Link resourceLink = linkTo(ResourceController.class).slash(activity.getResource().getId()).withRel("Resource");
-           Link bookingLink = linkTo(BookingController.class).slash(activity.getId()).withRel("Place Booking For This Activity");
-           activity.add(activityLink, resourceLink, bookingLink, viewActivityTypes);
-       }
-       //Links for full page
-       Link viewTimetable = linkTo(TimetableController.class).withRel("View timetable for all facilities");
-       Link viewResourceTimetable = linkTo(TimetableController.class).slash(resource_id).withSelfRel();
-       Link viewActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for this resource");
-       Link createNewResource = linkTo(ResourceController.class).withRel("Add New Facility");
-       Link createNewActivityType = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("Create new Activity Type for Resource");
+ // //view timetable by specified facility
+ //@GetMapping("{resource_id}")
+ //@Operation(summary = "Get Timetable for a facility",
+ //        description = "Get list of all activities for a particular facilities #2")
+ //public PagedModel<Activity> getTimetableByResource(Pageable pageable, @Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
+ //    Page<Activity> timetabledActivitiesByResource = activityService.findByResourceId(pageable, resource_id);
+ //    //unique links for each activity
+ //    for (Activity activity : timetabledActivitiesByResource) {
+ //        Long activityId = activity.getId();
+ //        Link activityLink = linkTo(ActivityController.class).slash(activityId).withRel("Activity");
+ //        Link viewActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for this resource");
+ //        Link resourceLink = linkTo(ResourceController.class).slash(activity.getResource().getId()).withRel("Resource");
+ //        Link bookingLink = linkTo(BookingController.class).slash(activity.getId()).withRel("Place Booking For This Activity");
+ //        activity.add(activityLink, resourceLink, bookingLink, viewActivityTypes);
+ //    }
+ //    //Links for full page
+ //    Link viewTimetable = linkTo(TimetableController.class).withRel("View timetable for all facilities");
+ //    Link viewResourceTimetable = linkTo(TimetableController.class).slash(resource_id).withSelfRel();
+ //    Link viewActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for this resource");
+ //    Link createNewResource = linkTo(ResourceController.class).withRel("Add New Facility");
+ //    Link createNewActivityType = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("Create new Activity Type for Resource");
 
-       PagedModel<Activity> result = pagedResourcesAssembler.toModel(timetabledActivitiesByResource);
-       result.add(viewTimetable, viewResourceTimetable, createNewResource, createNewActivityType, viewResourceTimetable, viewActivityTypes);
-       return result;
-   }
+ //    PagedModel<Activity> result = pagedResourcesAssembler.toModel(timetabledActivitiesByResource);
+ //    result.add(viewTimetable, viewResourceTimetable, createNewResource, createNewActivityType, viewResourceTimetable, viewActivityTypes);
+ //    return result;
+ //}
 }
 

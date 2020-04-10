@@ -34,7 +34,7 @@ import java.math.BigDecimal;
 })
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
-public abstract class Sale extends PagedModel<Sale> {
+public abstract class Sale {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -15,7 +15,7 @@ import java.util.List;
  * or Leeds Central
  */
 @Entity
-public class Centre extends PagedModel<Centre> {
+public class Centre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

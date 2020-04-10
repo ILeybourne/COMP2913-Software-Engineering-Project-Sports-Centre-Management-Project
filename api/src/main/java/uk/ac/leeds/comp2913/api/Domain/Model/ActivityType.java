@@ -26,7 +26,7 @@ import javax.validation.constraints.Size;
  */
 
 @Entity
-public class ActivityType extends PagedModel<ActivityType> {
+public class ActivityType {
 
     @JsonProperty
     @Id

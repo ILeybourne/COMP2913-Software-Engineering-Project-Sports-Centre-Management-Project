@@ -30,7 +30,7 @@ import javax.validation.constraints.NotNull;
  * and should be displayed on the weekly timetable for booking
  */
 @Entity
-public class Activity extends PagedModel<Activity> {
+public class Activity {
 
     public Activity() {
     }

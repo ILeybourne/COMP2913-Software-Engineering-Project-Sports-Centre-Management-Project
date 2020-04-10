@@ -1,25 +1,46 @@
 package uk.ac.leeds.comp2913.api.ViewModel;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.RepresentationModel;
+
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
+import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
+import uk.ac.leeds.comp2913.api.Domain.Model.RegularSession;
+import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
+
 //Used by manager to create activities, can pass a regular session boolean to create a regular session
-public class ActivityDTO {
+public class ActivityDTO extends RepresentationModel<ActivityDTO> {
+  //Post
   @NotBlank(message = "start time is required")
   private Date startTime;
-
   @NotBlank(message = "end time is required")
   private Date endTime;
   private boolean regularSession;
   private boolean social;
   private Integer interval;
 
+  //Others for Get
+  private Long id;
+  private String name;
+  private Resource resource;
+  private Date created_at;
+  private Date updated_at;
+  private Integer currentCapacity;
+  private BigDecimal cost;
+  private RegularSession regularSessionId;
 
   public ActivityDTO (){
   }
@@ -59,6 +80,7 @@ public class ActivityDTO {
     this.endTime = endTime;
   }
 
+  @JsonIgnore
   public boolean isRegularSession() {
     return regularSession;
   }
@@ -82,5 +104,74 @@ public class ActivityDTO {
   public void setInterval(Integer interval) {
     this.interval = interval;
   }
+
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  @JsonIgnoreProperties({"activities", "bookings"})
+  public Resource getResource() {
+    return resource;
+  }
+
+  public void setResource(Resource resource) {
+    this.resource = resource;
+  }
+
+  public Date getCreated_at() {
+    return created_at;
+  }
+
+  public void setCreated_at(Date created_at) {
+    this.created_at = created_at;
+  }
+
+  public Date getUpdated_at() {
+    return updated_at;
+  }
+
+  public void setUpdated_at(Date updated_at) {
+    this.updated_at = updated_at;
+  }
+
+  @JsonProperty
+  public Integer getCurrentCapacity() {
+    return currentCapacity;
+  }
+
+  public void setCurrentCapacity(Integer currentCapacity) {
+    this.currentCapacity = currentCapacity;
+  }
+
+  public BigDecimal getCost() {
+    return cost;
+  }
+
+  public void setCost(BigDecimal cost) {
+    this.cost = cost;
+  }
+
+  @JsonIgnoreProperties({"activities", "bookings"})
+  public RegularSession getRegularSessionId() {
+    return regularSessionId;
+  }
+
+  public void setRegularSessionId(RegularSession regularSessionId) {
+    this.regularSessionId = regularSessionId;
+  }
+
 
 }

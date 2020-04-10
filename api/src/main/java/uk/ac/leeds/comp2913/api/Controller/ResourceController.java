@@ -61,40 +61,40 @@ public class ResourceController {
     }
 
     //Get Resources
-    @GetMapping("")
-    @Operation(summary = "Get all facilities",
-            description = "Get a list of all facilities with basic information")
-//    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
-    public PagedModel<Resource> getResources(Pageable pageable) {
-        Page<Resource> allResources = resourceService.findAll(pageable);
-        for(Resource resource : allResources) {
-            Long resourceId = resource.getId();
-            Link selfLink = linkTo(ResourceController.class).slash(resourceId).withSelfRel();
-            resource.add(selfLink);
-        }
-        Link createResource = linkTo(ResourceController.class).withRel("Create new resource");
-        Link viewAllResources = linkTo(ResourceController.class).withSelfRel();
-        PagedModel<Resource> result = pagedResourcesAssembler.toModel(allResources);
-        result.add(viewAllResources, createResource);
-        return result;
-    }
-
-    @GetMapping("/{resource_id}")
-    @Operation(summary = "Get a specific facility",
-            description = "Get a specific facility with more information and links")
-    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
-    public Resource indexResource(@Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
-        Resource resource = resourceService.findById(resource_id);
-        Link selfLink = linkTo(ResourceController.class).slash(resource_id).withSelfRel();
-        Link createResource = linkTo(ResourceController.class).withRel("Create new resource");
-        Link updateLink = linkTo(ResourceController.class).slash(resource_id).withRel("update");
-        Link deleteLink = linkTo(ResourceController.class).slash(resource_id).withRel("delete");
-        Link viewActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for Resource");
-        Link newActivityTypeLink = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("Create new Activity Type for Resource");
-        Link viewResourceTimetable = linkTo(TimetableController.class).slash(resource_id).withRel("Facility Timetable");
-        resource.add(selfLink,createResource ,updateLink, deleteLink, viewActivityTypes, newActivityTypeLink, viewResourceTimetable);
-        return resource;
-    }
+    //@GetMapping("")
+    //@Operation(summary = "Get all facilities",
+    //        description = "Get a list of all facilities with basic information")
+//  //  @PreAuthorize("hasAuthority('SCOPE_read:resource')")
+    //public PagedModel<Resource> getResources(Pageable pageable) {
+    //    Page<Resource> allResources = resourceService.findAll(pageable);
+    //    for(Resource resource : allResources) {
+    //        Long resourceId = resource.getId();
+    //        Link selfLink = linkTo(ResourceController.class).slash(resourceId).withSelfRel();
+    //        resource.add(selfLink);
+    //    }
+    //    Link createResource = linkTo(ResourceController.class).withRel("Create new resource");
+    //    Link viewAllResources = linkTo(ResourceController.class).withSelfRel();
+    //    PagedModel<Resource> result = pagedResourcesAssembler.toModel(allResources);
+    //    result.add(viewAllResources, createResource);
+    //    return result;
+    //}
+//
+    //@GetMapping("/{resource_id}")
+    //@Operation(summary = "Get a specific facility",
+    //        description = "Get a specific facility with more information and links")
+    //@PreAuthorize("hasAuthority('SCOPE_read:resource')")
+    //public Resource indexResource(@Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
+    //    Resource resource = resourceService.findById(resource_id);
+    //    Link selfLink = linkTo(ResourceController.class).slash(resource_id).withSelfRel();
+    //    Link createResource = linkTo(ResourceController.class).withRel("Create new resource");
+    //    Link updateLink = linkTo(ResourceController.class).slash(resource_id).withRel("update");
+    //    Link deleteLink = linkTo(ResourceController.class).slash(resource_id).withRel("delete");
+    //    Link viewActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for Resource");
+    //    Link newActivityTypeLink = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("Create new Activity Type for Resource");
+    //    Link viewResourceTimetable = linkTo(TimetableController.class).slash(resource_id).withRel("Facility Timetable");
+    //    resource.add(selfLink,createResource ,updateLink, deleteLink, viewActivityTypes, newActivityTypeLink, viewResourceTimetable);
+    //    return resource;
+    //}
 
     //Post new resource
     @PostMapping("")
