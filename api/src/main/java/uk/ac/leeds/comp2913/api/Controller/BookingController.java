@@ -33,6 +33,7 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.BookingPagedResourcesAssembler;
 import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -54,77 +55,76 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class BookingController {
     private final BookingRepository bookingRepository;
     private final BookingService bookingService;
-    private final PagedResourcesAssembler pagedResourcesAssembler;
+    private final PagedResourcesAssembler<Booking> pagedResourcesAssembler;
+    private final BookingPagedResourcesAssembler bookingPagedResourcesAssembler;
 
 
     @Autowired
-    public BookingController(BookingRepository bookingRepository, BookingService bookingService, PagedResourcesAssembler pagedResourcesAssembler) {
+    public BookingController(BookingRepository bookingRepository, BookingService bookingService, PagedResourcesAssembler<Booking> pagedResourcesAssembler, BookingPagedResourcesAssembler bookingPagedResourcesAssembler) {
         this.bookingRepository = bookingRepository;
         this.bookingService = bookingService;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.bookingPagedResourcesAssembler = bookingPagedResourcesAssembler;
     }
 
-  //@GetMapping("")
-  //@Operation(summary = "Get a list of all bookings",
-  //        description = "Get list of all bookings with basic information, self link provides more details")
-  //public PagedModel<Booking> getBookings(Pageable pageable) {
-  //    Page <Booking> allBookings = bookingService.findAll(pageable);
-  //    for (Booking booking : allBookings) {
-  //        Long bookingId = booking.getId();
-  //        Link selfLink = linkTo(BookingController.class).slash(bookingId).withSelfRel();
-  //        Link accountLink = linkTo(AccountController.class).slash(booking.getAccount().getId()).withRel("Account");
-  //        Link activityLink = linkTo(ActivityController.class).slash(booking.getActivity().getId()).withRel("Activity");
-  //        booking.add(selfLink, accountLink, activityLink);
-  //    }
-  //    Link viewAllBookings = linkTo(BookingController.class).withSelfRel();
-  //    PagedModel<Booking> result = pagedResourcesAssembler.toModel(allBookings);
-  //    result.add(viewAllBookings);
-  //    return result;
-  //}
+  @GetMapping("")
+  @Operation(summary = "Get a list of all bookings",
+          description = "Get list of all bookings with basic information, self link provides more details")
+  public PagedModel<BookingDTO> getBookings(Pageable pageable) {
+      Page <Booking> allBookings = bookingService.findAll(pageable);
+     // for (Booking booking : allBookings) {
+     //     Long bookingId = booking.getId();
+     //     Link selfLink = linkTo(BookingController.class).slash(bookingId).withSelfRel();
+     //     Link accountLink = linkTo(AccountController.class).slash(booking.getAccount().getId()).withRel("Account");
+     //     Link activityLink = linkTo(ActivityController.class).slash(booking.getActivity().getId()).withRel("Activity");
+     //     booking.add(selfLink, accountLink, activityLink);
+     // }
+     // Link viewAllBookings = linkTo(BookingController.class).withSelfRel();
+      //PagedModel<Booking> result = pagedResourcesAssembler.toModel(allBookings);
+     // result.add(viewAllBookings);
+      return pagedResourcesAssembler.toModel(allBookings, bookingPagedResourcesAssembler);
+  }
 
-  //@GetMapping("/{booking_id}")
-  //@Operation(summary = "Get a specific booking",
-  //        description = "Get a specific booking with more details/links")
-  //public Booking getBookingById(@Parameter(description = "The id of the booking", required = true)@PathVariable Long booking_id) {
-  //    Booking booking = bookingService.findById(booking_id);
-  //    Link deleteLink = linkTo(BookingController.class).slash(booking_id).withRel("Delete");
-  //    Link updateLink = linkTo(BookingController.class).slash(booking_id).withRel("Update");
-  //    //Link receiptLink = linkTo(ReceiptController.class).slash(booking.getReceipt().getId()).slash("receipt").withRel("Receipt");
-  //    Link accountLink = linkTo(AccountController.class).slash(booking.getAccount().getId()).withRel("Account");
-  //    Link activityLink = linkTo(ActivityController.class).slash(booking.getActivity().getId()).withRel("Activity");
-  //    booking.add(deleteLink, updateLink, accountLink, activityLink);
-  //    if (booking.getRegularSession()!=null){
-  //        Link cancelRegularSessionLink = linkTo(BookingController.class).slash("cancel").slash(booking.getActivity().getId()).slash(booking.getAccount().getId()).withRel("Unsubscribe from Regular Session");
-  //        booking.add(cancelRegularSessionLink);
-  //    }
-  //    return booking;
-  //}
+  @GetMapping("/{booking_id}")
+  @Operation(summary = "Get a specific booking",
+          description = "Get a specific booking with more details/links")
+  public BookingDTO getBookingById(@Parameter(description = "The id of the booking", required = true)@PathVariable Long booking_id) {
+      BookingDTO booking = bookingPagedResourcesAssembler.toModel(bookingService.findById(booking_id));
+     booking.add(linkTo(BookingController.class).slash(booking_id).withRel("Delete"));
+     booking.add(linkTo(BookingController.class).slash(booking_id).withRel("Update"));
+     // booking.add(deleteLink, updateLink, accountLink, activityLink);
+     // if (booking.getRegularSession()!=null){
+     //     Link cancelRegularSessionLink = linkTo(BookingController.class).slash("cancel").slash(booking.getActivity().getId()).slash(booking.getAccount().getId()).withRel("Unsubscribe from Regular Session");
+     //     booking.add(cancelRegularSessionLink);
+     // }
+      return booking;
+  }
 
-  //@GetMapping("/account/{account_id}")
-  //@Operation(summary = "Get a list of bookings made by a specific account",
-  //        description = "returns a list of bookings placed by a specific account")
-  //public PagedModel<Booking> getBookingsByAccount(Pageable pageable, @Parameter(description = "The ID of the account", required = true)@PathVariable Long account_id) {
-  //    Page<Booking> bookingsWithAccountId = bookingService.findByAccountId(pageable, account_id);
-  //    PagedModel<Booking> result = pagedResourcesAssembler.toModel(bookingsWithAccountId);
-  //    return result;
-  //}
+  @GetMapping("/account/{account_id}")
+  @Operation(summary = "Get a list of bookings made by a specific account",
+          description = "returns a list of bookings placed by a specific account")
+  public PagedModel<BookingDTO> getBookingsByAccount(Pageable pageable, @Parameter(description = "The ID of the account", required = true)@PathVariable Long account_id) {
+      Page<Booking> bookingsWithAccountId = bookingService.findByAccountId(pageable, account_id);
+      PagedModel<BookingDTO> result = pagedResourcesAssembler.toModel(bookingsWithAccountId, bookingPagedResourcesAssembler);
+      return result;
+  }
 
-  //@GetMapping("/activity/{activity_id}")
-  //@Operation(summary = "Get a list of bookings for a specific activity",
-  //        description = "Get list of bookings for a specific activity")
-  //public PagedModel<Booking> getBookingsByActivity(Pageable pageable, @Parameter(description = "The Id of the activity", required = true)@PathVariable Long activity_id) {
-  //    Page<Booking> activityBookings = bookingService.findByActivityId(pageable, activity_id);
-  //    for (Booking booking : activityBookings) {
-  //        Long bookingId = booking.getId();
-  //        Link selfLink = linkTo(BookingController.class).slash(bookingId).withSelfRel();
-  //        booking.add(selfLink);
-  //    }
-  //    Link selfLink = linkTo(ActivityController.class).slash("activity").slash(activity_id).withSelfRel();
-  //    Link activityLink = linkTo(ActivityController.class).slash(activity_id).withRel("Activity");
-  //    PagedModel<Booking> result = pagedResourcesAssembler.toModel(activityBookings);
-  //    result.add(selfLink, activityLink);
-  //    return result;
-  //}
+ //@GetMapping("/activity/{activity_id}")
+ //@Operation(summary = "Get a list of bookings for a specific activity",
+ //        description = "Get list of bookings for a specific activity")
+ //public PagedModel<Booking> getBookingsByActivity(Pageable pageable, @Parameter(description = "The Id of the activity", required = true)@PathVariable Long activity_id) {
+ //    Page<Booking> activityBookings = bookingService.findByActivityId(pageable, activity_id);
+ //    for (Booking booking : activityBookings) {
+ //        Long bookingId = booking.getId();
+ //        Link selfLink = linkTo(BookingController.class).slash(bookingId).withSelfRel();
+ //        booking.add(selfLink);
+ //    }
+ //    Link selfLink = linkTo(ActivityController.class).slash("activity").slash(activity_id).withSelfRel();
+ //    Link activityLink = linkTo(ActivityController.class).slash(activity_id).withRel("Activity");
+ //    PagedModel<Booking> result = pagedResourcesAssembler.toModel(activityBookings);
+ //    result.add(selfLink, activityLink);
+ //    return result;
+ //}
 
     //Post booking with the option to book on to a regular session
     @PostMapping("/{activity_id}")
