@@ -39,33 +39,4 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
-    @Override
-    @Transactional
-    public Customer getCustomerAccountDetails(Long account_id){
-        Account account = accountRepository.findById(account_id)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found for ID" + account_id));
-        Customer customerDetails = account.getCustomer();
-        Hibernate.initialize(customerDetails);
-        return customerDetails;
-    }
-
-    @Override
-    @Transactional
-    public List <Booking> getAccountBookings(Long account_id){
-        Account account = accountRepository.findById(account_id)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found for ID" + account_id));
-        List<Booking> accountBookings = account.getBookings();
-        Hibernate.initialize(accountBookings);
-        return accountBookings;
-    }
-
-    @Override
-    @Transactional
-    public List <Membership> getAccountMembership(Long account_id){
-        Account account = accountRepository.findById(account_id)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found for ID" + account_id));
-        List <Membership> accountMembership = account.getMemberships();
-        Hibernate.initialize(accountMembership);
-        return accountMembership;
-    }
 }

@@ -16,6 +16,7 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 @Repository
 public interface MembershipRepository extends JpaRepository<Membership, Long>, PagingAndSortingRepository<Membership, Long> {
     Page<Membership> findByMembershipTypeId(Pageable pageable, Long membershipTypeId);
+    Page<Membership> findByAccountId(Pageable pageable, Long account_id);
     List<Membership> findAll();
     Optional<Membership> findById(Long membership_id);
 

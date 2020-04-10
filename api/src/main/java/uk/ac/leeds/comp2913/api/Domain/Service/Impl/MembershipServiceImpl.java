@@ -56,6 +56,12 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
+    public Page<Membership> findMembershipByAccountId(Pageable pageable, Long account_id){
+        return membershipRepository.findByAccountId(pageable, account_id);
+    }
+
+
+    @Override
     public Membership addMember(Long account_id, Long membership_type_id, Membership membership) {
         MembershipType membershipType = membershipTypeRepository.findById(membership_type_id)
                 .orElseThrow(() -> new ResourceNotFoundException("Membership type not found for ID" + membership_type_id));

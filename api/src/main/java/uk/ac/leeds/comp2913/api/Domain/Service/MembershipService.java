@@ -33,4 +33,5 @@ public interface MembershipService {
 
     void automatedMembershipRenewals();
 
+    Page<Membership> findMembershipByAccountId(Pageable pageable, Long account_id);
 }

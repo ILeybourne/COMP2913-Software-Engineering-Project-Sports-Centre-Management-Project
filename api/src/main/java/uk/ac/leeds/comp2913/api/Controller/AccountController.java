@@ -46,37 +46,6 @@ public class AccountController {
   @Operation(summary = "Get specific account",
           description = "Get a specific account, links to view their customer details, bookings, membership")
   public AccountDTO getAccountById (@Parameter(description = "The ID of the specific account", required = true)@PathVariable Long account_id){
-        AccountDTO account = accountPagedResourcesAssembler.toModel(accountService.getAccountById(account_id));
-        account.add(linkTo(AccountController.class).slash(account_id).slash("details").withRel("Customer Details"));
-        account.add(linkTo(AccountController.class).slash(account_id).slash("bookings").withRel("Account Bookings"));
-        account.add(linkTo(AccountController.class).slash(account_id).slash("membership").withRel("Account Memberships"));
-      return account;
+        return accountPagedResourcesAssembler.toModel(accountService.getAccountById(account_id));
   }
-
-// @GetMapping("/{account_id}/details")
-//  @Operation(summary = "View customer details",
-//         description = "View customer details for a particular account")
-// public Customer getAccountCustomerDetails (@Parameter(description = "The ID of the specific account", required = true)@PathVariable Long account_id){
-//      Customer customer = accountService.getCustomerAccountDetails(account_id);
-//     Link accountLink = linkTo(AccountController.class).slash(account_id).withRel("Account");
-//     customer.add(accountLink);
-//     return customer;
-// }
-
-// @GetMapping("/{account_id}/bookings")
-// @Operation(summary = "view bookings for an account",
-//         description = "Get list of all bookings linked to a specific account")
-//   public List<Booking> getAccountBookings (@Parameter(description = "The ID of the specific account", required = true)@PathVariable Long account_id){
-//       return accountService.getAccountBookings(account_id);
-//   }
-
-//  @GetMapping("/{account_id}/membership")
-//  @Operation(summary = "Get memberships for an account",
-//          description = "Get list of all memberships associated with an account")
-//  public List<Membership> getAccountMemberships (@Parameter(description = "The ID of the specific account", required = true)@PathVariable Long account_id){
-//      return accountService.getAccountMembership(account_id);
-//  }
-
-
-
 }

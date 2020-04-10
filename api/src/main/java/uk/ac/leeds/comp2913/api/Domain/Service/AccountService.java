@@ -19,13 +19,4 @@ public interface AccountService {
 
     @Transactional
     Account getAccountById(Long account_id);
-
-    @Transactional
-    Customer getCustomerAccountDetails(Long account_id);
-
-    @Transactional
-    List<Booking> getAccountBookings(Long account_id);
-
-    @Transactional
-    List<Membership> getAccountMembership(Long account_id);
 }

@@ -23,6 +23,7 @@ public class ResourcePagedResourcesAssembler extends RepresentationModelAssemble
         resourceDTO.add(linkTo(methodOn(ResourceController.class).getResourceById(resource.getId())).withSelfRel());
         resourceDTO.add(linkTo(ActivityTypeController.class).slash("resource").slash(resource.getId()).withRel("View Activity Types for Resource"));
         resourceDTO.add(linkTo(TimetableController.class).slash(resource.getId()).withRel("Facility Timetable"));
+
         resourceDTO.setId(resource.getId());
         resourceDTO.setName(resource.getName());
         resourceDTO.setCreatedAt(resource.getCreatedAt());

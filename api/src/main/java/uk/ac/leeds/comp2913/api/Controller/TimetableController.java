@@ -18,6 +18,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
+import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityPagedResourcesAssembler;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityTypePagedResourcesAssembler;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,64 +40,53 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class TimetableController {
 
     private final ActivityService activityService;
-    private final PagedResourcesAssembler pagedResourcesAssembler;
+    private final PagedResourcesAssembler<Activity> pagedResourcesAssembler;
+    private final ActivityPagedResourcesAssembler activityPagedResourcesAssembler;
 
 
     @Autowired
-    public TimetableController(ActivityService activityService, PagedResourcesAssembler pagedResourcesAssembler) {
+    public TimetableController(ActivityService activityService, PagedResourcesAssembler<Activity> pagedResourcesAssembler, ActivityPagedResourcesAssembler activityPagedResourcesAssembler) {
         this.activityService = activityService;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.activityPagedResourcesAssembler = activityPagedResourcesAssembler;
     }
 
     //View timetable for all facilities
- // @GetMapping("")
- // @Operation(summary = "Get Timetable",
- //         description = "Get list of all activities for all facilities #1")
- // public PagedModel<Activity> getTimetable(Pageable pageable) {
- //     Page<Activity> timetabledActivities = activityService.findAllWithResources(pageable);
+  @GetMapping("")
+  @Operation(summary = "Get Timetable",
+          description = "Get list of all activities for all facilities #1")
+  public PagedModel<ActivityDTO> getTimetable(Pageable pageable) {
+      PagedModel<ActivityDTO> timetableForAllFacilities = pagedResourcesAssembler.toModel((activityService.findAllWithResources(pageable)), activityPagedResourcesAssembler);
+      //Create unique links for each activity
+      for (ActivityDTO activity : timetableForAllFacilities) {
+          activity.add(linkTo(ResourceController.class).slash(activity.getResource().getId()).withRel("Resource"));
+          activity.add(linkTo(TimetableController.class).slash(activity.getResource().getId()).withRel("View Facility Timetable"));
+          activity.add(linkTo(BookingController.class).slash(activity.getId()).withRel("Place Booking For This Activity"));
+      }
+      timetableForAllFacilities.add(linkTo(ResourceController.class).withRel("Add New Facility"));
 
- //     //Create unique links for each activity
- //     for (Activity activity : timetabledActivities) {
- //         Long activityId = activity.getId();
- //         Link activityLink = linkTo(ActivityController.class).slash(activityId).withRel("Activity");
- //         Link resourceLink = linkTo(ResourceController.class).slash(activity.getResource().getId()).withRel("Resource");
- //         Link resourceTimetable = linkTo(TimetableController.class).slash(activity.getResource().getId()).withRel("View Timetable For Resource");
- //         Link bookingLink = linkTo(BookingController.class).slash(activity.getId()).withRel("Place Booking For This Activity");
- //         activity.add(activityLink, resourceLink, bookingLink, resourceTimetable);
- //     }
- //     //Links that are for full page
- //     Link viewTimetable = linkTo(TimetableController.class).withSelfRel();
- //     Link createNewResource = linkTo(ResourceController.class).withRel("Add New Resource");
- //     PagedModel<Activity> result = pagedResourcesAssembler.toModel(timetabledActivities);
- //     result.add(viewTimetable, createNewResource);
- //     return result;
- // }
+      return timetableForAllFacilities;
+  }
 
- // //view timetable by specified facility
- //@GetMapping("{resource_id}")
- //@Operation(summary = "Get Timetable for a facility",
- //        description = "Get list of all activities for a particular facilities #2")
- //public PagedModel<Activity> getTimetableByResource(Pageable pageable, @Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
- //    Page<Activity> timetabledActivitiesByResource = activityService.findByResourceId(pageable, resource_id);
- //    //unique links for each activity
- //    for (Activity activity : timetabledActivitiesByResource) {
- //        Long activityId = activity.getId();
- //        Link activityLink = linkTo(ActivityController.class).slash(activityId).withRel("Activity");
- //        Link viewActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for this resource");
- //        Link resourceLink = linkTo(ResourceController.class).slash(activity.getResource().getId()).withRel("Resource");
- //        Link bookingLink = linkTo(BookingController.class).slash(activity.getId()).withRel("Place Booking For This Activity");
- //        activity.add(activityLink, resourceLink, bookingLink, viewActivityTypes);
- //    }
- //    //Links for full page
- //    Link viewTimetable = linkTo(TimetableController.class).withRel("View timetable for all facilities");
- //    Link viewResourceTimetable = linkTo(TimetableController.class).slash(resource_id).withSelfRel();
- //    Link viewActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for this resource");
- //    Link createNewResource = linkTo(ResourceController.class).withRel("Add New Facility");
- //    Link createNewActivityType = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("Create new Activity Type for Resource");
+  //view timetable by specified facility
+ @GetMapping("{resource_id}")
+ @Operation(summary = "Get Timetable for a facility",
+         description = "Get list of all activities for a particular facilities #2")
+ public PagedModel<ActivityDTO> getTimetableByResource(Pageable pageable, @Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
+     PagedModel<ActivityDTO> facilityTimetable = pagedResourcesAssembler.toModel((activityService.findByResourceId(pageable, resource_id)), activityPagedResourcesAssembler);
 
- //    PagedModel<Activity> result = pagedResourcesAssembler.toModel(timetabledActivitiesByResource);
- //    result.add(viewTimetable, viewResourceTimetable, createNewResource, createNewActivityType, viewResourceTimetable, viewActivityTypes);
- //    return result;
- //}
+         //unique links for each activity
+     for (ActivityDTO activity : facilityTimetable) {
+         activity.add(linkTo(ActivityController.class).slash(activity.getId()).withRel("Activity"));
+         activity.add(linkTo(ResourceController.class).slash(activity.getResource().getId()).withRel("Resource"));
+         activity.add(linkTo(BookingController.class).slash(activity.getId()).withRel("Place Booking For This Activity"));
+     }
+     //Links for full page
+       facilityTimetable.add(linkTo(TimetableController.class).withRel("View timetable for all facilities"));
+       facilityTimetable.add(linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("View Activity Types for this resource"));
+       facilityTimetable.add(linkTo(ResourceController.class).withRel("Add New Facility"));
+       facilityTimetable.add(linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("Create new Activity Type for Resource"));
+       return facilityTimetable;
+ }
 }
 

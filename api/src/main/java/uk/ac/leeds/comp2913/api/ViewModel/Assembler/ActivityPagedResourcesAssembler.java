@@ -26,7 +26,7 @@ public class ActivityPagedResourcesAssembler extends RepresentationModelAssemble
         activityDTO.setStartTime(activity.getStartTime());
         activityDTO.setEndTime(activity.getEndTime());
         activityDTO.setCost(activity.getCost());
-        //activityDTO.setSocial(activity.Social());
+        //activityDTO.setSocial(activity.getSocial());
         activityDTO.setResource(activity.getResource());
         activityDTO.setCurrentCapacity(activity.getCurrentCapacity());
         activityDTO.setRegularSessionId(activity.getRegularSession());

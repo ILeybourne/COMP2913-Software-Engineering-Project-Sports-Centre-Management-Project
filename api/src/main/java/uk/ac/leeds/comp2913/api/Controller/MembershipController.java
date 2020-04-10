@@ -68,6 +68,14 @@ public class MembershipController {
         return membership;
     }
 
+    @GetMapping("/members/account/{account_id}")
+    @Operation(summary = "Get memberships by account",
+            description = "Get memberships by account id")
+    public PagedModel<MembershipDTO> getMembershipByAccountId(Pageable pageable, @Parameter(description = "The ID of the Account", required = true)@PathVariable Long account_id) {
+        Page <Membership> accountMemberships = membershipService.findMembershipByAccountId(pageable, account_id);
+        return pagedResourcesAssembler.toModel(accountMemberships, membershipPagedResourcesAssembler);
+    }
+
     @GetMapping("/members/type/{membership_type_id}")
     @Operation(summary = "Get Memberships by a particular membership type",
             description = "Get list a list of memberships for a particular type (all monthly memberships etc)")

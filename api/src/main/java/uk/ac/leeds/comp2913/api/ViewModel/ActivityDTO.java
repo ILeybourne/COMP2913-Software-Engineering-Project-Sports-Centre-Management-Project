@@ -97,6 +97,7 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
     this.social = social;
   }
 
+  @JsonIgnore
   public Integer getInterval() {
     return interval;
   }

@@ -79,4 +79,12 @@ public class Customer {
         this.getReceipts().add(receipt);
         receipt.setCustomer(this);
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
