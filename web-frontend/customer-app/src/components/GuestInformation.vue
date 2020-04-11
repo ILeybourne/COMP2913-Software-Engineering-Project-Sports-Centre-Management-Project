@@ -74,6 +74,16 @@
             class="form-control"
           />
         </div>
+        <div class="form-row">
+          <label for="cardRadio">Card or Cash:</label>
+<!--          <input type="checkbox" checked data-toggle="toggle" data-on="Card" data-off="Cash">-->
+          <div class="form-row">
+          <label for="cardRadio" class="radio-inline">Card</label><br>
+          <input type="radio" id="cardRadio" name="cardCash" value="card"   v-model="cardCash"/>
+          <label for="cashRadio" class="radio-inline">Cash</label><br>
+          <input type="radio" id="cashRadio" name="cardCash" value="cash" v-model="cardCash"/>
+          </div>
+        </div>
         <div class="button-container">
           <button
             id="guestSubmitBtn"
@@ -144,6 +154,7 @@ export default {
       email: "",
       phone: "",
       health: "",
+      cardCash: "card",
       componentWidth: 90,
       firstNameValid: null,
       surnameValid: null,

@@ -16,8 +16,7 @@
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
           ></GuestInformation> </b-col
-        ><b-col v-bind:class="{ 'd-none': hideBilling }">
-          <!--        v-bind:class="{ 'd-none': hideBilling }"-->
+        ><b-col v-bind:class="{ 'd-none': hideCard }">
           <div>
             <form id="payment-form">
               <div id="cardDiv">
@@ -35,6 +34,11 @@
               </div>
             </form>
           </div>
+        </b-col>
+        <b-col v-bind:class="{ 'd-none': hideCash }">
+              <div id="cashDiv">
+                <CashInformation :activityPrice="this.price" ></CashInformation>
+              </div>
         </b-col>
       </b-row>
     </b-container>
@@ -97,13 +101,18 @@ h1 {
 <script>
 import BookingInformation from "@/components/BookingInformation.vue";
 import GuestInformation from "@/components/GuestInformation.vue";
+import CashInformation from "@/components/CashInformation.vue";
 
 // @ is an alias to /src
 export default {
   name: "BookingPage",
   components: {
     GuestInformation,
-    BookingInformation
+    BookingInformation,
+    CashInformation
+  },
+  props: {
+    activityPrice: Number,
   },
   data() {
     return {
@@ -131,7 +140,8 @@ export default {
       expiryDate: "",
       secureCode: "",
       hideGuest: true,
-      hideBilling: true,
+      hideCard: true,
+      hideCash: true,
       hidePayment: true,
       bookings: [],
       activitiesFromServer: [],
@@ -271,7 +281,15 @@ export default {
       this.email = value.email;
       this.phone = value.phone;
       this.health = value.health;
-      this.hideBilling = false;
+      if(value.cardCash == "card"){
+        this.hideCard = false;
+        this.hideCash = true;
+
+      }else{
+        this.hideCash = false;
+        this.hideCard = true;
+
+      }
     },
     showGuestInfo(value) {
       if (value.userType == "guest") {
@@ -282,6 +300,7 @@ export default {
         this.date = value.selectedDate;
         this.selectedTime = value.selectedTime;
         this.price = value.price;
+        // this.setCashPrice()
         //Shows guest component
         this.hideGuest = false;
       }
@@ -293,22 +312,13 @@ export default {
         // this.email =
         // this.phone =
       }
-      // this.getBookings();
-    }
 
-    // async getBookings() {
-    //   const { data } = await this.$http.get("http://localhost:8000/bookings");
-    //   this.bookings = data;
-    // },
-    //
-    // async getActivities() {
-    //   const { data } = await this.$http.get("http://localhost:8000/activities");
-    //   this.activitiesFromServer = data.content;
-    // }
+    },
   },
   mounted() {
     // this.getActivities();
     this.configureStripe();
+
   }
 };
 </script>

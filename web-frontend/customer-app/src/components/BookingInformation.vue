@@ -67,6 +67,7 @@
           <label for="price">Price:</label>
           <input type="text" id="price" name="price" v-model="price" disabled />
         </div>
+
         <div class="button-container">
           <!--          TODO function call on enter press-->
           <button
@@ -267,9 +268,9 @@ export default {
         this.setActivityTypeOptions(facilityId);
         this.selectedActivityId = activityTypeId;
         console.log(this.selectedActivityId);
-        this.selectedActivityName = this.activities.find(
-          x => x.id == activityTypeId
-        ).name;
+        // this.selectedActivityName = this.activities.find(
+        //   x => x.id == activityTypeId
+        // ).name;
 
         let selectedDateUnix = this.sessions.find(x => x.id == activityId)
           .startTime;
@@ -287,6 +288,7 @@ export default {
 
         this.timeOptions.push(forrmattedTime);
         this.selectedTime = forrmattedTime;
+        this.getPrice(activityTypeId);
       }
     },
     getTimes() {
@@ -333,7 +335,7 @@ export default {
   },
   async mounted() {
     await this.getFacilities();
-    await this.getFacilities();
+    await this.getActivities();
     await this.getAllSessions();
     this.fillByQuery();
   }
