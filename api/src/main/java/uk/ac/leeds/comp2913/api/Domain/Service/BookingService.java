@@ -3,6 +3,7 @@ package uk.ac.leeds.comp2913.api.Domain.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
@@ -31,4 +32,8 @@ public interface BookingService {
   Page<Booking> findByAccountId(Pageable pageable, Long account_id);
 
   Page<Booking> findByActivityId(Pageable pageable, Long activity_id);
+
+  Booking updateBooking(Long booking_id, Booking bookingRequest);
+
+  ResponseEntity<?> deleteBooking(Long bookingId);
 }

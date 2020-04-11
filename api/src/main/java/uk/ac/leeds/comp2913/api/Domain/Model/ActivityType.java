@@ -56,7 +56,6 @@ public class ActivityType {
      * TODO: shouldn't eager load
      * Which resource the activity needs to take place
      */
-    @NotNull(message = "resource is mandatory")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
@@ -109,6 +108,7 @@ public class ActivityType {
         this.totalCapacity = totalCapacity;
     }
 
+    @JsonIgnore
     public Resource getResource() {
         return resource;
     }

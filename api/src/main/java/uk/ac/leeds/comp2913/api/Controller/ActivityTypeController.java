@@ -72,14 +72,6 @@ public class ActivityTypeController {
             description = "Get list all activity types (used as templates for scheduling activities) #2")
     public PagedModel<ActivityTypeDTO> getActivityTypes(Pageable pageable) {
         Page<ActivityType> allActivityTypes =  activityTypeService.findAll(pageable);
-       // for (ActivityType activityType : allActivityTypes) {
-       //     Long activityTypeId = activityType.getId();
-       //     Link selfLink = linkTo(ActivityTypeController.class).slash(activityTypeId).withSelfRel();
-       //     activityType.add(selfLink);
-       // }
-       // Link viewAllActivityTypes = linkTo(ActivityTypeController.class).withSelfRel();
-       // PagedModel<ActivityType> result = pagedResourcesAssembler.toModel(allActivityTypes);
-       // result.add(viewAllActivityTypes);
         return pagedResourcesAssembler.toModel(allActivityTypes, activityTypePagedResourcesAssembler);
     }
 
@@ -87,15 +79,11 @@ public class ActivityTypeController {
     @GetMapping("/{activity_type_id}")
     @Operation(summary = "Get a specific activity type",
             description = "Get a specific activity type with links to its details/relevant operations #2")
-    public ActivityType getActivityTypeId(@Parameter(description = "The ID of the activity type", required = true)@PathVariable Long activity_type_id) {
-        ActivityType activityType = activityTypeService.findById(activity_type_id);
-        Link selfLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withSelfRel();
-       // Link updateLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("update");
-       // Link deleteLink = linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("delete");
-       // Link resourceLink = linkTo(ResourceController.class).slash(activityType.getResource().getId()).withRel("Resource");
-       // Link createNewActivity = linkTo(ActivityController.class).slash("activitytype").slash(activity_type_id).withRel("Create New Scheduled Activity from this template");
-       // activityType.add(selfLink, updateLink, deleteLink, resourceLink, createNewActivity);
-
+    public ActivityTypeDTO getActivityTypeId(@Parameter(description = "The ID of the activity type", required = true)@PathVariable Long activity_type_id) {
+        ActivityTypeDTO activityType = activityTypePagedResourcesAssembler.toModel(activityTypeService.findById(activity_type_id));
+        activityType.add(linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("update"));
+        activityType.add(linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("delete"));
+        activityType.add(linkTo(ActivityController.class).slash("activitytype").slash(activity_type_id).withRel("Create New Scheduled Activity from this template"));
         return activityType;
     }
 
@@ -106,10 +94,7 @@ public class ActivityTypeController {
                     "used for scheduling activities #2")
     public PagedModel<ActivityTypeDTO> getActivityTypesByResourceId(Pageable pageable, @Parameter(description = "The ID of the resource", required = true)@PathVariable Long resource_id) {
         Page<ActivityType> allActivityTypes =  activityTypeService.findByResourceId(pageable, resource_id);
-        Link viewAllActivityTypes = linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withSelfRel();
-        //Link resourceLink = linkTo(ResourceController.class).slash(resource_id).withRel("resource");
         PagedModel<ActivityTypeDTO> result = pagedResourcesAssembler.toModel(allActivityTypes, activityTypePagedResourcesAssembler);
-        //result.add(viewAllActivityTypes, resourceLink);
         return result;
     }
 
@@ -117,9 +102,9 @@ public class ActivityTypeController {
     @PostMapping("/resource/{resource_id}")
     @Operation(summary = "Create a new activity type that occurs for a resource",
             description = "create a new acitivity type for a particular resource #2")
-    public ActivityType addActivityType(@Parameter(description = "The ID of the resource", required = true) @PathVariable Long resource_id,
+    public ActivityTypeDTO addActivityType(@Parameter(description = "The ID of the resource", required = true) @PathVariable Long resource_id,
                                         @Parameter(description = "An activity type object", required = true) @Valid @RequestBody ActivityType activityType) {
-        return activityTypeService.addActivityType(resource_id, activityType);
+        return activityTypePagedResourcesAssembler.toModel(activityTypeService.addActivityType(resource_id, activityType));
     }
 
     //update activity type

@@ -44,25 +44,25 @@ public class ReceiptController {
      * @param pageable
      * @return
      */
-    //@GetMapping("")
-    //@Operation(summary = "Get all receipts",
-    //        description = "Get a list of all receipts")
-    //public Page<Receipt> getReceipts(Pageable pageable) {
-    //    return receiptService.findAll(pageable);
-    //}
-//
-    ///**
+    @GetMapping("")
+    @Operation(summary = "Get all receipts",
+            description = "Get a list of all receipts")
+    public Page<Receipt> getReceipts(Pageable pageable) {
+        return receiptService.findAll(pageable);
+    }
+
+    /**
     // * TODO: add endpoint that return file download of the receipt PDF
     // *
     // * @param receipt_id
     // * @return
     // */
-    //@GetMapping("/{receipt_id}")
-    //@Operation(summary = "Get a receipt",
-    //        description = "Returns a specific receipt")
-    //public Receipt getReceipt( @Parameter(description = "The ID of the receipt", required = true)@PathVariable Long receipt_id) {
-    //    return receiptService.findById(receipt_id);
-    //}
+    @GetMapping("/{receipt_id}")
+    @Operation(summary = "Get a receipt",
+            description = "Returns a specific receipt")
+    public Receipt getReceipt( @Parameter(description = "The ID of the receipt", required = true)@PathVariable Long receipt_id) {
+        return receiptService.findById(receipt_id);
+    }
 
 
     /**

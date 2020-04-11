@@ -1,5 +1,8 @@
 package uk.ac.leeds.comp2913.api.ViewModel;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
@@ -13,7 +16,6 @@ public class ActivityTypeDTO extends RepresentationModel<ActivityTypeDTO> {
     private BigDecimal cost;
 
     public ActivityTypeDTO(){}
-
 
     public long getId() {
         return id;

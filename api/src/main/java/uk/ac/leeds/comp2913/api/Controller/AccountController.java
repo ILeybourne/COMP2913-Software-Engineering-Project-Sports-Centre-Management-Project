@@ -38,8 +38,7 @@ public class AccountController {
    @Operation(summary = "Get all accounts",
            description = "Get list of all accounts")
    public PagedModel<AccountDTO> getAccounts(Pageable pageable) {
-       Page<Account> accounts = accountService.getAccounts(pageable);
-       return pagedResourcesAssembler.toModel(accounts, accountPagedResourcesAssembler);
+       return pagedResourcesAssembler.toModel((accountService.getAccounts(pageable)), accountPagedResourcesAssembler);
    }
 
   @GetMapping("/{account_id}")

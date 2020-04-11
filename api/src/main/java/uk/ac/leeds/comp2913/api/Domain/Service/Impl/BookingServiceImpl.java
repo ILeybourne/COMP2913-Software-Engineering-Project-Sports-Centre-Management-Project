@@ -4,10 +4,14 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
@@ -21,6 +25,7 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -53,14 +58,12 @@ public class BookingServiceImpl implements BookingService {
     return bookingRepository.findByActivityId(pageable, activity_id);
   }
 
-
   @Override
   @Transactional
   public Booking findById(Long booking_id){
     return bookingRepository.findById(booking_id)
             .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
 }
-
 
   @Override
   @Transactional
@@ -72,12 +75,43 @@ public class BookingServiceImpl implements BookingService {
     return account;
   }
 
-
   @Transactional
   @Override
   public Booking save(Booking booking){
     return bookingRepository.save(booking);
   }
+
+  @Transactional
+  @Override
+  public Booking updateBooking(Long booking_id, Booking bookingRequest) {
+    Booking booking =bookingRepository.findById(booking_id)
+            .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
+    booking.setActivity(bookingRequest.getActivity());
+    booking.setAccount(bookingRequest.getAccount());
+    booking.setRegularSession(bookingRequest.getRegularSession());
+    booking.setParticipants(bookingRequest.getParticipants());
+      return bookingRepository.save(booking);
+  }
+
+  @Transactional
+  @Override
+  public ResponseEntity<?> deleteBooking(Long booking_id) {
+    return bookingRepository.findById(booking_id).map(booking -> {
+      bookingRepository.delete(booking);
+      return ResponseEntity.ok().build();
+    }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   //Posts a new booking for an activity. The customer can pass a boolean to create automatic bookings for repeating sessions
   //at a reduced rate

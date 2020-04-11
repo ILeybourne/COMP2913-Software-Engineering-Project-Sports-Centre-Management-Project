@@ -4,6 +4,7 @@ import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSuppor
 import org.springframework.stereotype.Component;
 
 import uk.ac.leeds.comp2913.api.Controller.ActivityTypeController;
+import uk.ac.leeds.comp2913.api.Controller.ResourceController;
 import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 import uk.ac.leeds.comp2913.api.ViewModel.ActivityTypeDTO;
 
@@ -19,6 +20,7 @@ public class ActivityTypePagedResourcesAssembler extends RepresentationModelAsse
     public ActivityTypeDTO toModel(ActivityType activityType){
         ActivityTypeDTO activityTypeDTO = instantiateModel(activityType);
         activityTypeDTO.add(linkTo(methodOn(ActivityTypeController.class).getActivityTypeId(activityType.getId())).withSelfRel());
+        activityTypeDTO.add(linkTo(methodOn(ResourceController.class).getResourceById(activityType.getResource().getId())).withRel("resource"));
         activityTypeDTO.setId(activityType.getId());
         activityTypeDTO.setName(activityType.getName());
         activityTypeDTO.setCost(activityType.getCost());
