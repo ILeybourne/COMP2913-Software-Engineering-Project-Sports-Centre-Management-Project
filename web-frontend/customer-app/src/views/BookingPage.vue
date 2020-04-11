@@ -6,7 +6,7 @@
     </div>
     <b-container class="form-container">
       <b-row class="row">
-        <b-col col lg="maxColSize ">
+        <b-col col lg="maxColSize " v-bind:class="{ 'd-none': hideBooking }">
           <BookingInformation
             class="booking-info"
             @getUserType="showGuestInfo"
@@ -36,11 +36,26 @@
           </div>
         </b-col>
         <b-col v-bind:class="{ 'd-none': hideCash }">
-              <div id="cashDiv">
-                <CashInformation :activityPrice="this.price" ></CashInformation>
-              </div>
+          <div id="cashDiv">
+            <CashInformation :activityPrice="this.price"
+                             @submitCashPayment="handleCashPayment"
+
+            ></CashInformation>
+          </div>
         </b-col>
       </b-row>
+      <div v-bind:class="{ 'd-none': hideSuccess }" id="successDiv">
+        <h1 >Success</h1>
+        <p>Booking confirmation
+          Activity: {{selectedActivityName}}<br/>
+          Booked on: {{date}}<br/>
+          Time: {{selectedTime}}<br/>
+          Amount paid: {{price}}<br/>
+          Customer: {{firstName}} {{surname}}<br/>
+          Receipt send to: {{email}}<br/>
+        </p>
+        <p>Please wait to be redirected</p>
+      </div>
     </b-container>
   </div>
 </template>
@@ -54,14 +69,6 @@
   display: inline;
 }
 .booking-info {
-  display: inline;
-}
-
-.billing-info {
-  display: inline;
-}
-
-.payment-info {
   display: inline;
 }
 
@@ -102,6 +109,7 @@ h1 {
 import BookingInformation from "@/components/BookingInformation.vue";
 import GuestInformation from "@/components/GuestInformation.vue";
 import CashInformation from "@/components/CashInformation.vue";
+import { mapGetters, mapActions } from "vuex";
 
 // @ is an alias to /src
 export default {
@@ -112,13 +120,10 @@ export default {
     CashInformation
   },
   props: {
-    activityPrice: Number,
+    activityPrice: Number
   },
   data() {
     return {
-      activitiesFromServer: [],
-
-
       selectedFacility: null,
       selectedActivity: null,
       selectedActivityId: null,
@@ -142,9 +147,11 @@ export default {
       cardNumber: "",
       expiryDate: "",
       secureCode: "",
+      hideBooking: false,
       hideGuest: true,
       hideCard: true,
       hideCash: true,
+      hideSuccess: true,
       hidePayment: true,
       bookings: [],
       loading: false,
@@ -152,7 +159,6 @@ export default {
       // publishableKey: "pk_test_crv9Zb7tvQtSJ82FhQwrnb8k00v3eIOvj8",
       token: null,
       charge: null,
-
       stripe: "",
       elements: "",
       card: "",
@@ -160,7 +166,25 @@ export default {
       stripeOptions: {}
     };
   },
+  computed: {
+    ...mapGetters("facilities", ["activities"]),
+    selectedActivityName: function () {
+      if(this.selectedActivityId != null) {
+        return this.activities.find(act => act.id = this.selectedActivityId).name
+      }
+      return null
+   }
+  },
   methods: {
+    ...mapActions("facilities", ["getActivities"]),
+
+    bookByCash(){
+      this.hideBooking = true;
+      this.hideGuest = true;
+      this.hideCard = true;
+      this.hideSuccess = false;
+    },
+
     configureStripe() {
       //TODO get from env
       // eslint-disable-next-line no-undef
@@ -176,13 +200,10 @@ export default {
       e.preventDefault();
       // Talk to our server to get encrpyted prices
       // eslint-disable-next-line no-undef
-      const token = await this.$http.post(
+      const paymentIntent = await this.$http.post(
         `/payments/intent`
-        // {
-        // }
       );
-      //console.log(token);
-      this.sendTokenToServer(token.data.clientSecret);
+      this.sendTokenToServer(paymentIntent.data.clientSecret);
     },
     async sendTokenToServer(client_secret) {
       let successBol = false;
@@ -201,20 +222,22 @@ export default {
         // Show error to your customer (e.g., insufficient funds)
         console.log(result.error.message);
       } else {
-        console.log("first else)")
+        console.log("first else)");
         // The payment has been processed!
         if (result.paymentIntent.status === "succeeded") {
-          //console.log("success");
-          //TODO create booking
-          await  this.postAllFormData()
-          console.log("yes mate")
+          await this.postAllFormData();
           //TODO Set payment amount
+
+
+          this.hideBooking = true;
+          this.hideGuest = true;
+          this.hideCard = true;
+          this.hideSuccess = false;
           //TODO Redirect
           successBol = true;
         }
       }
       if (successBol == true) {
-
         //Change url
         // await this.$router.push({
         //   name: "BookingPage",
@@ -222,70 +245,47 @@ export default {
         // });
       }
     },
+    async handleCashPayment (value) {
+      if(value.change >= 0) {
+        await this.postAllFormData()
+
+        this.hideBooking = true;
+        this.hideGuest = true;
+        this.hideCash = true;
+        this.hideSuccess = false;
+      }else {
+        //invalid amount of cash given
+      }
+    },
     async postAllFormData() {
       try {
         /* TODO: Validate and check server response */
-        // this.getActivities();
-        // const token = await this.$auth.getTokenSilently();
-        // let activities = this.activitiesFromServer;
-        ////console.log(activities);
-        // let bookedActivity = this.activitiesFromServer.find(
-        //   activity => activity.name == this.selectedActivity
-        // );
-        console.log(this.$auth._uid)
+        let bookedActivity = this.activities.find(
+          activity => activity.id == this.selectedActivityId
+        );
+        console.log(this.$auth._uid);
 
-        /*
-
-* */
         const body = {
           //TODO PASS USER
           account: null,
-          activity: null,
+          activity: bookedActivity,
           createdAt: Date.now(),
           receipt: null,
           updatedAt: null,
           type: "booking",
           amount: this.price
         };
-        // await this.$http.get(`/bookings`);
 
-        await this.$http.post(
-          `/bookings`,
-
-          body,
-
-          {
-            // headers: {
-            //   Authorization: `Bearer ${token}`
-            // }
-          }
-        );
+        await this.$http.post(`/bookings`, body);
 
         // await this.$router.push({
         //   name: "BookingPage",
         //   query: { status: "success" }
         // });
       } catch (e) {
-        ////console.log(e);
+        console.log(e);
       }
     },
-    // fillPaymentInfo(value) {
-    //   this.nameCard = value.nameCard;
-    //   this.cardType = value.cardType;
-    //   this.cardNumber = value.cardNumber;
-    //   this.expiryDate = value.date;
-    //   this.secureCode = value.secureCode;
-    //   this.postAllFormData();
-    // },
-    // showPaymentInfo(value) {
-    //   this.name = value.name;
-    //   this.emailBilling = value.email;
-    //   this.houseNumber = value.houseNumber;
-    //   this.streetName = value.streetName;
-    //   this.city = value.city;
-    //   this.postCode = value.postCode;
-    //   this.hidePayment = false;
-    // },
     showBillingInfo(value) {
       console.log(value);
       this.firstName = value.firstName;
@@ -293,14 +293,12 @@ export default {
       this.email = value.email;
       this.phone = value.phone;
       this.health = value.health;
-      if(value.cardCash == "card"){
+      if (value.cardCash == "card") {
         this.hideCard = false;
         this.hideCash = true;
-
-      }else{
+      } else {
         this.hideCash = false;
         this.hideCard = true;
-
       }
     },
     showGuestInfo(value) {
@@ -324,13 +322,11 @@ export default {
         // this.email =
         // this.phone =
       }
-
-    },
+    }
   },
   mounted() {
-    // this.getActivities();
+    this.getActivities();
     this.configureStripe();
-
   }
 };
 </script>

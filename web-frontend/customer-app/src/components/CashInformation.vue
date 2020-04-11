@@ -1,10 +1,10 @@
 <template>
-  <div class="guest-info">
+  <div class="cash-info">
     <div
-      class="guest-container"
+      class="cash-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
     >
-      <form @submit="submitCustomerDetails($event)">
+      <form>
         <div class="form-row">
           <label for="Price">Price:</label>
           <input
@@ -24,7 +24,6 @@
             name="cashGiven"
             class="form-control"
             v-model="cashGiven"
-
             required
             @keyup="getChange"
           />
@@ -42,10 +41,11 @@
         </div>
         <div class="button-container">
           <button
-            id="guestSubmitBtn"
-            type="submit"
+            id="cashSubmitBtn"
+            type="button"
             class="btn btn-outline-secondary"
             name="details"
+            @click="submitCashPayment"
           >
             Submit
           </button>
@@ -60,14 +60,8 @@
   padding: 5px;
 }
 
-/*.guest-info {*/
-/*  padding-top: 5%;*/
-/*  padding-bottom: 5%;*/
-/*}*/
-
-.guest-container {
+.cash-container {
   margin: auto;
-  /*width: 50%;*/
   border: 3px solid #3183e5;
   padding: 10px;
   border-radius: 10px;
@@ -106,31 +100,21 @@ export default {
   data() {
     return {
       cashGiven: 0,
-      change:0,
+      change: 0,
       componentWidth: 90,
     };
   },
   computed: {},
   methods: {
-    getChange(){
+    getChange() {
       this.change = this.cashGiven - this.$attrs.activityPrice
-              console.log(this.change)
+      console.log(this.change)
     },
-    submitCustomerDetails(e) {
-      e.preventDefault();
-      if (
-        this.$data.firstName !== "" &&
-        this.$data.surname !== "" &&
-        this.$data.email !== "" &&
-        this.$data.phone !== ""
-      ) {
-        this.$emit("submitCustomerDetails", this.$data);
-        this.componentWidth = 60;
-      }
-    },
-
+    submitCashPayment(e) {
+      this.$emit("submitCashPayment", this.$data);
+      console.log(e)
+      this.componentWidth = 60;
+    }
   },
-  mounted() {
-  }
 };
 </script>
