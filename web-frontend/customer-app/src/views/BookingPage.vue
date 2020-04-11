@@ -116,6 +116,9 @@ export default {
   },
   data() {
     return {
+      activitiesFromServer: [],
+
+
       selectedFacility: null,
       selectedActivity: null,
       selectedActivityId: null,
@@ -144,7 +147,6 @@ export default {
       hideCash: true,
       hidePayment: true,
       bookings: [],
-      activitiesFromServer: [],
       loading: false,
       amount: 1000,
       // publishableKey: "pk_test_crv9Zb7tvQtSJ82FhQwrnb8k00v3eIOvj8",
@@ -197,23 +199,27 @@ export default {
 
       if (result.error) {
         // Show error to your customer (e.g., insufficient funds)
-        //console.log(result.error.message);
+        console.log(result.error.message);
       } else {
+        console.log("first else)")
         // The payment has been processed!
         if (result.paymentIntent.status === "succeeded") {
           //console.log("success");
           //TODO create booking
-          // await  this.postAllFormData()
+          await  this.postAllFormData()
+          console.log("yes mate")
           //TODO Set payment amount
           //TODO Redirect
           successBol = true;
         }
       }
       if (successBol == true) {
-        await this.$router.push({
-          name: "BookingPage",
-          query: { status: "success" }
-        });
+
+        //Change url
+        // await this.$router.push({
+        //   name: "BookingPage",
+        //   query: { status: "success" }
+        // });
       }
     },
     async postAllFormData() {
@@ -226,16 +232,22 @@ export default {
         // let bookedActivity = this.activitiesFromServer.find(
         //   activity => activity.name == this.selectedActivity
         // );
+        console.log(this.$auth._uid)
 
+        /*
+
+* */
         const body = {
           //TODO PASS USER
-          // account: parseInt(this.$auth._uid),
-          id: 1,
-          activityId: 1,
-          accountId: 1,
-          type: 1
+          account: null,
+          activity: null,
+          createdAt: Date.now(),
+          receipt: null,
+          updatedAt: null,
+          type: "booking",
+          amount: this.price
         };
-        await this.$http.get(`/bookings`);
+        // await this.$http.get(`/bookings`);
 
         await this.$http.post(
           `/bookings`,
@@ -249,10 +261,10 @@ export default {
           }
         );
 
-        await this.$router.push({
-          name: "BookingPage",
-          query: { status: "success" }
-        });
+        // await this.$router.push({
+        //   name: "BookingPage",
+        //   query: { status: "success" }
+        // });
       } catch (e) {
         ////console.log(e);
       }

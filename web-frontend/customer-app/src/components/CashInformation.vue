@@ -113,8 +113,8 @@ export default {
   computed: {},
   methods: {
     getChange(){
-      this.change = this.$attrs.activityPrice - this.cashGiven
-      console.log(this.change)
+      this.change = this.cashGiven - this.$attrs.activityPrice
+              console.log(this.change)
     },
     submitCustomerDetails(e) {
       e.preventDefault();
