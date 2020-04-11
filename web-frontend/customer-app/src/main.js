@@ -8,12 +8,14 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import { domain, clientId, audience } from "../auth_config.json";
-import { Auth0Plugin } from "@/services/auth.service";
-import authHttp from "@/services/auth-http.service";
+import { Auth0Plugin } from "@/plugins/auth.plugin";
+import authHttp from "@/plugins/axios.plugin";
 import VueAxios from "vue-axios";
 import { mapActions, mapMutations } from "vuex";
 // import { ServicesPlugin } from "@/services/ServicesPlugin";
 import vuetify from "@/plugins/vuetify";
+import VueGraph from "vue-graph";
+Vue.use(VueGraph);
 
 Vue.use(Auth0Plugin, {
   domain,

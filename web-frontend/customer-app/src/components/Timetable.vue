@@ -47,7 +47,6 @@ export default {
       });
     },
     events() {
-      /* TODO: make adapter */
       /*Transform the server format into full calendar format*/
       return this.sessions.map(activity => {
         return {
@@ -61,15 +60,26 @@ export default {
         };
       });
     },
-    activityTypeOptions() {
+    activitiesForFacility() {
       const filter = activity =>
         activity.resource.id === Number(this.selectedActivityForm.resourceId);
 
-      return this.activities.filter(filter).map(a => a.name);
+      const filteredActivities = this.activities.filter(filter);
+
+      let activityArray = [{ value: null, text: "Please Select" }];
+
+      for (const activity of filteredActivities) {
+        activityArray.push({ value: activity.id, text: activity.name });
+      }
+
+      return activityArray;
+    },
+    activitiesAvailable() {
+      return this.activitiesForFacility.length > 1;
     }
   },
   methods: {
-    ...mapActions("facilities", ["getAllFacilities", "getAllActivities"]),
+    ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
     drawEvent(eventInfo) {
       const { event } = eventInfo;
@@ -120,7 +130,7 @@ export default {
     async submitNewActivity(event) {
       event.preventDefault();
       let activityType = this.selectedActivityForm.activityType;
-      const activity = this.activityTypes.find(a => a.name === activityType);
+      const activity = this.activities.find(a => a.name === activityType);
 
       /* TODO: Validate and check server response */
       this.selectedActivityForm.name = activityType;
@@ -131,7 +141,7 @@ export default {
       };
 
       const { data } = await this.$http.post(
-        `/facilities/${this.selectedActivityForm.resourceId}/activities`,
+        `/activities/activitytype/${activityType}`,
         body
       );
 
@@ -141,14 +151,18 @@ export default {
           facility: String,
           activity: String
         },
-        query: { facilityId: data.resource.id, activityId: data.id }
+        query: {
+          facilityId: this.selectedActivityForm.resourceId,
+          activityId: this.selectedActivityForm.activityType,
+          sessionId: data.id
+        }
       });
     }
   },
   async mounted() {
     // await this.geTimetableForRange(this.start, this.end);
-    await this.getAllActivities();
-    await this.getAllFacilities();
+    await this.getFacilities();
+    await this.getActivities();
     await this.getAllSessions();
     // await timetableService.read();
   }
@@ -189,8 +203,9 @@ export default {
           <b-select
             id="activitySelect"
             v-model="selectedActivityForm.activityType"
-            :options="activityTypeOptions"
+            :options="activitiesForFacility"
             required
+            :disabled="!activitiesAvailable"
           ></b-select>
         </b-form-group>
         <b-form-group
@@ -202,6 +217,7 @@ export default {
             id="startTimeInput"
             v-model="selectedActivityForm.startTime"
             type="datetime-local"
+            readonly
             required
           ></b-form-input>
         </b-form-group>

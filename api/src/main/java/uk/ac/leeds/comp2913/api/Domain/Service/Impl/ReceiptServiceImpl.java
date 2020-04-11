@@ -60,8 +60,6 @@ public class ReceiptServiceImpl implements ReceiptService {
 
         customer.addReceipt(receipt);
 
-        receipt.invoice();
-
         this.receiptRepository.save(receipt);
 
         String htmlContent = createInvoiceHtmlTemplate(receipt, transactionId);

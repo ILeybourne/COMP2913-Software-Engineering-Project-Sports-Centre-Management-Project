@@ -1,4 +1,4 @@
-import authHttp from "@/services/auth-http.service";
+import authHttp from "@/plugins/axios.plugin";
 
 export class TimetableService {
   async create() {}

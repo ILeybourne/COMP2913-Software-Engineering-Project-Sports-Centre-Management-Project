@@ -1,4 +1,4 @@
-import { getInstance } from "@/services/auth.service";
+import { getInstance } from "@/plugins/auth.plugin";
 
 export const authGuard = (to, from, next) => {
   const authService = getInstance();
@@ -14,8 +14,8 @@ export const authGuard = (to, from, next) => {
   };
   /*TODO may be able to remove*/
 
-  console.log("In auth guard is loading: ", authService.loading);
-  console.log("auth guard user is ", authService.user);
+  //console.log("In auth guard is loading: ", authService.loading);
+  //console.log("auth guard user is ", authService.user);
 
   // If loading has already finished, check our auth state using `fn()`
   if (!authService.loading) {

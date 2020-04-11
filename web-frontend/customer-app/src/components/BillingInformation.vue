@@ -219,9 +219,7 @@ export default {
     },
 
     submitBillingDetails(e) {
-      //TODO Validate before showing 2nd form
       e.preventDefault();
-      //TODO send array of data to parent
       if (
         this.$data.name !== "" &&
         this.$data.email !== "" &&

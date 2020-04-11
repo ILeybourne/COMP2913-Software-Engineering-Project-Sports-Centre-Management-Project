@@ -1,142 +1,75 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MembershipTest {
 
-    Membership membership;
-    MembershipType membershipType;
-    Account account;
-    Random random;
+    ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        membership = new Membership();
-        membershipType = new MembershipType();
-        account = new Account();
-        random = new Random();
+        objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
     }
 
     @AfterEach
     void tearDown() {
     }
 
-    @Test
-    void getCreatedAt() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setCreatedAt(testDateSet);
-        Date testDateGet = membership.getCreatedAt();
-        assertEquals(testDateSet, testDateGet);
-    }
+    @ParameterizedTest
+    @MethodSource("membershipJsonVal")
+    void membershipJson(Date accountCreatedAt, String membershipTypeName, Date createdAt, Date updatedAt, Date startDate, Date endDate, String expectedOutput) throws JsonProcessingException {
+        // Create account object
+        Account account = new Account();
+        account.setCreatedAt(accountCreatedAt);
 
-    @Test
-    void setCreatedAt() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setCreatedAt(testDateSet);
-        Date testDateGet = membership.getCreatedAt();
-        assertEquals(testDateSet, testDateGet);
-    }
+        // Create membership type object
+        MembershipType membershipType = new MembershipType();
+        membershipType.setName(membershipTypeName);
 
-    @Test
-    void getUpdatedAt() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setUpdatedAt(testDateSet);
-        Date testDateGet = membership.getUpdatedAt();
-        assertEquals(testDateSet, testDateGet);
-    }
-
-    @Test
-    void setUpdatedAt() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setUpdatedAt(testDateSet);
-        Date testDateGet = membership.getUpdatedAt();
-        assertEquals(testDateSet, testDateGet);
-    }
-
-    @Test
-    void getAccount() {
+        // Create membership object
+        Membership membership = new Membership();
+        membership.setCreatedAt(createdAt);
+        membership.setUpdatedAt(updatedAt);
         membership.setAccount(account);
-        Account testGetAccount = membership.getAccount();
-        assertEquals(account, testGetAccount);
-    }
-
-    @Test
-    void setAccount() {
-        membership.setAccount(account);
-        Account testGetAccount = membership.getAccount();
-        assertEquals(account, testGetAccount);
-    }
-
-    @Test
-    void getMembershipType() {
         membership.setMembershipType(membershipType);
-        MembershipType testGetMembershipType = membership.getMembershipType();
-        assertEquals(membershipType, testGetMembershipType);
+        membership.setStartDate(startDate);
+        membership.setEndDate(endDate);
+
+        // Create json and perform assertion
+        String actualOutput = objectMapper.writeValueAsString(membership);
+        assertEquals(expectedOutput, actualOutput);
     }
 
-    @Test
-    void setMembershipType() {
-        membership.setMembershipType(membershipType);
-        MembershipType testGetMembershipType = membership.getMembershipType();
-        assertEquals(membershipType, testGetMembershipType);
-    }
-
-    @Test
-    void getStartDate() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setStartDate(testDateSet);
-        Date testGetStartDate = membership.getStartDate();
-        assertEquals(testDateSet, testGetStartDate);
-    }
-    @Test
-    void setStartDate() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setStartDate(testDateSet);
-        Date testGetStartDate = membership.getStartDate();
-        assertEquals(testDateSet, testGetStartDate);
-    }
-
-    @Test
-    void setEndDate() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setEndDate(testDateSet);
-        Date testGetEndDate = membership.getEndDate();
-        assertEquals(testDateSet, testGetEndDate);
-    }
-    @Test
-    void endEndDate() {
-        Date testDateSet = new Date(random.nextLong());
-        membership.setEndDate(testDateSet);
-        Date testGetEndDate = membership.getEndDate();
-        assertEquals(testDateSet, testGetEndDate);
-    }
-
-
-    @Test
-    @Disabled
-    void makePayment() {
-    }
-
-    @Test
-    @Disabled
-    void emailReceipt() {
-    }
-
-    @Test
-    @Disabled
-    void printReceipt() {
-    }
-
-    @Test
-    @Disabled
-    void storeReceipt() {
+    static Stream<Arguments> membershipJsonVal() {
+        return Stream.of(
+                Arguments.of(new Date(110, Calendar.JANUARY, 1), "TestMembership1", new Date(120, Calendar.JUNE, 2), new Date(121, Calendar.NOVEMBER, 3), new Date(122, Calendar.APRIL, 4), new Date(123, Calendar.SEPTEMBER, 5),
+                        "{\"type\":\"membership\",\"account\":{\"bookings\":null,\"createdAt\":1262304000000,\"customer\":null,\"id\":0,\"updatedAt\":null},\"amount\":null,\"createdAt\":1591052400000,\"endDate\":1693868400000,\"id\":0,\"membershipType\":{\"cost\":null,\"createdAt\":null,\"duration\":0,\"id\":0,\"name\":\"TestMembership1\",\"updatedAt\":null},\"name\":\"Membership TestMembership1\",\"receipt\":null,\"startDate\":1649026800000,\"transactionId\":null,\"updatedAt\":1635897600000}"),
+                Arguments.of(new Date(110, Calendar.FEBRUARY, 6), "TestMembership2", new Date(120, Calendar.JULY, 7), new Date(121, Calendar.DECEMBER, 8), new Date(122, Calendar.MAY, 9), new Date(123, Calendar.OCTOBER, 10),
+                        "{\"type\":\"membership\",\"account\":{\"bookings\":null,\"createdAt\":1265414400000,\"customer\":null,\"id\":0,\"updatedAt\":null},\"amount\":null,\"createdAt\":1594076400000,\"endDate\":1696892400000,\"id\":0,\"membershipType\":{\"cost\":null,\"createdAt\":null,\"duration\":0,\"id\":0,\"name\":\"TestMembership2\",\"updatedAt\":null},\"name\":\"Membership TestMembership2\",\"receipt\":null,\"startDate\":1652050800000,\"transactionId\":null,\"updatedAt\":1638921600000}"),
+                Arguments.of(new Date(110, Calendar.MARCH, 11), "TestMembership3", new Date(120, Calendar.AUGUST, 12), new Date(121, Calendar.JANUARY, 13), new Date(122, Calendar.JUNE, 14), new Date(123, Calendar.NOVEMBER, 15),
+                        "{\"type\":\"membership\",\"account\":{\"bookings\":null,\"createdAt\":1268265600000,\"customer\":null,\"id\":0,\"updatedAt\":null},\"amount\":null,\"createdAt\":1597186800000,\"endDate\":1700006400000,\"id\":0,\"membershipType\":{\"cost\":null,\"createdAt\":null,\"duration\":0,\"id\":0,\"name\":\"TestMembership3\",\"updatedAt\":null},\"name\":\"Membership TestMembership3\",\"receipt\":null,\"startDate\":1655161200000,\"transactionId\":null,\"updatedAt\":1610496000000}"),
+                Arguments.of(new Date(110, Calendar.APRIL, 16), "TestMembership4", new Date(120, Calendar.SEPTEMBER, 17), new Date(121, Calendar.FEBRUARY, 18), new Date(122, Calendar.JULY, 19), new Date(123, Calendar.DECEMBER, 20),
+                        "{\"type\":\"membership\",\"account\":{\"bookings\":null,\"createdAt\":1271372400000,\"customer\":null,\"id\":0,\"updatedAt\":null},\"amount\":null,\"createdAt\":1600297200000,\"endDate\":1703030400000,\"id\":0,\"membershipType\":{\"cost\":null,\"createdAt\":null,\"duration\":0,\"id\":0,\"name\":\"TestMembership4\",\"updatedAt\":null},\"name\":\"Membership TestMembership4\",\"receipt\":null,\"startDate\":1658185200000,\"transactionId\":null,\"updatedAt\":1613606400000}"),
+                Arguments.of(new Date(110, Calendar.MAY, 21), "TestMembership5", new Date(120, Calendar.OCTOBER, 22), new Date(121, Calendar.MARCH, 23), new Date(122, Calendar.AUGUST, 24), new Date(123, Calendar.JANUARY, 25),
+                        "{\"type\":\"membership\",\"account\":{\"bookings\":null,\"createdAt\":1274396400000,\"customer\":null,\"id\":0,\"updatedAt\":null},\"amount\":null,\"createdAt\":1603321200000,\"endDate\":1674604800000,\"id\":0,\"membershipType\":{\"cost\":null,\"createdAt\":null,\"duration\":0,\"id\":0,\"name\":\"TestMembership5\",\"updatedAt\":null},\"name\":\"Membership TestMembership5\",\"receipt\":null,\"startDate\":1661295600000,\"transactionId\":null,\"updatedAt\":1616457600000}")
+        );
     }
 }

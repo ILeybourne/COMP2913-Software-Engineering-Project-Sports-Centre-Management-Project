@@ -1,44 +1,72 @@
-<template>
-  <v-card class="mx-auto text-center" color="green" dark max-width="600">
-    <v-card-text>
-      <v-sheet color="rgba(0, 0, 0, .12)">
-        <v-sparkline
-          :value="value"
-          color="rgba(255, 255, 255, .7)"
-          height="100"
-          padding="24"
-          stroke-linecap="round"
-          smooth
-        >
-          <template v-slot:label="item"> ${{ item.value }} </template>
-        </v-sparkline>
-      </v-sheet>
-    </v-card-text>
-  </v-card></template
->
+<template
+  ><div class="small">
+    <line-chart :chart-data="datacollection"></line-chart>
+    <button @click="fillData()">Randomize</button>
+  </div>
+</template>
 
-<style scoped></style>
+<style scoped>
+.small {
+  max-width: 600px;
+  margin: 150px auto;
+}
+</style>
 <script>
-export default {
-  data: () => ({
-    value: [423, 446, 675, 510, 590, 610, 760]
-  }),
-  computed: {},
-  methods: {
-    dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
-    async getBooking() {
-      const token = await this.$auth.getTokenSilently();
+import { mapActions, mapGetters } from "vuex";
+import LineChart from "./LineChart.js";
 
-      const { data } = await this.$http.get(`/bookings`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      this.bookings = data.content;
+export default {
+  components: {
+    LineChart
+  },
+  data() {
+    return {
+      datacollection: null
+    };
+  },
+
+  computed: {
+    ...mapGetters("timetable", ["sessions"])
+  },
+  methods: {
+    ...mapActions("timetable", {
+      getActivity: "getAllSessions"
+    }),
+    fillData() {
+      this.datacollection = {
+        labels: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        datasets: [
+          {
+            label: "Data One",
+            backgroundColor: "#17a2b8",
+            data: [
+              this.getRandomInt(),
+              this.getRandomInt(),
+              this.getRandomInt(),
+              this.getRandomInt(),
+              this.getRandomInt(),
+              this.getRandomInt(),
+              this.getRandomInt()
+            ]
+          }
+        ]
+      };
     },
-    showCancel() {
-      this.$bvModal.show("edit-booking-modal");
+    getRandomInt() {
+      return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
     }
+  },
+  async mounted() {
+    this.fillData();
+    await this.getActivity();
   }
 };
 </script>
