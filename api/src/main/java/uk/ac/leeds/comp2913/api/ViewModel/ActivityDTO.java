@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.springframework.data.repository.cdi.Eager;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -12,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.FetchType;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -24,12 +28,12 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 //Used by manager to create activities, can pass a regular session boolean to create a regular session
 public class ActivityDTO extends RepresentationModel<ActivityDTO> {
   //Post
-  @NotBlank(message = "start time is required")
+  @NotNull(message = "start time is required")
   private Date startTime;
-  @NotBlank(message = "end time is required")
+  @NotNull(message = "end time is required")
   private Date endTime;
   private boolean regularSession;
-  private boolean social;
+  private Boolean social;
   private Integer interval;
 
   //Others for Get
@@ -57,8 +61,8 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
     if (social == null) {
       social = false;
     }
-    this.regularSession = (boolean) regularSession;
-    this.social = (boolean) social;
+    this.regularSession = (Boolean) regularSession;
+    this.social = (Boolean) social;
     this.startTime = startTime;
     this.endTime = endTime;
     this.interval = interval;
@@ -89,13 +93,7 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
     this.regularSession = regularSession;
   }
 
-  public boolean isSocial() {
-    return social;
-  }
 
-  public void setSocial(boolean social) {
-    this.social = social;
-  }
 
   @JsonIgnore
   public Integer getInterval() {
@@ -123,7 +121,7 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
     this.name = name;
   }
 
-  @JsonIgnoreProperties({"activities", "bookings"})
+  @JsonIgnoreProperties({"activities", "bookings", "createdAt", "updatedAt"})
   public Resource getResource() {
     return resource;
   }
@@ -175,4 +173,11 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
   }
 
 
+  public Boolean isSocial() {
+    return social;
+  }
+
+  public void setSocial(Boolean social) {
+    this.social = social;
+  }
 }

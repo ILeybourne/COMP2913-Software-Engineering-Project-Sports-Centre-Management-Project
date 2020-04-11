@@ -14,7 +14,7 @@ import java.util.Optional;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 
 @Repository
-public interface MembershipRepository extends JpaRepository<Membership, Long>, PagingAndSortingRepository<Membership, Long> {
+public interface MembershipRepository extends JpaRepository<Membership, Long>, CustomMembershipRepository {
     Page<Membership> findByMembershipTypeId(Pageable pageable, Long membershipTypeId);
     Page<Membership> findByAccountId(Pageable pageable, Long account_id);
     List<Membership> findAll();
@@ -24,7 +24,6 @@ public interface MembershipRepository extends JpaRepository<Membership, Long>, P
             "where m.repeatingPayment = true and m.endDate = (SELECT MAX(mm.endDate)" +
             "from Membership mm where mm.account.id = m.account.id)")
     List<Membership> findLastWithRepeatPayments();
-
 
     }
 

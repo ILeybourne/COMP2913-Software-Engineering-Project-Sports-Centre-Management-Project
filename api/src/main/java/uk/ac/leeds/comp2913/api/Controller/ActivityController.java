@@ -63,8 +63,7 @@ public class ActivityController {
             description = "Get List of all scheduled activities and links to view the activitys details")
     public PagedModel<ActivityDTO> getActivities(Pageable pageable) {
         Page<Activity> allActivities = activityService.getActivities(pageable);
-        PagedModel<ActivityDTO> result = pagedResourcesAssembler.toModel(allActivities, activityPagedResourcesAssembler);
-        return result;
+        return pagedResourcesAssembler.toModel(allActivities, activityPagedResourcesAssembler);
     }
 
     //get single activity
@@ -73,17 +72,13 @@ public class ActivityController {
             description = "Get a specific scheduled activity, and links to relevant operations")
     public ActivityDTO getActivityByActivityId(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id) {
         ActivityDTO activity = activityPagedResourcesAssembler.toModel(activityService.findActivityById(activity_id));
-        Link deleteLink = linkTo(ActivityController.class).slash(activity_id).withRel("delete");
-        Link updateLink = linkTo(ActivityController.class).slash(activity_id).withRel("update");
-        Link viewBookingsLink = linkTo(BookingController.class).slash("activity").slash(activity_id).withRel("Bookings");
-        Link placeBookingLink = linkTo(BookingController.class).slash(activity_id).withRel("Place Booking");
-        activity.add(updateLink, deleteLink, viewBookingsLink, placeBookingLink);
-    //    if (activity.getRegularSession() != null) {
-    //        Long regularSessionId = activity.getRegularSession().getId();
-    //        Link stopRegularSessionLink = linkTo(ActivityController.class).slash("cancelregularsession")
-    //                .slash(regularSessionId).withRel("Stop Regular Session");
-    //        activity.add(stopRegularSessionLink);
-    //    }
+        activity.add(linkTo(ActivityController.class).slash(activity_id).withRel("delete"));
+        activity.add(linkTo(ActivityController.class).slash(activity_id).withRel("update"));
+        activity.add(linkTo(BookingController.class).slash("activity").slash(activity_id).withRel("Bookings"));
+        activity.add(linkTo(BookingController.class).slash(activity_id).withRel("Place Booking"));
+        if (activity.getRegularSessionId() != null) {
+            activity.add(linkTo(ActivityController.class).slash("cancelregularsession").slash(activity.getRegularSessionId().getId()).withRel("Stop Regular Session"));
+        }
         return activity;
     }
 //
@@ -92,9 +87,7 @@ public class ActivityController {
     @Operation(summary = "Get scheduled activities for a given resource",
             description = "Get list of all scheduled activities for a particular facility#2")
     public PagedModel<ActivityDTO> getActivitiesByResourceId(Pageable pageable, @Parameter(description = "The ID of the specific resource(facility)", required = true)@PathVariable Long resource_id) {
-        //Page<Activity> activitiesByResource = activityService.findByResourceId(pageable, resource_id);
-        PagedModel<ActivityDTO> result = pagedResourcesAssembler.toModel(activityService.findByResourceId(pageable, resource_id), activityPagedResourcesAssembler);
-        return result;
+        return pagedResourcesAssembler.toModel(activityService.findByResourceId(pageable, resource_id), activityPagedResourcesAssembler);
     }
 
     //schedule an activity
@@ -116,6 +109,7 @@ public class ActivityController {
             regularSession = null;
         }
         return activityService.createNewActivity(activity, activity_type_id, regularSession);
+
     }
 
     //update details of scheduled activity

@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -75,8 +76,7 @@ public class ActivityServiceImpl implements ActivityService {
       regularSessionRepository.save(regularSession);
       activity.setRegularSession(regularSession);
     }
-    activityRepository.save(activity);
-    return  activity;
+    return activityRepository.save(activity);
   }
 
   @Override

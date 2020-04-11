@@ -19,6 +19,7 @@ import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipTypeRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
+import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
@@ -84,13 +85,14 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public Membership stopRepeatPayment(Long membership_id) {
-        Membership membership = membershipRepository.findById(membership_id)
-                .orElseThrow(() -> new ResourceNotFoundException("Membership not found with id " + membership_id));
-        if (membership.getRepeatingPayment() == true) {
-            membership.setRepeatingPayment(false);
-        }
-        return membershipRepository.save(membership);
+    @Transactional
+    public void stopRepeatPayment(Long membership_id) {
+        Membership m = membershipRepository.findById(membership_id)
+                .orElseThrow(() -> new ResourceNotFoundException("Membership not found for ID" + membership_id));
+        Long membership_type_id = m.getMembershipType().getId();
+        Long account_id = m.getAccount().getId();
+        membershipRepository.stopRepeatPayment(membership_type_id, account_id);
+
     }
 
     @Override

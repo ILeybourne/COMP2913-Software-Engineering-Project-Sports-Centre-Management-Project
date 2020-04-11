@@ -29,7 +29,7 @@ public interface MembershipService {
 
     ResponseEntity<?> deleteMembership(Long membership_id);
 
-    Membership stopRepeatPayment(Long membership_id);
+    void stopRepeatPayment(Long membership_id);
 
     void automatedMembershipRenewals();
 

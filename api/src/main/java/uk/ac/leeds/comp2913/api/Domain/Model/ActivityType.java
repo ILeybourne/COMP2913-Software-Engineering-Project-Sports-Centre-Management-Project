@@ -109,7 +109,6 @@ public class ActivityType {
         this.totalCapacity = totalCapacity;
     }
 
-    @JsonIgnore
     public Resource getResource() {
         return resource;
     }

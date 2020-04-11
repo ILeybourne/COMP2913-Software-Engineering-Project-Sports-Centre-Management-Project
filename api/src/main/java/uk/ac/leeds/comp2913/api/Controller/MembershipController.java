@@ -108,8 +108,8 @@ public class MembershipController {
     @PutMapping("/members/{membership_id}/stop")
     @Operation(summary = "Stop the repeating payment of a membership",
             description = "Cancel the repeating payment of a membership, changing the boolean to false")
-    public Membership stopRepeatingPayment( @Parameter(description = "The ID of the membership", required = true)@PathVariable Long membership_id) {
-        return membershipService.stopRepeatPayment(membership_id);
+    public void stopRepeatingPayment( @Parameter(description = "The ID of the membership", required = true)@PathVariable Long membership_id) {
+        membershipService.stopRepeatPayment(membership_id);
     }
 
     //cancel membership

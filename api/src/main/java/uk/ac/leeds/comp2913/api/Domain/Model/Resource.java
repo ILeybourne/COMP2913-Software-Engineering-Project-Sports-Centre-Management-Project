@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;

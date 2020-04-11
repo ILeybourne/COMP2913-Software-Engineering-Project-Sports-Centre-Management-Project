@@ -3,6 +3,8 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import com.fasterxml.jackson.annotation.*;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Range;
@@ -65,9 +67,9 @@ public class Activity {
     /**
      * Which resource the activity needs to take place
      */
-    @NotNull(message = "Resource is mandatory")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id", nullable = false)
+    @NotNull(message = "Resource is mandatory")
     private Resource resource;
 
     /**
@@ -179,7 +181,7 @@ public class Activity {
         this.bookings = bookings;
     }
 
-    @JsonIgnoreProperties({"activities", "activityTypes"})
+    @JsonIgnore
     public Resource getResource() {
         return resource;
     }
