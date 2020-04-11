@@ -64,7 +64,6 @@ public class ReceiptController {
         return receiptService.findById(receipt_id);
     }
 
-
     /**
      * @param receipt_id
      * @return
