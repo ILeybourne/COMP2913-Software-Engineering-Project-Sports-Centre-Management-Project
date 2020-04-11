@@ -21,6 +21,7 @@ import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityPagedResourcesAssembler;
 
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -94,6 +95,7 @@ public class ActivityController {
     //Pulls data from activity type, only start and end type is pulled from json via JsonCreator
     //schedule an activity. Create a one time activity or regular session
     @PostMapping("activitytype/{activity_type_id}")
+    @Transactional
     @Operation(summary = "create a new scheduled activity",
             description = "create a new scheduled activity, using activity type. Has the option to make regular session #12")
     public Activity createActivity(@Parameter(description = "An ActivityDTO object, providing details needed to create an activity", required = true) @Valid @RequestBody ActivityDTO activityDTO,
@@ -109,7 +111,6 @@ public class ActivityController {
             regularSession = null;
         }
         return activityService.createNewActivity(activity, activity_type_id, regularSession);
-
     }
 
     //update details of scheduled activity

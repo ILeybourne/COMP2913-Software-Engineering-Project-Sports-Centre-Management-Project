@@ -27,7 +27,6 @@ public class RegularSession {
   private Long id;
 
   //Activities that are regular sessions
-  @NotEmpty(message = "activity is required to schedule regular session")
   @OneToMany(mappedBy = "regularSession", fetch = FetchType.LAZY)
   private Set<Activity> activities;
 

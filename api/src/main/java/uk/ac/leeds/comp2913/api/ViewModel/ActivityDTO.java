@@ -32,6 +32,7 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
   private Date startTime;
   @NotNull(message = "end time is required")
   private Date endTime;
+
   private boolean regularSession;
   private Boolean social;
   private Integer interval;
@@ -52,7 +53,7 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
   @JsonCreator
   public ActivityDTO(@JsonProperty("startTime") Date startTime,
                      @JsonProperty("endTime") Date endTime,
-                     @JsonProperty(value = "RegularSession") Boolean regularSession,
+                     @JsonProperty(value = "regularSession") Boolean regularSession,
                      @JsonProperty(value = "social") Boolean social,
                      @JsonProperty("interval") Integer interval) {
     if (regularSession == null) {
@@ -84,18 +85,7 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
     this.endTime = endTime;
   }
 
-  @JsonIgnore
-  public boolean isRegularSession() {
-    return regularSession;
-  }
-
-  public void setRegularSession(boolean regularSession) {
-    this.regularSession = regularSession;
-  }
-
-
-
-  @JsonIgnore
+   @JsonIgnore
   public Integer getInterval() {
     return interval;
   }
@@ -179,5 +169,14 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
 
   public void setSocial(Boolean social) {
     this.social = social;
+  }
+
+
+  public boolean isRegularSession() {
+    return regularSession;
+  }
+
+  public void setRegularSession(boolean regularSession) {
+    this.regularSession = regularSession;
   }
 }

@@ -73,7 +73,7 @@ public class ActivityServiceImpl implements ActivityService {
     activity.setActivityType(activityType);
 
     if (regularSession != null){
-      regularSessionRepository.save(regularSession);
+      this.regularSessionRepository.save(regularSession);
       activity.setRegularSession(regularSession);
     }
     return activityRepository.save(activity);
