@@ -293,7 +293,7 @@ export default {
       this.email = value.email;
       this.phone = value.phone;
       this.health = value.health;
-      if (value.cardCash == "card") {
+      if (value.cardCashSelection == "card") {
         this.hideCard = false;
         this.hideCash = true;
       } else {

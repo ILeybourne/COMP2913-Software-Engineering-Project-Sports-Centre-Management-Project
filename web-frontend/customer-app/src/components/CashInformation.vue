@@ -6,38 +6,55 @@
     >
       <form>
         <div class="form-row">
-          <label for="Price">Price:</label>
-          <input
-            type="text"
-            id="cashPrice"
-            name="cashPrice"
-            v-model="$attrs.activityPrice"
-            class="form-control"
-            readonly
-          />
+          <label for="PriceDiv">Price:</label>
+          <div id="PriceDiv" name="PriceDiv"  class="input-container">
+            <b-input-group size="lg" prepend="£">
+              <b-form-input
+                type="number"
+                step="0.01"
+                id="cashPrice"
+                name="cashPrice"
+                v-model="$attrs.activityPrice"
+                class="form-control"
+                readonly
+              ></b-form-input>
+            </b-input-group>
+          </div>
         </div>
         <div class="form-row">
-          <label for="cashGiven">Cash Given:</label>
-          <input
-            type="text"
-            id="cashGiven"
-            name="cashGiven"
-            class="form-control"
-            v-model="cashGiven"
-            required
-            @keyup="getChange"
-          />
+          <label for="cashGivenDiv">Cash Given:</label>
+          <div id="cashGivenDiv" name="cashGiven" class="input-container">
+            <b-input-group size="lg" prepend="£">
+              <b-form-input
+                type="number"
+                step="0.01"
+                id="cashGiven"
+                name="cashGiven"
+                class="form-control"
+                v-model="cashGiven"
+                required
+                @keyup="getChange"
+                pattern="^\d*(\.\d{0,2})?$"
+              ></b-form-input>
+            </b-input-group>
+          </div>
         </div>
         <div class="form-row">
-          <label for="changeDue">Change Due:</label>
-          <input
-            type="text"
-            id="changeDue"
-            name="changeDue"
-            class="form-control"
-            v-model="change"
-            readonly
-          />
+          <label for="changeDueDiv">Change Due:</label>
+          <div id="changeDueDiv" name="cashGiven" class="input-container">
+            <b-input-group size="lg" prepend="£">
+              <b-form-input
+                id="changeDue"
+                name="changeDue"
+                class="form-control"
+                v-model="change"
+                readonly
+                type="number"
+                step="0.01"
+                @keyup="[getChange, setTwoNumberDecimal($event)]"
+              ></b-form-input>
+            </b-input-group>
+          </div>
         </div>
         <div class="button-container">
           <button
@@ -46,6 +63,10 @@
             class="btn btn-outline-secondary"
             name="details"
             @click="submitCashPayment"
+            v-bind:class="{
+              disable: changeValid
+            }"
+            @load="getChange"
           >
             Submit
           </button>
@@ -56,6 +77,10 @@
 </template>
 
 <style scoped>
+  .input-container{
+    min-width: 90%;
+  }
+
 .form-row {
   padding: 5px;
 }
@@ -96,25 +121,43 @@ button {
 
 <script>
 export default {
-  name: "CardInformation",
+  name: "CashInformation",
   data() {
     return {
       cashGiven: 0,
-      change: 0,
-      componentWidth: 90,
+      changeValid: false,
+      componentWidth: 90
     };
   },
-  computed: {},
+  computed: {
+    change: function() {
+      console.log(Number(this.cashGiven) + " " + this.$attrs.activityPrice);
+      return Number(this.cashGiven) - this.$attrs.activityPrice;
+    }
+  },
   methods: {
+    setTwoNumberDecimal(event) {
+      console.log("event");
+      console.log(event);
+      this.cashGiven = parseFloat(event).toFixed(2);
+      console.log("this.cashGiven");
+      console.log(this.cashGiven);
+    },
+
     getChange() {
-      this.change = this.cashGiven - this.$attrs.activityPrice
-      console.log(this.change)
+      this.change = this.cashGiven - this.$attrs.activityPrice;
+      if (this.change >= 0) {
+        this.changeValid = true;
+      } else {
+        this.changeValid = false;
+      }
+      // console.log(this.change)
     },
     submitCashPayment(e) {
       this.$emit("submitCashPayment", this.$data);
-      console.log(e)
+      console.log(e);
       this.componentWidth = 60;
     }
-  },
+  }
 };
 </script>

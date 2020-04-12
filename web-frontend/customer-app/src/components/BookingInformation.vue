@@ -127,7 +127,7 @@ label {
 </style>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+  import { mapActions, mapGetters } from "vuex";
 export default {
   ...mapActions("facilities", ["getFacilities", "getActivities"]),
   ...mapActions("timetable", ["getAllSessions"]),
