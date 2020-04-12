@@ -37,22 +37,22 @@
         </b-col>
         <b-col v-bind:class="{ 'd-none': hideCash }">
           <div id="cashDiv">
-            <CashInformation :activityPrice="this.price"
-                             @submitCashPayment="handleCashPayment"
-
+            <CashInformation
+              :activityPrice="this.price"
+              @submitCashPayment="handleCashPayment"
             ></CashInformation>
           </div>
         </b-col>
       </b-row>
       <div v-bind:class="{ 'd-none': hideSuccess }" id="successDiv">
-        <h1 >Success</h1>
-        <p>Booking confirmation
-          Activity: {{selectedActivityName}}<br/>
-          Booked on: {{date}}<br/>
-          Time: {{selectedTime}}<br/>
-          Amount paid: {{price}}<br/>
-          Customer: {{firstName}} {{surname}}<br/>
-          Receipt send to: {{email}}<br/>
+        <h1>Success</h1>
+        <p>
+          Booking confirmation Activity: {{ selectedActivityName }}<br />
+          Booked on: {{ date }}<br />
+          Time: {{ selectedTime }}<br />
+          Amount paid: {{ price }}<br />
+          Customer: {{ firstName }} {{ surname }}<br />
+          Receipt send to: {{ email }}<br />
         </p>
         <p>Please wait to be redirected</p>
       </div>
@@ -168,17 +168,18 @@ export default {
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
-    selectedActivityName: function () {
-      if(this.selectedActivityId != null) {
-        return this.activities.find(act => act.id = this.selectedActivityId).name
+    selectedActivityName: function() {
+      if (this.selectedActivityId != null) {
+        return this.activities.find(act => (act.id = this.selectedActivityId))
+          .name;
       }
-      return null
-   }
+      return null;
+    }
   },
   methods: {
     ...mapActions("facilities", ["getActivities"]),
 
-    bookByCash(){
+    bookByCash() {
       this.hideBooking = true;
       this.hideGuest = true;
       this.hideCard = true;
@@ -200,9 +201,7 @@ export default {
       e.preventDefault();
       // Talk to our server to get encrpyted prices
       // eslint-disable-next-line no-undef
-      const paymentIntent = await this.$http.post(
-        `/payments/intent`
-      );
+      const paymentIntent = await this.$http.post(`/payments/intent`);
       this.sendTokenToServer(paymentIntent.data.clientSecret);
     },
     async sendTokenToServer(client_secret) {
@@ -228,7 +227,6 @@ export default {
           await this.postAllFormData();
           //TODO Set payment amount
 
-
           this.hideBooking = true;
           this.hideGuest = true;
           this.hideCard = true;
@@ -245,15 +243,15 @@ export default {
         // });
       }
     },
-    async handleCashPayment (value) {
-      if(value.change >= 0) {
-        await this.postAllFormData()
+    async handleCashPayment(value) {
+      if (value.change >= 0) {
+        await this.postAllFormData();
 
         this.hideBooking = true;
         this.hideGuest = true;
         this.hideCash = true;
         this.hideSuccess = false;
-      }else {
+      } else {
         //invalid amount of cash given
       }
     },

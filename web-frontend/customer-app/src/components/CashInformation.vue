@@ -7,7 +7,7 @@
       <form>
         <div class="form-row">
           <label for="PriceDiv">Price:</label>
-          <div id="PriceDiv" name="PriceDiv"  class="input-container">
+          <div id="PriceDiv" name="PriceDiv" class="input-container">
             <b-input-group size="lg" prepend="£">
               <b-form-input
                 type="number"
@@ -77,9 +77,9 @@
 </template>
 
 <style scoped>
-  .input-container{
-    min-width: 90%;
-  }
+.input-container {
+  min-width: 90%;
+}
 
 .form-row {
   padding: 5px;
