@@ -1,8 +1,12 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.lang.reflect.Member;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.*;
@@ -25,15 +29,29 @@ import javax.persistence.*;
     private MembershipType membershipType;
 
     //foreign key, account id to link user
-    @OneToOne (fetch = FetchType.EAGER)
+    @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private Date startDate;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     private Date endDate;
+
+    @Column(name = "repeating_payment")
+    private Boolean repeatingPayment;
+
+    public Membership(){}
+
+    public static Membership renewMembership(Membership membership){
+        Membership renewedMembership = new Membership();
+        renewedMembership.setMembershipType(membership.getMembershipType());
+        renewedMembership.setStartDate(membership.getEndDate());
+        renewedMembership.setAccount(membership.getAccount());
+        renewedMembership.setRepeatingPayment(membership.getRepeatingPayment());
+        return renewedMembership;
+    }
 
     public Date getCreatedAt() {
         return created_at;
@@ -51,6 +69,7 @@ import javax.persistence.*;
         this.updated_at = updated_at;
     }
 
+    @JsonIgnore
     public Account getAccount() {
         return account;
     }
@@ -61,8 +80,10 @@ import javax.persistence.*;
 
     public void setMembershipType(MembershipType membershipType) {
         this.membershipType = membershipType;
+        this.amount = membershipType.getCost();
     }
 
+    @JsonIgnore
     public MembershipType getMembershipType() {
         return membershipType;
     }
@@ -73,14 +94,28 @@ import javax.persistence.*;
 
     public void setStartDate(Date startDate) {
       this.startDate = startDate;
+      setEndDate(startDate);
     }
 
     public Date getEndDate() {
       return endDate;
     }
 
-    public void setEndDate(Date endDate) {
-      this.endDate = endDate;
+    public void setEndDate(Date startDate) {
+        this.endDate = (calculateEndDate(startDate, membershipType.getDuration()));
+    }
+
+    public Date calculateEndDate(Date startDate, Integer duration){
+        Date endDate = new Date(startDate.getTime()+((24*60*60*1000) * duration)); //Math at the end converts a day into milliseconds
+        return endDate;
+    }
+
+    public Boolean getRepeatingPayment() {
+        return repeatingPayment;
+    }
+
+    public void setRepeatingPayment(Boolean repeatingPayment) {
+        this.repeatingPayment = repeatingPayment;
     }
 
     @Override

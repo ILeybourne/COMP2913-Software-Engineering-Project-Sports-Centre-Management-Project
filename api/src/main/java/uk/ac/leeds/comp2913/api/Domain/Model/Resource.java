@@ -1,15 +1,21 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 
 /**
@@ -24,6 +30,8 @@ public class Resource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message = "name is required")
+    @Size(min = 3, max = 20)
     private String name;
 
     @ManyToOne
@@ -32,14 +40,13 @@ public class Resource {
     /**
      * List of activities ever booked for the resource
      */
-    @OneToMany(mappedBy = "resource", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "resource", fetch = FetchType.LAZY)
     private Set<Activity> activities;
 
     /**
      * List of activities held at the resource
      */
-    @JsonProperty
-    @OneToMany(mappedBy = "resource", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "resource", fetch = FetchType.LAZY)
     private Set<ActivityType> activityTypes;
 
     @CreationTimestamp
@@ -56,7 +63,7 @@ public class Resource {
         this.name = name;
     }
 
-    @JsonIgnoreProperties("activityType")
+    @JsonIgnore
     public Set<Activity> getActivities() {
         return activities;
     }
@@ -73,7 +80,8 @@ public class Resource {
         this.id = id;
     }
 
-    @JsonIgnoreProperties("resource")
+
+    @JsonIgnore
     public Set<ActivityType> getActivityTypes() {
         return activityTypes;
     }
@@ -90,5 +98,21 @@ public class Resource {
     public void removeActivityType(ActivityType type) {
         activityTypes.remove(type);
         type.setResource(null);
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

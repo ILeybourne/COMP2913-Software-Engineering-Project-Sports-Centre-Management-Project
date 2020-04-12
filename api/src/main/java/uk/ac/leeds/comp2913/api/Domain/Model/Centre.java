@@ -2,8 +2,11 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.hateoas.PagedModel;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +21,7 @@ public class Centre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "name is required")
     private String name;
 
     /*TODO: Address */

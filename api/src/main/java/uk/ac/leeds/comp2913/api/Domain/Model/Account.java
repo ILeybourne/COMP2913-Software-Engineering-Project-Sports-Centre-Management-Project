@@ -1,14 +1,18 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 public class Account {
@@ -25,11 +29,11 @@ public class Account {
     @ManyToOne
     private Centre centre;
 
-    @OneToOne(mappedBy = "account",fetch = FetchType.EAGER)
-    private Membership Memberships;
+    @OneToMany(mappedBy = "account",fetch = FetchType.LAZY)
+    private List<Membership> memberships;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id")
+    @ManyToOne
+    @JoinColumn(name = "customer_id", unique=true)
     private Customer customer;
 
     @OneToMany(mappedBy = "account")
@@ -55,7 +59,6 @@ public class Account {
         this.updated_at = updated_at;
     }
 
-
     @JsonIgnore
     public Centre getCentre() {
         return centre;
@@ -66,14 +69,6 @@ public class Account {
     }
 
     @JsonIgnore
-    public Membership getMemberships() {
-        return Memberships;
-    }
-
-    public void setMemberships(Membership memberships) {
-        Memberships = memberships;
-    }
-
     public Customer getCustomer() {
         return customer;
     }
@@ -82,6 +77,7 @@ public class Account {
         this.customer = customer;
     }
 
+    @JsonIgnore
     public List<Booking> getBookings() {
       return bookings;
     }
@@ -89,4 +85,14 @@ public class Account {
     public void setBookings(List<Booking> bookings) {
       this.bookings = bookings;
     }
+
+    @JsonIgnore
+    public List<Membership> getMemberships() {
+        return memberships;
+    }
+
+    public void setMemberships(List<Membership> memberships) {
+        this.memberships = memberships;
+    }
+
 }

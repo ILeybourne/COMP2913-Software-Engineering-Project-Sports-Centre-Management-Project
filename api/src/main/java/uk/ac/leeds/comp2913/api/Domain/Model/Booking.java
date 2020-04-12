@@ -1,13 +1,17 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
@@ -18,9 +22,12 @@ public class Booking extends Sale {
 
     @CreationTimestamp
     private Date created_at;
+
+    @JsonIgnore
     @UpdateTimestamp
     private Date updated_at;
 
+    @Range(min = 1)
     private int participants;
 
     /**
@@ -32,7 +39,8 @@ public class Booking extends Sale {
     /**
      * The Activity associated with the booking
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @NotNull(message = "Activity is required")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id")
     private Activity activity;
 
@@ -66,6 +74,7 @@ public class Booking extends Sale {
         return originalAmount.multiply(BigDecimal.valueOf(0.7));
     }
 
+    @JsonIgnore
     public Date getCreatedAt() {
         return created_at;
     }
@@ -74,6 +83,7 @@ public class Booking extends Sale {
         this.created_at = created_at;
     }
 
+    @JsonIgnore
     public Date getUpdatedAt() {
         return updated_at;
     }
@@ -82,6 +92,7 @@ public class Booking extends Sale {
         this.updated_at = updated_at;
     }
 
+    @JsonIgnore
     public Account getAccount() {
         return account;
     }
@@ -90,7 +101,7 @@ public class Booking extends Sale {
         this.account = account;
     }
 
-    @JsonIgnoreProperties("bookings")
+    @JsonIgnore
     public Activity getActivity() {
         return activity;
     }
@@ -112,7 +123,7 @@ public class Booking extends Sale {
         this.participants = participants;
     }
 
-    @JsonIgnoreProperties("activities")
+    @JsonIgnore
     public RegularSession getRegularSession() {
         return regularSession;
     }

@@ -1,10 +1,17 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.PagedModel;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
 /**
@@ -33,6 +40,7 @@ public abstract class Sale {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   protected long id;
 
+  @NotNull(message = "amount is required")
   @Column(name = "amount", nullable = false)
   protected BigDecimal amount;
 
@@ -44,7 +52,7 @@ public abstract class Sale {
    * Hence if we need to get the time of payment, we get the created_at
    * timestamp from the receipt
    */
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "receipt_id")
   protected Receipt receipt;
 
@@ -69,6 +77,7 @@ public abstract class Sale {
     this.amount = cost;
   }
 
+  @JsonIgnore
   public String getTransactionId() {
     return transactionId;
   }
@@ -77,6 +86,7 @@ public abstract class Sale {
     this.transactionId = transactionId;
   }
 
+  @JsonIgnore
   public Receipt getReceipt() {
     return receipt;
   }
