@@ -12,7 +12,11 @@
       <div class="facility-info">
         info
         <div class="facility-btn">
-          <button type="button" class="btn btn-outline-secondary" id="facilityButton">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            id="facilityButton"
+          >
             Book Now
           </button>
         </div>

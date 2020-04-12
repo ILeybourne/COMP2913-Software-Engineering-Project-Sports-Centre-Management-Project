@@ -1,12 +1,9 @@
 <template>
-  <v-data-table
-      :headers="headers"
-      :items="activities"
-      >
+  <v-data-table :headers="headers" :items="activities">
     <template v-slot:top>
       <v-toolbar flat color="white">
         <v-spacer></v-spacer>
-        <v-dialog  max-width="500px">
+        <v-dialog max-width="500px">
           <template v-slot:activator="{ on }">
             <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
           </template>
@@ -55,7 +52,6 @@ export default {
           sortable: false
         }
       ]
-
     };
   },
   computed: {
