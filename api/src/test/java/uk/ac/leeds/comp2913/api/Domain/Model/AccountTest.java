@@ -59,7 +59,7 @@ class AccountTest {
         account.setCreatedAt(createdAt);
         account.setUpdatedAt(updatedAt);
         account.setCentre(centre);
-        account.setMemberships(membership);
+        account.setMemberships(List.of(membership));
         account.setCustomer(customer);
         account.setBookings(new ArrayList<>());
 

@@ -3,8 +3,13 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 import com.fasterxml.jackson.annotation.*;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Range;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.PagedModel;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -12,6 +17,9 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * TODO: @CHORE Rename this entity to 'session' as it fits more with spec
@@ -39,19 +47,21 @@ public class Activity {
      */
     private Boolean social;
 
+    @NotEmpty(message = "Name is mandatory")
     private String name;
 
+    @NotNull(message = "Start time is mandatory")
     @Column(name = "start_time")
     private Date startTime;
 
+    @NotNull(message = "end time is mandatory")
     @Column(name = "end_time")
     private Date endTime;
 
     /**
      * The bookings that have been made against the activity
      */
-    @JsonIgnore
-    @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY)
     private Set<Booking> bookings;
 
     /**
@@ -59,13 +69,14 @@ public class Activity {
      */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id", nullable = false)
+    @NotNull(message = "Resource is mandatory")
     private Resource resource;
 
     /**
      * Which activity type the activity belongs to
      */
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @NotNull(message = "activity type is mandatory")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_type_id", nullable = false)
     private ActivityType activityType;
 
@@ -77,6 +88,8 @@ public class Activity {
     @Formula("(SELECT SUM(b.participants) FROM sports_centre_management.booking b where b.activity_id = id)")
     private Integer currentCapacity;
 
+    @Range(min = 0)
+    @NotNull(message = "cost is mandatory")
     private BigDecimal cost;
 
     //IF an activity is a regular session, then it will hold the ID of the regular session
@@ -113,6 +126,7 @@ public class Activity {
         this.cost = activityType.getCost();
     }
 
+    @JsonIgnore
     public ActivityType getActivityType() {
         return activityType;
     }
@@ -158,6 +172,7 @@ public class Activity {
         this.currentCapacity = current_capacity;
     }
 
+    @JsonIgnore
     public Set<Booking> getBookings() {
         return bookings;
     }
@@ -166,7 +181,7 @@ public class Activity {
         this.bookings = bookings;
     }
 
-    @JsonIgnoreProperties({"activities", "activityTypes"})
+    @JsonIgnore
     public Resource getResource() {
         return resource;
     }
@@ -191,7 +206,7 @@ public class Activity {
         this.social = social;
     }
 
-    @JsonIgnoreProperties({"activities"})
+    @JsonIgnoreProperties({"activities", "bookings"})
     public RegularSession getRegularSession() {
         return regularSession;
     }

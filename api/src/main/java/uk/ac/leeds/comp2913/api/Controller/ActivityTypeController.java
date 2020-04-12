@@ -2,6 +2,12 @@ package uk.ac.leeds.comp2913.api.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,14 +22,26 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityTypeRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ResourceRepository;
+import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
+import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
+import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
+import uk.ac.leeds.comp2913.api.ViewModel.ActivityTypeDTO;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityPagedResourcesAssembler;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityTypePagedResourcesAssembler;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 
 /**
  * TODO: @CHORE, annotate with Swagger API documentation
+ * localhost:8000/swagger-ui.html
  * TODO: @CHORE, move domain logic into a service @DEPENDENCY for Testing
  * TODO: @CHORE, add HAL to all endpoints
  * TODO: @CHORE, add hasAuthority checks to all endpoints
@@ -32,14 +50,16 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 @RequestMapping("/activitytypes")
 public class ActivityTypeController {
 
-    private final ResourceRepository resourceRepository;
+    private final ActivityTypeService activityTypeService;
+    private final PagedResourcesAssembler<ActivityType> pagedResourcesAssembler;
+    private final ActivityTypePagedResourcesAssembler activityTypePagedResourcesAssembler;
 
-    private final ActivityTypeRepository activityTypeRepository;
 
     @Autowired
-    public ActivityTypeController(ActivityTypeRepository activityTypeRepository, ResourceRepository resourceRepository) {
-        this.activityTypeRepository = activityTypeRepository;
-        this.resourceRepository = resourceRepository;
+    public ActivityTypeController(ActivityTypeService activityTypeService, PagedResourcesAssembler<ActivityType> pagedResourcesAssembler, ActivityTypePagedResourcesAssembler activityTypePagedResourcesAssembler) {
+        this.activityTypeService = activityTypeService;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.activityTypePagedResourcesAssembler = activityTypePagedResourcesAssembler;
     }
 
     /**
@@ -48,51 +68,59 @@ public class ActivityTypeController {
      */
 
     @GetMapping("")
-    public List<ActivityType> getActivityTypes() {
-        return activityTypeRepository.findAll();
+    @Operation(summary = "Get all activity types",
+            description = "Get list all activity types (used as templates for scheduling activities) #2")
+    public PagedModel<ActivityTypeDTO> getActivityTypes(Pageable pageable) {
+        Page<ActivityType> allActivityTypes =  activityTypeService.findAll(pageable);
+        return pagedResourcesAssembler.toModel(allActivityTypes, activityTypePagedResourcesAssembler);
+    }
+
+    //Get activity types for a resource
+    @GetMapping("/{activity_type_id}")
+    @Operation(summary = "Get a specific activity type",
+            description = "Get a specific activity type with links to its details/relevant operations #2")
+    public ActivityTypeDTO getActivityTypeId(@Parameter(description = "The ID of the activity type", required = true)@PathVariable Long activity_type_id) {
+        ActivityTypeDTO activityType = activityTypePagedResourcesAssembler.toModel(activityTypeService.findById(activity_type_id));
+        activityType.add(linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("update"));
+        activityType.add(linkTo(ActivityTypeController.class).slash(activity_type_id).withRel("delete"));
+        activityType.add(linkTo(ActivityController.class).slash("activitytype").slash(activity_type_id).withRel("Create New Scheduled Activity from this template"));
+        return activityType;
     }
 
     //Get activity types for a resource
     @GetMapping("/resource/{resource_id}")
-    public List<ActivityType> getActivitiesByResourceId(@PathVariable Long resource_id) {
-        return activityTypeRepository.findByResourceId(resource_id);
+    @Operation(summary = "Get a list of activity types for a facility",
+            description = "Get list of all activity types for a particular facilities" +
+                    "used for scheduling activities #2")
+    public PagedModel<ActivityTypeDTO> getActivityTypesByResourceId(Pageable pageable, @Parameter(description = "The ID of the resource", required = true)@PathVariable Long resource_id) {
+        Page<ActivityType> allActivityTypes =  activityTypeService.findByResourceId(pageable, resource_id);
+        PagedModel<ActivityTypeDTO> result = pagedResourcesAssembler.toModel(allActivityTypes, activityTypePagedResourcesAssembler);
+        return result;
     }
 
     //add new activity type to resource
     @PostMapping("/resource/{resource_id}")
-    public ActivityType addActivityType(@PathVariable Long resource_id, @Valid @RequestBody ActivityType activityType) {
-        return resourceRepository.findById(resource_id)
-                .map(resource -> {
-                    activityType.setResource(resource);
-                    return activityTypeRepository.save(activityType);
-                }).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id " + resource_id));
+    @Operation(summary = "Create a new activity type that occurs for a resource",
+            description = "create a new acitivity type for a particular resource #2")
+    public ActivityTypeDTO addActivityType(@Parameter(description = "The ID of the resource", required = true) @PathVariable Long resource_id,
+                                        @Parameter(description = "An activity type object", required = true) @Valid @RequestBody ActivityType activityType) {
+        return activityTypePagedResourcesAssembler.toModel(activityTypeService.addActivityType(resource_id, activityType));
     }
 
     //update activity type
     @PutMapping("/{activity_type_id}")
-    public ActivityType updateActivityType(@PathVariable Long activity_type_id, @Valid @RequestBody ActivityType activityTypeRequest) {
-
-        return activityTypeRepository.findById(activity_type_id)
-                .map(activityType -> {
-//                    TODO: @Chore Cleanup, let JsonCretor take care
-                    activityType.setName(activityTypeRequest.getName());
-                    activityType.setTotalCapacity(activityTypeRequest.getTotalCapacity());
-                    activityType.setCost(activityTypeRequest.getCost());
-                    return activityTypeRepository.save(activityType);
-                }).orElseThrow(() -> new ResourceNotFoundException("Activity Type not found with ID " + activity_type_id));
+    @Operation(summary = "Update activity type",
+            description = "edit the details of an activity type #2")
+    public ActivityType updateActivityType(@Parameter(description = "The ID of the activity type", required = true)@PathVariable Long activity_type_id,
+                                           @Parameter(description = "An activity type object", required = true)@Valid @RequestBody ActivityType activityTypeRequest) {
+        return activityTypeService.updateActivityType(activity_type_id, activityTypeRequest);
     }
 
     //delete activity
     @DeleteMapping("/{activity_type_id}")
-    public ResponseEntity<?> deleteActivityType(@PathVariable Long activity_type_id) {
-
-        try {
-            activityTypeRepository.deleteById(activity_type_id);
-            return ResponseEntity
-                    .noContent()
-                    .build();
-        } catch (EmptyResultDataAccessException e){
-            throw new ResourceNotFoundException("Activity not found with the ID " + activity_type_id);
-        }
+    @Operation(summary = "delete an activity type",
+            description = "delete an activity type #2")
+    public ResponseEntity<?> deleteActivityType(@Parameter(description = "The id of the activity type", required = true)@PathVariable Long activity_type_id) {
+        return activityTypeService.deleteActivityType(activity_type_id);
     }
 }

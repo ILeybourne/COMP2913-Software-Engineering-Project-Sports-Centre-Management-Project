@@ -1,67 +1,105 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
+
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.RegularSessionRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.RegularSession;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
-import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityPagedResourcesAssembler;
 
+
+import javax.transaction.Transactional;
 import javax.validation.Valid;
-
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * TODO: @CHORE, annotate with Swagger API documentation
+ * localhost:8000/swagger-ui.html
  * TODO: @CHORE, move domain logic into a service @DEPENDENCY for Testing
  * TODO: @CHORE, add HAL to all endpoints
  * TODO: @CHORE, add hasAuthority checks to all endpoints
+ * https://www.baeldung.com/spring-hateoas-tutorial?fbclid=IwAR2NW80nLYxRXVDCwtIvCa2-ntc6CzfK54qjf8KALi6_CWlX5jcz9YghPQo
+ *
+ * TODO: PAGINATION CONFIG FOR SORTING
  */
 @RestController
 @RequestMapping("/activities")
 public class ActivityController {
 
-    private final ActivityRepository activityRepository;
     private final ActivityService activityService;
-    private final RegularSessionRepository regularSessionRepository;
+    private final PagedResourcesAssembler<Activity> pagedResourcesAssembler;
+    private final ActivityPagedResourcesAssembler activityPagedResourcesAssembler;
+
 
     @Autowired
-    public ActivityController(ActivityRepository activityRepository, ActivityService activityService, RegularSessionRepository regularSessionRepository) {
-        this.activityRepository = activityRepository;
+    public ActivityController(ActivityService activityService, PagedResourcesAssembler<Activity> pagedResourcesAssembler, ActivityPagedResourcesAssembler activityPagedResourcesAssembler) {
         this.activityService = activityService;
-        this.regularSessionRepository = regularSessionRepository;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.activityPagedResourcesAssembler = activityPagedResourcesAssembler;
     }
 
     /**
      * Get all scheduled activities in the database
      *
-     * @param pageable Pagination Metadata
      * @return a page of Activities
      */
     @GetMapping("")
-    public Page<Activity> getActivities(Pageable pageable) {
-        return activityRepository.findAll(pageable);
+    @Operation(summary = "List all scheduled activities",
+            description = "Get List of all scheduled activities and links to view the activitys details")
+    public PagedModel<ActivityDTO> getActivities(Pageable pageable) {
+        Page<Activity> allActivities = activityService.getActivities(pageable);
+        return pagedResourcesAssembler.toModel(allActivities, activityPagedResourcesAssembler);
     }
 
+    //get single activity
+    @GetMapping("/{activity_id}")
+    @Operation(summary = "Get specific scheduled activity",
+            description = "Get a specific scheduled activity, and links to relevant operations")
+    public ActivityDTO getActivityByActivityId(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id) {
+        ActivityDTO activity = activityPagedResourcesAssembler.toModel(activityService.findActivityById(activity_id));
+        activity.add(linkTo(ActivityController.class).slash(activity_id).withRel("delete"));
+        activity.add(linkTo(ActivityController.class).slash(activity_id).withRel("update"));
+        activity.add(linkTo(BookingController.class).slash("activity").slash(activity_id).withRel("Bookings"));
+        activity.add(linkTo(BookingController.class).slash(activity_id).withRel("Place Booking"));
+        if (activity.getRegularSessionId() != null) {
+            activity.add(linkTo(ActivityController.class).slash("cancelregularsession").slash(activity.getRegularSessionId().getId()).withRel("Stop Regular Session"));
+        }
+        return activity;
+    }
+//
     //get scheduled activities for a given resource
     @GetMapping("/resource/{resource_id}")
-    public List<Activity> getActivitiesByResourceId(@PathVariable Long resource_id) {
-        return activityRepository.findByResourceId(resource_id);
+    @Operation(summary = "Get scheduled activities for a given resource",
+            description = "Get list of all scheduled activities for a particular facility#2")
+    public PagedModel<ActivityDTO> getActivitiesByResourceId(Pageable pageable, @Parameter(description = "The ID of the specific resource(facility)", required = true)@PathVariable Long resource_id) {
+        return pagedResourcesAssembler.toModel(activityService.findByResourceId(pageable, resource_id), activityPagedResourcesAssembler);
     }
 
     //schedule an activity
     //Pulls data from activity type, only start and end type is pulled from json via JsonCreator
     //schedule an activity. Create a one time activity or regular session
     @PostMapping("activitytype/{activity_type_id}")
-    public Activity createActivity(@Valid @RequestBody ActivityDTO activityDTO, @PathVariable Long activity_type_id) {
+    @Transactional
+    @Operation(summary = "create a new scheduled activity",
+            description = "create a new scheduled activity, using activity type. Has the option to make regular session #12")
+    public Activity createActivity(@Parameter(description = "An ActivityDTO object, providing details needed to create an activity", required = true) @Valid @RequestBody ActivityDTO activityDTO,
+                                   @Parameter(description = "An ActivityDTO object, providing details needed to create an activity", required = true) @PathVariable Long activity_type_id) {
         Activity activity = new Activity();
         RegularSession regularSession = new RegularSession();
         activity.setStartTime(activityDTO.getStartTime());
@@ -75,40 +113,28 @@ public class ActivityController {
         return activityService.createNewActivity(activity, activity_type_id, regularSession);
     }
 
-
     //update details of scheduled activity
     @PutMapping("/{activity_id}")
-    public Activity updateActivity(@PathVariable Long activity_id, @Valid @RequestBody Activity activityRequest) {
-
-        Activity activity = activityRepository.findById(activity_id)
-                .orElseThrow(() -> new ResourceNotFoundException("Activity not found with ID " + activity_id));
-
-        activity.setName(activityRequest.getName());
-        activity.setCost(activityRequest.getCost());
-        activity.setStartTime(activityRequest.getStartTime());
-        activity.setEndTime(activityRequest.getEndTime());
-        activity.setCurrentCapacity(activityRequest.getCurrentCapacity());
-        activity.setRegularSession(activityRequest.getRegularSession());
-
-        return activityRepository.save(activity);
+    @Operation(summary = "Update a scheduled activity",
+            description = "Update the details of a scheduled activity #2")
+    public Activity updateActivity(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id, @Valid @RequestBody Activity activityRequest) {
+        return activityService.editActivity(activity_id, activityRequest);
     }
 
     //delete scheduled activity
     @DeleteMapping("/{activity_id}")
-    public ResponseEntity<?> deleteActivity(@PathVariable Long activity_id) {
+    @Operation(summary = "Delete a scheduled activity",
+            description = "delete a specific activity from the timetable/database #2")
+    public ResponseEntity<?> deleteActivity(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id) {
         return activityService.deleteActivity(activity_id);
     }
 
     //delete regular session, therefore stop activities from repeating
-    @DeleteMapping("/activities/cancelregularsession/{regular_session_id}")
-    public ResponseEntity<?> deleteRegularSession(@PathVariable Long regular_session_id) {
-        try {
-            regularSessionRepository.deleteById(regular_session_id);
-            return ResponseEntity
-                    .noContent()
-                    .build();
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException("Regular Session not found with that ID " + regular_session_id);
-        }
+    @DeleteMapping("/cancelregularsession/{regular_session_id}")
+    @Operation(summary = "Delete regular session",
+            description = "Removes a regular session (which allows a scheduled activity to repeat) #2")
+    public ResponseEntity<?> deleteRegularSession(@Parameter(description = "The ID of the specific regular session", required = true)@PathVariable Long regular_session_id) {
+        return activityService.deleteRegularSession(regular_session_id);
     }
+
 }
