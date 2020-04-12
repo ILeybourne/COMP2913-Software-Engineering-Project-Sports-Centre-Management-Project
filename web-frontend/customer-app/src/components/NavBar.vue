@@ -7,6 +7,7 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
+          <b-nav-item to="/about">About</b-nav-item>
           <b-nav-item to="/timetable">Timetable</b-nav-item>
           <b-nav-item to="/facilities">Facilities</b-nav-item>
           <b-nav-item to="/bookings">Bookings</b-nav-item>

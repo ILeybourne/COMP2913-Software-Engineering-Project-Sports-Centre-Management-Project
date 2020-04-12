@@ -76,6 +76,7 @@
         </div>
         <div class="button-container">
           <button
+            id="guestSubmitBtn"
             type="submit"
             class="btn btn-outline-secondary"
             name="details"
@@ -178,9 +179,7 @@ export default {
     },
 
     submitCustomerDetails(e) {
-      //TODO Validate before showing 2nd form
       e.preventDefault();
-      //TODO send array of data to parent
       if (
         this.$data.firstName !== "" &&
         this.$data.surname !== "" &&
@@ -189,10 +188,10 @@ export default {
       ) {
         this.$emit("submitCustomerDetails", this.$data);
         this.componentWidth = 60;
-        this.facilityValid = true;
-        this.activitiesValid = true;
-        this.dateValid = true;
-        this.timeValid = true;
+        this.firstNameValid = true;
+        this.surnameValid = true;
+        this.emailValid = true;
+        this.phoneValid = true;
       } else {
         this.callValidation();
       }

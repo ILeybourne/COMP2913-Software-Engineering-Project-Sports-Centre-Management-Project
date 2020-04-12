@@ -1,5 +1,5 @@
 <template>
-  <div class="facility">
+  <div class="facility" id="facilityComponent">
     <div class="facility-container">
       <div class="image">
         <!-- check licence-->
@@ -12,7 +12,7 @@
       <div class="facility-info">
         info
         <div class="facility-btn">
-          <button type="button" class="btn btn-outline-secondary">
+          <button type="button" class="btn btn-outline-secondary" id="facilityButton">
             Book Now
           </button>
         </div>
