@@ -71,15 +71,15 @@ class AccountTest {
     static Stream<Arguments> accountJsonVal() {
         return Stream.of(
                 Arguments.of("Jeff", 123, "jeff@jeff.net", new Date(130, Calendar.MAY, 4), new Date(130, Calendar.OCTOBER, 25),
-                        "{\"bookings\":[],\"createdAt\":1904079600000,\"customer\":{\"account\":null,\"dateOfBirth\":null,\"emailAddress\":\"jeff@jeff.net\",\"receipts\":[]},\"id\":0,\"updatedAt\":1919113200000}"),
+                        "{\"createdAt\":1904079600000,\"id\":0,\"updatedAt\":1919113200000}"),
                 Arguments.of("Todd", 456, "todd@todd.net", new Date(130, Calendar.OCTOBER, 21), new Date(131, Calendar.DECEMBER, 2),
-                        "{\"bookings\":[],\"createdAt\":1918767600000,\"customer\":{\"account\":null,\"dateOfBirth\":null,\"emailAddress\":\"todd@todd.net\",\"receipts\":[]},\"id\":0,\"updatedAt\":1953936000000}"),
+                        "{\"createdAt\":1918767600000,\"id\":0,\"updatedAt\":1953936000000}"),
                 Arguments.of("Eric", -1, "eric@eric.net", new Date(90, Calendar.JANUARY, 1), new Date(91, Calendar.NOVEMBER, 22),
-                        "{\"bookings\":[],\"createdAt\":631152000000,\"customer\":{\"account\":null,\"dateOfBirth\":null,\"emailAddress\":\"eric@eric.net\",\"receipts\":[]},\"id\":0,\"updatedAt\":690768000000}"),
+                        "{\"createdAt\":631152000000,\"id\":0,\"updatedAt\":690768000000}"),
                 Arguments.of("Mike", 286, "mike@mike.net", new Date(10, Calendar.MAY, 7), new Date(11, Calendar.AUGUST, 30),
-                        "{\"bookings\":[],\"createdAt\":-1882569600000,\"customer\":{\"account\":null,\"dateOfBirth\":null,\"emailAddress\":\"mike@mike.net\",\"receipts\":[]},\"id\":0,\"updatedAt\":-1841097600000}"),
+                        "{\"createdAt\":-1882569600000,\"id\":0,\"updatedAt\":-1841097600000}"),
                 Arguments.of("Brad", 321, "brad@brad.net", new Date(1000, Calendar.FEBRUARY, 19), new Date(1001, Calendar.JUNE, 28),
-                        "{\"bookings\":[],\"createdAt\":29352240000000,\"customer\":{\"account\":null,\"dateOfBirth\":null,\"emailAddress\":\"brad@brad.net\",\"receipts\":[]},\"id\":0,\"updatedAt\":29394918000000}")
+                        "{\"createdAt\":29352240000000,\"id\":0,\"updatedAt\":29394918000000}")
         );
     }
 }

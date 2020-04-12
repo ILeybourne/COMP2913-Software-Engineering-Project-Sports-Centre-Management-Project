@@ -53,15 +53,15 @@ class ResourceTest {
     static Stream<Arguments> resourceJsonVal() {
         return Stream.of(
                 Arguments.of("TestResource1", 1,
-                        "{\"activities\":[],\"activityTypes\":[],\"id\":1,\"name\":\"TestResource1\"}"),
+                        "{\"createdAt\":null,\"id\":1,\"name\":\"TestResource1\",\"updatedAt\":null}"),
                 Arguments.of("TestResource2", 2,
-                        "{\"activities\":[],\"activityTypes\":[],\"id\":2,\"name\":\"TestResource2\"}"),
+                        "{\"createdAt\":null,\"id\":2,\"name\":\"TestResource2\",\"updatedAt\":null}"),
                 Arguments.of("TestResource3", 3,
-                        "{\"activities\":[],\"activityTypes\":[],\"id\":3,\"name\":\"TestResource3\"}"),
+                        "{\"createdAt\":null,\"id\":3,\"name\":\"TestResource3\",\"updatedAt\":null}"),
                 Arguments.of("TestResource4", 4,
-                        "{\"activities\":[],\"activityTypes\":[],\"id\":4,\"name\":\"TestResource4\"}"),
+                        "{\"createdAt\":null,\"id\":4,\"name\":\"TestResource4\",\"updatedAt\":null}"),
                 Arguments.of("TestResource5", 5,
-                        "{\"activities\":[],\"activityTypes\":[],\"id\":5,\"name\":\"TestResource5\"}")
+                        "{\"createdAt\":null,\"id\":5,\"name\":\"TestResource5\",\"updatedAt\":null}")
         );
     }
 

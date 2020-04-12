@@ -48,15 +48,15 @@ class RegularSessionTest {
     static Stream<Arguments> regularSessionJsonVal() {
         return Stream.of(
                 Arguments.of(111, 5,
-                        "{\"activities\":[],\"bookings\":[],\"id\":111,\"interval\":5}"),
+                        "{\"activities\":[],\"id\":111,\"interval\":5}"),
                 Arguments.of(222, 4,
-                        "{\"activities\":[],\"bookings\":[],\"id\":222,\"interval\":4}"),
+                        "{\"activities\":[],\"id\":222,\"interval\":4}"),
                 Arguments.of(333, 3,
-                        "{\"activities\":[],\"bookings\":[],\"id\":333,\"interval\":3}"),
+                        "{\"activities\":[],\"id\":333,\"interval\":3}"),
                 Arguments.of(444, 2,
-                        "{\"activities\":[],\"bookings\":[],\"id\":444,\"interval\":2}"),
+                        "{\"activities\":[],\"id\":444,\"interval\":2}"),
                 Arguments.of(555, 1,
-                        "{\"activities\":[],\"bookings\":[],\"id\":555,\"interval\":1}")
+                        "{\"activities\":[],\"id\":555,\"interval\":1}")
         );
     }
 }
