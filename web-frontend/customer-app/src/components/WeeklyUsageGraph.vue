@@ -1,7 +1,11 @@
 <template
   ><div class="small">
-    <line-chart :chart-data="datacollection"></line-chart>
+    <line-chart v-if="startDate" :chart-data="datacollection"></line-chart>
     <button @click="fillData()">Randomize</button>
+    <div class="input-group">
+      <label>Start Date</label>
+      <v-date-picker @change="fillData" v-model="startDate"></v-date-picker>
+    </div>
   </div>
 </template>
 
@@ -15,16 +19,23 @@
 import { mapActions, mapGetters } from "vuex";
 import LineChart from "./LineChart.js";
 
+const groupBy = (xs, key) => {
+  return xs.reduce(function(rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+};
+
 export default {
   components: {
     LineChart
   },
   data() {
     return {
-      datacollection: null
+      datacollection: {},
+      startDate: null
     };
   },
-
   computed: {
     ...mapGetters("timetable", ["sessions"])
   },
@@ -32,41 +43,64 @@ export default {
     ...mapActions("timetable", {
       getActivity: "getAllSessions"
     }),
-    fillData() {
-      this.datacollection = {
-        labels: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday"
-        ],
-        datasets: [
-          {
-            label: "Data One",
-            backgroundColor: "#17a2b8",
-            data: [
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt(),
-              this.getRandomInt()
-            ]
-          }
-        ]
-      };
-    },
-    getRandomInt() {
-      return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
+    async fillData() {
+      console.log(this.startDate);
+      const endDate = this.$moment(this.startDate);
+      const startDate = endDate.clone().subtract("days", 6);
+      console.log(startDate);
+      console.log(endDate);
+      const data = {};
+      const response = await this.getActivity();
+      const thisWeek = response
+        .map(session => {
+          const startTimestamp = this.$moment(session.startTime);
+
+          return {
+            ...session,
+            startTimestamp,
+            dayOfYear: startTimestamp.dayOfYear()
+          };
+        })
+        .filter(session => {
+          return (
+            session.startTimestamp.isAfter(startDate) &&
+            session.startTimestamp.isBefore(endDate)
+          );
+        });
+      const grouped = groupBy(thisWeek, "dayOfYear");
+      console.log(grouped);
+      let day0 = startDate.dayOfYear();
+      const weeklyUsage = [];
+      const dates = [
+        startDate,
+        this.$moment().dayOfYear(day0 + 1),
+        this.$moment().dayOfYear(day0 + 2),
+        this.$moment().dayOfYear(day0 + 3),
+        this.$moment().dayOfYear(day0 + 4),
+        this.$moment().dayOfYear(day0 + 5),
+        this.$moment().dayOfYear(day0 + 6)
+      ];
+
+      for (const date of dates) {
+        const day = date.dayOfYear();
+        let y = grouped[day];
+        if (!y) {
+          y = [];
+        }
+        console.log(y);
+        weeklyUsage.push(y.length);
+      }
+
+      data.labels = dates.map(date => date.format("DD-MMM"));
+      console.log(data.labels);
+      data.datasets = [
+        {
+          label: "Weekly Usage",
+          data: weeklyUsage
+        }
+      ];
+      this.datacollection = data;
     }
-  },
-  async mounted() {
-    this.fillData();
-    await this.getActivity();
   }
 };
 </script>

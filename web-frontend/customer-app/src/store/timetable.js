@@ -34,6 +34,7 @@ const actions = {
     const { data } = await axios.get("/timetable");
     commit("SET_SESSIONS", data);
     commit("loading/FINISH_LOADING", null, { root: true });
+    return data;
   },
   async updateSession({ commit }, { newSessionData, sessionId }) {
     commit("loading/START_LOADING", null, { root: true });
