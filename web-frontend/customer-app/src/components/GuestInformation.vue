@@ -20,10 +20,7 @@
             @keyup="validateFirstName"
             required
           />
-          <div class="error" v-if="!$v.firstName.required">
-            Field is required
-          </div>
-          <div class="error" v-if="!$v.firstName.minLength">
+          <div class="error" v-if="!$v.firstName.minLength && $v.firstName.$model !== ''">
             Name must have at least
             {{ $v.firstName.$params.minLength.min }} letters.
           </div>
@@ -43,8 +40,7 @@
             @keyup="validateSurname"
             required
           />
-          <div class="error" v-if="!$v.surname.required">Field is required</div>
-          <div class="error" v-if="!$v.surname.minLength">
+          <div class="error" v-if="!$v.surname.minLength && $v.surname.$model !== ''">
             Name must have at least
             {{ $v.surname.$params.minLength.min }} letters.
           </div>
@@ -61,8 +57,7 @@
             @keyup="validateEmail"
             required
           />
-          <div class="error" v-if="!$v.email.required">Field is required</div>
-          <div class="error" v-if="!$v.email.email">Must be a valid e-mail address</div>
+          <div class="error" v-if="!$v.email.email && $v.email.$model !== ''">Must be a valid e-mail address</div>
         </div>
         <div class="form-row">
           <label for="phone">Phone Number:</label>
@@ -77,8 +72,7 @@
             @keyup="validatePhone"
             required
           />
-          <div class="error" v-if="!$v.phone.required">Field is required</div>
-          <div class="error" v-if="!$v.phone.numeric">Must be a valid phone number</div>
+          <div class="error" v-if="!$v.phone.numeric && $v.phone.$model !== ''">Must be a valid phone number</div>
         </div>
         <div class="form-row">
           <label for="health">Health Issues:</label>
@@ -110,6 +104,7 @@
             type="submit"
             class="btn btn-outline-secondary"
             name="details"
+            @click="guestInfoSubmitEmptyCheck"
           >
             Submit
           </button>
@@ -189,7 +184,8 @@ export default {
       firstNameValid: null,
       surnameValid: null,
       emailValid: null,
-      phoneValid: null
+      phoneValid: null,
+      emptySubmit: false
     };
   },
   validations: {
@@ -212,6 +208,13 @@ export default {
   },
   computed: {},
   methods: {
+    guestInfoSubmitEmptyCheck(){
+      if(this.firstName !== '' || this.surname !== '' || this.email !== '' || this.phone !== '' ){
+        this.emptySubmit = true;
+      }else{
+        this.emptySubmit = false
+      }
+    },
     getUserType(e) {
       this.userType = e.toElement.name;
     },

@@ -32,7 +32,7 @@ const actions = {
   async getAllSessions({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/timetable");
-    commit("SET_SESSIONS", data);
+    commit("SET_SESSIONS", data._embedded.activityDToes);
     commit("loading/FINISH_LOADING", null, { root: true });
   },
   async updateSession({ commit }, { newSessionData, sessionId }) {

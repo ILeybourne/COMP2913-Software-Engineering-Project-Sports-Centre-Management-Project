@@ -124,15 +124,20 @@ export default {
   name: "CashInformation",
   data() {
     return {
+      changeVal: 0,
       cashGiven: 0,
       changeValid: false,
       componentWidth: 90
     };
   },
   computed: {
-    change: function() {
-      console.log(Number(this.cashGiven) + " " + this.$attrs.activityPrice);
-      return Number(this.cashGiven) - this.$attrs.activityPrice;
+    change:{
+      get(){
+        return Number(this.cashGiven) - this.$attrs.activityPrice;
+      },
+      set(){
+        this.changeVal = Number(this.cashGiven) - this.$attrs.activityPrice;
+      }
     }
   },
   methods: {
@@ -145,8 +150,8 @@ export default {
     },
 
     getChange() {
-      this.change = this.cashGiven - this.$attrs.activityPrice;
-      if (this.change >= 0) {
+      this.changeVal = this.cashGiven - this.$attrs.activityPrice;
+      if (this.changeVal >= 0) {
         this.changeValid = true;
       } else {
         this.changeValid = false;
