@@ -1,13 +1,18 @@
 <template>
-  <div>
-    <div>
-      <img :src="user.picture" />
-      <h2>{{ $auth.user.name }}</h2>
-      <p>{{ $auth.user.email }}</p>
-    </div>
-
-    <div>
-      <pre>{{ JSON.stringify(user, null, 2) }}</pre>
+  <div class="profile-container">
+    <div class="row">
+      <div class="left-column col-sm-6">
+        <div class="profile-picture-container">
+          <img :src="user.picture" class="profile-picture rounded" />
+        </div>
+        <div>
+          <h2>{{ $auth.user.name }}</h2>
+          <p>{{ $auth.user.email }}</p>
+        </div>
+      </div>
+      <div class="right-column col-sm-6">
+        <pre>{{ JSON.stringify(user, null, 2) }}</pre>
+      </div>
     </div>
   </div>
 </template>
@@ -23,4 +28,19 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.profile-container {
+  margin: 5%;
+}
+.left-column {
+  min-width: 350px;
+}
+.profile-picture-container {
+  padding-bottom: 24px;
+}
+.profile-picture {
+  width: 200px;
+}
+.right-column {
+}
+</style>
