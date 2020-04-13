@@ -1,5 +1,5 @@
 <template>
-  <div class="timetable-container">
+  <div id="timetable-container" class="container-flex">
     <div class="timetable">
       <h1>Timetable</h1>
       <Timetable></Timetable>
@@ -19,7 +19,7 @@ export default {
 </script>
 
 <style>
-.timetable-container {
+#timetable-container {
   margin: 3%;
 }
 </style>
