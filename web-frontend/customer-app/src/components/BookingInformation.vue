@@ -175,7 +175,7 @@ export default {
       let activities = this.activities;
 
       if (!(e == null)) {
-        const filter = activity => Number(activity.resource.id) === Number(e);
+        const filter = activity => Number(activity._links.resource.href.split('/').slice(-1)[0] ) === Number(e);
         activities = this.activities.filter(filter);
         for (const activity of activities) {
           activityArray.push({ value: activity.id, text: activity.name });

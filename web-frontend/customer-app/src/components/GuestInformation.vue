@@ -61,6 +61,8 @@
             @keyup="validateEmail"
             required
           />
+          <div class="error" v-if="!$v.email.required">Field is required</div>
+          <div class="error" v-if="!$v.email.email">Must be a valid e-mail address</div>
         </div>
         <div class="form-row">
           <label for="phone">Phone Number:</label>
@@ -75,6 +77,8 @@
             @keyup="validatePhone"
             required
           />
+          <div class="error" v-if="!$v.phone.required">Field is required</div>
+          <div class="error" v-if="!$v.phone.numeric">Must be a valid phone number</div>
         </div>
         <div class="form-row">
           <label for="health">Health Issues:</label>
