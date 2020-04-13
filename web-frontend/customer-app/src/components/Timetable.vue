@@ -185,7 +185,6 @@ export default {
         :eventRender="drawEvent"
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
         defaultView="resourceTimelineDay"
-        aspectRatio="3"
         minTime="06:00:00"
         maxTime="23:00:00"
         @eventClick="activityClick($event)"
@@ -250,6 +249,7 @@ export default {
         <ActivityInfo :activity="this.previewActivity"></ActivityInfo>
       </b-modal>
     </div>
+    <div class="row"></div>
   </div>
 </template>
 
@@ -259,6 +259,8 @@ export default {
 @import "~@fullcalendar/resource-timeline/main.css";
 @import "~@fullcalendar/timeline/main.css";
 
+#calendar-container {
+}
 #calendar {
   max-width: 100%;
   max-height: 100%;

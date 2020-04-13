@@ -1,10 +1,8 @@
 <template>
-  <div class="row">
-    <div class="col" style="margin: 24px">
-      <div class="timetable">
-        <h1>Timetable</h1>
-        <Timetable></Timetable>
-      </div>
+  <div class="timetable-container">
+    <div class="timetable">
+      <h1>Timetable</h1>
+      <Timetable></Timetable>
     </div>
   </div>
 </template>
@@ -19,3 +17,9 @@ export default {
   }
 };
 </script>
+
+<style>
+.timetable-container {
+  margin: 3%;
+}
+</style>
