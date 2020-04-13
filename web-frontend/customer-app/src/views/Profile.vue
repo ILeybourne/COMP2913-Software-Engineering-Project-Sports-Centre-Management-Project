@@ -1,17 +1,39 @@
 <template>
-  <div class="profile-container">
+  <div id="profile-container">
     <div class="row">
-      <div class="left-column col-sm-6">
-        <div class="profile-picture-container">
-          <img :src="user.picture" class="profile-picture rounded" />
-        </div>
-        <div>
-          <h2>{{ $auth.user.name }}</h2>
-          <p>{{ $auth.user.email }}</p>
+      <div id="left-column" class="col-sm-7">
+        <div id="profile-card" class="card">
+          <div id="profile-picture-container">
+            <img
+              :src="user.picture"
+              id="profile-picture"
+              class="rounded border-bottom border-dark"
+            />
+          </div>
+          <div>
+            <h2>{{ $auth.user.nickname }}</h2>
+            <ul class="list-unstyled">
+              <li>{{ $auth.user.name }}</li>
+              <li>{{ $auth.user.email }}</li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="right-column col-sm-6">
-        <pre>{{ JSON.stringify(user, null, 2) }}</pre>
+      <div id="right-column" class="col-sm-5 align-self-center">
+        <div id="membership-card" class="card">
+          <h2>Membership</h2>
+          <a>Membership details</a>
+        </div>
+        <div class="text-center">
+          <button
+            id="cancel-membership-btn"
+            type="button"
+            class="btn btn-outline-primary  "
+          >
+            Cancel Membership
+          </button>
+        </div>
+        <!--<pre>{{ JSON.stringify(user, null, 2) }}</pre>-->
       </div>
     </div>
   </div>
@@ -29,18 +51,28 @@ export default {
 </script>
 
 <style scoped>
-.profile-container {
+#profile-container {
   margin: 5%;
 }
-.left-column {
+#left-column {
   min-width: 350px;
 }
-.profile-picture-container {
+#profile-card {
+  padding: 15px;
+}
+#profile-picture-container {
   padding-bottom: 24px;
 }
-.profile-picture {
+#profile-picture {
   width: 200px;
 }
-.right-column {
+#right-column {
+  padding-top: 24px;
+}
+#membership-card {
+  padding: 15px;
+}
+#cancel-membership-btn {
+  margin-top: 15px;
 }
 </style>
