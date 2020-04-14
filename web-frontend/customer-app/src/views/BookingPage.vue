@@ -201,7 +201,7 @@ export default {
       e.preventDefault();
       // Talk to our server to get encrpyted prices
       // eslint-disable-next-line no-undef
-      const paymentIntent = await this.$http.post(`/payments/intent`);
+      const paymentIntent = await this.$http.post(`/payments/intent/`+this.selectedActivityId);
       this.sendTokenToServer(paymentIntent.data.clientSecret);
     },
     async sendTokenToServer(client_secret) {

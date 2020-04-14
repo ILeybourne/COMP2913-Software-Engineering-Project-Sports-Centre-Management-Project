@@ -104,7 +104,6 @@
             type="submit"
             class="btn btn-outline-secondary"
             name="details"
-            @click="guestInfoSubmitEmptyCheck"
           >
             Submit
           </button>
@@ -154,7 +153,6 @@ label {
 
 button {
   margin: auto;
-
   width: 50%;
 }
 </style>
@@ -185,7 +183,6 @@ export default {
       surnameValid: null,
       emailValid: null,
       phoneValid: null,
-      emptySubmit: false
     };
   },
   validations: {
@@ -206,15 +203,7 @@ export default {
       numeric
     }
   },
-  computed: {},
   methods: {
-    guestInfoSubmitEmptyCheck(){
-      if(this.firstName !== '' || this.surname !== '' || this.email !== '' || this.phone !== '' ){
-        this.emptySubmit = true;
-      }else{
-        this.emptySubmit = false
-      }
-    },
     getUserType(e) {
       this.userType = e.toElement.name;
     },
@@ -232,14 +221,12 @@ export default {
       this.phoneValid =
         this.$data.phone !== "" && this.$data.phone.length == 11;
     },
-
     callValidation() {
       this.validateFirstName();
       this.validateSurname();
       this.validateEmail();
       this.validatePhone();
     },
-
     submitCustomerDetails(e) {
       e.preventDefault();
       if (

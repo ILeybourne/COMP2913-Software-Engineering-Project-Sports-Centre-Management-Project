@@ -4,6 +4,7 @@
       class="cash-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
     >
+      <h2>Cash Payment</h2>
       <form>
         <div class="form-row">
           <label for="PriceDiv">Price:</label>
@@ -114,9 +115,11 @@ label {
 
 button {
   margin: auto;
-
   width: 50%;
 }
+  h2{
+    text-align: center;
+  }
 </style>
 
 <script>

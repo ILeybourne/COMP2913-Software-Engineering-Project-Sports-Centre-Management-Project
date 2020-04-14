@@ -28,7 +28,7 @@
             id="activity"
             @change="
               [
-                selectActivity(),
+                selectActivityName(),
                 validateActivity(),
                 getPrice($event),
                 getTimes()
@@ -267,11 +267,7 @@ export default {
         this.selectedFacilityId = facilityId;
         this.setActivityTypeOptions(facilityId);
         this.selectedActivityId = activityTypeId;
-        console.log(this.selectedActivityId);
-        // this.selectedActivityName = this.activities.find(
-        //   x => x.id == activityTypeId
-        // ).name;
-
+        this.selectActivityName();
         let selectedDateUnix = this.sessions.find(x => x.id == activityId)
           .startTime;
         let selectedDate = new Date(selectedDateUnix);
@@ -323,10 +319,10 @@ export default {
         }
       }
     },
-    selectActivity() {
+    selectActivityName() {
       if (this.selectedActivityId != null) {
         this.selectedActivityName = this.activities.find(
-          x => x.id === this.selectedActivityId
+          x => Number(x.id) === Number(this.selectedActivityId)
         ).name;
       } else {
         this.selectedActivityName = "Please Select";

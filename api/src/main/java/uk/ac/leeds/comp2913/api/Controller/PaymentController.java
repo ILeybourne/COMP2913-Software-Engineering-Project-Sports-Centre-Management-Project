@@ -9,13 +9,17 @@ import com.stripe.param.PaymentIntentCreateParams;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
+import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
+import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
+import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
+import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
 
 
 //import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.PaymentIntentRepository;
@@ -28,6 +32,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController {
 
     Logger logger = LoggerFactory.getLogger(PaymentController.class);
+    private final ActivityTypeService activityTypeService;
+
+
+    public PaymentController( ActivityTypeService activityTypeService) {
+        this.activityTypeService = activityTypeService;
+    }
 
 
 //    static class StripeKeyResponse {
@@ -116,17 +126,21 @@ public class PaymentController {
 //            return (new StripeKeyResponse("pk_test_crv9Zb7tvQtSJ82FhQwrnb8k00v3eIOvj8"));
 //    }
 
-    @PostMapping(path = "/intent")
+
+
+    @PostMapping(path = "/intent/{activity_id}")
     // from https://blog.hackages.io/create-a-simple-payment-flow-with-stripe-b1d0f0f94337
-    public PayResponseBody create() throws StripeException {
+    public PayResponseBody create(@PathVariable Long activity_id) throws StripeException {
         //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         PaymentIntent intent = null;
         PayResponseBody responseBody = new PayResponseBody();
         try {
+            ActivityType activityType = activityTypeService.findById(activity_id);
+
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                             .setCurrency("gbp")
-                            .setAmount(1099L)
+                            .setAmount((activityType.getCost().multiply( new BigDecimal(100.0))).longValue())
                             // Verify your integration in this guide by including this parameter
                             .putMetadata("integration_check", "accept_a_payment")
                             .build();
