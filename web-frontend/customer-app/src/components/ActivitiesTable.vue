@@ -47,6 +47,10 @@ export default {
           text: "Facility"
         },
         {
+          value: "formattedCost",
+          text: "Cost"
+        },
+        {
           value: "actions",
           text: "Actions",
           sortable: false

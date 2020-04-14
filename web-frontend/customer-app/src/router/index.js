@@ -12,9 +12,9 @@ import { authGuard } from "@/auth/helpers/auth.guard";
 import BookingsTablePage from "@/views/BookingsTablePage";
 import Test from "@/views/Test";
 import ActivitiesTablePage from "@/views/ActivitiesTablePage";
-import WeeklyUsagePage from "@/views/WeeklyUsagePage";
+import WeeklyUsageGraphPage from "@/views/WeeklyUsageGraphPage";
 import FacilityPriceListing from "@/views/FacilityPriceListing";
-
+import WeeklyUsagePage from "@/views/WeeklyUsagePage"
 Vue.use(VueRouter);
 
 const routes = [
@@ -87,15 +87,20 @@ const routes = [
     beforeEnter: authGuard
   },
   {
-    path: "/weeklyusage",
+    path: "/weeklyusagegraph",
     name: "WeeklyUsageGraph",
-    component: WeeklyUsagePage,
+    component: WeeklyUsageGraphPage,
     beforeEnter: authGuard
   },
   {
     path: "/facilitypricelisting",
     name: "FacilityPriceListing",
     component: FacilityPriceListing
+  },
+  {
+    path: "/weeklyusage",
+    name: "WeeklyUsage",
+    component: WeeklyUsagePage,
   }
 ];
 

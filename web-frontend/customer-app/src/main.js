@@ -16,7 +16,7 @@ import { mapActions, mapMutations } from "vuex";
 import vuetify from "@/plugins/vuetify";
 import VueGraph from "vue-graph";
 Vue.use(VueGraph);
-
+Vue.use(require("vue-moment"));
 Vue.use(Auth0Plugin, {
   domain,
   clientId,

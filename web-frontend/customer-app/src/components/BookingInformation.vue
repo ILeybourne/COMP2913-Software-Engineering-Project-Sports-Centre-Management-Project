@@ -28,7 +28,7 @@
             id="activity"
             @change="
               [
-                selectActivity(),
+                selectActivityName(),
                 validateActivity(),
                 getPrice($event),
                 getTimes()
@@ -67,6 +67,7 @@
           <label for="price">Price:</label>
           <input type="text" id="price" name="price" v-model="price" disabled />
         </div>
+
         <div class="button-container">
           <!--          TODO function call on enter press-->
           <button
@@ -126,7 +127,7 @@ label {
 </style>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+  import { mapActions, mapGetters } from "vuex";
 export default {
   ...mapActions("facilities", ["getFacilities", "getActivities"]),
   ...mapActions("timetable", ["getAllSessions"]),
@@ -174,7 +175,7 @@ export default {
       let activities = this.activities;
 
       if (!(e == null)) {
-        const filter = activity => Number(activity.resource.id) === Number(e);
+        const filter = activity => Number(activity._links.resource.href.split('/').slice(-1)[0] ) === Number(e);
         activities = this.activities.filter(filter);
         for (const activity of activities) {
           activityArray.push({ value: activity.id, text: activity.name });
@@ -266,11 +267,7 @@ export default {
         this.selectedFacilityId = facilityId;
         this.setActivityTypeOptions(facilityId);
         this.selectedActivityId = activityTypeId;
-        console.log(this.selectedActivityId);
-        this.selectedActivityName = this.activities.find(
-          x => x.id == activityTypeId
-        ).name;
-
+        this.selectActivityName();
         let selectedDateUnix = this.sessions.find(x => x.id == activityId)
           .startTime;
         let selectedDate = new Date(selectedDateUnix);
@@ -287,6 +284,7 @@ export default {
 
         this.timeOptions.push(forrmattedTime);
         this.selectedTime = forrmattedTime;
+        this.getPrice(activityTypeId);
       }
     },
     getTimes() {
@@ -321,10 +319,10 @@ export default {
         }
       }
     },
-    selectActivity() {
+    selectActivityName() {
       if (this.selectedActivityId != null) {
         this.selectedActivityName = this.activities.find(
-          x => x.id === this.selectedActivityId
+          x => Number(x.id) === Number(this.selectedActivityId)
         ).name;
       } else {
         this.selectedActivityName = "Please Select";
@@ -333,7 +331,7 @@ export default {
   },
   async mounted() {
     await this.getFacilities();
-    await this.getFacilities();
+    await this.getActivities();
     await this.getAllSessions();
     this.fillByQuery();
   }

@@ -59,15 +59,15 @@ class ActivityTypeTest {
     static Stream<Arguments> activityTypeJsonVal() {
         return Stream.of(
                 Arguments.of(1, 6, new Date(120, Calendar.JANUARY, 1), new Date(121, Calendar.JUNE, 6), "TestType1", BigDecimal.valueOf(100), 200,
-                        "{\"cost\":100,\"createdAt\":1577836800000,\"id\":6,\"name\":\"TestType1\",\"resource\":{\"id\":1,\"name\":null},\"totalCapacity\":200,\"updatedAt\":1622934000000}"),
+                        "{\"cost\":100,\"createdAt\":1577836800000,\"id\":6,\"name\":\"TestType1\",\"totalCapacity\":200,\"updatedAt\":1622934000000}"),
                 Arguments.of(2, 7, new Date(120, Calendar.JANUARY, 2), new Date(121, Calendar.JUNE, 7), "TestType2", BigDecimal.valueOf(200), 400,
-                        "{\"cost\":200,\"createdAt\":1577923200000,\"id\":7,\"name\":\"TestType2\",\"resource\":{\"id\":2,\"name\":null},\"totalCapacity\":400,\"updatedAt\":1623020400000}"),
+                        "{\"cost\":200,\"createdAt\":1577923200000,\"id\":7,\"name\":\"TestType2\",\"totalCapacity\":400,\"updatedAt\":1623020400000}"),
                 Arguments.of(3, 8, new Date(120, Calendar.JANUARY, 3), new Date(121, Calendar.JUNE, 8), "TestType3", BigDecimal.valueOf(300), 600,
-                        "{\"cost\":300,\"createdAt\":1578009600000,\"id\":8,\"name\":\"TestType3\",\"resource\":{\"id\":3,\"name\":null},\"totalCapacity\":600,\"updatedAt\":1623106800000}"),
+                        "{\"cost\":300,\"createdAt\":1578009600000,\"id\":8,\"name\":\"TestType3\",\"totalCapacity\":600,\"updatedAt\":1623106800000}"),
                 Arguments.of(4, 9, new Date(120, Calendar.JANUARY, 4), new Date(121, Calendar.JUNE, 9), "TestType4", BigDecimal.valueOf(400), 800,
-                        "{\"cost\":400,\"createdAt\":1578096000000,\"id\":9,\"name\":\"TestType4\",\"resource\":{\"id\":4,\"name\":null},\"totalCapacity\":800,\"updatedAt\":1623193200000}"),
+                        "{\"cost\":400,\"createdAt\":1578096000000,\"id\":9,\"name\":\"TestType4\",\"totalCapacity\":800,\"updatedAt\":1623193200000}"),
                 Arguments.of(5, 10, new Date(120, Calendar.JANUARY, 5), new Date(121, Calendar.JUNE, 10), "TestType5", BigDecimal.valueOf(500), 1000,
-                        "{\"cost\":500,\"createdAt\":1578182400000,\"id\":10,\"name\":\"TestType5\",\"resource\":{\"id\":5,\"name\":null},\"totalCapacity\":1000,\"updatedAt\":1623279600000}")
+                        "{\"cost\":500,\"createdAt\":1578182400000,\"id\":10,\"name\":\"TestType5\",\"totalCapacity\":1000,\"updatedAt\":1623279600000}")
         );
     }
 }

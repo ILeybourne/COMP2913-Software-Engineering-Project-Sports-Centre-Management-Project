@@ -55,15 +55,15 @@ class CustomerTest {
     static Stream<Arguments> customerJsonVal() {
         return Stream.of(
                 Arguments.of(new Date(120, Calendar.JANUARY, 1), "a@a.com",
-                        "{\"account\":[],\"dateOfBirth\":1577836800000,\"emailAddress\":\"a@a.com\",\"receipts\":[]}"),
+                        "{\"dateOfBirth\":1577836800000,\"emailAddress\":\"a@a.com\",\"id\":null}"),
                 Arguments.of(new Date(121, Calendar.MARCH, 2), "b@b.com",
-                        "{\"account\":[],\"dateOfBirth\":1614643200000,\"emailAddress\":\"b@b.com\",\"receipts\":[]}"),
+                        "{\"dateOfBirth\":1614643200000,\"emailAddress\":\"b@b.com\",\"id\":null}"),
                 Arguments.of(new Date(122, Calendar.MAY, 3), "c@c.com",
-                        "{\"account\":[],\"dateOfBirth\":1651532400000,\"emailAddress\":\"c@c.com\",\"receipts\":[]}"),
+                        "{\"dateOfBirth\":1651532400000,\"emailAddress\":\"c@c.com\",\"id\":null}"),
                 Arguments.of(new Date(123, Calendar.JULY, 4), "d@d.com",
-                        "{\"account\":[],\"dateOfBirth\":1688425200000,\"emailAddress\":\"d@d.com\",\"receipts\":[]}"),
+                        "{\"dateOfBirth\":1688425200000,\"emailAddress\":\"d@d.com\",\"id\":null}"),
                 Arguments.of(new Date(124, Calendar.SEPTEMBER, 5), "e@e.com",
-                        "{\"account\":[],\"dateOfBirth\":1725490800000,\"emailAddress\":\"e@e.com\",\"receipts\":[]}")
+                        "{\"dateOfBirth\":1725490800000,\"emailAddress\":\"e@e.com\",\"id\":null}")
         );
     }
 

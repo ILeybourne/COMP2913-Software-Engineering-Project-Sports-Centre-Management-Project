@@ -128,11 +128,6 @@
   padding: 5px;
 }
 
-/*.booking-info {*/
-/*  padding-top: 5%;*/
-/*  padding-bottom: 5%;*/
-/*}*/
-
 .billing-container {
   margin: auto;
   width: 50%;
