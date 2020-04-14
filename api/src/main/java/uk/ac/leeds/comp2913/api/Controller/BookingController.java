@@ -61,7 +61,7 @@ public class BookingController {
     @Autowired
     public BookingController( BookingService bookingService, PagedResourcesAssembler<Booking> pagedResourcesAssembler, BookingPagedResourcesAssembler bookingPagedResourcesAssembler) {
         this.bookingService = bookingService;
-        this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;#
         this.bookingPagedResourcesAssembler = bookingPagedResourcesAssembler;
     }
 

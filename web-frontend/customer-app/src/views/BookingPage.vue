@@ -168,6 +168,7 @@ export default {
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
+    ...mapGetters("auth", ["user"]),
     selectedActivityName: function() {
       if (this.selectedActivityId != null) {
         return this.activities.find(act => (act.id = this.selectedActivityId))
@@ -201,7 +202,7 @@ export default {
       e.preventDefault();
       // Talk to our server to get encrpyted prices
       // eslint-disable-next-line no-undef
-      const paymentIntent = await this.$http.post(`/payments/intent/`+this.selectedActivityId);
+      const paymentIntent = await this.$http.post(`/payments/intent/`+this.selectedActivityId+"/1");
       this.sendTokenToServer(paymentIntent.data.clientSecret);
     },
     async sendTokenToServer(client_secret) {
@@ -311,6 +312,7 @@ export default {
         // this.setCashPrice()
         //Shows guest component
         this.hideGuest = false;
+
       }
       if (value.userType == "account") {
         this.hideGuest = false;
@@ -323,6 +325,8 @@ export default {
     }
   },
   mounted() {
+    console.log("this.user)")
+    console.log(this.user)
     this.getActivities();
     this.configureStripe();
   }
