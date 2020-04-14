@@ -62,7 +62,8 @@ export default {
     },
     activitiesForFacility() {
       const filter = activity =>
-        activity.resource.id === Number(this.selectedActivityForm.resourceId);
+        Number(activity._links.resource.href.split("/").slice(-1)[0]) ==
+        Number(this.selectedActivityForm.resourceId);
 
       const filteredActivities = this.activities.filter(filter);
 

@@ -13,13 +13,17 @@
             name="firstName"
             v-model="firstName"
             v-bind:class="{
-              'is-valid': firstNameValid,
-              'is-invalid': !firstNameValid
+              'is-valid': !$v.firstName.$invalid,
+              'is-invalid': $v.firstName.$invalid
             }"
             class="form-control"
             @keyup="validateFirstName"
             required
           />
+          <div class="error" v-if="!$v.firstName.minLength && $v.firstName.$model !== ''">
+            Name must have at least
+            {{ $v.firstName.$params.minLength.min }} letters.
+          </div>
         </div>
         <div class="form-row">
           <label for="surname">Surname:</label>
@@ -30,12 +34,16 @@
             class="form-control"
             v-model="surname"
             v-bind:class="{
-              'is-valid': surnameValid,
-              'is-invalid': !surnameValid
+              'is-valid': !$v.surname.$invalid,
+              'is-invalid': $v.surname.$invalid
             }"
             @keyup="validateSurname"
             required
           />
+          <div class="error" v-if="!$v.surname.minLength && $v.surname.$model !== ''">
+            Name must have at least
+            {{ $v.surname.$params.minLength.min }} letters.
+          </div>
         </div>
         <div class="form-row">
           <label for="email">Email:</label>
@@ -49,6 +57,7 @@
             @keyup="validateEmail"
             required
           />
+          <div class="error" v-if="!$v.email.email && $v.email.$model !== ''">Must be a valid e-mail address</div>
         </div>
         <div class="form-row">
           <label for="phone">Phone Number:</label>
@@ -63,6 +72,7 @@
             @keyup="validatePhone"
             required
           />
+          <div class="error" v-if="!$v.phone.numeric && $v.phone.$model !== ''">Must be a valid phone number</div>
         </div>
         <div class="form-row">
           <label for="health">Health Issues:</label>
@@ -73,6 +83,20 @@
             v-model="health"
             class="form-control"
           />
+        </div>
+        <div class="form-row">
+          <label for="cardRadio">Card or Cash:</label>
+          <b-form-group>
+            <b-form-radio-group
+              id="btn-radios-2"
+              v-model="cardCashSelection"
+              :options="cardCashOptions"
+              buttons
+              button-variant="outline-primary"
+              size="lg"
+              name="radio-btn-outline"
+            ></b-form-radio-group>
+          </b-form-group>
         </div>
         <div class="button-container">
           <button
@@ -90,14 +114,14 @@
 </template>
 
 <style scoped>
+.error {
+  font-size: x-small;
+  color: red;
+}
+
 .form-row {
   padding: 5px;
 }
-
-/*.guest-info {*/
-/*  padding-top: 5%;*/
-/*  padding-bottom: 5%;*/
-/*}*/
 
 .guest-container {
   margin: auto;
@@ -129,30 +153,73 @@ label {
 
 button {
   margin: auto;
-
   width: 50%;
 }
 </style>
 
 <script>
+import Vue from "vue";
+import Vuelidate from "vuelidate";
+Vue.use(Vuelidate);
+import { required, minLength, email, numeric } from "vuelidate/lib/validators";
+
 export default {
   name: "GuestInformation",
   data() {
     return {
+      cardCashOptions: [
+        { value: "card", text: "Card" },
+        { value: "cash", text: "Cash" }
+      ],
+      cardCashSelection: "card",
       firstName: "",
       surname: "",
       email: "",
       phone: "",
       health: "",
+      // cardCash: "card",
       componentWidth: 90,
       firstNameValid: null,
       surnameValid: null,
       emailValid: null,
-      phoneValid: null
+      phoneValid: null,
     };
   },
-  computed: {},
+  validations: {
+    firstName: {
+      required,
+      minLength: minLength(3)
+    },
+    surname: {
+      required,
+      minLength: minLength(2)
+    },
+    email: {
+      required,
+      email
+    },
+    phone: {
+      required,
+      numeric
+    }
+  },
   methods: {
+    // async getClientSecretOfCustomer() {
+    //   // Talk to our server to get encrpyted prices
+    //   // eslint-disable-next-line no-undef
+    //   const paymentIntent = await this.$http.post(
+    //           `/payments/intent/` + this.$attrs.activityType +"/1",
+    //           {
+    //             payment_method: {
+    //               card: this.card,
+    //               billing_details: {
+    //                 name: this.firstName
+    //               }
+    //             }
+    //           }
+    //   );
+    //   this.sendTokenToServer(paymentIntent.data.clientSecret);
+    // },
     getUserType(e) {
       this.userType = e.toElement.name;
     },
@@ -170,14 +237,12 @@ export default {
       this.phoneValid =
         this.$data.phone !== "" && this.$data.phone.length == 11;
     },
-
     callValidation() {
       this.validateFirstName();
       this.validateSurname();
       this.validateEmail();
       this.validatePhone();
     },
-
     submitCustomerDetails(e) {
       e.preventDefault();
       if (

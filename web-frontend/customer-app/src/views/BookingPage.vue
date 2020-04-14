@@ -6,18 +6,18 @@
     </div>
     <b-container class="form-container">
       <b-row class="row">
-        <b-col col lg="maxColSize ">
+        <b-col col lg="maxColSize " v-bind:class="{ 'd-none': hideBooking }">
           <BookingInformation
             class="booking-info"
             @getUserType="showGuestInfo"
           ></BookingInformation> </b-col
         ><b-col v-bind:class="{ 'd-none': hideGuest }">
           <GuestInformation
+                  :activityType="this.selectedActivityId"
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
           ></GuestInformation> </b-col
-        ><b-col v-bind:class="{ 'd-none': hideBilling }">
-          <!--        v-bind:class="{ 'd-none': hideBilling }"-->
+        ><b-col v-bind:class="{ 'd-none': hideCard }">
           <div>
             <form id="payment-form">
               <div id="cardDiv">
@@ -29,14 +29,34 @@
                     id="paymentButton"
                     @click="submitPayment($event)"
                   >
-                    Pay ${{ amount / 100 }}
+                    Pay £{{ price }}
                   </button>
                 </div>
               </div>
             </form>
           </div>
         </b-col>
+        <b-col v-bind:class="{ 'd-none': hideCash }">
+          <div id="cashDiv">
+            <CashInformation
+              :activityPrice="this.price"
+              @submitCashPayment="handleCashPayment"
+            ></CashInformation>
+          </div>
+        </b-col>
       </b-row>
+      <div v-bind:class="{ 'd-none': hideSuccess }" id="successDiv">
+        <h1>Success</h1>
+        <p>
+          Booking confirmation Activity: {{ selectedActivityName }}<br />
+          Booked on: {{ date }}<br />
+          Time: {{ selectedTime }}<br />
+          Amount paid: {{ price }}<br />
+          Customer: {{ firstName }} {{ surname }}<br />
+          Receipt send to: {{ email }}<br />
+        </p>
+        <p>Please wait to be redirected</p>
+      </div>
     </b-container>
   </div>
 </template>
@@ -50,14 +70,6 @@
   display: inline;
 }
 .booking-info {
-  display: inline;
-}
-
-.billing-info {
-  display: inline;
-}
-
-.payment-info {
   display: inline;
 }
 
@@ -97,13 +109,20 @@ h1 {
 <script>
 import BookingInformation from "@/components/BookingInformation.vue";
 import GuestInformation from "@/components/GuestInformation.vue";
+import CashInformation from "@/components/CashInformation.vue";
+import { mapGetters, mapActions } from "vuex";
 
 // @ is an alias to /src
 export default {
   name: "BookingPage",
   components: {
     GuestInformation,
-    BookingInformation
+    BookingInformation,
+    CashInformation
+  },
+  props: {
+    activityPrice: Number,
+    activityType: Number
   },
   data() {
     return {
@@ -130,17 +149,18 @@ export default {
       cardNumber: "",
       expiryDate: "",
       secureCode: "",
+      hideBooking: false,
       hideGuest: true,
-      hideBilling: true,
+      hideCard: true,
+      hideCash: true,
+      hideSuccess: true,
       hidePayment: true,
       bookings: [],
-      activitiesFromServer: [],
       loading: false,
       amount: 1000,
       // publishableKey: "pk_test_crv9Zb7tvQtSJ82FhQwrnb8k00v3eIOvj8",
       token: null,
       charge: null,
-
       stripe: "",
       elements: "",
       card: "",
@@ -148,7 +168,27 @@ export default {
       stripeOptions: {}
     };
   },
+  computed: {
+    ...mapGetters("facilities", ["activities"]),
+    ...mapGetters("auth", ["user"]),
+    selectedActivityName: function() {
+      if (this.selectedActivityId != null) {
+        return this.activities.find(act => (act.id = this.selectedActivityId))
+          .name;
+      }
+      return null;
+    }
+  },
   methods: {
+    ...mapActions("facilities", ["getActivities"]),
+
+    bookByCash() {
+      this.hideBooking = true;
+      this.hideGuest = true;
+      this.hideCard = true;
+      this.hideSuccess = false;
+    },
+
     configureStripe() {
       //TODO get from env
       // eslint-disable-next-line no-undef
@@ -164,14 +204,20 @@ export default {
       e.preventDefault();
       // Talk to our server to get encrpyted prices
       // eslint-disable-next-line no-undef
-      const token = await this.$http.post(
-        `/payments/intent`
-        // {
-        // }
+      const paymentIntent = await this.$http.post(
+        `/payments/intent/` + this.selectedActivityId,
+        {
+          payment_method: {
+            card: this.card,
+            billing_details: {
+              name: this.firstName
+            }
+          }
+        }
       );
-      //console.log(token);
-      this.sendTokenToServer(token.data.clientSecret);
+      this.sendTokenToServer(paymentIntent.data.clientSecret);
     },
+
     async sendTokenToServer(client_secret) {
       let successBol = false;
       //uses client secret from  payment intent to make payment
@@ -181,89 +227,78 @@ export default {
           card: this.card,
           billing_details: {
             name: this.firstName
-          }
-        }
+          },
+        },
+        setup_future_usage: "off_session"
       });
 
       if (result.error) {
         // Show error to your customer (e.g., insufficient funds)
-        //console.log(result.error.message);
+        console.log(result.error.message);
       } else {
+        console.log("first else)");
         // The payment has been processed!
         if (result.paymentIntent.status === "succeeded") {
-          //console.log("success");
-          //TODO create booking
-          // await  this.postAllFormData()
+          await this.postAllFormData();
           //TODO Set payment amount
+
+          this.hideBooking = true;
+          this.hideGuest = true;
+          this.hideCard = true;
+          this.hideSuccess = false;
           //TODO Redirect
           successBol = true;
         }
       }
       if (successBol == true) {
-        await this.$router.push({
-          name: "BookingPage",
-          query: { status: "success" }
-        });
+        //Change url
+        // await this.$router.push({
+        //   name: "BookingPage",
+        //   query: { status: "success" }
+        // });
+      }
+    },
+    async handleCashPayment(value) {
+      if (value.change >= 0) {
+        await this.postAllFormData();
+
+        this.hideBooking = true;
+        this.hideGuest = true;
+        this.hideCash = true;
+        this.hideSuccess = false;
+      } else {
+        //invalid amount of cash given
       }
     },
     async postAllFormData() {
       try {
         /* TODO: Validate and check server response */
-        // this.getActivities();
-        // const token = await this.$auth.getTokenSilently();
-        // let activities = this.activitiesFromServer;
-        ////console.log(activities);
-        // let bookedActivity = this.activitiesFromServer.find(
-        //   activity => activity.name == this.selectedActivity
-        // );
+        let bookedActivity = this.activities.find(
+          activity => activity.id == this.selectedActivityId
+        );
+        console.log(this.$auth._uid);
 
         const body = {
           //TODO PASS USER
-          // account: parseInt(this.$auth._uid),
-          id: 1,
-          activityId: 1,
-          accountId: 1,
-          type: 1
+          account: null,
+          activity: bookedActivity,
+          createdAt: Date.now(),
+          receipt: null,
+          updatedAt: null,
+          type: "booking",
+          amount: this.price
         };
-        await this.$http.get(`/bookings`);
 
-        await this.$http.post(
-          `/bookings`,
+        await this.$http.post(`/bookings/`+this.selectedActivityId, body);
 
-          body,
-
-          {
-            // headers: {
-            //   Authorization: `Bearer ${token}`
-            // }
-          }
-        );
-
-        await this.$router.push({
-          name: "BookingPage",
-          query: { status: "success" }
-        });
+        // await this.$router.push({
+        //   name: "BookingPage",
+        //   query: { status: "success" }
+        // });
       } catch (e) {
-        ////console.log(e);
+        console.log(e);
       }
     },
-    // fillPaymentInfo(value) {
-    //   this.nameCard = value.nameCard;
-    //   this.cardType = value.cardType;
-    //   this.cardNumber = value.cardNumber;
-    //   this.expiryDate = value.date;
-    //   this.secureCode = value.secureCode;
-    //   this.postAllFormData();
-    // },
-    // showPaymentInfo(value) {
-    //   this.name = value.name;
-    //   this.emailBilling = value.email;
-    //   this.houseNumber = value.houseNumber;
-    //   this.streetName = value.streetName;
-    //   this.city = value.city;
-    //   this.postCode = value.postCode;
-    //   this.hidePayment = false;
-    // },
     showBillingInfo(value) {
       console.log(value);
       this.firstName = value.firstName;
@@ -271,7 +306,13 @@ export default {
       this.email = value.email;
       this.phone = value.phone;
       this.health = value.health;
-      this.hideBilling = false;
+      if (value.cardCashSelection == "card") {
+        this.hideCard = false;
+        this.hideCash = true;
+      } else {
+        this.hideCash = false;
+        this.hideCard = true;
+      }
     },
     showGuestInfo(value) {
       if (value.userType == "guest") {
@@ -282,6 +323,7 @@ export default {
         this.date = value.selectedDate;
         this.selectedTime = value.selectedTime;
         this.price = value.price;
+        // this.setCashPrice()
         //Shows guest component
         this.hideGuest = false;
       }
@@ -293,21 +335,12 @@ export default {
         // this.email =
         // this.phone =
       }
-      // this.getBookings();
     }
-
-    // async getBookings() {
-    //   const { data } = await this.$http.get("http://localhost:8000/bookings");
-    //   this.bookings = data;
-    // },
-    //
-    // async getActivities() {
-    //   const { data } = await this.$http.get("http://localhost:8000/activities");
-    //   this.activitiesFromServer = data.content;
-    // }
   },
   mounted() {
-    // this.getActivities();
+    console.log("this.user)");
+    console.log(this.user);
+    this.getActivities();
     this.configureStripe();
   }
 };

@@ -34,13 +34,13 @@ const actions = {
   async getFacilities({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/resources");
-    commit("SET_FACILITIES", data.content);
+    commit("SET_FACILITIES", data._embedded.resourceDToes);
     commit("loading/FINISH_LOADING", null, { root: true });
   },
   async getActivities({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/activitytypes");
-    commit("SET_ACTIVITIES", data);
+    commit("SET_ACTIVITIES", data._embedded.activityTypeDToes);
     commit("loading/FINISH_LOADING", null, { root: true });
   }
 };
