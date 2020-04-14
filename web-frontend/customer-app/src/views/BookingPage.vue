@@ -13,6 +13,7 @@
           ></BookingInformation> </b-col
         ><b-col v-bind:class="{ 'd-none': hideGuest }">
           <GuestInformation
+                  :activityType="this.selectedActivityId"
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
           ></GuestInformation> </b-col
@@ -28,7 +29,7 @@
                     id="paymentButton"
                     @click="submitPayment($event)"
                   >
-                    Pay ${{ amount / 100 }}
+                    Pay £{{ price }}
                   </button>
                 </div>
               </div>
@@ -120,7 +121,8 @@ export default {
     CashInformation
   },
   props: {
-    activityPrice: Number
+    activityPrice: Number,
+    activityType: Number
   },
   data() {
     return {
@@ -202,9 +204,20 @@ export default {
       e.preventDefault();
       // Talk to our server to get encrpyted prices
       // eslint-disable-next-line no-undef
-      const paymentIntent = await this.$http.post(`/payments/intent/`+this.selectedActivityId+"/1");
+      const paymentIntent = await this.$http.post(
+        `/payments/intent/` + this.selectedActivityId,
+        {
+          payment_method: {
+            card: this.card,
+            billing_details: {
+              name: this.firstName
+            }
+          }
+        }
+      );
       this.sendTokenToServer(paymentIntent.data.clientSecret);
     },
+
     async sendTokenToServer(client_secret) {
       let successBol = false;
       //uses client secret from  payment intent to make payment
@@ -214,8 +227,9 @@ export default {
           card: this.card,
           billing_details: {
             name: this.firstName
-          }
-        }
+          },
+        },
+        setup_future_usage: "off_session"
       });
 
       if (result.error) {
@@ -275,7 +289,7 @@ export default {
           amount: this.price
         };
 
-        await this.$http.post(`/bookings`, body);
+        await this.$http.post(`/bookings/`+this.selectedActivityId, body);
 
         // await this.$router.push({
         //   name: "BookingPage",
@@ -312,7 +326,6 @@ export default {
         // this.setCashPrice()
         //Shows guest component
         this.hideGuest = false;
-
       }
       if (value.userType == "account") {
         this.hideGuest = false;
@@ -325,8 +338,8 @@ export default {
     }
   },
   mounted() {
-    console.log("this.user)")
-    console.log(this.user)
+    console.log("this.user)");
+    console.log(this.user);
     this.getActivities();
     this.configureStripe();
   }

@@ -204,6 +204,22 @@ export default {
     }
   },
   methods: {
+    // async getClientSecretOfCustomer() {
+    //   // Talk to our server to get encrpyted prices
+    //   // eslint-disable-next-line no-undef
+    //   const paymentIntent = await this.$http.post(
+    //           `/payments/intent/` + this.$attrs.activityType +"/1",
+    //           {
+    //             payment_method: {
+    //               card: this.card,
+    //               billing_details: {
+    //                 name: this.firstName
+    //               }
+    //             }
+    //           }
+    //   );
+    //   this.sendTokenToServer(paymentIntent.data.clientSecret);
+    // },
     getUserType(e) {
       this.userType = e.toElement.name;
     },
