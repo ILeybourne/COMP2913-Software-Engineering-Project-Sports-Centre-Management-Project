@@ -7,22 +7,20 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class GrantedAuthoritiesExtractor implements Converter<Jwt, Collection<GrantedAuthority>> {
-
     public Collection<GrantedAuthority> convert(Jwt jwt) {
-//            Collection<String> scopes = (Collection<String>) jwt.getClaims().get("scope");
-//            return scopes.stream()
-//                    .map(SimpleGrantedAuthority::new)
-//                    .collect(Collectors.toList());
-        Collection<?> authorities = (Collection<?>)
-                jwt.getClaims().getOrDefault("new_claim", Collections.emptyList());
+        Collection<?> permissions = (Collection<?>) jwt.getClaims()
+                .getOrDefault("permissions", Collections.emptyList());
 
-        return authorities.stream()
-                .map(Object::toString)
+        final List<GrantedAuthority> coll = permissions.stream()
+                .map((string) -> "SCOPE_" + string)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+        return coll;
     }
 
 }
