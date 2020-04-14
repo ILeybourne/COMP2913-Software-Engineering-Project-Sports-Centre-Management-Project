@@ -29,11 +29,11 @@ public class Account {
     @ManyToOne
     private Centre centre;
 
-    @OneToMany(mappedBy = "account",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<Membership> memberships;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", unique=true)
+    @JoinColumn(name = "customer_id", unique = true)
     private Customer customer;
 
     @OneToMany(mappedBy = "account")
@@ -41,6 +41,10 @@ public class Account {
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Date getCreatedAt() {
@@ -79,11 +83,11 @@ public class Account {
 
     @JsonIgnore
     public List<Booking> getBookings() {
-      return bookings;
+        return bookings;
     }
 
     public void setBookings(List<Booking> bookings) {
-      this.bookings = bookings;
+        this.bookings = bookings;
     }
 
     @JsonIgnore
