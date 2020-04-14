@@ -71,15 +71,15 @@ class ActivityTest {
     static Stream<Arguments> activityJsonVal() {
         return Stream.of(
                 Arguments.of("TestType1", 1, 6, 11, new Date(120, Calendar.JANUARY, 1), new Date(121, Calendar.JUNE, 6), "TestActivity1", 100, BigDecimal.valueOf(72), false,
-                        "{\"cost\":72,\"currentCapacity\":100,\"endTime\":1622934000000,\"id\":11,\"name\":\"TestActivity1\",\"regularSession\":{\"bookings\":null,\"id\":6,\"interval\":null},\"resource\":{\"id\":1,\"name\":null},\"social\":false,\"startTime\":1577836800000}"),
+                        "{\"cost\":72,\"currentCapacity\":100,\"endTime\":1622934000000,\"id\":11,\"name\":\"TestActivity1\",\"regularSession\":{\"id\":6,\"interval\":null},\"social\":false,\"startTime\":1577836800000}"),
                 Arguments.of("TestType2", 2, 7, 12, new Date(120, Calendar.FEBRUARY, 2), new Date(121, Calendar.JULY, 7), "TestActivity2", 123, BigDecimal.valueOf(54), true,
-                        "{\"cost\":54,\"currentCapacity\":123,\"endTime\":1625612400000,\"id\":12,\"name\":\"TestActivity2\",\"regularSession\":{\"bookings\":null,\"id\":7,\"interval\":null},\"resource\":{\"id\":2,\"name\":null},\"social\":true,\"startTime\":1580601600000}"),
+                        "{\"cost\":54,\"currentCapacity\":123,\"endTime\":1625612400000,\"id\":12,\"name\":\"TestActivity2\",\"regularSession\":{\"id\":7,\"interval\":null},\"social\":true,\"startTime\":1580601600000}"),
                 Arguments.of("TestType3", 3, 8, 13, new Date(120, Calendar.MARCH, 3), new Date(121, Calendar.AUGUST, 8), "TestActivity3", 456, BigDecimal.valueOf(34), false,
-                        "{\"cost\":34,\"currentCapacity\":456,\"endTime\":1628377200000,\"id\":13,\"name\":\"TestActivity3\",\"regularSession\":{\"bookings\":null,\"id\":8,\"interval\":null},\"resource\":{\"id\":3,\"name\":null},\"social\":false,\"startTime\":1583193600000}"),
+                        "{\"cost\":34,\"currentCapacity\":456,\"endTime\":1628377200000,\"id\":13,\"name\":\"TestActivity3\",\"regularSession\":{\"id\":8,\"interval\":null},\"social\":false,\"startTime\":1583193600000}"),
                 Arguments.of("TestType4", 4, 9, 14, new Date(120, Calendar.APRIL, 4), new Date(121, Calendar.SEPTEMBER, 9), "TestActivity4", 789, BigDecimal.valueOf(101), true,
-                        "{\"cost\":101,\"currentCapacity\":789,\"endTime\":1631142000000,\"id\":14,\"name\":\"TestActivity4\",\"regularSession\":{\"bookings\":null,\"id\":9,\"interval\":null},\"resource\":{\"id\":4,\"name\":null},\"social\":true,\"startTime\":1585954800000}"),
+                        "{\"cost\":101,\"currentCapacity\":789,\"endTime\":1631142000000,\"id\":14,\"name\":\"TestActivity4\",\"regularSession\":{\"id\":9,\"interval\":null},\"social\":true,\"startTime\":1585954800000}"),
                 Arguments.of("TestType5", 5, 10, 15, new Date(120, Calendar.MAY, 5), new Date(121, Calendar.OCTOBER, 10), "TestActivity5", 2000, BigDecimal.valueOf(21), false,
-                        "{\"cost\":21,\"currentCapacity\":2000,\"endTime\":1633820400000,\"id\":15,\"name\":\"TestActivity5\",\"regularSession\":{\"bookings\":null,\"id\":10,\"interval\":null},\"resource\":{\"id\":5,\"name\":null},\"social\":false,\"startTime\":1588633200000}")
+                        "{\"cost\":21,\"currentCapacity\":2000,\"endTime\":1633820400000,\"id\":15,\"name\":\"TestActivity5\",\"regularSession\":{\"id\":10,\"interval\":null},\"social\":false,\"startTime\":1588633200000}")
         );
     }
 

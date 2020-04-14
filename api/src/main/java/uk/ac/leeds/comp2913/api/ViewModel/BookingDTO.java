@@ -25,7 +25,6 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
 
   @JsonCreator
   public BookingDTO(@JsonProperty("participants") Integer participants,
-                    @JsonProperty("amount") BigDecimal amount,
                     @JsonProperty("accountId") Long accountId,
                     @JsonProperty(value = "regularBooking") Boolean regularBooking) {
     if (regularBooking == null) {

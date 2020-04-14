@@ -110,14 +110,6 @@ public class BookingController {
         return bookingService.createNewBookingForActivity(b, activity_id, account_id, regularBooking);
     }
 
-    @PutMapping("/{booking_id}")
-    @Operation(summary = "Update Booking",
-            description = "Edit a booking")
-    public Booking updateBooking(@Parameter(description = "The ID of the booking", required = true)@PathVariable Long booking_id,
-                                 @Parameter(description = "A Booking object", required = true)@Valid @RequestBody Booking bookingRequest) {
-        return bookingService.updateBooking(booking_id, bookingRequest);
-    }
-
     //unsubscribe from regular session auto bookings
     @PutMapping("/cancel/{activity_id}/{account_id}")
     @Operation(summary = "unsubscribe from a regular session",
@@ -130,7 +122,7 @@ public class BookingController {
     @DeleteMapping("/{booking_id}")
     @Operation(summary = "Cancel Booking #5",
             description = "Cancel a booking #5")
-    public ResponseEntity<?> deleteBooking(@Parameter(description = "The Id of the booking in the path", required = true)@PathVariable Long bookingId) {
-        return bookingService.deleteBooking(bookingId);
+    public ResponseEntity<?> deleteBooking(@Parameter(description = "The Id of the booking in the path", required = true)@PathVariable Long booking_id) {
+        return bookingService.deleteBooking(booking_id);
     }
 }

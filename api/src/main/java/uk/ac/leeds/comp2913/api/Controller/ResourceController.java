@@ -63,7 +63,7 @@ public class ResourceController {
     @GetMapping("")
     @Operation(summary = "Get all facilities",
             description = "Get a list of all facilities with basic information")
-//    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
+    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
     public PagedModel<ResourceDTO> getResources(Pageable pageable) {
         Page<Resource> allResources = resourceService.findAll(pageable);
         return pagedResourcesAssembler.toModel(allResources, resourcePagedResourcesAssembler);
@@ -72,7 +72,7 @@ public class ResourceController {
     @GetMapping("/{resource_id}")
     @Operation(summary = "Get a specific facility",
             description = "Get a specific facility with more information and links")
-   // @PreAuthorize("hasAuthority('SCOPE_read:resource')")
+    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
     public ResourceDTO getResourceById(@Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
         ResourceDTO resource = resourcePagedResourcesAssembler.toModel(resourceService.findById(resource_id));
         resource.add(linkTo(ResourceController.class).slash(resource_id).withRel("update"));
