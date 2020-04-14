@@ -14,7 +14,7 @@ import Test from "@/views/Test";
 import ActivitiesTablePage from "@/views/ActivitiesTablePage";
 import WeeklyUsageGraphPage from "@/views/WeeklyUsageGraphPage";
 import FacilityPriceListing from "@/views/FacilityPriceListing";
-import WeeklyUsagePage from "@/views/WeeklyUsagePage"
+import WeeklyUsagePage from "@/views/WeeklyUsagePage";
 Vue.use(VueRouter);
 
 const routes = [
@@ -100,13 +100,14 @@ const routes = [
   {
     path: "/weeklyusage",
     name: "WeeklyUsage",
-    component: WeeklyUsagePage,
+    component: WeeklyUsagePage
   }
 ];
 
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
+  linkActiveClass: "active",
   routes
 });
 

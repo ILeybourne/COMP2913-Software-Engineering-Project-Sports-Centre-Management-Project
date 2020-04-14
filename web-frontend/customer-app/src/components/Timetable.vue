@@ -5,13 +5,13 @@ import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import interactionPlugin from "@fullcalendar/interaction";
 import { BPopover } from "bootstrap-vue";
 import { mapActions, mapGetters } from "vuex";
-import ActivityInfo from "@/components/ActivityInfo.vue";
+import SessionInfo from "@/components/SessionInfo.vue";
 
 export default {
   name: "Timetable",
   components: {
     FullCalendar,
-    ActivityInfo
+    SessionInfo
   },
   data() {
     return {
@@ -25,7 +25,7 @@ export default {
         center: "title",
         right: "resourceTimelineDay,resourceTimelineWeek"
       },
-      previewActivity: {},
+      previewSession: {},
       selectedActivityForm: {
         startTime: null,
         endTime: null,
@@ -62,7 +62,7 @@ export default {
     },
     activitiesForFacility() {
       const filter = activity =>
-        Number(activity._links.resource.href.split("/").slice(-1)[0]) ==
+        Number(activity._links.resource.href.split("/").slice(-1)[0]) ===
         Number(this.selectedActivityForm.resourceId);
 
       const filteredActivities = this.activities.filter(filter);
@@ -112,13 +112,15 @@ export default {
     },
     activityClick(eventInfo) {
       const { event } = eventInfo;
-      // const { extendedProps: options } = event;
-      this.previewActivity = this.activities.find(
+
+      this.previewSession = this.sessions.find(
         activity => activity.id === Number(event.id)
       );
-      this.$bvModal.show("preview-activity-modal");
+
+      if (this.previewSession) {
+        this.$bvModal.show("preview-activity-modal");
+      }
     },
-    onEventTimeChange() {},
     onSelect(event) {
       const s = event.start.toISOString();
       this.selectedActivityForm.startTime = s.substring(0, s.length - 1);
@@ -243,8 +245,8 @@ export default {
         </div>
       </b-form>
     </b-modal>
-    <b-modal id="preview-activity-modal" title="Activity">
-      <ActivityInfo :activity="this.previewActivity"></ActivityInfo>
+    <b-modal id="preview-activity-modal" title="Session Details">
+      <SessionInfo v-if="this.previewSession" :session="this.previewSession"></SessionInfo>
     </b-modal>
   </div>
 </template>

@@ -1,7 +1,9 @@
 <template>
   <div id="app" v-if="!blocking">
     <NavBar />
-    <router-view />
+    <div class="container">
+      <router-view />
+    </div>
     <Footer />
   </div>
   <PreLoadSpinner v-else></PreLoadSpinner>
