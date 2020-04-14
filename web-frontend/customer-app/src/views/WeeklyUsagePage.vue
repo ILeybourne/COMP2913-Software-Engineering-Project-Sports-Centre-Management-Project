@@ -1,18 +1,18 @@
 <template>
-  <div class="weeklyusagegraph">
+  <div class="weeklyusage">
     <h1>Weekly Usage</h1>
-    <WeeklyUsageGraph></WeeklyUsageGraph>
+    <WeeklyUsage></WeeklyUsage>
   </div>
 </template>
 
 <script>
-import WeeklyUsageGraph from "@/components/WeeklyUsageGraph.vue";
+import WeeklyUsage from "@/components/WeeklyUsage.vue";
 
 // @ is an alias to /src
 export default {
   name: "WeeklyUsagePage",
   components: {
-    WeeklyUsageGraph
+    WeeklyUsage
   }
 };
 </script>

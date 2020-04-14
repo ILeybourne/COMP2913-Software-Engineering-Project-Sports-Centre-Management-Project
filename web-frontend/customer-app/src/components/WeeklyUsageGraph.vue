@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     ...mapActions("timetable", {
-      getActivity: "getAllSessions"
+      getActivity: "getAllSessions",
     }),
     async fillData() {
       console.log(this.startDate);
