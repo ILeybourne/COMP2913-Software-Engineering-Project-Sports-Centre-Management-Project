@@ -1,6 +1,5 @@
 import axios from "@/plugins/axios.plugin";
 
-
 const state = {
   facilities: [],
   /*

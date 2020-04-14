@@ -26,6 +26,10 @@ export default {
         right: "resourceTimelineDay,resourceTimelineWeek"
       },
       previewSession: {},
+      buttonText: {
+        today: "Today"
+      },
+      previewActivity: {},
       selectedActivityForm: {
         startTime: null,
         endTime: null,
@@ -173,6 +177,7 @@ export default {
 </script>
 
 <template>
+  <div id="calendar-container">
   <div id="calendar">
     <FullCalendar
       :resources="resources"
@@ -248,6 +253,8 @@ export default {
     <b-modal id="preview-activity-modal" title="Session Details">
       <SessionInfo v-if="this.previewSession" :session="this.previewSession"></SessionInfo>
     </b-modal>
+    </div>
+    <div class="row"></div>
   </div>
 </template>
 
@@ -257,7 +264,10 @@ export default {
 @import "~@fullcalendar/resource-timeline/main.css";
 @import "~@fullcalendar/timeline/main.css";
 
+#calendar-container {
+}
 #calendar {
   max-width: 100%;
+  max-height: 100%;
 }
 </style>
