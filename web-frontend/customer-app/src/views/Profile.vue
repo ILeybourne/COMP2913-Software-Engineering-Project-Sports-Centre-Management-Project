@@ -1,6 +1,6 @@
 <template>
   <div id="profile-container">
-    <h1>Profile</h1>
+    <h1>My Account</h1>
     <div class="row">
       <div id="left-column" class="col-sm-7">
         <div id="profile-card" class="card">
