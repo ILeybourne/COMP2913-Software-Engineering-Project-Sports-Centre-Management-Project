@@ -63,7 +63,7 @@ public class ResourceController {
     @GetMapping("")
     @Operation(summary = "Get all facilities",
             description = "Get a list of all facilities with basic information")
-    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
+//    @PreAuthorize("hasAuthority('SCOPE_read:resource')")
     public PagedModel<ResourceDTO> getResources(Pageable pageable) {
         Page<Resource> allResources = resourceService.findAll(pageable);
         return pagedResourcesAssembler.toModel(allResources, resourcePagedResourcesAssembler);
