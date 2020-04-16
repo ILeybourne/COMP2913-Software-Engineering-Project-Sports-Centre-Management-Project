@@ -13,7 +13,7 @@
           ></BookingInformation> </b-col
         ><b-col v-bind:class="{ 'd-none': hideGuest }">
           <GuestInformation
-                  :activityType="this.selectedActivityId"
+            :activityType="this.selectedActivityId"
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
           ></GuestInformation> </b-col
@@ -227,7 +227,7 @@ export default {
           card: this.card,
           billing_details: {
             name: this.firstName
-          },
+          }
         },
         setup_future_usage: "off_session"
       });
@@ -289,7 +289,7 @@ export default {
           amount: this.price
         };
 
-        await this.$http.post(`/bookings/`+this.selectedActivityId, body);
+        await this.$http.post(`/bookings/` + this.selectedActivityId, body);
 
         // await this.$router.push({
         //   name: "BookingPage",

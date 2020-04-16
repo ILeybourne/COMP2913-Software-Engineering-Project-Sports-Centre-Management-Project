@@ -117,9 +117,9 @@ button {
   margin: auto;
   width: 50%;
 }
-  h2{
-    text-align: center;
-  }
+h2 {
+  text-align: center;
+}
 </style>
 
 <script>
@@ -134,11 +134,11 @@ export default {
     };
   },
   computed: {
-    change:{
-      get(){
+    change: {
+      get() {
         return Number(this.cashGiven) - this.$attrs.activityPrice;
       },
-      set(){
+      set() {
         this.changeVal = Number(this.cashGiven) - this.$attrs.activityPrice;
       }
     }
