@@ -26,6 +26,13 @@ export default {
   },
   computed: {
     ...mapGetters("loading", ["blocking"])
+  },
+  watch: {
+    // eslint-disable-next-line no-unused-vars
+    $route(to, from) {
+      document.title = to.meta.title || "Zenergy";
+    },
+    immediate: true
   }
 };
 </script>
