@@ -197,19 +197,33 @@ export default {
     async submitPayment(e) {
       e.preventDefault();
       // Talk to our server to get encrpyted prices
-      // eslint-disable-next-line no-undef
-      const paymentIntent = await this.$http.post(
-        `/payments/intent/` + this.selectedActivityId,
-        {
-          payment_method: {
-            card: this.card,
-            billing_details: {
-              name: this.firstName
-            }
+      let paymentIntent = null;
+      if (this.userType === "guest") {
+        // const body = {
+        //
+        // };
+
+        // eslint-disable-next-line no-undef
+        paymentIntent = await this.$http.post(
+          `/payments/intent/` + this.selectedActivityId,
+          {
+            payment_method: {
+              card: this.card,
+              billing_details: {
+                name: this.firstName
+              }
+            },
+            activityTypeId: this.selectedActivityId,
+            regularSession: 1,
+            // body
+
           }
-        }
-      );
-      this.sendTokenToServer(paymentIntent.data.clientSecret);
+        );
+      }
+
+      if (paymentIntent != null) {
+        this.sendTokenToServer(paymentIntent.data.clientSecret);
+      }
     },
 
     async sendTokenToServer(client_secret) {
@@ -228,9 +242,9 @@ export default {
 
       if (result.error) {
         // Show error to your customer (e.g., insufficient funds)
-        console.log(result.error.message);
+        // console.log(result.error.message);
       } else {
-        console.log("first else)");
+        // console.log("first else)");
         // The payment has been processed!
         if (result.paymentIntent.status === "succeeded") {
           await this.postAllFormData();
@@ -270,7 +284,7 @@ export default {
         let bookedActivity = this.activities.find(
           activity => activity.id == this.selectedActivityId
         );
-        console.log(this.$auth._uid);
+        // console.log(this.$auth._uid);
 
         const body = {
           //TODO PASS USER
@@ -293,11 +307,11 @@ export default {
         //   query: { status: "success" }
         // });
       } catch (e) {
-        console.log(e);
+        // console.log(e);
       }
     },
     showBillingInfo(value) {
-      console.log(value);
+      // console.log(value);
       this.firstName = value.firstName;
       this.surname = value.surname;
       this.email = value.email;
@@ -324,9 +338,13 @@ export default {
         // this.setCashPrice()
         //Shows guest component
         this.hideGuest = false;
+        this.userType = 'guest'
+
       }
       if (value.userType == "account") {
         this.hideGuest = false;
+        this.userType = 'account'
+
         //TODO autofill with account information
         // this.firstName =
         // this.surname =
@@ -336,8 +354,8 @@ export default {
     }
   },
   mounted() {
-    console.log("this.user)");
-    console.log(this.user);
+    // console.log("this.user)");
+    // console.log(this.user);
     this.getActivities();
     this.configureStripe();
   }

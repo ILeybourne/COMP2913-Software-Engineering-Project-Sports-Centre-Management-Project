@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -77,19 +78,43 @@ public class PaymentController {
         }
     }
 
+    static class  ActivityRequestBody {
+        private Integer activityTypeId;
+        private Boolean regularSession;
 
 
+        public Integer getActivityTypeId() {
+            return activityTypeId;
+        }
+
+        public void setActivityTypeId(Integer activityTypeId) {
+            this.activityTypeId = activityTypeId;
+        }
+
+        public Boolean getRegularSession() {
+            return regularSession;
+        }
+
+        public void setRegularSession(Boolean regularSession) {
+            this.regularSession = regularSession;
+        }
+    }
+
+    //Guest Payment
     //TODO Move into response body
     @PostMapping(path = "/intent/{activity_id}")
     // from https://blog.hackages.io/create-a-simple-payment-flow-with-stripe-b1d0f0f94337
-    public PayResponseBody create(@PathVariable Long activity_id ) throws StripeException {
+    public PayResponseBody create(@RequestBody ActivityRequestBody requestBody, @PathVariable Long activity_id) throws StripeException {
         //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         PaymentIntent intent = null;
         Customer customer = null;
         PayResponseBody responseBody = new PayResponseBody();
+        logger.info( "request" );
+        logger.info( requestBody.getActivityTypeId().toString() );
+
         try {
-            ActivityType activityType = activityTypeService.findById(activity_id);
+            ActivityType activityType = activityTypeService.findById(requestBody.getActivityTypeId().longValue());
             //TODO set customer on sign-up of user
                 //guest payment
                 //new customer
