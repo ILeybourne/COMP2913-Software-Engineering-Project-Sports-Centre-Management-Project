@@ -11,10 +11,10 @@ const authHttp = axios.create({
 // TODO: increment and decrement loading state
 
 authHttp.interceptors.request.use(
-  config => {
+  async config => {
     const instance = getInstance();
     if (instance.isAuthenticated) {
-      config.headers.Authorization = `Authorization ${instance.getTokenSilently()}`;
+      config.headers.Authorization = `Bearer ${await instance.getTokenSilently()}`;
     }
 
     return config;

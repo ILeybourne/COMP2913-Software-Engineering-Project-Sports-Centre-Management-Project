@@ -7,7 +7,7 @@
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
     <envs>
-      <env name="SERVER_PORT" value="9000" />
+      <env name="SERVER_PORT" value="8000" />
     </envs>
     <method v="2">
       <option name="Make" enabled="true" />

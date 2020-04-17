@@ -5,13 +5,13 @@ import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import interactionPlugin from "@fullcalendar/interaction";
 import { BPopover } from "bootstrap-vue";
 import { mapActions, mapGetters } from "vuex";
-import ActivityInfo from "@/components/ActivityInfo.vue";
+import SessionInfo from "@/components/SessionInfo.vue";
 
 export default {
   name: "Timetable",
   components: {
     FullCalendar,
-    ActivityInfo
+    SessionInfo
   },
   data() {
     return {
@@ -24,6 +24,10 @@ export default {
         left: "today prev,next",
         center: "title",
         right: "resourceTimelineDay,resourceTimelineWeek"
+      },
+      previewSession: {},
+      buttonText: {
+        today: "Today"
       },
       previewActivity: {},
       selectedActivityForm: {
@@ -62,7 +66,7 @@ export default {
     },
     activitiesForFacility() {
       const filter = activity =>
-        Number(activity._links.resource.href.split("/").slice(-1)[0]) ==
+        Number(activity._links.resource.href.split("/").slice(-1)[0]) ===
         Number(this.selectedActivityForm.resourceId);
 
       const filteredActivities = this.activities.filter(filter);
@@ -112,13 +116,15 @@ export default {
     },
     activityClick(eventInfo) {
       const { event } = eventInfo;
-      // const { extendedProps: options } = event;
-      this.previewActivity = this.activities.find(
+
+      this.previewSession = this.sessions.find(
         activity => activity.id === Number(event.id)
       );
-      this.$bvModal.show("preview-activity-modal");
+
+      if (this.previewSession) {
+        this.$bvModal.show("preview-activity-modal");
+      }
     },
-    onEventTimeChange() {},
     onSelect(event) {
       const s = event.start.toISOString();
       this.selectedActivityForm.startTime = s.substring(0, s.length - 1);
@@ -171,81 +177,87 @@ export default {
 </script>
 
 <template>
-  <div id="calendar">
-    <FullCalendar
-      :resources="resources"
-      :events="events"
-      :plugins="calendarPlugins"
-      :header="header"
-      :selectable="true"
-      :selectMirror="true"
-      :eventRender="drawEvent"
-      schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-      defaultView="resourceTimelineDay"
-      aspectRatio="1"
-      minTime="06:00:00"
-      maxTime="23:00:00"
-      @eventClick="activityClick($event)"
-      @eventDrop="onEventTimeChange($event)"
-      @eventResize="onEventTimeChange($event)"
-      @select="onSelect($event)"
-    />
-    <b-modal id="create-activity-modal" title="Create Activity" hide-footer>
-      <!--TODO: use Vuex-->
-      <!--TODO: Reoccurring-->
-      <!--TODO: extract from this page-->
-      <!--TODO: Activity preview component showing capacity etc for selection-->
-      <b-form @submit="submitNewActivity($event)">
-        <b-form-group
-          id="activityType"
-          label="Activity Type"
-          label-for="activitySelect"
-        >
-          <b-select
-            id="activitySelect"
-            v-model="selectedActivityForm.activityType"
-            :options="activitiesForFacility"
-            required
-            :disabled="!activitiesAvailable"
-          ></b-select>
-        </b-form-group>
-        <b-form-group
-          id="startTime"
-          label="Start Time:"
-          label-for="startTimeInput"
-        >
-          <b-form-input
-            id="startTimeInput"
-            v-model="selectedActivityForm.startTime"
-            type="datetime-local"
-            readonly
-            required
-          ></b-form-input>
-        </b-form-group>
+  <div id="calendar-container">
+    <div id="calendar">
+      <FullCalendar
+        :resources="resources"
+        :events="events"
+        :plugins="calendarPlugins"
+        :header="header"
+        :selectable="true"
+        :selectMirror="true"
+        :eventRender="drawEvent"
+        schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+        defaultView="resourceTimelineDay"
+        aspectRatio="1"
+        minTime="06:00:00"
+        maxTime="23:00:00"
+        @eventClick="activityClick($event)"
+        @eventDrop="onEventTimeChange($event)"
+        @eventResize="onEventTimeChange($event)"
+        @select="onSelect($event)"
+      />
+      <b-modal id="create-activity-modal" title="Create Activity" hide-footer>
+        <!--TODO: use Vuex-->
+        <!--TODO: Reoccurring-->
+        <!--TODO: extract from this page-->
+        <!--TODO: Activity preview component showing capacity etc for selection-->
+        <b-form @submit="submitNewActivity($event)">
+          <b-form-group
+            id="activityType"
+            label="Activity Type"
+            label-for="activitySelect"
+          >
+            <b-select
+              id="activitySelect"
+              v-model="selectedActivityForm.activityType"
+              :options="activitiesForFacility"
+              required
+              :disabled="!activitiesAvailable"
+            ></b-select>
+          </b-form-group>
+          <b-form-group
+            id="startTime"
+            label="Start Time:"
+            label-for="startTimeInput"
+          >
+            <b-form-input
+              id="startTimeInput"
+              v-model="selectedActivityForm.startTime"
+              type="datetime-local"
+              readonly
+              required
+            ></b-form-input>
+          </b-form-group>
 
-        <b-form-group id="endTime" label="End Time:" label-for="endTimeInput">
-          <b-form-input
-            id="endTimeInput"
-            v-model="selectedActivityForm.endTime"
-            type="datetime-local"
-            readonly
-            required
-          ></b-form-input>
-        </b-form-group>
-        <div class="d-flex justify-content-between">
-          <b-button type="submit" variant="primary">Book Activity</b-button>
-          <b-button
-            type="reset"
-            variant="danger"
-            @click="$bvModal.hide('create-activity-modal')"
-            >Cancel
-          </b-button>
-        </div>
-      </b-form>
-    </b-modal>
-    <b-modal id="preview-activity-modal" title="Activity">
-      <ActivityInfo :activity="this.previewActivity"></ActivityInfo>
-    </b-modal>
+          <b-form-group id="endTime" label="End Time:" label-for="endTimeInput">
+            <b-form-input
+              id="endTimeInput"
+              v-model="selectedActivityForm.endTime"
+              type="datetime-local"
+              readonly
+              required
+            ></b-form-input>
+          </b-form-group>
+          <div class="d-flex justify-content-between">
+            <b-button type="submit" variant="primary">Book Activity</b-button>
+            <b-button
+              type="reset"
+              variant="danger"
+              @click="$bvModal.hide('create-activity-modal')"
+              >Cancel
+            </b-button>
+          </div>
+        </b-form>
+      </b-modal>
+      <b-modal id="preview-activity-modal" title="Session Details">
+        <SessionInfo
+          v-if="this.previewSession"
+          :session="this.previewSession"
+        ></SessionInfo>
+      </b-modal>
+    </div>
+    <div class="row"></div>
   </div>
 </template>
 
@@ -255,7 +267,10 @@ export default {
 @import "~@fullcalendar/resource-timeline/main.css";
 @import "~@fullcalendar/timeline/main.css";
 
+#calendar-container {
+}
 #calendar {
   max-width: 100%;
+  max-height: 100%;
 }
 </style>
