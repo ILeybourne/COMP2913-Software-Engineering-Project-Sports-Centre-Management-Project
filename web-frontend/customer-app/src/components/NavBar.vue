@@ -1,7 +1,12 @@
 <template>
   <header class="header-section">
     <b-navbar toggleable="lg">
-      <b-navbar-brand to="/"><img src="../assets/logo.png" style="height: 84.8px; width: 264.8px" />
+      <b-navbar-brand to="/"
+        ><img
+          src="../assets/logo.png"
+          style="height: 84.8px; width: 264.8px"
+          alt=""
+        />
       </b-navbar-brand>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
