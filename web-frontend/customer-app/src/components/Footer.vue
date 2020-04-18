@@ -23,14 +23,14 @@
         <div class="row" data-cy="footerColumn2Body">
           <div class="link-icons col-2 text-left">
             <!-- add proper icons -->
-            <p><a>Icon</a></p>
-            <p><a>Icon</a></p>
-            <p><a>Icon</a></p>
+            <p><font-awesome-icon icon="home" /></p>
+            <p><font-awesome-icon icon="at" /></p>
+            <p><font-awesome-icon icon="phone-alt" /></p>
           </div>
           <div class="col-10 text-left">
-            <p><a class="text-muted">city, postcode, door number</a></p>
-            <p><a class="text-muted">email@address.dom</a></p>
-            <p><a class="text-muted">phone number</a></p>
+            <p><a class="text-muted">Headingley Lane, Leeds LS6 2BT </a></p>
+            <p><a class="text-muted">customerservice@zenergy.com</a></p>
+            <p><a class="text-muted">0113 343 2401</a></p>
           </div>
         </div>
       </div>
@@ -56,8 +56,8 @@
             </div>
           </a>
         </div>
-        <div class="text-center text-muted">
-          <em>Awesome slogan</em>
+        <div id="slogan" class="text-center text-muted">
+          <em>Respire, perspire,<br />ingest, retire</em>
         </div>
       </div>
     </div>
@@ -85,12 +85,27 @@
 .column-4 {
   min-width: 120px;
 }
+#slogan {
+}
 .link-icons {
 }
 </style>
 
 <script>
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faHome } from "@fortawesome/free-solid-svg-icons";
+import { faAt } from "@fortawesome/free-solid-svg-icons";
+import { faPhoneAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 export default {
-  name: "Footer"
+  name: "Footer",
+  components: {
+    "font-awesome-icon": FontAwesomeIcon
+  },
+  created: function() {
+    library.add(faHome);
+    library.add(faAt);
+    library.add(faPhoneAlt);
+  }
 };
 </script>
