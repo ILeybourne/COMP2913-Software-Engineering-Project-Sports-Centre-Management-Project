@@ -15,25 +15,35 @@
             </v-row>
             <v-spacer></v-spacer>
             <v-row>
-              <v-col><b>Duration</b><br />(Days)</v-col>
+              <v-col><b>Duration</b> (Days): </v-col>
               <v-col>{{ dto.duration }}</v-col>
             </v-row>
             <v-spacer></v-spacer>
             <v-row>
-              <v-col><b>Cost</b><br />(£)</v-col>
+              <v-col><b>Cost</b> (£): </v-col>
               <v-col>{{ dto.cost }}</v-col>
             </v-row>
-            <form class="form-inline">
-              <div class="spacer"></div>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            <label>
               <div class="btn-container">
-                <input
-                  type="radio"
-                  :id=dto.name
-                  name="membership-type"
-                  :value=dto.id
-                />
+                <v-btn
+                  v-if="selectedOption !== dto.id"
+                  class="ma-2"
+                  v-on:click="selectMembershipType(dto.id)"
+                >
+                  <v-icon>mdi-checkbox-blank-circle-outline</v-icon>
+                </v-btn>
+                <v-btn
+                  v-if="selectedOption === dto.id"
+                  class="ma-2"
+                  v-on:click="selectMembershipType(dto.id)"
+                >
+                  <v-icon>mdi-checkbox-marked-circle</v-icon>
+                </v-btn>
               </div>
-            </form>
+              Select {{ dto.name }} Membership
+            </label>
           </v-container>
         </v-row>
         <div class="spacer"></div>
@@ -46,28 +56,9 @@
       <div class="form-container">
         <form class="form-inline">
           <div class="spacer"></div>
-          <div class="btn-container">
-            <input
-              type="radio"
-              id="annual"
-              name="membership-type"
-              value="annual"
-            />
-          </div>
-
-          <div class="spacer"></div>
-          <div class="btn-container">
-            <input
-              type="radio"
-              id="monthly"
-              name="membership-type"
-              value="monthly"
-            />
-          </div>
-          <div class="spacer"></div>
           <div class="submit-container">
             <button type="submit" value="submit" class="btn btn-default">
-              Buy Membership And Create Account
+              Continue to Payment {{selectedOption}}
             </button>
           </div>
         </form>
@@ -109,6 +100,7 @@
 /*}*/
 
 .membership-details {
+  text-align: center;
   width: auto;
   border: 3px solid #3183e5;
   border-radius: 10px;
@@ -151,8 +143,15 @@ export default {
   components: {},
   data: function() {
     return {
-      membershipTypes: []
+      membershipTypes: [],
+      selectedOption: null
     };
+  },
+  methods: {
+    selectMembershipType(id) {
+      console.log(id);
+      this.selectedOption = id;
+    }
   },
   created() {
     axios
