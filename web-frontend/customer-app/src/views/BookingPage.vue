@@ -20,7 +20,7 @@
         ><b-col v-bind:class="{ 'd-none': hideCard }">
           <div>
             <div v-bind:class="{ 'd-none': hideQuickPay }">
-              <button @click="submitPayment()">
+              <button @click="submitQuickPayment()" :disabled="paymentSubmit">
                 Quick Pay
               </button>
             </div>
@@ -33,6 +33,7 @@
                     class="btn btn-outline-primary"
                     id="paymentButton"
                     @click="submitPayment()"
+                    :disabled="paymentSubmit"
                   >
                     Pay £{{ price }}
                   </button>
@@ -172,23 +173,33 @@ export default {
       complete: false,
       stripeOptions: {},
       selectedActivityName: "",
-      hideQuickPay: true
+      hideQuickPay: true,
+      paymentSubmit: false
     };
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("auth", ["user"])
+    ...mapGetters("auth", ["user"]),
+    quickPayDisable: function() {
+      return this.paymentSubmit;
+    }
   },
   methods: {
     ...mapActions("facilities", ["getActivities"]),
+
+    showTempPage() {
+      this.hideBooking = true;
+      this.hideGuest = true;
+      this.hideCard = true;
+      this.hideSuccess = false;
+    },
 
     async checkCustomerStripeId() {
       const hasStripeId = await this.$http.post(
         //TODO Remove static customer id
         `/payments/customer/stripe_id/14`
       );
-
-      console.log(hasStripeId);
+      // console.log(hasStripeId);
       return hasStripeId.data;
     },
 
@@ -209,10 +220,34 @@ export default {
       this.card.mount("#card-element");
     },
 
+    async submitQuickPayment() {
+      this.paymentSubmit = true;
+      let paymentIntent = null;
+      // eslint-disable-next-line no-undef
+      paymentIntent = await this.$http.post(
+        `/payments/intent/` + "14", //this.customerId,
+        {
+          payment_method: {
+            card: this.card,
+            billing_details: {
+              name: this.firstName
+            }
+          },
+          activityTypeId: this.selectedActivityId,
+          regularSession: 1,
+          email: this.email
+        }
+      );
+      if (paymentIntent.status === 200) {
+        this.showTempPage();
+      }
+    },
+
     //To test stripe use the card: 4242 4242 4242 4242 and any postcode/cvc
     async submitPayment() {
       // e.preventDefault();
       // Talk to our server to get encrpyted prices
+      this.paymentSubmit = true;
       let paymentIntent = null;
       if (this.userType === "guest") {
         // eslint-disable-next-line no-undef
@@ -231,6 +266,9 @@ export default {
             // body
           }
         );
+        if (paymentIntent != null) {
+          this.sendTokenToServer(paymentIntent.data.clientSecret);
+        }
       }
       if (this.userType === "account") {
         // eslint-disable-next-line no-undef
@@ -248,10 +286,9 @@ export default {
             email: this.email
           }
         );
-      }
-
-      if (paymentIntent != null) {
-        this.sendTokenToServer(paymentIntent.data.clientSecret);
+        if (paymentIntent.status === 200) {
+          this.showTempPage();
+        }
       }
     },
 
@@ -277,11 +314,7 @@ export default {
         if (result.paymentIntent.status === "succeeded") {
           await this.postAllFormData();
           //TODO Set payment amount
-
-          this.hideBooking = true;
-          this.hideGuest = true;
-          this.hideCard = true;
-          this.hideSuccess = false;
+          this.showTempPage()
           //TODO Redirect
           successBol = true;
         }
@@ -297,11 +330,7 @@ export default {
     async handleCashPayment(value) {
       if (value.change >= 0) {
         await this.postAllFormData();
-
-        this.hideBooking = true;
-        this.hideGuest = true;
-        this.hideCash = true;
-        this.hideSuccess = false;
+        this.showTempPage()
       } else {
         //invalid amount of cash given
       }

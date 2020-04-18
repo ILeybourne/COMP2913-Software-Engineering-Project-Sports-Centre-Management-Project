@@ -53,7 +53,7 @@
             name="email"
             v-model="email"
             class="form-control"
-            v-bind:class="{ 'is-valid': emailValid, 'is-invalid': !emailValid }"
+            v-bind:class="{ 'is-valid': !$v.email.$invalid, 'is-invalid': $v.email.$invalid }"
             @keyup="validateEmail"
             required
           />
@@ -161,7 +161,7 @@ button {
 import Vue from "vue";
 import Vuelidate from "vuelidate";
 Vue.use(Vuelidate);
-import { required, minLength, email, numeric } from "vuelidate/lib/validators";
+import { required, minLength, maxLength, email, numeric } from "vuelidate/lib/validators";
 
 export default {
   name: "GuestInformation",
@@ -196,7 +196,9 @@ export default {
     },
     email: {
       required,
-      email
+      email,
+      minLength: minLength(3),
+      maxLength: maxLength(20)
     },
     phone: {
       required,
