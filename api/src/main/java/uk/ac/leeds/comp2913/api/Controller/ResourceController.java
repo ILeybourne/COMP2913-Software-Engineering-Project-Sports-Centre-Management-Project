@@ -63,7 +63,7 @@ public class ResourceController {
     @GetMapping("")
     @Operation(summary = "Get all facilities",
             description = "Get a list of all facilities with basic information")
-//    @PreAuthorize("hasAuthority('SCOPE_read:resources')")
+    @PreAuthorize("hasAuthority('SCOPE_read:resources')")
     public PagedModel<ResourceDTO> getResources(Pageable pageable) {
         Page<Resource> allResources = resourceService.findAll(pageable);
         return pagedResourcesAssembler.toModel(allResources, resourcePagedResourcesAssembler);
@@ -72,7 +72,7 @@ public class ResourceController {
     @GetMapping("/{resource_id}")
     @Operation(summary = "Get a specific facility",
             description = "Get a specific facility with more information and links")
-//    @PreAuthorize("hasAuthority('SCOPE_read:resources')")
+    @PreAuthorize("hasAuthority('SCOPE_read:resources')")
     public ResourceDTO getResourceById(@Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
         ResourceDTO resource = resourcePagedResourcesAssembler.toModel(resourceService.findById(resource_id));
         resource.add(linkTo(ResourceController.class).slash(resource_id).withRel("update"));
@@ -86,7 +86,7 @@ public class ResourceController {
     @PostMapping("")
     @Operation(summary = "Create a new facility",
             description = "Create a new facility")
-//    @PreAuthorize("hasAuthority('SCOPE_create:resources')")
+    @PreAuthorize("hasAuthority('SCOPE_create:resources')")
     public Resource createResource(@Parameter(description = "The ID of the facility/resource", required = true)@Valid @RequestBody Resource resource) {
         return resourceService.create(resource);
     }
@@ -95,7 +95,7 @@ public class ResourceController {
     @PutMapping("/{resource_id}")
     @Operation(summary = "Update a facility",
             description = "Update the details of a facility")
-//    @PreAuthorize("hasAuthority('SCOPE_update:resources')")
+    @PreAuthorize("hasAuthority('SCOPE_update:resources')")
     public Resource updateResource(@Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id,
                                    @Parameter(description = "A Resource object", required = true)@Valid @RequestBody Resource resourceRequest) {
         return resourceService.update(resource_id, resourceRequest);
@@ -105,7 +105,7 @@ public class ResourceController {
     @DeleteMapping("/{resource_id}")
     @Operation(summary = "delete a facility",
             description = "Delete a facility")
-//    @PreAuthorize("hasAuthority('SCOPE_delete:resource')")
+    @PreAuthorize("hasAuthority('SCOPE_delete:resource')")
     public ResponseEntity<?> deleteResource( @Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
         resourceService.deleteById(resource_id);
         return ResponseEntity.ok()

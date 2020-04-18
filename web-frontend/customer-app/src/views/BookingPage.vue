@@ -199,13 +199,9 @@ export default {
       // Talk to our server to get encrpyted prices
       let paymentIntent = null;
       if (this.userType === "guest") {
-        // const body = {
-        //
-        // };
-
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
-          `/payments/intent/` + this.selectedActivityId,
+          `/payments/intent/`,// + this.selectedActivityId,
           {
             payment_method: {
               card: this.card,
@@ -215,8 +211,24 @@ export default {
             },
             activityTypeId: this.selectedActivityId,
             regularSession: 1,
+            email: this.email
             // body
-
+          }
+        );
+      }
+      if (this.userType === "account") {
+        // eslint-disable-next-line no-undef
+        paymentIntent = await this.$http.post(`/payments/intent/`  + "14", //this.customerId,
+          {
+            payment_method: {
+              card: this.card,
+              billing_details: {
+                name: this.firstName
+              }
+            },
+            activityTypeId: this.selectedActivityId,
+            regularSession: 1,
+            email: this.email
           }
         );
       }
@@ -338,12 +350,11 @@ export default {
         // this.setCashPrice()
         //Shows guest component
         this.hideGuest = false;
-        this.userType = 'guest'
-
+        this.userType = "guest";
       }
       if (value.userType == "account") {
         this.hideGuest = false;
-        this.userType = 'account'
+        this.userType = "account";
 
         //TODO autofill with account information
         // this.firstName =

@@ -4,6 +4,7 @@ package uk.ac.leeds.comp2913.api.Controller;
 import com.stripe.Stripe;
 import com.stripe.exception.CardException;
 import com.stripe.exception.StripeException;
+import com.stripe.model.Card;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentMethod;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
@@ -79,15 +81,17 @@ public class PaymentController {
     }
 
     static class  ActivityRequestBody {
-        private Integer activityTypeId;
+        private Long activityTypeId;
         private Boolean regularSession;
+        private String email;
+        private Long customerId;
 
 
-        public Integer getActivityTypeId() {
+        public Long getActivityTypeId() {
             return activityTypeId;
         }
 
-        public void setActivityTypeId(Integer activityTypeId) {
+        public void setActivityTypeId(Long activityTypeId) {
             this.activityTypeId = activityTypeId;
         }
 
@@ -98,13 +102,29 @@ public class PaymentController {
         public void setRegularSession(Boolean regularSession) {
             this.regularSession = regularSession;
         }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public Long getCustomerId() {
+            return customerId;
+        }
+
+        public void setCustomerId(Long customerId) {
+            this.customerId = customerId;
+        }
     }
 
     //Guest Payment
     //TODO Move into response body
-    @PostMapping(path = "/intent/{activity_id}")
+    @PostMapping(path = "/intent/")
     // from https://blog.hackages.io/create-a-simple-payment-flow-with-stripe-b1d0f0f94337
-    public PayResponseBody create(@RequestBody ActivityRequestBody requestBody, @PathVariable Long activity_id) throws StripeException {
+    public PayResponseBody create(@RequestBody ActivityRequestBody requestBody) throws StripeException {
         //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         PaymentIntent intent = null;
@@ -115,17 +135,25 @@ public class PaymentController {
 
         try {
             ActivityType activityType = activityTypeService.findById(requestBody.getActivityTypeId().longValue());
-            //TODO set customer on sign-up of user
-                //guest payment
-                //new customer
-                CustomerCreateParams customerParams =
-                        CustomerCreateParams.builder()
-                                .setEmail("email@email.com")
-                                .build();
+            //guest payment
 
-                customer = Customer.create(customerParams);
+            //new stripe customer
+            CustomerCreateParams customerParams =
+                    CustomerCreateParams.builder()
+                            .setEmail(requestBody.getEmail())
+                            .build();
 
+            customer = Customer.create(customerParams);
 
+            //new customer
+            uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer = new uk.ac.leeds.comp2913.api.Domain.Model.Customer();
+            internalCustomer.setEmailAddress(requestBody.getEmail());
+            internalCustomer.setStripeId(customer.getId());
+            //TODO get DOB
+            internalCustomer.setDateOfBirth(new Date());
+            customerRepository.save(internalCustomer);
+
+            //Create Payment Intent
             PaymentIntentCreateParams intentParams = PaymentIntentCreateParams.builder()
                             .setCurrency("gbp")
                             .setAmount((activityType.getCost().multiply( new BigDecimal(100.0))).longValue())
@@ -149,78 +177,98 @@ public class PaymentController {
     }
 
 
-//    //TODO Move into response body
-//    @PostMapping(path = "/intent/{activity_id}/{customer_id}")
-//    // from https://blog.hackages.io/create-a-simple-payment-flow-with-stripe-b1d0f0f94337
-//    public PayResponseBody createFromCustomer(@PathVariable Long activity_id, @PathVariable Long customer_id ) throws StripeException {
-//        //TODO Move to env
-//        //TODO link auth0 to API
-//        Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
-//        PaymentIntent intent = null;
-//        Customer customer = null;
-//        PayResponseBody responseBody = new PayResponseBody();
-//        try {
-//            ActivityType activityType = activityTypeService.findById(activity_id);
-//            //TODO set customer on sign-up of user
-//            //Search for customer by ID
-////            if (customerService.findById(customer_id) != null) {
-//////                Customer customer = customerService.findById(customer_id);
-////            }else{
-//                //Else create new customer
-//                //TODO Create on guest payment
+    //TODO Move into response body
+    @PostMapping(path = "/intent/{customer_id}")
+    // from https://blog.hackages.io/create-a-simple-payment-flow-with-stripe-b1d0f0f94337
+    public PayResponseBody create(@RequestBody ActivityRequestBody requestBody, @PathVariable Long customer_id) throws StripeException {
+        //TODO Move to env
+        Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
+        PaymentIntent intent = null;
+        uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer =null;
+        Customer customer = null;
+        PayResponseBody responseBody = new PayResponseBody();
+        try {
+            if(customerRepository.findById(customer_id).isPresent()) {
+                //get api customer
+                internalCustomer = customerRepository.findById(customer_id).get();
+                //get stripe customer
+                customer = Customer.retrieve(internalCustomer.getStripeId());
+
+                if (requestBody.getActivityTypeId() != null) {
+                    //get activity type
+                    ActivityType activityType = activityTypeService.findById(requestBody.getActivityTypeId());
+
+
+                    //get list of payment methods
+                    PaymentMethodListParams params =
+                            PaymentMethodListParams.builder()
+                                    .setCustomer(internalCustomer.getStripeId())
+                                    .setType(PaymentMethodListParams.Type.CARD)
+                                    .build();
+
+
+                    //TODO set customer on sign-up of user
+                    //Search for customer by ID
+//            if (customerService.findById(customer_id) != null) {
+////                Customer customer = customerService.findById(customer_id);
+//            }else{
+                    //Else create new customer
+                    //TODO Create on guest payment
+
+                    //new customer
+//                CustomerCreateParams customerParams =
+//                        CustomerCreateParams.builder()
+//                                .setEmail("email@email.com")
+//                                .build();
 //
-//                //new customer
-////                CustomerCreateParams customerParams =
-////                        CustomerCreateParams.builder()
-////                                .setEmail("email@email.com")
-////                                .build();
-////
-////                customer = Customer.create(customerParams);
+//                customer = Customer.create(customerParams);
+
+//            Card card = (Card) customer.getSources().getData();
+
+
 //
-//            PaymentMethodListParams params =
-//                    PaymentMethodListParams.builder()
-//                            .setCustomer("cus_H62V7iQcZ1NTyE"
-//                            )
-//                            .setType(PaymentMethodListParams.Type.CARD)
-//                            .build();
-////
-//            PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
-////                uk.ac.leeds.comp2913.api.Domain.Model.Customer serverCustomer = new uk.ac.leeds.comp2913.api.Domain.Model.Customer();
-////                serverCustomer.setId(1L);
-////                serverCustomer.setEmailAddress(customer.getId());
-////                customerRepository.save(serverCustomer);
-////            }
-//
-////            return paymentMethods;
-//
-////
-//            PaymentIntentCreateParams intentParams = PaymentIntentCreateParams.builder()
-//                            .setCurrency("gbp")
-//                            .setAmount((activityType.getCost().multiply( new BigDecimal(100.0))).longValue())
-//                            .setCustomer("cus_H62V7iQcZ1NTyE")
-//                    .setPaymentMethod(paymentMethods.getData().get(0).getId())
-//                    .setConfirm(true)
-//                    .setOffSession(true)
-//                    // Verify your integration in this guide by including this parameter
-//                            .putMetadata("integration_check", "accept_a_payment")
-//                            .build();
-//            intent = PaymentIntent.create(intentParams);
-////
-////            logger.info("💰 Payment received!");
-////            // The payment is complete and the money has been moved
-////            // You can add any post-payment code here (e.g. shipping, fulfillment, etc)
-////
-//            responseBody.setClientSecret(intent.getClientSecret());
-//        } catch (CardException err) {
-//            // Handle "hard declines" e.g. insufficient funds, expired card, etc
-//            // See https://stripe.com/docs/declines/codes for more
-//            if (err.getCode().equals("authentication_required")) {
-//                responseBody.setError("This card requires authentication in order to proceeded. Please use a different card");
-//            } else {
-//                responseBody.setError(err.getMessage());
+                    PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
+                    logger.info("paymentMethods.getData().get(0).getId()");
+//            logger.info(paymentMethods.getData().get(0).getId());
+//                uk.ac.leeds.comp2913.api.Domain.Model.Customer serverCustomer = new uk.ac.leeds.comp2913.api.Domain.Model.Customer();
+//                serverCustomer.setId(1L);
+//                serverCustomer.setEmailAddress(customer.getId());
+//                customerRepository.save(serverCustomer);
 //            }
-//        }
-//        return responseBody;
-////        return null;
-//    }
+
+//            return paymentMethods;
+
+//
+                    PaymentIntentCreateParams intentParams = PaymentIntentCreateParams.builder()
+                            .setCurrency("gbp")
+                            .setAmount((activityType.getCost().multiply(new BigDecimal(100.0))).longValue())
+                            .setCustomer("cus_H62V7iQcZ1just NTyE")
+                            .setPaymentMethod(paymentMethods.getData().get(0).getId())
+                            .setConfirm(true)
+                            .setOffSession(true)
+                            // Verify your integration in this guide by including this parameter
+                            .putMetadata("integration_check", "accept_a_payment")
+                            .build();
+                    intent = PaymentIntent.create(intentParams);
+//
+//            logger.info("💰 Payment received!");
+//            // The payment is complete and the money has been moved
+//            // You can add any post-payment code here (e.g. shipping, fulfillment, etc)
+//
+                    responseBody.setClientSecret(intent.getClientSecret());
+                }
+            }
+            responseBody.setError("Customer id not Found!");
+        } catch (CardException err) {
+            // Handle "hard declines" e.g. insufficient funds, expired card, etc
+            // See https://stripe.com/docs/declines/codes for more
+            if (err.getCode().equals("authentication_required")) {
+                responseBody.setError("This card requires authentication in order to proceeded. Please use a different card");
+            } else {
+                responseBody.setError(err.getMessage());
+            }
+        }
+        return responseBody;
+//        return null;
+    }
 }
