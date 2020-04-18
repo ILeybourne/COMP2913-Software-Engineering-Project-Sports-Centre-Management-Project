@@ -3,20 +3,35 @@
     <div class="membership-container">
       <div class="info-container">
         <div class="spacer"></div>
-        <div class="annual-membership-details">
-          Annual Membership Details
-        </div>
-        <div class="spacer"></div>
-
-        <div class="monthly-membership-details">
-          Monthly Membership Details
-        </div>
+        <v-row v-for="type in membershipTypes._embedded" :key="type.id">
+          <v-container
+            class="membership-details"
+            v-for="dto in type"
+            :key="dto.id"
+            ><v-row>
+              <v-col
+                ><h4>{{ dto.name }}</h4></v-col
+              >
+            </v-row>
+            <v-spacer></v-spacer>
+            <v-row>
+              <v-col><b>Duration</b><br />(Days)</v-col>
+              <v-col>{{ dto.duration }}</v-col>
+            </v-row>
+            <v-spacer></v-spacer>
+            <v-row>
+              <v-col><b>Cost</b><br />(£)</v-col>
+              <v-col>{{ dto.cost }}</v-col>
+            </v-row>
+          </v-container>
+        </v-row>
         <div class="spacer"></div>
 
         <div class="account-creation-form">
           Account Creation Form
         </div>
       </div>
+
       <div class="form-container">
         <form class="form-inline">
           <div class="spacer"></div>
@@ -82,15 +97,8 @@
 /*    diplay: flex;*/
 /*}*/
 
-.annual-membership-details {
-  width: 20%;
-  border: 3px solid #3183e5;
-  border-radius: 10px;
-  min-height: 50%;
-}
-
-.monthly-membership-details {
-  width: 20%;
+.membership-details {
+  width: auto;
   border: 3px solid #3183e5;
   border-radius: 10px;
   min-height: 50%;
@@ -125,7 +133,26 @@
 </style>
 
 <script>
+import axios from "@/plugins/axios.plugin";
+
 export default {
-  name: "BookingInformation"
+  name: "Memberships",
+  components: {},
+  data: function() {
+    return {
+      membershipTypes: []
+    };
+  },
+
+  created() {
+    axios
+      .get(`/membership/types`)
+      .then(response => {
+        this.membershipTypes = response.data;
+      })
+      .catch(e => {
+        this.errors.push(e);
+      });
+  }
 };
 </script>
