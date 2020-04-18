@@ -29,14 +29,15 @@
               <div class="btn-container">
                 <v-btn
                   v-if="selectedOption !== dto.id"
-                  class="ma-2"
+                  class="mx-2"
+                  fab-dark color="yellow"
                   v-on:click="selectMembershipType(dto.id)"
                 >
-                  <v-icon>mdi-checkbox-blank-circle-outline</v-icon>
+                  <v-icon dark>mdi-checkbox-blank-circle-outline</v-icon>
                 </v-btn>
                 <v-btn
                   v-if="selectedOption === dto.id"
-                  class="ma-2"
+                  class="mx-2"
                   v-on:click="selectMembershipType(dto.id)"
                 >
                   <v-icon>mdi-checkbox-marked-circle</v-icon>
@@ -46,22 +47,19 @@
             </label>
           </v-container>
         </v-row>
-        <div class="spacer"></div>
+
+
 
         <div class="account-creation-form">
           Account Creation Form
         </div>
       </div>
 
-      <div class="form-container">
-        <form class="form-inline">
-          <div class="spacer"></div>
-          <div class="submit-container">
-            <button type="submit" value="submit" class="btn btn-default">
-              Continue to Payment {{selectedOption}}
-            </button>
-          </div>
-        </form>
+      <div class="spacer"></div>
+      <div class="submit-container">
+        <button type="submit" value="submit" class="site-btn">
+          Continue to Payment {{ selectedOption }}
+        </button>
       </div>
     </div>
   </div>
@@ -69,8 +67,8 @@
 
 <style scoped>
 .membership-options {
-  padding-top: 5%;
-  padding-bottom: 5%;
+  background: #f6f9fa;
+  padding: 59px 0 5px;
   min-height: 50%;
   max-height: 50%;
 }
@@ -78,21 +76,16 @@
 .membership-container {
   /*margin: auto;*/
   /*width: 50%;*/
-  border: 3px solid #3183e5;
-  border-radius: 10px;
 
   padding: 10px;
   min-height: 50%;
+  background: #f6f9fa;
 }
 
 .info-container {
   display: flex;
   width: 100%;
   height: 500px;
-}
-
-.btn-container {
-  margin: 0 auto;
 }
 
 /*form {*/
@@ -102,9 +95,23 @@
 .membership-details {
   text-align: center;
   width: auto;
-  border: 3px solid #3183e5;
-  border-radius: 10px;
   min-height: 50%;
+  background: #242424;
+  color: #fff;
+}
+
+.membership-details h4 {
+  color: #fff;
+  text-decoration-color: #242424;
+}
+
+.membership-details h4:hover {
+  color: #fff;
+  background: #242424;
+}
+
+.membership-details:hover h4 {
+  background: #fcff18;
 }
 
 .account-creation-form {
@@ -119,20 +126,6 @@
   height: 1%;
 }
 
-.form-container {
-  display: flex;
-}
-
-.btn-container {
-  margin: 0 auto;
-  width: 100%;
-}
-
-.form-inline {
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-}
 </style>
 
 <script>
