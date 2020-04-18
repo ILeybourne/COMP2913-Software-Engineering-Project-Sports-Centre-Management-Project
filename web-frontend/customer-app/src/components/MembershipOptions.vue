@@ -23,6 +23,17 @@
               <v-col><b>Cost</b><br />(£)</v-col>
               <v-col>{{ dto.cost }}</v-col>
             </v-row>
+            <form class="form-inline">
+              <div class="spacer"></div>
+              <div class="btn-container">
+                <input
+                  type="radio"
+                  :id=dto.name
+                  name="membership-type"
+                  :value=dto.id
+                />
+              </div>
+            </form>
           </v-container>
         </v-row>
         <div class="spacer"></div>
@@ -143,7 +154,6 @@ export default {
       membershipTypes: []
     };
   },
-
   created() {
     axios
       .get(`/membership/types`)
