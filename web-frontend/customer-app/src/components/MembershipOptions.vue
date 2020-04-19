@@ -2,7 +2,6 @@
   <div class="membership-options">
     <div class="membership-container">
       <div class="info-container">
-        <div class="spacer"></div>
         <v-row v-for="type in membershipTypes._embedded" :key="type.id">
           <v-container
             class="membership-details"
@@ -23,54 +22,64 @@
               <v-col><b>Cost</b> (£): </v-col>
               <v-col>{{ dto.cost }}</v-col>
             </v-row>
+            <v-row class="text">
+              <v-col
+                ><p>
+                  Buy a {{ dto.name }} membership today! Pay one off for the
+                  {{ dto.duration }} day duration, or subscribe to have your
+                  membership renewed automatically. Payments would be taken
+                  every {{ dto.duration }} days and you can stop them any time!
+                </p></v-col
+              >
+            </v-row>
+
             <v-spacer></v-spacer>
             <v-spacer></v-spacer>
-            <label>
-              <div class="btn-container">
-                <v-btn
-                  v-if="selectedOption !== dto.id"
-                  class="mx-2"
-                  fab-dark color="yellow"
-                  v-on:click="selectMembershipType(dto.id)"
-                >
-                  <v-icon dark>mdi-checkbox-blank-circle-outline</v-icon>
-                </v-btn>
-                <v-btn
-                  v-if="selectedOption === dto.id"
-                  class="mx-2"
-                  v-on:click="selectMembershipType(dto.id)"
-                >
-                  <v-icon>mdi-checkbox-marked-circle</v-icon>
-                </v-btn>
-              </div>
-              Select {{ dto.name }} Membership
-            </label>
+            <v-col class="btn-container">
+              <v-btn
+                icon
+                x-large
+                color="#fcff18"
+                v-if="selectedOption !== dto.id"
+                class="unselected"
+                v-on:click="selectMembershipType(dto.id)"
+              >
+                <v-icon>mdi-checkbox-blank-circle-outline</v-icon>
+              </v-btn>
+              <v-btn
+                icon
+                x-large
+                color="#fcff18"
+                v-if="selectedOption === dto.id"
+                class="selected"
+                v-on:click="selectMembershipType(dto.id)"
+              >
+                <v-icon>mdi-checkbox-marked-circle</v-icon>
+              </v-btn>
+            </v-col>
+          </v-container>
+          <v-container class="account-creation-form">
+            <v-row>
+              <v-col><h4>Account Creation Form</h4></v-col>
+            </v-row>
           </v-container>
         </v-row>
-
-
-
-        <div class="account-creation-form">
-          Account Creation Form
-        </div>
-      </div>
-
-      <div class="spacer"></div>
-      <div class="submit-container">
-        <button type="submit" value="submit" class="site-btn">
-          Continue to Payment {{ selectedOption }}
-        </button>
       </div>
     </div>
+    <v-container class="submit-container">
+      <button type="submit" value="submit" class="site-btn">
+        Continue to Payment {{ selectedOption }}
+      </button>
+    </v-container>
   </div>
 </template>
 
 <style scoped>
 .membership-options {
   background: #f6f9fa;
-  padding: 59px 0 5px;
+  padding: 59px 0px 59px 0px ;
   min-height: 50%;
-  max-height: 50%;
+  height: auto;
 }
 
 .membership-container {
@@ -85,7 +94,7 @@
 .info-container {
   display: flex;
   width: 100%;
-  height: 500px;
+  height: auto;
 }
 
 /*form {*/
@@ -94,7 +103,7 @@
 
 .membership-details {
   text-align: center;
-  width: auto;
+  width: 20%;
   min-height: 50%;
   background: #242424;
   color: #fff;
@@ -105,27 +114,23 @@
   text-decoration-color: #242424;
 }
 
-.membership-details h4:hover {
-  color: #fff;
-  background: #242424;
-}
-
 .membership-details:hover h4 {
   background: #fcff18;
+  color: #242424;
 }
 
 .account-creation-form {
-  width: 40%;
+  width: 30%;
   border: 3px solid #3183e5;
   border-radius: 10px;
   min-height: 50%;
 }
 
-.spacer {
-  width: 4%;
-  height: 1%;
+.submit-container {
+  text-align: right;
+  padding-top: 25px;
+  padding-right: 90px;
 }
-
 </style>
 
 <script>
