@@ -25,10 +25,11 @@
             <v-row class="text">
               <v-col
                 ><p>
-                  Buy a {{ dto.name }} membership today! Pay one off for the
-                  {{ dto.duration }} day duration, or subscribe to have your
-                  membership renewed automatically. Payments would be taken
-                  every {{ dto.duration }} days and you can stop them any time!
+                  Purchase today and pay once to be a member for
+                  {{ dto.duration }} days, or subscribe to have your membership
+                  renewed automatically for as long as you say. Payments would
+                  be taken be taken be taken every {{ dto.duration }} days and
+                  you can any time.
                 </p></v-col
               >
             </v-row>
@@ -46,13 +47,12 @@
                 @mouseover="hoverName = dto.name"
                 @mouseleave="hoverName = null"
               >
-                <v-icon v-if="(hoverName == dto.name)"
+                <v-icon v-if="hoverName === dto.name"
                   >mdi-checkbox-marked-circle-outline</v-icon
                 >
-                <v-icon v-else-if="(hoverName == null || hoverName !== dto.name)"
+                <v-icon v-else-if="hoverName == null || hoverName !== dto.name"
                   >mdi-checkbox-blank-circle-outline</v-icon
                 >
-
               </v-btn>
               <v-btn
                 icon
