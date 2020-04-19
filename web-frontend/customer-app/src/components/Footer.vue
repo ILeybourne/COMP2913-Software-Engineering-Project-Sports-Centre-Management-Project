@@ -8,10 +8,9 @@
             <a class="text-muted"
               >We exist to make sporting services and spaces better for
               everyone. That means investing back into providing quality leisure
-              and health facilities for the good of the communities where we
-              operate. We are always looking to improve the services and
-              facilities we offer and for ways in which it can contribute
-              positively to the local community.</a
+              and health facilities for the good of the communities in which we
+              operate. We are always looking to improve our services, and to
+              give everything we can back to the community.</a
             ><br />
             <a class="text-muted">Learn more </a
             ><a href="/about" title="About" data-cy="footerAboutLink">here</a>
