@@ -9,7 +9,7 @@
             :key="dto.id"
             ><v-row>
               <v-col
-                ><h4>{{ dto.name }}</h4></v-col
+                ><h3>{{ dto.name }}</h3></v-col
               >
             </v-row>
             <v-spacer></v-spacer>
@@ -43,8 +43,16 @@
                 v-if="selectedOption !== dto.id"
                 class="unselected"
                 v-on:click="selectMembershipType(dto.id)"
+                @mouseover="hoverName = dto.name"
+                @mouseleave="hoverName = null"
               >
-                <v-icon>mdi-checkbox-blank-circle-outline</v-icon>
+                <v-icon v-if="(hoverName == dto.name)"
+                  >mdi-checkbox-marked-circle-outline</v-icon
+                >
+                <v-icon v-else-if="(hoverName == null || hoverName !== dto.name)"
+                  >mdi-checkbox-blank-circle-outline</v-icon
+                >
+
               </v-btn>
               <v-btn
                 icon
@@ -77,7 +85,7 @@
 <style scoped>
 .membership-options {
   background: #f6f9fa;
-  padding: 59px 0px 59px 0px ;
+  padding: 59px 0px 59px 0px;
   min-height: 50%;
   height: auto;
 }
@@ -109,12 +117,12 @@
   color: #fff;
 }
 
-.membership-details h4 {
+.membership-details h3 {
   color: #fff;
   text-decoration-color: #242424;
 }
 
-.membership-details:hover h4 {
+.membership-details:hover h3 {
   background: #fcff18;
   color: #242424;
 }
@@ -142,7 +150,8 @@ export default {
   data: function() {
     return {
       membershipTypes: [],
-      selectedOption: null
+      selectedOption: null,
+      hoverName: null
     };
   },
   methods: {
