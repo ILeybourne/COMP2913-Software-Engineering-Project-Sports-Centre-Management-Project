@@ -27,9 +27,9 @@
                 ><p>
                   Purchase today and pay once to be a member for
                   {{ dto.duration }} days, or subscribe to have your membership
-                  renewed automatically for as long as you say. Payments would
-                  be taken be taken be taken every {{ dto.duration }} days and
-                  you can any time.
+                  renewed automatically for as long as you like. Payments would
+                  be taken every {{ dto.duration }} days and you can stop them
+                  any time.
                 </p></v-col
               >
             </v-row>
@@ -43,7 +43,7 @@
                 color="#fcff18"
                 v-if="selectedOption !== dto.id"
                 class="unselected"
-                v-on:click="selectMembershipType(dto.id)"
+                v-on:click="selectMembershipType(dto.id), getMembershipType()"
                 @mouseover="hoverName = dto.name"
                 @mouseleave="hoverName = null"
               >
@@ -60,25 +60,91 @@
                 color="#fcff18"
                 v-if="selectedOption === dto.id"
                 class="selected"
-                v-on:click="selectMembershipType(dto.id)"
+                v-on:click="selectMembershipType(dto.id), getMembershipType()"
               >
                 <v-icon>mdi-checkbox-marked-circle</v-icon>
               </v-btn>
             </v-col>
           </v-container>
-          <v-container class="account-creation-form">
-            <v-row>
-              <v-col><h4>Account Creation Form</h4></v-col>
-            </v-row>
+          <v-container
+            class="account-creation-form"
+            v-if="selectedOption !== null"
+          >
+            <v-form>
+              <v-row>
+                <v-col><h3>Sign Up Today!</h3></v-col>
+              </v-row>
+              <v-spacer></v-spacer>
+              <v-row>
+                <v-col>
+                  <v-text-field
+                          v-model="emailAddress"
+                          label="Email Address"
+                          filled
+                          required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-spacer></v-spacer>
+              <v-row>
+                <v-col>Date of Birth: </v-col>
+                <v-col>
+                  <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    v-model="selectedDateOfBirth"
+                    required
+                  />
+                </v-col>
+              </v-row>
+              <v-spacer></v-spacer>
+              <v-row>
+                <v-col>Renew?</v-col>
+                <v-col
+                  ><v-checkbox v-model="repeatingPayment"></v-checkbox
+                ></v-col>
+              </v-row>
+              <v-spacer></v-spacer>
+              <v-container class="membershipTypeDetails">
+                <v-row><v-col>Membership Details</v-col></v-row>
+                <v-row>
+                  <v-col>Type: </v-col>
+                  <v-col>{{ membershipTypeDetails.name }}</v-col>
+                </v-row>
+                <v-row>
+                  <v-col>Cost: </v-col>
+                  <v-col>{{ membershipTypeDetails.cost }}</v-col>
+                </v-row>
+                <v-row>
+                  <v-col>Duration: </v-col>
+                  <v-col>{{ membershipTypeDetails.duration }}</v-col>
+                </v-row>
+                <v-row>
+                  <v-col>Start Date: </v-col>
+                  <v-col>Todays date</v-col>
+                </v-row>
+                <v-row>
+                  <v-col>End Date: </v-col>
+                  <v-col>End date</v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+            <v-spacer></v-spacer>
+            <v-container class="submit-container">
+              <button
+                type="submit"
+                value="submit"
+                class="site-btn"
+                v-on:click="addMember()"
+              >
+                Continue to Payment {{ selectedOption }}
+              </button>
+            </v-container>
           </v-container>
         </v-row>
       </div>
     </div>
-    <v-container class="submit-container">
-      <button type="submit" value="submit" class="site-btn">
-        Continue to Payment {{ selectedOption }}
-      </button>
-    </v-container>
   </div>
 </template>
 
@@ -101,6 +167,7 @@
 
 .info-container {
   display: flex;
+  justify-content: space-between;
   width: 100%;
   height: auto;
 }
@@ -129,15 +196,34 @@
 
 .account-creation-form {
   width: 30%;
-  border: 3px solid #3183e5;
-  border-radius: 10px;
   min-height: 50%;
+  text-align: center;
+  background: #242424;
+  color: #fff;
+}
+.account-creation-form h3 {
+  color: #fff;
+  text-decoration-color: #242424;
 }
 
-.submit-container {
+.account-creation-form:hover h3 {
+  background: #fcff18;
+  color: #242424;
+}
+
+/*.submit-container {
   text-align: right;
   padding-top: 25px;
   padding-right: 90px;
+}*/
+
+.submit-container {
+  bottom: 0;
+}
+.membershipTypeDetails {
+  margin: auto;
+  border: 2px solid #fff;
+  height: 100%;
 }
 </style>
 
@@ -151,13 +237,37 @@ export default {
     return {
       membershipTypes: [],
       selectedOption: null,
-      hoverName: null
+      hoverName: null,
+      repeatingPayment: null,
+      membershipTypeDetails: [],
+      selectedDateOfBirth: null,
+      emailAddress: null
     };
   },
   methods: {
     selectMembershipType(id) {
       console.log(id);
       this.selectedOption = id;
+    },
+    getMembershipType() {
+      axios.get(`/membership/types/` + this.selectedOption).then(response => {
+        this.membershipTypeDetails = response.data;
+      });
+      return this.membershipTypeDetails;
+    },
+    addMember() {
+      axios
+        .post("/membership/" + this.selectedOption, {
+          email: this.emailAddress,
+          dateOfBirth: this.selectedDateOfBirth,
+          repeatingPayment: this.repeatingPayment
+        })
+        .then(function(response) {
+          console.log(response);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     }
   },
   created() {

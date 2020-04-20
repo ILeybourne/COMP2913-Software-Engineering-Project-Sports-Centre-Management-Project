@@ -9,12 +9,17 @@ import org.springframework.hateoas.RepresentationModel;
 import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 public class MembershipDTO extends RepresentationModel<MembershipDTO> {
 
-    @NotNull(message = "account id is required")
-    private Long accountId;
+    @NotEmpty(message = "email is required")
+    @Size(min = 3, max = 20)
+    private String emailAddress;
+    @NotNull
+    private Date dateOfBirth;
     private boolean repeatingPayment;
     private Date created_at;
     private Date updated_at;
@@ -26,22 +31,15 @@ public class MembershipDTO extends RepresentationModel<MembershipDTO> {
     public MembershipDTO(){}
 
     @JsonCreator
-    public MembershipDTO(@JsonProperty("accountId") Long accountId,
+    public MembershipDTO(@JsonProperty("email") String emailAddress,
+                         @JsonProperty("dateOfBirth") Date dateOfBirth,
                          @JsonProperty(value = "repeatingPayment") Boolean repeatingPayment){
         if (repeatingPayment == null) {
             repeatingPayment = false;
         }
-        this.accountId = accountId;
+        this.emailAddress = emailAddress;
+        this.dateOfBirth = dateOfBirth;
         this.repeatingPayment = (boolean) repeatingPayment;
-    }
-
-    @JsonIgnore
-    public Long getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
     }
 
     public boolean isRepeatingPayment() {
@@ -99,5 +97,23 @@ public class MembershipDTO extends RepresentationModel<MembershipDTO> {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @JsonIgnore
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    @JsonIgnore
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 }

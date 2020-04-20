@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
+import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
@@ -85,15 +86,20 @@ public class MembershipController {
     }
 
 
-    //Add a member, store membership with account Id and membership type id
+    //Add a member, create an account in the database and store customer details
     @PostMapping("/{membership_type_id}")
     @Operation(summary = "Take out a membership #3",
             description = "Purchase a membership, requires membership type, account and whether the payment should repeat")
     public Membership addMembership( @Parameter(description = "A membership DTO Object", required = true)@Valid @RequestBody MembershipDTO membership,
                                      @Parameter(description = "The membership type Id", required = true)@PathVariable Long membership_type_id){
         Membership m = new Membership();
+        Customer c = new Customer();
+        Account a = new Account();
+        c.setDateOfBirth(membership.getDateOfBirth());
+        c.setEmailAddress(membership.getEmailAddress());
+        a.setCustomer(c);
         m.setRepeatingPayment(membership.isRepeatingPayment());
-        return membershipService.addMember(membership.getAccountId(), membership_type_id, m);
+        return membershipService.addMember(membership_type_id, m, a, c);
     }
 
     // Upgrade/downgrade membership type

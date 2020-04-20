@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import uk.ac.leeds.comp2913.api.Domain.Model.Account;
+import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 
@@ -23,7 +25,7 @@ public interface MembershipService {
 
     Page<Membership> findMembershipsByMembershipType(Pageable pageable, Long membership_type_id);
 
-    Membership addMember(Long account_id, Long membership_type_id, Membership membership);
+    Membership addMember(Long membership_type_id, Membership membership, Account account, Customer customer);
 
     Membership updateMembership(Long membership_id, Membership membershipRequest);
 

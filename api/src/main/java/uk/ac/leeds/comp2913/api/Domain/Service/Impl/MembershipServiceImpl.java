@@ -16,10 +16,12 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
+import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipTypeRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
+import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
@@ -30,12 +32,14 @@ public class MembershipServiceImpl implements MembershipService {
     private final MembershipRepository membershipRepository;
     private final MembershipTypeRepository membershipTypeRepository;
     private final AccountRepository accountRepository;
+    private final CustomerRepository customerRepository;
 
     @Autowired
-    public MembershipServiceImpl(MembershipRepository membershipRepository, MembershipTypeRepository membershipTypeRepository, AccountRepository accountRepository) {
+    public MembershipServiceImpl(MembershipRepository membershipRepository, MembershipTypeRepository membershipTypeRepository, AccountRepository accountRepository, CustomerRepository customerRepository) {
         this.membershipRepository = membershipRepository;
         this.membershipTypeRepository = membershipTypeRepository;
         this.accountRepository = accountRepository;
+        this.customerRepository = customerRepository;
     }
 
     @Override
@@ -63,12 +67,11 @@ public class MembershipServiceImpl implements MembershipService {
 
 
     @Override
-    public Membership addMember(Long account_id, Long membership_type_id, Membership membership) {
+    public Membership addMember(Long membership_type_id, Membership membership, Account account, Customer customer) {
         MembershipType membershipType = membershipTypeRepository.findById(membership_type_id)
                 .orElseThrow(() -> new ResourceNotFoundException("Membership type not found for ID" + membership_type_id));
-        Account account = accountRepository.findById(account_id)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found for ID" + account_id));
-
+        customerRepository.save(customer);
+        accountRepository.save(account);
         membership.setMembershipType(membershipType);
         membership.setAccount(account);
         membership.setStartDate(new Date());
