@@ -47,6 +47,7 @@ public class ReceiptController {
     @GetMapping("")
     @Operation(summary = "Get all receipts",
             description = "Get a list of all receipts")
+    @PreAuthorize("hasAuthority('SCOPE_read:receipts')")
     public Page<Receipt> getReceipts(Pageable pageable) {
         return receiptService.findAll(pageable);
     }
@@ -60,6 +61,7 @@ public class ReceiptController {
     @GetMapping("/{receipt_id}")
     @Operation(summary = "Get a receipt",
             description = "Returns a specific receipt")
+    @PreAuthorize("hasAuthority('SCOPE_read:receipts')")
     public Receipt getReceipt( @Parameter(description = "The ID of the receipt", required = true)@PathVariable Long receipt_id) {
         return receiptService.findById(receipt_id);
     }
@@ -71,6 +73,7 @@ public class ReceiptController {
     @DeleteMapping("/{receipt_id}")
     @Operation(summary = "Delete a receipt",
             description = "Delete a receipt")
+    @PreAuthorize("hasAuthority('SCOPE_delete:receipts')")
     public ResponseEntity<?> deleteReceipt( @Parameter(description = "The ID of the receipt", required = true)@PathVariable Long receipt_id) {
         receiptService.delete(receipt_id);
         return ResponseEntity.ok()

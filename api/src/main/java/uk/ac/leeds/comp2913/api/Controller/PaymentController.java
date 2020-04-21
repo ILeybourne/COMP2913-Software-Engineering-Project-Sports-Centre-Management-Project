@@ -14,6 +14,7 @@ import com.stripe.param.PaymentMethodListParams;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,6 +82,7 @@ public class PaymentController {
 
     //TODO Move into response body
     @PostMapping(path = "/intent/{activity_id}")
+    @PreAuthorize("hasAuthority('SCOPE_can:cash_booking')")
     // from https://blog.hackages.io/create-a-simple-payment-flow-with-stripe-b1d0f0f94337
     public PayResponseBody create(@PathVariable Long activity_id ) throws StripeException {
         //TODO Move to env

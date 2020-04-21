@@ -9,6 +9,7 @@ import org.springframework.hateoas.Link;
 
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -98,6 +99,7 @@ public class ActivityController {
     @Transactional
     @Operation(summary = "create a new scheduled activity",
             description = "create a new scheduled activity, using activity type. Has the option to make regular session #12")
+    @PreAuthorize("hasAuthority('SCOPE_create:activity')")
     public Activity createActivity(@Parameter(description = "An ActivityDTO object, providing details needed to create an activity", required = true) @Valid @RequestBody ActivityDTO activityDTO,
                                    @Parameter(description = "An ActivityDTO object, providing details needed to create an activity", required = true) @PathVariable Long activity_type_id) {
         Activity activity = new Activity();
@@ -125,6 +127,7 @@ public class ActivityController {
     @DeleteMapping("/{activity_id}")
     @Operation(summary = "Delete a scheduled activity",
             description = "delete a specific activity from the timetable/database #2")
+    @PreAuthorize("hasAuthority('SCOPE_delete:activity')")
     public ResponseEntity<?> deleteActivity(@Parameter(description = "The ID of the specific activity", required = true)@PathVariable Long activity_id) {
         return activityService.deleteActivity(activity_id);
     }
@@ -133,6 +136,7 @@ public class ActivityController {
     @DeleteMapping("/cancelregularsession/{regular_session_id}")
     @Operation(summary = "Delete regular session",
             description = "Removes a regular session (which allows a scheduled activity to repeat) #2")
+    @PreAuthorize("hasAuthority('SCOPE_delete:activity')")
     public ResponseEntity<?> deleteRegularSession(@Parameter(description = "The ID of the specific regular session", required = true)@PathVariable Long regular_session_id) {
         return activityService.deleteRegularSession(regular_session_id);
     }
