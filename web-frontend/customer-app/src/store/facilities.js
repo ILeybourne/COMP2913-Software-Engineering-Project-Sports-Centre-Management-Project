@@ -33,13 +33,23 @@ const actions = {
   async getFacilities({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/resources");
-    commit("SET_FACILITIES", data._embedded.resourceDToes);
+    const list = data._embedded.resourceDToes;
+    commit("SET_FACILITIES", list);
     commit("loading/FINISH_LOADING", null, { root: true });
+    return list;
   },
   async getActivities({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/activitytypes");
-    commit("SET_ACTIVITIES", data._embedded.activityTypeDToes);
+    const activities = data._embedded.activityTypeDToes;
+    commit("SET_ACTIVITIES", activities);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return activities;
+  },
+  async deleteActivity({ commit }, activityId) {
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.delete(`/activitytypes/${activityId}`);
+    commit("SET_SESSIONS", data);
     commit("loading/FINISH_LOADING", null, { root: true });
   }
 };

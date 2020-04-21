@@ -78,7 +78,8 @@ const routes = [
   {
     path: "/bookingtable",
     name: "BookingTable",
-    component: BookingsTablePage
+    component: BookingsTablePage,
+    beforeEnter: authGuard
   },
   {
     path: "/activitiestable",
@@ -100,7 +101,8 @@ const routes = [
   {
     path: "/weeklyusage",
     name: "WeeklyUsage",
-    component: WeeklyUsagePage
+    component: WeeklyUsagePage,
+    beforeEnter: authGuard
   }
 ];
 

@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     ...mapActions("timetable", {
-      getActivity: "getAllSessions",
+      getActivity: "getAllSessions"
     }),
     async fillData() {
       console.log(this.startDate);
@@ -51,6 +51,7 @@ export default {
       console.log(endDate);
       const data = {};
       const response = await this.getActivity();
+      console.log(response);
       const thisWeek = response
         .map(session => {
           const startTimestamp = this.$moment(session.startTime);
