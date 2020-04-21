@@ -97,7 +97,6 @@ public class MembershipController {
         Account a = new Account();
         c.setDateOfBirth(membership.getDateOfBirth());
         c.setEmailAddress(membership.getEmailAddress());
-        a.setCustomer(c);
         m.setRepeatingPayment(membership.isRepeatingPayment());
         return membershipService.addMember(membership_type_id, m, a, c);
     }

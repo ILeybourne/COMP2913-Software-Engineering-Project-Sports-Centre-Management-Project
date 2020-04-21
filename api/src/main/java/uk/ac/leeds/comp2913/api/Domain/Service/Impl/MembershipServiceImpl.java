@@ -10,6 +10,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.lang.reflect.Member;
 import java.util.Date;
 import java.util.List;
 
@@ -65,12 +66,46 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipRepository.findByAccountId(pageable, account_id);
     }
 
+    //Checks existing customers don't have active memberships
+    @Transactional
+    public String validateMembership(Customer customer) {
+        String response = "valid";
+        //List<Account> customerAccounts = customer.getAccount();
+        List<Account> customerAccounts = accountRepository.findAllByCustomerId(customer.getId());
+        if (customerAccounts != null) {
+            Account lastAccount = customerAccounts.get(customerAccounts.size() - 1);
+            //List<Membership> allMemberships = lastAccount.getMemberships();
+            List<Membership> allMemberships = membershipRepository.findAllByAccountIdOrderByEndDateAsc(lastAccount.getId());
+            if (allMemberships.size()>0) {
+                Membership lastMembership = allMemberships.get(allMemberships.size() - 1);
+                Date lastMembershipEndDate = lastMembership.getEndDate();
+                if (lastMembershipEndDate.after(new Date())) { //checks to make sure old membership has expired
+                    response = "not valid";
+                }
+            }
+        }
+        return response;
+    }
 
+
+    //Check to see if customer data exists, if so, create new account using that, otherwise create new customer
+    //set the new membership to newly created account
+    //TODO add validation so an account isn't created if the customer has an active membership
     @Override
     public Membership addMember(Long membership_type_id, Membership membership, Account account, Customer customer) {
         MembershipType membershipType = membershipTypeRepository.findById(membership_type_id)
                 .orElseThrow(() -> new ResourceNotFoundException("Membership type not found for ID" + membership_type_id));
-        customerRepository.save(customer);
+        Customer existingCustomer = customerRepository.findByEmailAddress(customer.getEmailAddress());
+        if(existingCustomer !=null && validateMembership(existingCustomer).equals("not valid")) {
+            return new Membership(); // returns an empty membership object
+        }
+        else if(existingCustomer!=null && validateMembership(existingCustomer).equals("valid")){
+            account.setCustomer(existingCustomer);
+        }
+        else {
+            customerRepository.save(customer);
+            account.setCustomer(customer);
+        }
         accountRepository.save(account);
         membership.setMembershipType(membershipType);
         membership.setAccount(account);

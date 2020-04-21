@@ -43,7 +43,11 @@
                 color="#fcff18"
                 v-if="selectedOption !== dto.id"
                 class="unselected"
-                v-on:click="selectMembershipType(dto.id), getMembershipType()"
+                v-on:click="
+                  selectMembershipType(dto.id),
+                    getMembershipType(),
+                    assignEmail($auth.user.email)
+                "
                 @mouseover="hoverName = dto.name"
                 @mouseleave="hoverName = null"
               >
@@ -70,66 +74,72 @@
             class="account-creation-form"
             v-if="selectedOption !== null"
           >
-            <v-form>
-              <v-row>
-                <v-col><h3>Sign Up Today!</h3></v-col>
-              </v-row>
-              <v-spacer></v-spacer>
-              <v-row>
-                <v-col>
-                  <v-text-field
-                          v-model="emailAddress"
-                          label="Email Address"
-                          filled
-                          required
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-spacer></v-spacer>
-              <v-row>
-                <v-col>Date of Birth: </v-col>
-                <v-col>
+            <v-row>
+              <v-col><h3>Sign Up Today!</h3></v-col>
+            </v-row>
+            <v-spacer></v-spacer>
+            <v-row>
+              <v-form class="form">
+                <v-row>
+                  <v-col>
+                    <v-text-field
+                      class="text-field"
+                      v-model="emailAddress"
+                      label="Email Address"
+                      required
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>Date of Birth: </v-col>
+                  <v-col>
                   <input
-                    type="date"
-                    id="date"
-                    name="date"
-                    v-model="selectedDateOfBirth"
-                    required
-                  />
-                </v-col>
-              </v-row>
-              <v-spacer></v-spacer>
+                  type="date"
+                  id="date"
+                  name="date"
+                  v-model="selectedDateOfBirth"
+                  required
+                />
+                  </v-col>
+                </v-row>
+
+
+
+
+                <v-spacer></v-spacer>
+                <v-row>
+                  <v-col>Renew?</v-col>
+                  <v-col
+                    ><v-checkbox v-model="repeatingPayment"></v-checkbox
+                  ></v-col>
+                </v-row>
+              </v-form>
+            </v-row>
+
+            <v-spacer></v-spacer>
+            <v-container class="membershipTypeDetails">
+              <v-row><v-col>Membership Details</v-col></v-row>
               <v-row>
-                <v-col>Renew?</v-col>
-                <v-col
-                  ><v-checkbox v-model="repeatingPayment"></v-checkbox
-                ></v-col>
+                <v-col>Type: </v-col>
+                <v-col>{{ membershipTypeDetails.name }}</v-col>
               </v-row>
-              <v-spacer></v-spacer>
-              <v-container class="membershipTypeDetails">
-                <v-row><v-col>Membership Details</v-col></v-row>
-                <v-row>
-                  <v-col>Type: </v-col>
-                  <v-col>{{ membershipTypeDetails.name }}</v-col>
-                </v-row>
-                <v-row>
-                  <v-col>Cost: </v-col>
-                  <v-col>{{ membershipTypeDetails.cost }}</v-col>
-                </v-row>
-                <v-row>
-                  <v-col>Duration: </v-col>
-                  <v-col>{{ membershipTypeDetails.duration }}</v-col>
-                </v-row>
-                <v-row>
-                  <v-col>Start Date: </v-col>
-                  <v-col>Todays date</v-col>
-                </v-row>
-                <v-row>
-                  <v-col>End Date: </v-col>
-                  <v-col>End date</v-col>
-                </v-row>
-              </v-container>
-            </v-form>
+              <v-row>
+                <v-col>Cost: </v-col>
+                <v-col>{{ membershipTypeDetails.cost }}</v-col>
+              </v-row>
+              <v-row>
+                <v-col>Duration: </v-col>
+                <v-col>{{ membershipTypeDetails.duration }}</v-col>
+              </v-row>
+              <v-row>
+                <v-col>Start Date: </v-col>
+                <v-col>Todays date</v-col>
+              </v-row>
+              <v-row>
+                <v-col>End Date: </v-col>
+                <v-col>End date</v-col>
+              </v-row>
+            </v-container>
             <v-spacer></v-spacer>
             <v-container class="submit-container">
               <button
@@ -195,18 +205,16 @@
 }
 
 .account-creation-form {
+  display: flex;
+  flex-direction: column;
   width: 30%;
   min-height: 50%;
   text-align: center;
   background: #242424;
   color: #fff;
 }
-.account-creation-form h3 {
-  color: #fff;
-  text-decoration-color: #242424;
-}
 
-.account-creation-form:hover h3 {
+.account-creation-form h3 {
   background: #fcff18;
   color: #242424;
 }
@@ -225,6 +233,7 @@
   border: 2px solid #fff;
   height: 100%;
 }
+
 </style>
 
 <script>
@@ -241,13 +250,27 @@ export default {
       repeatingPayment: null,
       membershipTypeDetails: [],
       selectedDateOfBirth: null,
-      emailAddress: null
+      emailAddress: null,
+      menu: false,
+      date: null
     };
+  },
+  watch: {
+    menu(val) {
+      val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
+    }
   },
   methods: {
     selectMembershipType(id) {
       console.log(id);
       this.selectedOption = id;
+    },
+    assignEmail(email) {
+      console.log(email);
+      this.emailAddress = email;
+    },
+    save(date) {
+      this.$refs.menu.save(date);
     },
     getMembershipType() {
       axios.get(`/membership/types/` + this.selectedOption).then(response => {
