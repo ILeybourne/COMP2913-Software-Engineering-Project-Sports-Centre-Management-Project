@@ -1,6 +1,8 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -22,11 +24,15 @@ import java.util.List;
 
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
+import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
+import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -40,8 +46,16 @@ class TimetableControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @MockBean
+    ActivityService activityService;
+
+    Resource resource;
+
     @BeforeEach
     void setUp() {
+        resource = new Resource();
+        resource.setId(4L);
+        resource.setName("Test Resource");
     }
 
     @AfterEach
@@ -50,7 +64,7 @@ class TimetableControllerTest {
 
     @Disabled
     @Test
-    // TODO Additional clarification required
+    // TODO (@SebGarwood) Fix
     void getTimetable() throws Exception {
         // Create activity
         Activity activity1 = new Activity();
@@ -68,30 +82,36 @@ class TimetableControllerTest {
         Pageable request = PageRequest.of(0, 10);
         Page<Activity> response = new PageImpl<>(List.of(activity1, activity2, activity3), request, 1);
 
-        // Tie response to service
-//        when(bookingService.findByAccountId(any(), any())).thenReturn(response);
-
         // Perform get and assert
         mockMvc.perform(get("/timetable")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("100")));
     }
 
     @Disabled
     @Test
-    // TODO Additional clarification required
+    // TODO (@SebGarwood) Fix
     void getTimetableByResource() throws Exception {
-        // Perform get and assert
-        mockMvc.perform(get("/timetable")
-                .contentType("application/json"))
-                .andExpect(status().isOk());
-    }
+        // Create activity
+        Activity activity1 = new Activity();
+        activity1.setId(1L);
+        activity1.setResource(resource);
 
-//    @Test
-//    @WithMockUser(username = "test@comp2913.com")
-//    void getResources() throws Exception {
-//        mockMvc.perform(get("/timetable")
-//                .contentType("application/json"))
-//                .andExpect(status().isOk());
-//    }
+        // Create activity
+        Activity activity2 = new Activity();
+        activity2.setId(2L);
+        activity2.setResource(resource);
+
+        // Create activity
+        Activity activity3 = new Activity();
+        activity3.setId(3L);
+        activity3.setResource(resource);
+
+        // Perform get and assert
+        mockMvc.perform(get("/timetable/4")
+                .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("100")));
+    }
 }

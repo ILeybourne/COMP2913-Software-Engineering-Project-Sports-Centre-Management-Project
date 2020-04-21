@@ -27,10 +27,14 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
 import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -97,7 +101,8 @@ class BookingControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/bookings")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(3)));
     }
 
     @Test
@@ -114,7 +119,8 @@ class BookingControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/bookings/1")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
     @Test
@@ -147,7 +153,8 @@ class BookingControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/bookings/account/4")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(3)));
     }
 
     @Test
@@ -180,51 +187,41 @@ class BookingControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/bookings/activity/5")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(3)));
     }
 
     @Disabled
     @Test
-    // TODO Failing due to 400 status
     void createBookingValidation() throws Exception {
-        // Create booking request
-        BookingDTO bookingRequest = new BookingDTO();
+        // Create booking
+        Booking booking = new Booking();
+        booking.setId(1);
+        booking.setAccount(account);
+        booking.setActivity(activity);
 
-        // Perform put and assert
+        // Create booking dto
+        BookingDTO bookingDTO = new BookingDTO();
+        bookingDTO.setId(1L);
+        bookingDTO.setRegularBooking(false);
+        bookingDTO.setParticipants(100);
+
+        // Tie response to service
+        when(bookingService.createNewBookingForActivity(any(), any(), any(), any())).thenReturn(booking);
+
+        // Perform post then assert
         mockMvc.perform(post("/bookings/1")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(bookingRequest)))
-                .andExpect(status().isBadRequest());
-
-        bookingRequest.setParticipants(5);
-
-        mockMvc.perform(post("/bookings/1")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(bookingRequest)))
-                .andExpect(status().isBadRequest());
-
-        bookingRequest.setAccountId(1L);
-
-        mockMvc.perform(post("/bookings/1")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(bookingRequest)))
-                .andExpect(status().isOk());
-
-        bookingRequest.setRegularBooking(true);
-
-        mockMvc.perform(post("/bookings/1")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(bookingRequest)))
-                .andExpect(status().isOk());
+                .content(objectMapper.writeValueAsBytes(bookingDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("100")));
     }
-
 
     @Disabled
     @Test
     void cancelRegularSessionBooking() {
         // TODO (@SebGarwood) Fix return type
     }
-
 
     @Disabled
     @Test
