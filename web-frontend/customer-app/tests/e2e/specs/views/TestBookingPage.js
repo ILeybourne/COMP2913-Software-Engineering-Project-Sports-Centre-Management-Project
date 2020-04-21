@@ -8,7 +8,7 @@ describe("TestBookingPageResourcesAreFilledByServer", () => {
         url: "http://localhost:8000/resources"
       }).then(res => {
         resources = res;
-        console.log("response token", resources);
+        //console.log("response token", resources);
       });
     });
   });
@@ -21,7 +21,7 @@ describe("TestBookingPageResourcesAreFilledByServer", () => {
         activityTypes = res;
         cy.log("activityTypes")
         cy.log(activityTypes)
-        console.log("response token", activityTypes);
+        //console.log("response token", activityTypes);
       });
     });
   });

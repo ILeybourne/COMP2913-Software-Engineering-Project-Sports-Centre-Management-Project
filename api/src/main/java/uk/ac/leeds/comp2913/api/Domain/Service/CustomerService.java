@@ -11,6 +11,9 @@ public interface CustomerService {
   @Transactional
   Customer getCustomerByEmailAddress(String emailAddress);
 
+  @Transactional
+  Customer getCustomerByStripeId(String emailAddress);
+
     Page<Customer> findAll(Pageable pageable);
     Customer findById(Long customer_id);
 }

@@ -27,6 +27,9 @@
             <form id="payment-form">
               <div id="cardDiv">
                 <div id="card-element"></div>
+                <div id="cardError" v-bind:class="{ 'd-none': hideCardError }">
+                  An error has occurred please try again.
+                </div>
                 <div id="buttonDiv">
                   <button
                     type="button"
@@ -174,7 +177,10 @@ export default {
       stripeOptions: {},
       selectedActivityName: "",
       hideQuickPay: true,
-      paymentSubmit: false
+      paymentSubmit: false,
+      hideCardError: true,
+      authEmail: String,
+      customer: null
     };
   },
   computed: {
@@ -186,6 +192,18 @@ export default {
   },
   methods: {
     ...mapActions("facilities", ["getActivities"]),
+
+    async getCustomer() {
+      // let authEmail = this.user.email;
+      //TODO Replace with service
+      let response = await this.$http.get(`/customer?page=0&size=1000`);
+      let customers = response.data._embedded.customerDToes;
+      //console.log("customers");
+      //console.log(customers);
+      this.customer = customers.find(x => x.emailAddress === this.user.email);
+      //console.log(this.customer);
+
+    },
 
     showTempPage() {
       this.hideBooking = true;
@@ -199,7 +217,7 @@ export default {
         //TODO Remove static customer id
         `/payments/customer/stripe_id/14`
       );
-      // console.log(hasStripeId);
+      // //console.log(hasStripeId);
       return hasStripeId.data;
     },
 
@@ -225,7 +243,7 @@ export default {
       let paymentIntent = null;
       // eslint-disable-next-line no-undef
       paymentIntent = await this.$http.post(
-        `/payments/intent/` + "14", //this.customerId,
+        `/payments/intent/saved/` + this.customer, //this.customerId,
         {
           payment_method: {
             card: this.card,
@@ -252,7 +270,7 @@ export default {
       if (this.userType === "guest") {
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
-          `/payments/guestintent/`, // + this.selectedActivityId,
+          `/payments/guest-intent/`, // + this.selectedActivityId,
           {
             payment_method: {
               card: this.card,
@@ -273,7 +291,7 @@ export default {
       if (this.userType === "account") {
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
-          `/payments/intent/` + "14", //this.customerId,
+          `/payments/intent/card/` + this.customer.stripeId, //this.customerId,
           {
             payment_method: {
               card: this.card,
@@ -283,11 +301,15 @@ export default {
             },
             activityTypeId: this.selectedActivityId,
             regularSession: 1,
-            email: this.email
+            email: this.email,
+            customerId: this.customer.id,
           }
         );
         if (paymentIntent.status === 200) {
+          this.sendTokenToServer(paymentIntent.data.clientSecret);
           this.showTempPage();
+        } else {
+          this.hideCardError = false;
         }
       }
     },
@@ -305,18 +327,20 @@ export default {
         },
         setup_future_usage: "off_session"
       });
-      // console.log(result);
+      // //console.log(result);
       if (result.error) {
         // Show error to your customer (e.g., insufficient funds)
-        // console.log(result.error.message);
+        // //console.log(result.error.message);
       } else {
         // The payment has been processed!
         if (result.paymentIntent.status === "succeeded") {
           await this.postAllFormData();
           //TODO Set payment amount
-          this.showTempPage()
+          this.showTempPage();
           //TODO Redirect
           successBol = true;
+        } else {
+          this.hideCardError = false;
         }
       }
       if (successBol == true) {
@@ -330,7 +354,7 @@ export default {
     async handleCashPayment(value) {
       if (value.change >= 0) {
         await this.postAllFormData();
-        this.showTempPage()
+        this.showTempPage();
       } else {
         //invalid amount of cash given
       }
@@ -356,7 +380,7 @@ export default {
         };
         await this.$http.post(`/bookings/` + this.selectedActivityId, body);
       } catch (e) {
-        // console.log(e);
+        // //console.log(e);
       }
     },
     showBillingInfo(value) {
@@ -397,11 +421,27 @@ export default {
         // this.email =
         // this.phone =
       }
+    },
+    isEmpty(obj) {
+      if (Object.keys(obj).length === 0) {
+        return true;
+      } else {
+        if (Object.keys(obj)[0] == "success") {
+          return false;
+        } else {
+          return false;
+        }
+      }
     }
   },
   mounted() {
-    // console.log("this.user)");
-    // console.log(this.user);
+    //console.log("this.user)");
+    //console.log(this.user);
+
+
+    if (! this.isEmpty(this.user)) {
+      this.getCustomer();
+    }
     this.getActivities();
     this.configureStripe();
   }

@@ -260,7 +260,7 @@ export default {
       this.activityOptions = [];
       const facilityId = this.$route.query.facilityId;
       const activityTypeId = this.$route.query.activityId;
-      console.log(activityTypeId);
+      //console.log(activityTypeId);
       const activityId = this.$route.query.sessionId;
       if (!this.isEmpty(this.$route.query)) {
         //If query isn't empty fill ids, selectedDate and timeOptions
@@ -296,7 +296,7 @@ export default {
           let timeArray = ["Please Select"];
 
           for (const activity of this.sessions) {
-            // //console.log(activity)
+            // ////console.log(activity)
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
             const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))

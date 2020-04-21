@@ -145,11 +145,7 @@ export default {
   },
   methods: {
     setTwoNumberDecimal(event) {
-      console.log("event");
-      console.log(event);
       this.cashGiven = parseFloat(event).toFixed(2);
-      console.log("this.cashGiven");
-      console.log(this.cashGiven);
     },
 
     getChange() {
@@ -159,11 +155,9 @@ export default {
       } else {
         this.changeValid = false;
       }
-      // console.log(this.change)
     },
-    submitCashPayment(e) {
+    submitCashPayment() {
       this.$emit("submitCashPayment", this.$data);
-      console.log(e);
       this.componentWidth = 60;
     }
   }

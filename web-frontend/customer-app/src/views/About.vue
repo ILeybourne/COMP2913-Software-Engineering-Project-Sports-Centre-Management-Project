@@ -1,7 +1,11 @@
 <template>
   <div class="about">
     <!-- Hero section -->
-    <section class="hero-section set-bg" data-setbg="img/hero-bg.jpg">
+    <section
+      class="hero-section set-bg"
+      data-setbg="img/training-8287412.jpg"
+      style="background-image: url('/img/training-8287412.3939d78e.jpg')"
+    >
       <div class="container">
         <div class="hero-text">
           <h2>Physical activity</h2>
@@ -28,36 +32,33 @@
           <div class="col-md-4">
             <div class="icon-box-item">
               <div class="ib-icon">
-                <i class="flaticon-004-dumbbell"></i>
+                <img src="../assets/silhouette-3211976.png" alt="" />
               </div>
-              <h4>Intense Workouts</h4>
+              <h4>Stay Flexible</h4>
               <p>
-                Donec nec sapien in urna fermentum ornare. Morbi vel ultrices
-                leo. Sed eu turpis eu arcu vehicula fringilla ut vitae orci.
+                With three state of the art yoga and pilates studios.
               </p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="icon-box-item">
               <div class="ib-icon">
-                <i class="flaticon-031-app-1"></i>
+                <img src="../assets/athlete-3491526.png" alt="" />
               </div>
-              <h4>Intense Workouts</h4>
+              <h4>Stay Strong</h4>
               <p>
-                Donec nec sapien in urna fermentum ornare. Morbi vel ultrices
-                leo. Sed eu turpis eu arcu vehicula fringilla ut vitae orci.
+                with our two weight rooms.
               </p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="icon-box-item">
               <div class="ib-icon">
-                <i class="flaticon-010-podium"></i>
+                <img src="../assets/silhouette-5010366.png" alt="" />
               </div>
-              <h4>Intense Workouts</h4>
+              <h4>Stay Fit</h4>
               <p>
-                Donec nec sapien in urna fermentum ornare. Morbi vel ultrices
-                leo. Sed eu turpis eu arcu vehicula fringilla ut vitae orci.
+                With the latest equipment and regular classes
               </p>
             </div>
           </div>
@@ -67,27 +68,17 @@
     <!-- Feature section end -->
 
     <!-- Add section -->
-    <section class="add-section set-bg" data-setbg="img/add-bg.jpg">
+    <section
+      class="add-section set-bg"
+      data-setbg="/img/sport-5000062 copyblack.80ec09fa.jpg"
+      style="background-image: url('/img/sport-5000062 copyblack.80ec09fa.jpg')"
+    >
       <div class="container">
         <div class="row">
           <div class="col-lg-7 ml-auto">
             <div class="add-text">
-              <h2>Pay now and get a 25% <span>Discount</span></h2>
-              <ul>
-                <li>
-                  <img src="img/check-icon.png" alt="" />Lorem ipsum dolor sit
-                  amet, consectetur adipiscing elit.
-                </li>
-                <li>
-                  <img src="img/check-icon.png" alt="" />Risus commodo viverra
-                  maecenas accumsan lacus vel facilisis.
-                </li>
-                <li>
-                  <img src="img/check-icon.png" alt="" />Ipsum dolor sit amet,
-                  consectetur adipiscing elit, sed do.
-                </li>
-              </ul>
-              <a href="#" class="site-btn">Become a Member</a>
+              <h2>Become a member and get a 25% <span>Discount</span></h2>
+              <a href="/membership" class="site-btn">Become a Member</a>
             </div>
           </div>
         </div>
@@ -101,20 +92,20 @@
         <div class="row">
           <div class="col-lg-3 col-sm-6">
             <div class="milestone">
-              <h2>1374</h2>
+              <h2>8,904</h2>
               <p>Happy Clients</p>
             </div>
           </div>
           <div class="col-lg-3 col-sm-6">
             <div class="milestone">
-              <h2>356</h2>
-              <p>Strong Bodies</p>
+              <h2>65</h2>
+              <p>Dedicated Employees</p>
             </div>
           </div>
           <div class="col-lg-3 col-sm-6">
             <div class="milestone">
-              <h2>57k</h2>
-              <p>IG Followers</p>
+              <h2>32k</h2>
+              <p>Instagram Followers</p>
             </div>
           </div>
           <div class="col-lg-3 col-sm-6">
@@ -138,48 +129,44 @@
           <div class="col-lg-3 col-sm-6">
             <div class="trainer-item">
               <div class="trainer-pic">
-                <img src="img/trainers/1.jpg" alt="" />
+                <img src="src/assets/trainer1.jpg" alt="" />
               </div>
-              <h4>Michael Smith</h4>
+              <h4>Dennis Newton</h4>
               <p>
-                Vivamus libero mauris, bibendum eget sapien ac, ultrices rhoncus
-                ipsum nec sapien.
+                I am an competitive bodybuilder with a wealth knowledge concerning building muscle through weight training & nutrition.
               </p>
             </div>
           </div>
           <div class="col-lg-3 col-sm-6">
             <div class="trainer-item">
               <div class="trainer-pic">
-                <img src="img/trainers/2.jpg" alt="" />
+                <img src="../assets/personal-trainer-2141050_1280.jpg" alt="" />
               </div>
-              <h4>Jessica Black</h4>
+              <h4>Greg Dodson</h4>
               <p>
-                Ac, ultrices rhoncus ipsum. Donec nec sapien in urna fermentum
-                ornare.
+                I offer various martial arts training programmes to help you reach your fitness goals and improves your physical health and mental well-being
               </p>
             </div>
           </div>
           <div class="col-lg-3 col-sm-6">
             <div class="trainer-item">
               <div class="trainer-pic">
-                <img src="img/trainers/3.jpg" alt="" />
+                <img src="../assets/professional-4781792_1920.jpg" alt="" />
               </div>
-              <h4>James Brown</h4>
+              <h4>Paula Gallagher</h4>
               <p>
-                Libero mauris, bibendum eget sapien ac, ultrices rhoncus ipsum.
-                Donec nec sapien.
+                I run yoga classes specialising in back care and injury rehabilitation. One to one sessions also available.
               </p>
             </div>
           </div>
           <div class="col-lg-3 col-sm-6">
             <div class="trainer-item">
               <div class="trainer-pic">
-                <img src="img/trainers/4.jpg" alt="" />
+                <img src="../assets/personally-728224_1920.jpg" alt="" />
               </div>
-              <h4>Paula Carlton</h4>
+              <h4>Codie Weston</h4>
               <p>
-                Sapien ac, ultrices rhoncus ipsum. Donec nec sapien in urna
-                fermen-tum ornare.
+                I create successful training programmes for people of all ages wanting to lose weight, gain strength or improve their overall health!
               </p>
             </div>
           </div>
@@ -190,41 +177,58 @@
 
     <!-- BMI section -->
     <section class="bmi-section spad">
-      <div class="bmi-bg set-bg" data-setbg="img/bmi-bg.jpg"></div>
+      <div class="bmi-bg set-bg" data-setbg="/img/healthyFood.8e56e835.jpeg" style="background-image: url('/img/healthyFood.8e56e835.jpeg')"></div>
       <div class="container">
         <div class="row">
           <div class="col-lg-7 ml-auto">
             <div class="section-title mb-0">
               <h2>Calculate your <span>BMI</span></h2>
               <p>
-                Vivamus libero mauris, bibendum eget sapien ac, ultrices rhoncus
-                ipsum nec sapien.Vivamus libero mauris, bibendum eget sapien ac,
-                ultrices rhoncus ipsum nec sapien.
+                The Body Mass Index (BMI) is a indicator that uses your height
+                and weight to work out if your weight is within a healthy range.
+                A Healthy BMI is considered to be between 20 and 25.
               </p>
             </div>
             <div class="bmi-calculator-warp">
               <div class="bmi-calculator">
                 <div class="row">
                   <div class="col-sm-6">
-                    <input
-                      type="text"
-                      placeholder="Weight (KG)"
-                      id="bmi-weight"
-                    />
+                    <b-input-group size="lg" append="KG">
+                      <b-form-input
+                        step="0.01"
+                        id="bmi-weight"
+                        name="bmi-weight"
+                        v-model="weight"
+                        placeholder="Weight"
+                        class="form-control"
+                      ></b-form-input>
+                    </b-input-group>
                   </div>
                   <div class="col-sm-6">
-                    <input type="text" placeholder="Hight (M)" id="bmi-hight" />
+                    <b-input-group size="lg" append="M">
+                      <b-form-input
+                        step="0.01"
+                        id="bmi-hight"
+                        name="bmi-hight"
+                        v-model="height"
+                        placeholder="Height"
+                        class="form-control"
+                      ></b-form-input>
+                    </b-input-group>
                   </div>
-                  <div class="col-sm-6">
-                    <button class="site-btn" id="bmi-submit">Calculate</button>
-                  </div>
-                  <div class="col-sm-6">
-                    <input type="text" id="bmi-result" readonly />
+                  <div class="col-sm-12">
+                    <b-input-group size="lg" prepend="BMI:">
+                      <b-form-input
+                              type="number"
+                              readonly
+                              v-model="bmi"
+                              id="bmi-result"
+                      ></b-form-input>
+                    </b-input-group>
                   </div>
                 </div>
                 <p>
-                  Vivamus libero mauris, bibendum eget sapien ac, ultrices
-                  rhoncus ipsum nec sapien.Vivamus libero mauris, bibendum.
+                  Enter your weight and height to calculate your BMI
                 </p>
               </div>
             </div>
@@ -233,28 +237,25 @@
       </div>
     </section>
     <!-- BMI section end -->
-
-    <!-- Newsletter section  -->
-    <section
-      class="newsletter-section set-bg"
-      data-setbg="img/newsletter-bg.jpg"
-    >
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="section-title text-white mb-0">
-              <h2>Subscribe to <span>newsletter</span></h2>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <form class="newsletter-form">
-              <input type="text" placeholder="Your e-mail here" />
-              <button class="site-btn" type="submit">Subscribe</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Newsletter section end -->
   </div>
 </template>
+<script>
+export default {
+  name: "About",
+  data() {
+    return {
+      height: null,
+      weight: null,
+    };
+  },
+  computed: {
+    bmi: function() {
+      if (this.weight != null && this.height != null) {
+        return Number(this.weight) / (Number(this.height) * Number(this.height));
+      }else {
+        return 0
+      }
+    }
+  }
+};
+</script>

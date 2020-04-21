@@ -22,6 +22,8 @@ public class CustomerPagedResourcesAssembler extends RepresentationModelAssemble
         customerDTO.setId(customer.getId());
         customerDTO.setEmailAddress(customer.getEmailAddress());
         customerDTO.setDateOfBirth(customer.getDateOfBirth());
+        customerDTO.setStripeId(customer.getStripeId());
+
         return customerDTO;
     }
 
