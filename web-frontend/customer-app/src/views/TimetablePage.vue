@@ -1,5 +1,5 @@
 <template>
-  <div id="timetable-container" class="container-flex">
+  <div>
     <div class="timetable">
       <h1>Timetable</h1>
       <Timetable></Timetable>
@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import Timetable from "../components/Timetable";
+import Timetable from "@/components/Timetable";
 
 export default {
   name: "TimetablePage",
@@ -17,9 +17,3 @@ export default {
   }
 };
 </script>
-
-<style>
-#timetable-container {
-  margin: 3%;
-}
-</style>
