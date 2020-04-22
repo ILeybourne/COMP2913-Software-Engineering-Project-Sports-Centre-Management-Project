@@ -1,12 +1,9 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,22 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityTypeRepository;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ResourceRepository;
-import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
-import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
-import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
-import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 import uk.ac.leeds.comp2913.api.ViewModel.ActivityTypeDTO;
-import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityPagedResourcesAssembler;
 import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityTypePagedResourcesAssembler;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;

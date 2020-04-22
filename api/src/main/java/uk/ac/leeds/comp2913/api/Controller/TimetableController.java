@@ -1,13 +1,9 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,15 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
 import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
-import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityPagedResourcesAssembler;
-import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityTypePagedResourcesAssembler;
-
-import java.util.Collection;
-import java.util.List;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityDTOAssembler;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -41,14 +32,14 @@ public class TimetableController {
 
     private final ActivityService activityService;
     private final PagedResourcesAssembler<Activity> pagedResourcesAssembler;
-    private final ActivityPagedResourcesAssembler activityPagedResourcesAssembler;
+    private final ActivityDTOAssembler activityDTOAssembler;
 
 
     @Autowired
-    public TimetableController(ActivityService activityService, PagedResourcesAssembler<Activity> pagedResourcesAssembler, ActivityPagedResourcesAssembler activityPagedResourcesAssembler) {
+    public TimetableController(ActivityService activityService, PagedResourcesAssembler<Activity> pagedResourcesAssembler, ActivityDTOAssembler activityDTOAssembler) {
         this.activityService = activityService;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
-        this.activityPagedResourcesAssembler = activityPagedResourcesAssembler;
+        this.activityDTOAssembler = activityDTOAssembler;
     }
 
     //View timetable for all facilities
@@ -56,7 +47,7 @@ public class TimetableController {
   @Operation(summary = "Get Timetable",
           description = "Get list of all activities for all facilities #1")
   public PagedModel<ActivityDTO> getTimetable(Pageable pageable) {
-      PagedModel<ActivityDTO> timetableForAllFacilities = pagedResourcesAssembler.toModel((activityService.findAllWithResources(pageable)), activityPagedResourcesAssembler);
+      PagedModel<ActivityDTO> timetableForAllFacilities = pagedResourcesAssembler.toModel((activityService.findAllWithResources(pageable)), activityDTOAssembler);
       //Create unique links for each activity
       for (ActivityDTO activity : timetableForAllFacilities) {
           activity.add(linkTo(ResourceController.class).slash(activity.getResource().getId()).withRel("Resource"));
@@ -73,7 +64,7 @@ public class TimetableController {
  @Operation(summary = "Get Timetable for a facility",
          description = "Get list of all activities for a particular facilities #2")
  public PagedModel<ActivityDTO> getTimetableByResource(Pageable pageable, @Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
-     PagedModel<ActivityDTO> facilityTimetable = pagedResourcesAssembler.toModel((activityService.findByResourceId(pageable, resource_id)), activityPagedResourcesAssembler);
+     PagedModel<ActivityDTO> facilityTimetable = pagedResourcesAssembler.toModel((activityService.findByResourceId(pageable, resource_id)), activityDTOAssembler);
 
          //unique links for each activity
      for (ActivityDTO activity : facilityTimetable) {
