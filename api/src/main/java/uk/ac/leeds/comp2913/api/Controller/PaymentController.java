@@ -16,6 +16,7 @@ import com.stripe.param.PaymentMethodListParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -247,6 +248,7 @@ public class PaymentController {
     }
 
     //Customer Saved Card Payment
+    @PreAuthorize("hasAuthority('SCOPE_can:cash_booking')")
     @PostMapping(path = "/intent/saved/{customer_id}")
     public PayResponseBody createFromSavedCard(@RequestBody ActivityRequestBody requestBody, @PathVariable Long customer_id) throws StripeException {
         //TODO Move to env

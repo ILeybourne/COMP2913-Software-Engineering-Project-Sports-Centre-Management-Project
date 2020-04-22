@@ -2,6 +2,7 @@ package uk.ac.leeds.comp2913.api.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -19,6 +20,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
@@ -27,13 +30,17 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
+import uk.ac.leeds.comp2913.api.ViewModel.MembershipDTO;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -105,7 +112,8 @@ class MembershipControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/membership/members")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(3)));
     }
 
     @Test
@@ -123,7 +131,8 @@ class MembershipControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/membership/members/1")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
     @Test
@@ -159,7 +168,8 @@ class MembershipControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/membership/members/account/4")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(3)));
     }
 
     @Test
@@ -195,19 +205,55 @@ class MembershipControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/membership/members/type/5")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(3)));
     }
 
-    @Disabled
     @Test
-    void addMembership() {
-        // TODO Additional clarification required
+    void addMembership() throws Exception {
+        // Create membership
+        Membership membership = new Membership();
+        membership.setId(1L);
+        membership.setAccount(account);
+        membership.setMembershipType(membershipType);
+        membership.setRepeatingPayment(repeatingPayment);
+
+        // Create membership DTO
+        MembershipDTO membershipDTO = new MembershipDTO();
+        membershipDTO.setRepeatingPayment(false);
+        membershipDTO.setStartDate(new Date(120, Calendar.APRIL, 19));
+        membershipDTO.setEndDate(new Date(120, Calendar.APRIL, 20));
+        membershipDTO.setAccountId(2L);
+
+        // Tie response to service
+        when(membershipService.addMember(any(), any(), any())).thenReturn(membership);
+
+        // Perform post and assert
+        mockMvc.perform(post("/membership/1")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsBytes(membershipDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
-    @Disabled
     @Test
-    void updateMembership() {
-        // TODO Additional clarification required
+    void updateMembership() throws Exception {
+        // Create membership
+        Membership membership = new Membership();
+        membership.setId(1L);
+        membership.setAccount(account);
+        membership.setMembershipType(membershipType);
+        membership.setRepeatingPayment(repeatingPayment);
+
+        // Tie response to service
+        when(membershipService.updateMembership(any(), any())).thenReturn(membership);
+
+        // Perform put and assert
+        mockMvc.perform(put("/membership/1")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsBytes(membership)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
     @Disabled
