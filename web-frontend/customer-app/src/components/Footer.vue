@@ -43,7 +43,7 @@
         <div class="line">
           <a href="/" title="Home">
             <div class="image text-center">
-              <img src="../assets/logo.png" style="height: 64px; width: 64px" />
+              <img src="../assets/logo.png" style="height: 63.6px; width: 198.6px" />
             </div>
           </a>
         </div>
