@@ -12,7 +12,7 @@
         <div class="hero-text">
           <h2>Physical activity</h2>
           <h2>enhances <span>positive energy!</span></h2>
-          <a href="" class="site-btn">Join the Gym</a>
+          <a href="/membership" class="site-btn">Join the Gym</a>
         </div>
       </div>
     </section>
@@ -231,7 +231,7 @@
                   </div>
                 </div>
                 <p>
-                  Enter your weight and height to calculate your BMI
+                  Enter your weight and height to automatically calculate your BMI
                 </p>
               </div>
             </div>
@@ -245,6 +245,14 @@
       </div>
     </section>
     <!-- BMI section end -->
+    <section>
+    <div class="container" style="padding-top: 30px">
+    <div class="section-title text-center">
+    <h2>Find <span>Us</span></h2>
+    </div>
+    </div>
+    <div class="map"><iframe src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ3Sq1l6leeUgRAAH3tEwDbio&key=AIzaSyCeUkdrY6miqihlwvUt_TpWk8XeYM1Z1g0" style="border:0" allowfullscreen></iframe></div>
+    </section>
   </div>
 </template>
 <script>
@@ -271,7 +279,6 @@ export default {
   },
   methods: {
     getUrls(){
-      console.log(this.$refs)
       this.heroUrl = this.$refs.heroImg.src
       this.addUrl = this.$refs.addImg.src
       this.foodUrl = this.$refs.foodImg.src

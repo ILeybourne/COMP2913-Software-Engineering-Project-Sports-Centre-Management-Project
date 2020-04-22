@@ -75,6 +75,8 @@
             class="btn btn-outline-secondary"
             name="guest"
             @click="getUserType($event)"
+            :disabled="!timeValid"
+            v-if="user.email === null"
           >
             Checkout As Guest
           </button>
@@ -83,6 +85,9 @@
             class="btn btn-outline-primary"
             name="account"
             @click="getUserType($event)"
+            :disabled="!timeValid"
+            v-if="user.email !== null"
+
           >
             Checkout With Account
           </button>
@@ -99,7 +104,6 @@
 
 .booking-container {
   margin: auto;
-  /*width: 50%;*/
   border: 3px solid #3183e5;
   padding: 10px;
   border-radius: 10px;
@@ -111,6 +115,11 @@
   padding-left: 20%;
   padding-right: 20%;
   padding-top: 10px;
+}
+
+button {
+  margin: auto;
+  width: 50%;
 }
 
 input {
@@ -138,7 +147,7 @@ export default {
     return {
       facilityOptions: [],
       activityOptions: [],
-      timeOptions: ["Please select"],
+      timeOptions: ["Please Select"],
 
       selectedActivityId: null,
       selectedFacilityId: null,
@@ -158,7 +167,8 @@ export default {
   },
   computed: {
     ...mapGetters("facilities", ["facilities", "activities"]),
-    ...mapGetters("timetable", ["sessions"])
+    ...mapGetters("timetable", ["sessions"]),
+    ...mapGetters("auth", ["user"])
   },
   methods: {
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
@@ -214,7 +224,10 @@ export default {
       this.dateValid = this.$data.date != null;
     },
     validateTime() {
-      this.timeValid = this.$data.selectedTime != null;
+      console.log(this.user )
+      console.log(this.$data.selectedTime == null)
+      console.log(this.$data.selectedTime === "Please Select")
+      this.timeValid = !(this.selectedTime == null || this.selectedTime === this.timeOptions[0]);
     },
 
     callValidation() {
@@ -285,6 +298,7 @@ export default {
         this.timeOptions.push(forrmattedTime);
         this.selectedTime = forrmattedTime;
         this.getPrice(activityTypeId);
+        this.callValidation()
       }
     },
     getTimes() {

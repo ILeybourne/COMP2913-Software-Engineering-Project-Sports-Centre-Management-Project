@@ -20,7 +20,8 @@
         ><b-col v-bind:class="{ 'd-none': hideCard }">
           <div>
             <div v-bind:class="{ 'd-none': hideQuickPay }">
-              <button @click="submitQuickPayment()" :disabled="paymentSubmit">
+<!--               v-if="customer.stripeId != null"-->
+              <button @click="submitQuickPayment()" :disabled="paymentSubmit" type="button">
                 Quick Pay
               </button>
             </div>
@@ -186,22 +187,17 @@ export default {
   computed: {
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("auth", ["user"]),
+    ...mapGetters("customers", ["customers"]),
     quickPayDisable: function() {
       return this.paymentSubmit;
     }
   },
   methods: {
     ...mapActions("facilities", ["getActivities"]),
+    ...mapActions("customers", ["getAllCustomers"]),
 
     async getCustomer() {
-      // let authEmail = this.user.email;
-      //TODO Replace with service
-      let response = await this.$http.get(`/customer?page=0&size=1000`);
-      let customers = response.data._embedded.customerDToes;
-      //console.log("customers");
-      //console.log(customers);
-      this.customer = customers.find(x => x.emailAddress === this.user.email);
-      //console.log(this.customer);
+      this.customer = this.customers.find(x => x.emailAddress === this.user.email);
 
     },
 
@@ -217,7 +213,6 @@ export default {
         //TODO Remove static customer id
         `/payments/customer/stripe_id/14`
       );
-      // //console.log(hasStripeId);
       return hasStripeId.data;
     },
 
@@ -243,7 +238,7 @@ export default {
       let paymentIntent = null;
       // eslint-disable-next-line no-undef
       paymentIntent = await this.$http.post(
-        `/payments/intent/saved/` + this.customer, //this.customerId,
+        `/payments/intent/saved/` + this.customer.id, //this.customerId,
         {
           payment_method: {
             card: this.card,
@@ -291,7 +286,7 @@ export default {
       if (this.userType === "account") {
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
-          `/payments/intent/card/` + this.customer.stripeId, //this.customerId,
+          `/payments/intent/card/` + this.customer.id, //this.customerId,
           {
             payment_method: {
               card: this.card,
@@ -303,6 +298,7 @@ export default {
             regularSession: 1,
             email: this.email,
             customerId: this.customer.id,
+            stripeId: this.customer.stripeId
           }
         );
         if (paymentIntent.status === 200) {
@@ -418,7 +414,7 @@ export default {
         //TODO autofill with customer information
         // this.firstName =
         // this.surname =
-        // this.email =
+        // this.email = this.user.email
         // this.phone =
       }
     },
@@ -432,17 +428,29 @@ export default {
           return false;
         }
       }
+    },
+    getRoles(){
+      let roles = this.$http.get("https://prod-comp2931/api/v2/users/"+this.customer.id+"/roles")
+              .header("authorization", "Bearer MGMT_API_ACCESS_TOKEN")
+
+      console.log(roles)
     }
   },
-  mounted() {
+  async created() {
+    if (! this.isEmpty(this.user)) {
+      await     this.getAllCustomers();
+      this.getCustomer()
+
+    }
+  },
+  async mounted() {
     //console.log("this.user)");
     //console.log(this.user);
 
 
-    if (! this.isEmpty(this.user)) {
-      this.getCustomer();
-    }
-    this.getActivities();
+    // this.getRoles()
+
+    await this.getActivities();
     this.configureStripe();
   }
 };
