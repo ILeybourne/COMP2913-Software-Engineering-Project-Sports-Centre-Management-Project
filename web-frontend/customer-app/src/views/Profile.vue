@@ -31,7 +31,7 @@
       <div id="right-column" class="col-sm-5 align-self-center">
         <div id="membership-card" class="card">
           <h2>Membership</h2>
-          <a>Membership details</a>
+          <a>{{ customers }}</a>
         </div>
         <div class="text-center">
           <button
@@ -49,12 +49,18 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Profile",
   computed: {
-    ...mapGetters("auth", ["user"])
+    ...mapGetters("auth", ["user", "customers"])
+  },
+  methods: {
+    ...mapActions("auth", ["getCustomers", "getMatch"])
+  },
+  mounted() {
+    return this.getCustomers();
   }
 };
 </script>
