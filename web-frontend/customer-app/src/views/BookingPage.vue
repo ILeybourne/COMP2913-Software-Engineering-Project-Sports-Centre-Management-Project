@@ -20,10 +20,7 @@
         ><b-col v-bind:class="{ 'd-none': hideCard }">
           <div>
             <div v-bind:class="{ 'd-none': hideQuickPay }">
-<!--               v-if="customer.stripeId != null"-->
-              <button @click="submitQuickPayment()" :disabled="paymentSubmit" type="button">
-                Quick Pay
-              </button>
+              <!--               v-if="customer.stripeId != null"-->
             </div>
             <form id="payment-form">
               <div id="cardDiv">
@@ -31,7 +28,7 @@
                 <div id="cardError" v-bind:class="{ 'd-none': hideCardError }">
                   An error has occurred please try again.
                 </div>
-                <div id="buttonDiv">
+                <div class="buttonDiv">
                   <button
                     type="button"
                     class="btn btn-outline-primary"
@@ -40,6 +37,19 @@
                     :disabled="paymentSubmit"
                   >
                     Pay £{{ price }}
+                  </button>
+                </div>
+                <h2 id="cardText">Or</h2>
+                <div class="buttonDiv">
+                  <button
+                    @click="submitQuickPayment()"
+                    :disabled="paymentSubmit"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    id="quickPayButton"
+                    v-if="showQuickPay"
+                  >
+                    Quick Pay
                   </button>
                 </div>
               </div>
@@ -99,7 +109,7 @@ h1 {
   text-align: center;
 }
 
-#buttonDiv {
+.buttonDiv {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,6 +117,17 @@ h1 {
 #paymentButton {
   margin-top: 3%;
   width: 50%;
+}
+
+#quickPayButton {
+  margin-top: 3%;
+  width: 50%;
+}
+
+#cardText {
+  text-align: center;
+  padding-top: 3%;
+  padding-bottom: 3%;
 }
 
 #cardDiv {
@@ -188,8 +209,12 @@ export default {
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("auth", ["user"]),
     ...mapGetters("customers", ["customers"]),
-    quickPayDisable: function() {
-      return this.paymentSubmit;
+    showQuickPay: function() {
+      if (this.customer !== null) {
+        return this.customer.stripeId !== null;
+      } else {
+        return false;
+      }
     }
   },
   methods: {
@@ -197,8 +222,9 @@ export default {
     ...mapActions("customers", ["getAllCustomers"]),
 
     async getCustomer() {
-      this.customer = this.customers.find(x => x.emailAddress === this.user.email);
-
+      this.customer = this.customers.find(
+        x => x.emailAddress === this.user.email
+      );
     },
 
     showTempPage() {
@@ -258,7 +284,6 @@ export default {
 
     //To test stripe use the card: 4242 4242 4242 4242 and any postcode/cvc
     async submitPayment() {
-      // e.preventDefault();
       // Talk to our server to get encrpyted prices
       this.paymentSubmit = true;
       let paymentIntent = null;
@@ -276,7 +301,6 @@ export default {
             activityTypeId: this.selectedActivityId,
             regularSession: 1,
             email: this.email
-            // body
           }
         );
         if (paymentIntent != null) {
@@ -323,10 +347,8 @@ export default {
         },
         setup_future_usage: "off_session"
       });
-      // //console.log(result);
       if (result.error) {
         // Show error to your customer (e.g., insufficient funds)
-        // //console.log(result.error.message);
       } else {
         // The payment has been processed!
         if (result.paymentIntent.status === "succeeded") {
@@ -347,6 +369,7 @@ export default {
         // });
       }
     },
+
     async handleCashPayment(value) {
       if (value.change >= 0) {
         await this.postAllFormData();
@@ -355,6 +378,7 @@ export default {
         //invalid amount of cash given
       }
     },
+
     async postAllFormData() {
       try {
         /* TODO: Validate and check server response */
@@ -376,9 +400,10 @@ export default {
         };
         await this.$http.post(`/bookings/` + this.selectedActivityId, body);
       } catch (e) {
-        // //console.log(e);
+        console.log(e);
       }
     },
+
     showBillingInfo(value) {
       this.firstName = value.firstName;
       this.surname = value.surname;
@@ -393,6 +418,7 @@ export default {
         this.hideCard = true;
       }
     },
+
     async showGuestInfo(value) {
       this.selectedFacility = value.selectedFacilityId;
       this.selectedActivity = value.selectedActivityName;
@@ -418,6 +444,7 @@ export default {
         // this.phone =
       }
     },
+
     isEmpty(obj) {
       if (Object.keys(obj).length === 0) {
         return true;
@@ -429,27 +456,25 @@ export default {
         }
       }
     },
-    getRoles(){
-      let roles = this.$http.get("https://prod-comp2931/api/v2/users/"+this.customer.id+"/roles")
-              .header("authorization", "Bearer MGMT_API_ACCESS_TOKEN")
 
-      console.log(roles)
+    getRoles() {
+      let roles = this.$http
+        .get(
+          "https://prod-comp2931/api/v2/users/" + this.customer.id + "/roles"
+        )
+        .header("authorization", "Bearer MGMT_API_ACCESS_TOKEN");
+
+      console.log(roles);
     }
   },
   async created() {
-    if (! this.isEmpty(this.user)) {
-      await     this.getAllCustomers();
-      this.getCustomer()
-
+    if (!this.isEmpty(this.user)) {
+      await this.getAllCustomers();
+      this.getCustomer();
     }
   },
   async mounted() {
-    //console.log("this.user)");
-    //console.log(this.user);
-
-
     // this.getRoles()
-
     await this.getActivities();
     this.configureStripe();
   }
