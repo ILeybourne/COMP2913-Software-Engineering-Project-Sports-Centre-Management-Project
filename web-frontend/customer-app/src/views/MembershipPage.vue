@@ -31,10 +31,14 @@
   padding: 10px;
   margin: auto;
 }
+@media screen and (max-width: 600px) {
+  .heading-div h1 {
+    font-size: 10vw;
+  }
+}
 .heading-div h1{
   width: 50%;
   margin: auto;
-
 }
 .heading-div p{
   width: 100%;

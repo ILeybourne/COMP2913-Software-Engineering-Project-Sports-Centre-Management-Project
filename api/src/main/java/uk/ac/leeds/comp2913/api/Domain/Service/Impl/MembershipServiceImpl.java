@@ -67,14 +67,11 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     //Checks existing customers don't have active memberships
-    @Transactional
     public String validateMembership(Customer customer) {
         String response = "valid";
-        //List<Account> customerAccounts = customer.getAccount();
         List<Account> customerAccounts = accountRepository.findAllByCustomerId(customer.getId());
-        if (customerAccounts != null) {
+        if (customerAccounts.size()>0) {
             Account lastAccount = customerAccounts.get(customerAccounts.size() - 1);
-            //List<Membership> allMemberships = lastAccount.getMemberships();
             List<Membership> allMemberships = membershipRepository.findAllByAccountIdOrderByEndDateAsc(lastAccount.getId());
             if (allMemberships.size()>0) {
                 Membership lastMembership = allMemberships.get(allMemberships.size() - 1);
@@ -90,14 +87,15 @@ public class MembershipServiceImpl implements MembershipService {
 
     //Check to see if customer data exists, if so, create new account using that, otherwise create new customer
     //set the new membership to newly created account
-    //TODO add validation so an account isn't created if the customer has an active membership
     @Override
     public Membership addMember(Long membership_type_id, Membership membership, Account account, Customer customer) {
         MembershipType membershipType = membershipTypeRepository.findById(membership_type_id)
                 .orElseThrow(() -> new ResourceNotFoundException("Membership type not found for ID" + membership_type_id));
         Customer existingCustomer = customerRepository.findByEmailAddress(customer.getEmailAddress());
         if(existingCustomer !=null && validateMembership(existingCustomer).equals("not valid")) {
-            return new Membership(); // returns an empty membership object
+            Membership falseMembership = new Membership();
+            falseMembership.setMembershipType(membershipType);
+            return falseMembership; // returns an empty membership object
         }
         else if(existingCustomer!=null && validateMembership(existingCustomer).equals("valid")){
             account.setCustomer(existingCustomer);
