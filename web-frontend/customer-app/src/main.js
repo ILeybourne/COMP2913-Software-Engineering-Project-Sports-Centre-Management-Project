@@ -44,8 +44,7 @@ const vm = new Vue({
   methods: {
     ...mapActions("auth", {
       setUser: "login",
-      logoutAuth: "logout",
-      setClaims: "setClaims"
+      logoutAuth: "logout"
     }),
     ...mapMutations("loading", { unblock: "ENABLE_LOAD" })
   },
@@ -61,7 +60,6 @@ const vm = new Vue({
         // debugger;
         this.unblock();
         this.setUser(this.$auth.user || null);
-        this.setClaims(this.$auth.getIdTokenClaims() || null);
       }
     });
 

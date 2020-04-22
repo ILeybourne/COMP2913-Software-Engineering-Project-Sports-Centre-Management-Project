@@ -3,7 +3,6 @@ import VueRouter from "vue-router";
 import store from "@/store";
 import Home from "@/views/Home.vue";
 import TimetablePage from "@/views/TimetablePage";
-import Facility from "@/views/Facilities";
 import BookingInformation from "@/views/BookingPage";
 import MembershipPage from "@/views/MembershipPage";
 import Profile from "@/views/Profile";
@@ -30,18 +29,6 @@ const routes = [
     }
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
-    meta: {
-      title: "Zenergy | About"
-    }
-  },
-  {
     path: "/profile",
     name: "Profile",
     component: Profile,
@@ -60,26 +47,14 @@ const routes = [
     }
   },
   {
-    path: "/timetable/:facilityName",
-    name: "Resource Timetable",
-    component: TimetableSinglePage,
-    props: true,
-    meta: {
-      title: "Zenergy | Facility Timetable - Sport & Physical Activities"
-    }
-  },
-  {
-    path: "/facilities",
-    name: "Facilities",
-    component: Facility,
-    meta: {
-      title: "Zenergy | Facilities - Sport & Physical Activities"
-    }
     // Optional id
     path: "/facilities/:id?",
     name: "FacilityPage",
     component: FacilityPage,
     props: true,
+    meta: {
+      title: "Zenergy | Facilities - Sport & Physical Activities"
+    },
     children: [
       {
         path: "timetable",
