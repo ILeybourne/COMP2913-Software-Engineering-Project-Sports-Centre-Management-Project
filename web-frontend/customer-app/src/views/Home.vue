@@ -5,8 +5,7 @@
     <section
       class="hero-section set-bg"
       data-setbg="~@/assets/heroImage.jpg"
-      :style="{backgroundImage: 'url(' + heroUrl+ ')'}"
-
+      :style="{ backgroundImage: 'url(' + heroUrl + ')' }"
     >
       <div class="container">
         <div class="hero-text">
@@ -73,7 +72,7 @@
     <section
       class="add-section set-bg"
       data-setbg="/img/addsectionImg.80ec09fa.jpg"
-      :style="{backgroundImage: 'url(' + addUrl+ ')'}"
+      :style="{ backgroundImage: 'url(' + addUrl + ')' }"
     >
       <div class="container">
         <div class="row">
@@ -135,7 +134,8 @@
               </div>
               <h4>Dennis Newton</h4>
               <p>
-                I am an competitive bodybuilder with a wealth knowledge concerning building muscle through weight training & nutrition.
+                I am an competitive bodybuilder with a wealth knowledge
+                concerning building muscle through weight training & nutrition.
               </p>
             </div>
           </div>
@@ -146,7 +146,9 @@
               </div>
               <h4>Greg Dodson</h4>
               <p>
-                I offer various martial arts training programmes to help you reach your fitness goals and improves your physical health and mental well-being
+                I offer various martial arts training programmes to help you
+                reach your fitness goals and improves your physical health and
+                mental well-being
               </p>
             </div>
           </div>
@@ -157,7 +159,8 @@
               </div>
               <h4>Paula Gallagher</h4>
               <p>
-                I run yoga classes specialising in back care and injury rehabilitation. One to one sessions also available.
+                I run yoga classes specialising in back care and injury
+                rehabilitation. One to one sessions also available.
               </p>
             </div>
           </div>
@@ -168,7 +171,9 @@
               </div>
               <h4>Codie Weston</h4>
               <p>
-                I create successful training programmes for people of all ages wanting to lose weight, gain strength or improve their overall health!
+                I create successful training programmes for people of all ages
+                wanting to lose weight, gain strength or improve their overall
+                health!
               </p>
             </div>
           </div>
@@ -179,7 +184,10 @@
 
     <!-- BMI section -->
     <section class="bmi-section spad">
-      <div class="bmi-bg set-bg" :data-setbg="foodUrl" :style="{backgroundImage: 'url(' + foodUrl+ ')'}"
+      <div
+        class="bmi-bg set-bg"
+        :data-setbg="foodUrl"
+        :style="{ backgroundImage: 'url(' + foodUrl + ')' }"
       ></div>
       <div class="container">
         <div class="row">
@@ -222,16 +230,17 @@
                   <div class="col-sm-12">
                     <b-input-group size="lg" prepend="BMI:">
                       <b-form-input
-                              type="number"
-                              readonly
-                              v-model="bmi"
-                              id="bmi-result"
+                        type="number"
+                        readonly
+                        v-model="bmi"
+                        id="bmi-result"
                       ></b-form-input>
                     </b-input-group>
                   </div>
                 </div>
                 <p>
-                  Enter your weight and height to automatically calculate your BMI
+                  Enter your weight and height to automatically calculate your
+                  BMI
                 </p>
               </div>
             </div>
@@ -239,19 +248,25 @@
         </div>
       </div>
       <div style="display: none">
-        <img src="../assets/heroImg.jpg" ref="heroImg">
-        <img src="../assets/addSectionImg.jpg" ref="addImg">
-        <img src="../assets/healthyFood.jpeg" ref="foodImg">
+        <img src="../assets/heroImg.jpg" ref="heroImg" />
+        <img src="../assets/addSectionImg.jpg" ref="addImg" />
+        <img src="../assets/healthyFood.jpeg" ref="foodImg" />
       </div>
     </section>
     <!-- BMI section end -->
     <section>
-    <div class="container" style="padding-top: 30px">
-    <div class="section-title text-center">
-    <h2>Find <span>Us</span></h2>
-    </div>
-    </div>
-    <div class="map"><iframe src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ3Sq1l6leeUgRAAH3tEwDbio&key=AIzaSyCeUkdrY6miqihlwvUt_TpWk8XeYM1Z1g0" style="border:0" allowfullscreen></iframe></div>
+      <div class="container" style="padding-top: 30px">
+        <div class="section-title text-center">
+          <h2>Find <span>Us</span></h2>
+        </div>
+      </div>
+      <div class="map">
+        <iframe
+          src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ3Sq1l6leeUgRAAH3tEwDbio&key=AIzaSyCeUkdrY6miqihlwvUt_TpWk8XeYM1Z1g0"
+          style="border:0"
+          allowfullscreen
+        ></iframe>
+      </div>
     </section>
   </div>
 </template>
@@ -271,21 +286,24 @@ export default {
   computed: {
     bmi: function() {
       if (this.weight != null && this.height != null) {
-        return Number(this.weight) / (Number(this.height) * Number(this.height));
-      }else {
-        return 0
+        return (
+          Number(this.weight) / (Number(this.height) * Number(this.height))
+        );
+      } else {
+        return 0;
       }
     }
   },
   methods: {
-    getUrls(){
-      this.heroUrl = this.$refs.heroImg.src
-      this.addUrl = this.$refs.addImg.src
-      this.foodUrl = this.$refs.foodImg.src
+    //TODO use webservice to get url
+    getUrls() {
+      this.heroUrl = this.$refs.heroImg.src;
+      this.addUrl = this.$refs.addImg.src;
+      this.foodUrl = this.$refs.foodImg.src;
     }
   },
-  mounted()  {
-    this.getUrls()
+  mounted() {
+    this.getUrls();
   }
 };
 </script>

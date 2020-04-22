@@ -19,7 +19,7 @@ const actions = {
     commit("SET_CUSTOMERS", data._embedded.customerDToes);
     commit("loading/FINISH_LOADING", null, { root: true });
     return data;
-  },
+  }
 };
 
 const namespaced = true;
