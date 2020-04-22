@@ -11,9 +11,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class ActivityPagedResourcesAssembler extends RepresentationModelAssemblerSupport<Activity, ActivityDTO> {
+public class ActivityDTOAssembler extends RepresentationModelAssemblerSupport<Activity, ActivityDTO> {
 
-    public ActivityPagedResourcesAssembler() {
+    public ActivityDTOAssembler() {
         super(ActivityController.class, ActivityDTO.class);
     }
 
