@@ -49,12 +49,12 @@ const actions = {
     commit("SET_SESSIONS", data);
     commit("loading/FINISH_LOADING", null, { root: true });
   },
-  async deleteActivities({ commit }, activityId){
+  async deleteActivities({ commit }, activityId) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.delete(`/activities/${activityId}`);
     commit("SET_SESSIONS", data);
     commit("loading/FINISH_LOADING", null, { root: true });
-}
+  }
 };
 
 const namespaced = true;

@@ -7,10 +7,7 @@
       </v-toolbar>
       <b-modal id="edit-modal" title="Edit Booking">
         <b-form>
-          <b-form-group
-            id="activity"
-            label="Activity"
-            label-for="Activity"
+          <b-form-group id="activity" label="Activity" label-for="Activity"
             ><b-form-input
               id="Activity"
               v-model="selectedActivity.name"

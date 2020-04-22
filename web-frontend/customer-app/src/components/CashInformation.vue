@@ -150,11 +150,7 @@ export default {
 
     getChange() {
       this.changeVal = this.cashGiven - this.$attrs.activityPrice;
-      if (this.changeVal >= 0) {
-        this.changeValid = true;
-      } else {
-        this.changeValid = false;
-      }
+      this.changeValid = this.changeVal >= 0;
     },
     submitCashPayment() {
       this.$emit("submitCashPayment", this.$data);

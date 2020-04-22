@@ -20,7 +20,10 @@
             @keyup="validateFirstName"
             required
           />
-          <div class="error" v-if="!$v.firstName.minLength && $v.firstName.$model !== ''">
+          <div
+            class="error"
+            v-if="!$v.firstName.minLength && $v.firstName.$model !== ''"
+          >
             Name must have at least
             {{ $v.firstName.$params.minLength.min }} letters.
           </div>
@@ -40,7 +43,10 @@
             @keyup="validateSurname"
             required
           />
-          <div class="error" v-if="!$v.surname.minLength && $v.surname.$model !== ''">
+          <div
+            class="error"
+            v-if="!$v.surname.minLength && $v.surname.$model !== ''"
+          >
             Name must have at least
             {{ $v.surname.$params.minLength.min }} letters.
           </div>
@@ -53,11 +59,16 @@
             name="email"
             v-model="email"
             class="form-control"
-            v-bind:class="{ 'is-valid': !$v.email.$invalid, 'is-invalid': $v.email.$invalid }"
+            v-bind:class="{
+              'is-valid': !$v.email.$invalid,
+              'is-invalid': $v.email.$invalid
+            }"
             @keyup="validateEmail"
             required
           />
-          <div class="error" v-if="!$v.email.email && $v.email.$model !== ''">Must be a valid e-mail address</div>
+          <div class="error" v-if="!$v.email.email && $v.email.$model !== ''">
+            Must be a valid e-mail address
+          </div>
         </div>
         <div class="form-row">
           <label for="phone">Phone Number:</label>
@@ -72,7 +83,9 @@
             @keyup="validatePhone"
             required
           />
-          <div class="error" v-if="!$v.phone.numeric && $v.phone.$model !== ''">Must be a valid phone number</div>
+          <div class="error" v-if="!$v.phone.numeric && $v.phone.$model !== ''">
+            Must be a valid phone number
+          </div>
         </div>
         <div class="form-row">
           <label for="health">Health Issues:</label>
@@ -161,7 +174,13 @@ button {
 import Vue from "vue";
 import Vuelidate from "vuelidate";
 Vue.use(Vuelidate);
-import { required, minLength, maxLength, email, numeric } from "vuelidate/lib/validators";
+import {
+  required,
+  minLength,
+  maxLength,
+  email,
+  numeric
+} from "vuelidate/lib/validators";
 
 export default {
   name: "GuestInformation",
@@ -182,7 +201,7 @@ export default {
       firstNameValid: null,
       surnameValid: null,
       emailValid: null,
-      phoneValid: null,
+      phoneValid: null
     };
   },
   validations: {

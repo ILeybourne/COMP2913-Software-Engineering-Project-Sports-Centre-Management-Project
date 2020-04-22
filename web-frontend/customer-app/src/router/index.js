@@ -14,6 +14,7 @@ import ActivitiesTablePage from "@/views/ActivitiesTablePage";
 import WeeklyUsageGraphPage from "@/views/WeeklyUsageGraphPage";
 import FacilityPriceListing from "@/views/FacilityPriceListing";
 import WeeklyUsagePage from "@/views/WeeklyUsagePage";
+import TimetableSinglePage from "@/views/TimetableSinglePage";
 Vue.use(VueRouter);
 
 const routes = [
@@ -133,7 +134,6 @@ const routes = [
     name: "WeeklyUsage",
     component: WeeklyUsagePage,
     beforeEnter: authGuard,
-    component: WeeklyUsagePage,
     meta: {
       title: "View Weekly Usage"
     }

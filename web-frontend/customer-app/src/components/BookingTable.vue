@@ -104,7 +104,7 @@ export default {
       selectedBooking: {
         startDate: null,
         startTime: null,
-        endDate:null,
+        endDate: null,
         endTime: null,
         id: null,
         facility: null,
