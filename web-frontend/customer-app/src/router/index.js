@@ -3,7 +3,6 @@ import VueRouter from "vue-router";
 import store from "@/store";
 import Home from "@/views/Home.vue";
 import TimetablePage from "@/views/TimetablePage";
-import TimetableSinglePage from "@/views/TimetableSinglePage";
 import Facility from "@/views/Facilities";
 import BookingInformation from "@/views/BookingPage";
 import MembershipPage from "@/views/MembershipPage";
@@ -42,12 +41,6 @@ const routes = [
     path: "/timetable",
     name: "Resource Timetable",
     component: TimetablePage
-  },
-  {
-    path: "/timetable/:facilityName",
-    name: "Resource Timetable",
-    component: TimetableSinglePage,
-    props: true
   },
   {
     path: "/facilities",

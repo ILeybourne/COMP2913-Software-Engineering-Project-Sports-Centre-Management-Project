@@ -1,10 +1,12 @@
 <template>
   <div class="about">
     <!-- Hero section -->
+    <!--      TODO Docker img names-->
     <section
       class="hero-section set-bg"
-      data-setbg="img/training-8287412.jpg"
-      style="background-image: url('/img/training-8287412.3939d78e.jpg')"
+      data-setbg="~@/assets/heroImage.jpg"
+      :style="{backgroundImage: 'url(' + heroUrl+ ')'}"
+
     >
       <div class="container">
         <div class="hero-text">
@@ -36,7 +38,7 @@
               </div>
               <h4>Stay Flexible</h4>
               <p>
-                With three state of the art yoga and pilates studios.
+                With three state of the art yoga studios.
               </p>
             </div>
           </div>
@@ -70,8 +72,8 @@
     <!-- Add section -->
     <section
       class="add-section set-bg"
-      data-setbg="/img/sport-5000062 copyblack.80ec09fa.jpg"
-      style="background-image: url('/img/sport-5000062 copyblack.80ec09fa.jpg')"
+      data-setbg="/img/addsectionImg.80ec09fa.jpg"
+      :style="{backgroundImage: 'url(' + addUrl+ ')'}"
     >
       <div class="container">
         <div class="row">
@@ -129,7 +131,7 @@
           <div class="col-lg-3 col-sm-6">
             <div class="trainer-item">
               <div class="trainer-pic">
-                <img src="src/assets/trainer1.jpg" alt="" />
+                <img src="../assets/trainer-1.jpg" alt="" />
               </div>
               <h4>Dennis Newton</h4>
               <p>
@@ -140,7 +142,7 @@
           <div class="col-lg-3 col-sm-6">
             <div class="trainer-item">
               <div class="trainer-pic">
-                <img src="../assets/personal-trainer-2141050_1280.jpg" alt="" />
+                <img src="../assets/trainer-2.jpg" alt="" />
               </div>
               <h4>Greg Dodson</h4>
               <p>
@@ -151,7 +153,7 @@
           <div class="col-lg-3 col-sm-6">
             <div class="trainer-item">
               <div class="trainer-pic">
-                <img src="../assets/professional-4781792_1920.jpg" alt="" />
+                <img src="../assets/trainer-3.jpg" alt="" />
               </div>
               <h4>Paula Gallagher</h4>
               <p>
@@ -162,7 +164,7 @@
           <div class="col-lg-3 col-sm-6">
             <div class="trainer-item">
               <div class="trainer-pic">
-                <img src="../assets/personally-728224_1920.jpg" alt="" />
+                <img src="../assets/trainer-4.jpg" alt="" />
               </div>
               <h4>Codie Weston</h4>
               <p>
@@ -177,7 +179,8 @@
 
     <!-- BMI section -->
     <section class="bmi-section spad">
-      <div class="bmi-bg set-bg" data-setbg="/img/healthyFood.8e56e835.jpeg" style="background-image: url('/img/healthyFood.8e56e835.jpeg')"></div>
+      <div class="bmi-bg set-bg" :data-setbg="foodUrl" :style="{backgroundImage: 'url(' + foodUrl+ ')'}"
+      ></div>
       <div class="container">
         <div class="row">
           <div class="col-lg-7 ml-auto">
@@ -235,6 +238,11 @@
           </div>
         </div>
       </div>
+      <div style="display: none">
+        <img src="../assets/heroImg.jpg" ref="heroImg">
+        <img src="../assets/addSectionImg.jpg" ref="addImg">
+        <img src="../assets/healthyFood.jpeg" ref="foodImg">
+      </div>
     </section>
     <!-- BMI section end -->
   </div>
@@ -246,6 +254,10 @@ export default {
     return {
       height: null,
       weight: null,
+
+      heroUrl: null,
+      addUrl: null,
+      foodUrl: null
     };
   },
   computed: {
@@ -256,6 +268,17 @@ export default {
         return 0
       }
     }
+  },
+  methods: {
+    getUrls(){
+      console.log(this.$refs)
+      this.heroUrl = this.$refs.heroImg.src
+      this.addUrl = this.$refs.addImg.src
+      this.foodUrl = this.$refs.foodImg.src
+    }
+  },
+  mounted()  {
+    this.getUrls()
   }
 };
 </script>
