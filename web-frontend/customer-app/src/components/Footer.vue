@@ -40,9 +40,9 @@
         <div class="row">
           <div class="col">
             <div data-cy="footerColumn3Body">
-              <p><a href="/timetable" title="Timetable">Timetable</a></p>
-              <p><a href="/facilities" title="Facilities">Facilities</a></p>
-              <p><a href="/profile" title="Profile">Profile</a></p>
+              <p><router-link to="/timetable">Timetable</router-link></p>
+              <p><router-link to="/facilities">Facilities</router-link></p>
+              <p><router-link to="/profile">Profile</router-link></p>
             </div>
           </div>
         </div>
