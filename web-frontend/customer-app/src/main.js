@@ -4,7 +4,7 @@ import router from "@/router";
 import store from "@/store";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 
-import "./assets/css/style.scss";
+import "@/assets/css/style.scss";
 
 import { domain, clientId, audience } from "../auth_config.json";
 import { Auth0Plugin } from "@/plugins/auth.plugin";
@@ -44,7 +44,8 @@ const vm = new Vue({
   methods: {
     ...mapActions("auth", {
       setUser: "login",
-      logoutAuth: "logout"
+      logoutAuth: "logout",
+      setClaims: "setClaims"
     }),
     ...mapMutations("loading", { unblock: "ENABLE_LOAD" })
   },
@@ -60,6 +61,7 @@ const vm = new Vue({
         // debugger;
         this.unblock();
         this.setUser(this.$auth.user || null);
+        this.setClaims(this.$auth.getIdTokenClaims() || null);
       }
     });
 

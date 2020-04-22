@@ -3,18 +3,20 @@ import VueRouter from "vue-router";
 import store from "@/store";
 import Home from "@/views/Home.vue";
 import TimetablePage from "@/views/TimetablePage";
-import TimetableSinglePage from "@/views/TimetableSinglePage";
-import Facility from "@/views/Facilities";
 import BookingInformation from "@/views/BookingPage";
 import MembershipPage from "@/views/MembershipPage";
 import Profile from "@/views/Profile";
 import { authGuard } from "@/auth/helpers/auth.guard";
 import BookingsTablePage from "@/views/BookingsTablePage";
-import Test from "@/views/Test";
 import ActivitiesTablePage from "@/views/ActivitiesTablePage";
 import WeeklyUsageGraphPage from "@/views/WeeklyUsageGraphPage";
 import FacilityPriceListing from "@/views/FacilityPriceListing";
 import WeeklyUsagePage from "@/views/WeeklyUsagePage";
+import FacilityPage from "@/views/FacilityPage";
+import PageNotFound from "@/views/PageNotFound";
+import FacilityTimetable from "@/components/FacilityTimetable";
+import FacilityCreate from "../components/FacilityCreate";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -44,27 +46,26 @@ const routes = [
     component: TimetablePage
   },
   {
-    path: "/timetable/:facilityName",
-    name: "Resource Timetable",
-    component: TimetableSinglePage,
-    props: true
+    // Optional id
+    path: "/facilities/:id?",
+    name: "FacilityPage",
+    component: FacilityPage,
+    props: true,
+    children: [
+      {
+        path: "timetable",
+        component: FacilityTimetable,
+        name: "FacilityTimetable",
+        props: route => ({ facilityId: Number(route.params.id) })
+      },
+      {
+        path: "edit",
+        component: FacilityCreate,
+        name: "FacilityEdit",
+        props: route => ({ facilityId: Number(route.params.id), edit: true })
+      }
+    ]
   },
-  {
-    path: "/facilities",
-    name: "Facilities",
-    component: Facility
-  },
-  {
-    path: "/test",
-    name: "Test",
-    component: Test
-  },
-  // {
-  //   path: "/bookings?activityId=:",
-  //   name: "BookingPageByActivityId",
-  //   component: BookingInformation,
-  //   beforeEnter: authGuard
-  // },
   {
     path: "/bookings",
     name: "BookingPage",
@@ -101,6 +102,10 @@ const routes = [
     path: "/weeklyusage",
     name: "WeeklyUsage",
     component: WeeklyUsagePage
+  },
+  {
+    path: "*",
+    component: PageNotFound
   }
 ];
 

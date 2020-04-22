@@ -21,11 +21,17 @@ const getters = {
         ...activity,
         formattedStartAt: formatDate(activity.startTime)
       };
-    })
+    }),
+  getSessionsForFacility: state => facilityId => {
+    return state.sessions.filter(
+      session => Number(session.resource.id) === Number(facilityId)
+    );
+  }
 };
 
 const mutations = {
-  SET_SESSIONS: (state, payload) => (state.sessions = payload)
+  SET_SESSIONS: (state, payload) => (state.sessions = payload),
+  ADD_SESSION: (state, payload) => state.sessions.push(payload)
 };
 
 const actions = {
@@ -47,6 +53,16 @@ const actions = {
     const { data } = await axios.delete(`/activity/${sessionId}`);
     commit("SET_SESSIONS", data);
     commit("loading/FINISH_LOADING", null, { root: true });
+  },
+  async createSession({ commit }, { activityId, ...session }) {
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.post(
+      `/activities/activitytype/${activityId}`,
+      session
+    );
+    commit("ADD_SESSION", data);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return data;
   }
 };
 

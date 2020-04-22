@@ -1,75 +1,67 @@
 <template>
-  <div class="facility" id="facilityComponent">
-    <div class="facility-container">
-      <div class="image">
-        <!-- check licence-->
-        <img
-          src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
-          width="800"
-          height="500"
-        />
-      </div>
-      <div class="facility-info">
-        info
-        <div class="facility-btn">
-          <button
-            type="button"
-            class="btn btn-outline-secondary"
-            id="facilityButton"
-          >
-            Book Now
-          </button>
-        </div>
-      </div>
-    </div>
+  <div class="facility">
+    <b-card
+      :title="facility.name"
+      :img-src="this.imageUrl"
+      @error="handleImageError"
+      :img-alt="facility.name"
+      img-top
+      style="max-width: 20rem;"
+    >
+      <b-card-text>
+        {{ facility.description }}
+      </b-card-text>
+      <b-row>
+        <b-button
+          :to="{ name: 'FacilityTimetable', params: { id: facility.id } }"
+          variant="info"
+          >See Timetable</b-button
+        >
+        <b-button
+          :to="{ name: 'FacilityPage', params: { id: facility.id } }"
+          variant="outline-primary"
+          >View Details</b-button
+        >
+      </b-row>
+    </b-card>
   </div>
 </template>
 
-<style scoped>
-.facility {
-  min-width: 25%;
-  min-height: 300px;
-  max-width: 50%;
-  max-height: 50%;
-}
+<style scoped></style>
 
-.facility-container {
-  width: 100%;
-  height: 100%;
-}
-
-.image {
-  width: 100%;
-  margin: 0 auto;
-  overflow: hidden;
-  position: relative;
-  height: 300px;
-}
-
-img {
-  position: absolute;
-}
-
-.facility-info {
-  width: 100%;
-  height: 20%;
-  background-color: #dcdcdc;
-  text-align: center;
-}
-
-.facility-btn {
-  margin: auto;
-  width: 50%;
-}
-
-button {
-  width: 100%;
-}
-</style>
-
-<!--TODO pass image to component-->
 <script>
+const defaultImage =
+  "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80";
+
 export default {
-  name: "Facility"
+  name: "Facility",
+  props: {
+    facility: {
+      type: Object,
+      required: true
+    }
+  },
+  methods: {
+    handleImageError() {
+      this.fallback = true;
+    }
+  },
+  computed: {
+    imageUrl() {
+      if (!this.fallback) {
+        // try download the image from the server
+        const link = this.facility._links["View image for resource"];
+        if (link) {
+          return link.href;
+        }
+      }
+      return defaultImage;
+    }
+  },
+  data() {
+    return {
+      fallback: false
+    };
+  }
 };
 </script>

@@ -1,12 +1,12 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,70 +16,64 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Collection;
+
+import javax.activation.MimetypesFileTypeMap;
 import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
-import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
 import uk.ac.leeds.comp2913.api.Domain.Service.ResourceService;
-import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ResourcePagedResourcesAssembler;
+import uk.ac.leeds.comp2913.api.Exception.FileUploadFailedException;
+import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.ViewModel.Assembler.FacilityDTOAssembler;
 import uk.ac.leeds.comp2913.api.ViewModel.ResourceDTO;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * TODO: @CHORE, annotate with Swagger API documentation
- * localhost:8000/swagger-ui.html
  * TODO: @CHORE, move domain logic into a service
  * TODO: @CHORE, add HAL to all endpoints, with links to where the client can find
  * *          the associated resource, account and activity  for the booking
- * TODO: @CHORE, add hasAuthority checks to all endpoints
- * <p>
- * TODO: @FEATURE, file upload for image of facility
  */
 @RestController
 @RequestMapping("/resources")
 public class ResourceController {
-
-    Logger logger = LoggerFactory.getLogger(ResourceController.class);
-
     private final ResourceService resourceService;
-    private final ActivityTypeService activityTypeService;
     private final PagedResourcesAssembler<Resource> pagedResourcesAssembler;
-    private final ResourcePagedResourcesAssembler resourcePagedResourcesAssembler;
+    private final FacilityDTOAssembler facilityDTOAssembler;
 
 
-    public ResourceController(ResourceService resourceService, ActivityTypeService activityTypeService, PagedResourcesAssembler<Resource> pagedResourcesAssembler, ResourcePagedResourcesAssembler resourcePagedResourcesAssembler) {
+    public ResourceController(ResourceService resourceService, PagedResourcesAssembler<Resource> pagedResourcesAssembler, FacilityDTOAssembler facilityDTOAssembler) {
         this.resourceService = resourceService;
-        this.activityTypeService = activityTypeService;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
-        this.resourcePagedResourcesAssembler = resourcePagedResourcesAssembler;
+        this.facilityDTOAssembler = facilityDTOAssembler;
     }
 
     //Get Resources
-    @GetMapping("")
+    @GetMapping(value = "", produces = "application/hal+json")
     @Operation(summary = "Get all facilities",
             description = "Get a list of all facilities with basic information")
-    @PreAuthorize("hasAuthority('SCOPE_read:resources')")
     public PagedModel<ResourceDTO> getResources(Pageable pageable) {
         Page<Resource> allResources = resourceService.findAll(pageable);
-        return pagedResourcesAssembler.toModel(allResources, resourcePagedResourcesAssembler);
+        return pagedResourcesAssembler.toModel(allResources, facilityDTOAssembler);
     }
 
     @GetMapping("/{resource_id}")
     @Operation(summary = "Get a specific facility",
             description = "Get a specific facility with more information and links")
-    @PreAuthorize("hasAuthority('SCOPE_read:resources')")
-    public ResourceDTO getResourceById(@Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
-        ResourceDTO resource = resourcePagedResourcesAssembler.toModel(resourceService.findById(resource_id));
-        resource.add(linkTo(ResourceController.class).slash(resource_id).withRel("update"));
-        resource.add(linkTo(ResourceController.class).slash(resource_id).withRel("delete"));
-        resource.add(linkTo(ActivityTypeController.class).slash("resource").slash(resource_id).withRel("Create new Activity Type for Resource"));
-        resource.add(linkTo(ResourceController.class).withRel("Create new resource"));
-        return resource;
+    public ResourceDTO getResourceById(@Parameter(description = "The ID of the facility/resource", required = true) @PathVariable Long resource_id) {
+        final Resource resource = resourceService.findById(resource_id);
+        return facilityDTOAssembler.toModel(resource);
     }
 
     //Post new resource
@@ -87,8 +81,8 @@ public class ResourceController {
     @Operation(summary = "Create a new facility",
             description = "Create a new facility")
     @PreAuthorize("hasAuthority('SCOPE_create:resources')")
-    public Resource createResource(@Parameter(description = "The ID of the facility/resource", required = true)@Valid @RequestBody Resource resource) {
-        return resourceService.create(resource);
+    public ResourceDTO createResource(@Parameter(description = "The ID of the facility/resource", required = true) @Valid @RequestBody Resource resource) {
+        return facilityDTOAssembler.toModel(resourceService.create(resource));
     }
 
     //update resource
@@ -96,8 +90,8 @@ public class ResourceController {
     @Operation(summary = "Update a facility",
             description = "Update the details of a facility")
     @PreAuthorize("hasAuthority('SCOPE_update:resources')")
-    public Resource updateResource(@Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id,
-                                   @Parameter(description = "A Resource object", required = true)@Valid @RequestBody Resource resourceRequest) {
+    public Resource updateResource(@Parameter(description = "The ID of the facility/resource", required = true) @PathVariable Long resource_id,
+                                   @Parameter(description = "A Resource object", required = true) @Valid @RequestBody Resource resourceRequest) {
         return resourceService.update(resource_id, resourceRequest);
     }
 
@@ -106,10 +100,58 @@ public class ResourceController {
     @Operation(summary = "delete a facility",
             description = "Delete a facility")
     @PreAuthorize("hasAuthority('SCOPE_delete:resource')")
-    public ResponseEntity<?> deleteResource( @Parameter(description = "The ID of the facility/resource", required = true)@PathVariable Long resource_id) {
+    public ResponseEntity<?> deleteResource(@Parameter(description = "The ID of the facility/resource", required = true) @PathVariable Long resource_id) {
         resourceService.deleteById(resource_id);
         return ResponseEntity.ok()
                 .build();
+    }
+
+    //    @PreAuthorize("hasAuthority('SCOPE_update:resource')")
+    @Operation(
+            summary = "Upload an image of the facility to the server",
+            description = "Upload an image of the facility to the server to be displayed on the facilities page"
+    )
+    @PostMapping("upload/{resource_id}")
+    public ResourceDTO uploadImage(@Parameter(description = "The ID of the facility", required = true) @PathVariable Long resource_id, @RequestParam("image") MultipartFile image) {
+        // Save image to S3
+        // Check image size
+        // return the url to the image using a href
+        try {
+            String TEMP_FILE_PREFIX = "resource";
+            String TEMP_FILE_POSTFIX = image.getOriginalFilename();
+            File tempFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_POSTFIX);
+            tempFile.deleteOnExit();
+            image.transferTo(tempFile);
+
+            if (image.isEmpty()) {
+                throw new FileUploadFailedException("The file provided was empty, please try again");
+            }
+
+            String mimetype = new MimetypesFileTypeMap().getContentType(tempFile);
+            String type = mimetype.split("/")[0];
+
+            if (!type.equals("image")) {
+                throw new FileUploadFailedException("The file provided was not an image, please try again with an image");
+            }
+
+            Resource r = this.resourceService.uploadImage(resource_id, tempFile);
+            tempFile.delete();
+            return facilityDTOAssembler.toModel(r);
+        } catch (IOException e) {
+            throw new FileUploadFailedException("The file upload failed, please try again");
+        }
+    }
+
+    @GetMapping("image/{resource_id}")
+    public ResponseEntity<byte[]> downloadImage(@Parameter(description = "The ID of the facility", required = true) @PathVariable Long resource_id) {
+        try {
+            File image = resourceService.downloadImage(resource_id);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.valueOf(Files.probeContentType(image.toPath())));
+            return new ResponseEntity<>(Files.readAllBytes(image.toPath()), headers, HttpStatus.OK);
+        } catch (IOException e) {
+            throw new ResourceNotFoundException("Image not found");
+        }
     }
 }
 

@@ -1,7 +1,6 @@
 <template>
   <div class="home">
-    <Facility></Facility>
-    <Facility></Facility>
+    <Facilities></Facilities>
     <BookingInformation></BookingInformation>
     <Timetable></Timetable>
   </div>
@@ -10,14 +9,14 @@
 <script>
 import Timetable from "@/components/Timetable.vue";
 import BookingInformation from "@/components/BookingInformation.vue";
-import Facility from "@/components/Facility.vue";
+import Facilities from "@/views/Facilities.vue";
 
 export default {
   name: "Home",
   components: {
     Timetable,
     BookingInformation,
-    Facility
+    Facilities
   }
 };
 </script>

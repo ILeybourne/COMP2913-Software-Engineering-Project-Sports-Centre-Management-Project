@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -33,6 +35,9 @@ public class Resource {
     @NotEmpty(message = "name is required")
     @Size(min = 3, max = 20)
     private String name;
+
+    @Size(max = 255)
+    private String description;
 
     @ManyToOne
     private Centre centre;
@@ -54,6 +59,9 @@ public class Resource {
 
     @UpdateTimestamp
     private Date updatedAt;
+
+    @Length(min = 5, max = 255)
+    private String imagePath;
 
     public String getName() {
         return name;
@@ -114,5 +122,25 @@ public class Resource {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getImageName() {
+        return "resource-" + this.id;
+    }
+
+    public void setFilePath(String filename) {
+        this.imagePath = filename;
+    }
+
+    public String getFilePath() {
+        return imagePath;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

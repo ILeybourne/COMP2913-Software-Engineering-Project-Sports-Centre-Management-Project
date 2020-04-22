@@ -14,6 +14,7 @@ public class ResourceDTO extends RepresentationModel<ResourceDTO> {
     private Long centreId;
     private Date createdAt;
     private Date updatedAt;
+    private String description;
 
     public ResourceDTO(){}
 
@@ -59,5 +60,11 @@ public class ResourceDTO extends RepresentationModel<ResourceDTO> {
     }
 
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
+    public String getDescription() {
+        return description;
+    }
 }
