@@ -32,9 +32,10 @@ const actions = {
   async getAllSessions({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/timetable");
-    commit("SET_SESSIONS", data._embedded.activityDToes);
+    let session = data._embedded.activityDToes;
+    commit("SET_SESSIONS", session);
     commit("loading/FINISH_LOADING", null, { root: true });
-    return data;
+    return session;
   },
   async updateSession({ commit }, { newSessionData, sessionId }) {
     commit("loading/START_LOADING", null, { root: true });
@@ -47,7 +48,13 @@ const actions = {
     const { data } = await axios.delete(`/activity/${sessionId}`);
     commit("SET_SESSIONS", data);
     commit("loading/FINISH_LOADING", null, { root: true });
-  }
+  },
+  async deleteActivities({ commit }, activityId){
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.delete(`/activities/${activityId}`);
+    commit("SET_SESSIONS", data);
+    commit("loading/FINISH_LOADING", null, { root: true });
+}
 };
 
 const namespaced = true;

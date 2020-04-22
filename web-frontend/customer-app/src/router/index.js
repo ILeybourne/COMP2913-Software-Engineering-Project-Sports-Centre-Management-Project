@@ -97,6 +97,7 @@ const routes = [
     path: "/bookingtable",
     name: "BookingTable",
     component: BookingsTablePage,
+    beforeEnter: authGuard,
     meta: {
       title: "Zenergy | View Bookings"
     }
@@ -130,6 +131,8 @@ const routes = [
   {
     path: "/weeklyusage",
     name: "WeeklyUsage",
+    component: WeeklyUsagePage,
+    beforeEnter: authGuard,
     component: WeeklyUsagePage,
     meta: {
       title: "View Weekly Usage"
