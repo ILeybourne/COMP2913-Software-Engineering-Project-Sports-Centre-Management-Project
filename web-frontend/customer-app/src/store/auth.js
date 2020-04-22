@@ -21,7 +21,9 @@ const actions = {
   logout({ commit }) {
     commit("LOGOUT");
   },
-  loginWithRedirect() {}
+  loginWithRedirect() {
+    // Deliberately empty
+  }
 };
 
 const namespaced = true;
