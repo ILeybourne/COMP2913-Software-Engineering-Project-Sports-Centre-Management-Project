@@ -528,12 +528,13 @@ Hero section
 
 .hero-text h2 {
 	font-size: 96px;
-	color: #fff;
+	color: #ffffff;
 	line-height: 1;
 }
 
 .hero-text h2 span {
 	color: #fcff18;
+	-webkit-text-stroke-width:1px;
 }
 
 .hero-text .site-btn {
@@ -1430,6 +1431,7 @@ Responsive
 		padding-bottom: 180px;
 	}
 	.hero-text h2 {
+		color: #d1d1d1;
 		font-size: 60px;
 	}
 	.add-text {

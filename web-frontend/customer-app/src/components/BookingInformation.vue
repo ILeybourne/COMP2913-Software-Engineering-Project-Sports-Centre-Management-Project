@@ -75,6 +75,8 @@
             class="btn btn-outline-secondary"
             name="guest"
             @click="getUserType($event)"
+            :disabled="!timeValid"
+            v-if="user.email === null"
           >
             Checkout As Guest
           </button>
@@ -83,6 +85,8 @@
             class="btn btn-outline-primary"
             name="account"
             @click="getUserType($event)"
+            :disabled="!timeValid"
+            v-if="user.email !== null"
           >
             Checkout With Account
           </button>
@@ -99,7 +103,6 @@
 
 .booking-container {
   margin: auto;
-  /*width: 50%;*/
   border: 3px solid #3183e5;
   padding: 10px;
   border-radius: 10px;
@@ -111,6 +114,11 @@
   padding-left: 20%;
   padding-right: 20%;
   padding-top: 10px;
+}
+
+button {
+  margin: auto;
+  width: 50%;
 }
 
 input {
@@ -127,18 +135,16 @@ label {
 </style>
 
 <script>
-  import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
   ...mapActions("facilities", ["getFacilities", "getActivities"]),
   ...mapActions("timetable", ["getAllSessions"]),
   name: "BookingInformation",
-  // props: ["content", "facilities"],
-  // props:
   data() {
     return {
       facilityOptions: [],
       activityOptions: [],
-      timeOptions: ["Please select"],
+      timeOptions: ["Please Select"],
 
       selectedActivityId: null,
       selectedFacilityId: null,
@@ -158,7 +164,8 @@ export default {
   },
   computed: {
     ...mapGetters("facilities", ["facilities", "activities"]),
-    ...mapGetters("timetable", ["sessions"])
+    ...mapGetters("timetable", ["sessions"]),
+    ...mapGetters("auth", ["user"])
   },
   methods: {
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
@@ -175,7 +182,9 @@ export default {
       let activities = this.activities;
 
       if (!(e == null)) {
-        const filter = activity => Number(activity._links.resource.href.split('/').slice(-1)[0] ) === Number(e);
+        const filter = activity =>
+          Number(activity._links.resource.href.split("/").slice(-1)[0]) ===
+          Number(e);
         activities = this.activities.filter(filter);
         for (const activity of activities) {
           activityArray.push({ value: activity.id, text: activity.name });
@@ -214,7 +223,12 @@ export default {
       this.dateValid = this.$data.date != null;
     },
     validateTime() {
-      this.timeValid = this.$data.selectedTime != null;
+      console.log(this.user);
+      console.log(this.$data.selectedTime == null);
+      console.log(this.$data.selectedTime === "Please Select");
+      this.timeValid = !(
+        this.selectedTime == null || this.selectedTime === this.timeOptions[0]
+      );
     },
 
     callValidation() {
@@ -260,7 +274,6 @@ export default {
       this.activityOptions = [];
       const facilityId = this.$route.query.facilityId;
       const activityTypeId = this.$route.query.activityId;
-      console.log(activityTypeId);
       const activityId = this.$route.query.sessionId;
       if (!this.isEmpty(this.$route.query)) {
         //If query isn't empty fill ids, selectedDate and timeOptions
@@ -285,6 +298,7 @@ export default {
         this.timeOptions.push(forrmattedTime);
         this.selectedTime = forrmattedTime;
         this.getPrice(activityTypeId);
+        this.callValidation();
       }
     },
     getTimes() {
@@ -296,7 +310,6 @@ export default {
           let timeArray = ["Please Select"];
 
           for (const activity of this.sessions) {
-            // //console.log(activity)
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
             const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))
@@ -308,7 +321,6 @@ export default {
             let formattedDate = year + "-" + month + "-" + date;
             if (
               activity.name == this.selectedActivityName &&
-              // formattedDate == event.target.value
               formattedDate == this.selectedDate
             ) {
               let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);

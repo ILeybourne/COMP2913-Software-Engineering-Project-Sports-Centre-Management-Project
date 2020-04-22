@@ -8,6 +8,7 @@ public class CustomerDTO extends RepresentationModel<CustomerDTO> {
     private Long id;
     private String emailAddress;
     private Date dateOfBirth;
+    private String stripeId;
 
     public CustomerDTO(){}
 
@@ -34,4 +35,11 @@ public class CustomerDTO extends RepresentationModel<CustomerDTO> {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public String getStripeId() { return stripeId; }
+
+    public void setStripeId(String stripeId) {
+        this.stripeId = stripeId;
+    }
+
 }

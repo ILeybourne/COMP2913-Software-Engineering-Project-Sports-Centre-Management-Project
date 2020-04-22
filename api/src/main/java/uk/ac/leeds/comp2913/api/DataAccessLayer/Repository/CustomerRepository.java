@@ -8,4 +8,7 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Customer findByEmailAddress(String email);
+    Customer findByStripeId(String stripeId);
+
+    Customer getCustomerByStripeId(String stripeId);
 }

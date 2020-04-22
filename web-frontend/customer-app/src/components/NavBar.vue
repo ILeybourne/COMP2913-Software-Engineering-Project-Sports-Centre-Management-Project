@@ -10,16 +10,14 @@
       </b-navbar-brand>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
       <b-collapse class="main-menu" id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item to="/about">About</b-nav-item>
+          <b-nav-item to="/">Home</b-nav-item>
           <b-nav-item to="/timetable">Timetable</b-nav-item>
           <b-nav-item to="/facilities">Facilities</b-nav-item>
           <b-nav-item to="/bookings">Bookings</b-nav-item>
           <b-nav-item to="/membership">Membership</b-nav-item>
         </b-navbar-nav>
-
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
           <div class="hr-box">

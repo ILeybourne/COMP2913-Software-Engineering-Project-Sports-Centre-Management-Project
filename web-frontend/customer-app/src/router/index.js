@@ -3,7 +3,6 @@ import VueRouter from "vue-router";
 import store from "@/store";
 import Home from "@/views/Home.vue";
 import TimetablePage from "@/views/TimetablePage";
-import TimetableSinglePage from "@/views/TimetableSinglePage";
 import Facility from "@/views/Facilities";
 import BookingInformation from "@/views/BookingPage";
 import MembershipPage from "@/views/MembershipPage";
@@ -78,12 +77,6 @@ const routes = [
     name: "Test",
     component: Test
   },
-  // {
-  //   path: "/bookings?activityId=:",
-  //   name: "BookingPageByActivityId",
-  //   component: BookingInformation,
-  //   beforeEnter: authGuard
-  // },
   {
     path: "/bookings",
     name: "BookingPage",
