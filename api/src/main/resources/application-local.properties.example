@@ -33,3 +33,8 @@ spring.mail.properties.mail.smtp.writetimeout=5000
 spring.mail.properties.mail.smtp.starttls.enable=true
 ########################################################## COMP
 COMP2913.iTextLicensePath=classpath:licenses/iTextKey.xml
+########################################################## S3
+s3.bucket.name=comp2913-dev
+s3.default.folder=
+s3.access.name=
+s3.access.secret=
