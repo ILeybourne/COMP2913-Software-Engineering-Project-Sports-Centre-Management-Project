@@ -56,14 +56,12 @@ const actions = {
     const { data } = await axios.post("/resources", request);
 
     if (request.file) {
-      const image = await dispatch("updateFacilityImage", {
+      await dispatch("updateFacilityImage", {
         facilityId: data.id,
         file: request.file
       });
-      console.log(image);
       // error handling
     }
-    debugger;
     commit("SET_FACILITIES", [...state.facilities, data]);
     commit("loading/START_LOADING", null, { root: true });
     return data;
