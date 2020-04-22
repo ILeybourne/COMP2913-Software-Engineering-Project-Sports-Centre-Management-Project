@@ -67,6 +67,7 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     //Checks existing customers don't have active memberships
+    @Transactional
     public String validateMembership(Customer customer) {
         String response = "valid";
         List<Account> customerAccounts = accountRepository.findAllByCustomerId(customer.getId());

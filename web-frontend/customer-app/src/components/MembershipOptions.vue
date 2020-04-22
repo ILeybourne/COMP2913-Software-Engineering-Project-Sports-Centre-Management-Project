@@ -1,6 +1,6 @@
 <template>
   <div class="membership-options">
-    <div class="membership-container">
+    <div class="membership-container" v-if="membershipTypes._embedded !== null">
       <v-row
         v-for="type in membershipTypes._embedded"
         :key="type.id"
@@ -10,7 +10,6 @@
           class="membership-details"
           v-for="dto in type"
           :key="dto.id"
-          v-on:load="assignEmail($auth.user.email)"
           ><v-row>
             <v-col
               ><h3>{{ dto.name }}</h3></v-col
@@ -89,6 +88,7 @@
                   v-model="emailAddress"
                   label="Email Address"
                   required
+                  :rules="[rules.required, rules.email]"
                 ></v-text-field>
                 <v-text-field
                   class="text-field"
@@ -98,6 +98,7 @@
                   label="Date Of Birth"
                   v-model="selectedDateOfBirth"
                   required
+                  :rules="[rules.required]"
                 />
                 <v-checkbox
                   class="text-field"
@@ -130,6 +131,8 @@
               <v-col v-if="postResponse.id > 0"
                 >New Membership created with id {{ postResponse.id }}</v-col
               >
+              <v-col v-if="postResponse === formError"
+              > {{ postResponse }}</v-col>
             </v-row>
           </v-container>
           <v-spacer></v-spacer>
@@ -146,6 +149,9 @@
           </v-container>
         </v-container>
       </v-row>
+    </div>
+    <div v-if="membershipTypes._embedded == null">
+      We're sorry, we currently have no memberships for sale
     </div>
   </div>
 </template>
@@ -257,12 +263,34 @@ export default {
       membershipTypeDetails: [],
       selectedDateOfBirth: null,
       emailAddress: null,
-      menu: false,
-      date: null,
-      postResponse: []
+      formError: "Please Check From Data",
+      postResponse: [],
+      rules: {
+        required: value => !!value || "Required.",
+        email: value => {
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          return pattern.test(value) || "Invalid e-mail.";
+        }
+      }
     };
   },
   methods: {
+    checkForm: function(e) {
+      if (this.emailAddress && this.date) {
+        return true;
+      }
+
+      this.errors = [];
+
+      if (!this.name) {
+        this.errors.push("Name required.");
+      }
+      if (!this.age) {
+        this.errors.push("Age required.");
+      }
+
+      e.preventDefault();
+    },
     selectMembershipType(id) {
       console.log(id);
       this.selectedOption = id;
@@ -278,23 +306,27 @@ export default {
       return this.membershipTypeDetails;
     },
     addMember() {
-      axios
-        .post("/membership/" + this.selectedOption, {
-          email: this.emailAddress,
-          dateOfBirth: this.selectedDateOfBirth,
-          repeatingPayment: this.repeatingPayment
-        })
-        .then(response => {
-          console.log(response);
-          this.postResponse = response.data;
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+      if (this.emailAddress !== null && this.selectedDateOfBirth !== null) {
+        axios
+          .post("/membership/" + this.selectedOption, {
+            email: this.emailAddress,
+            dateOfBirth: this.selectedDateOfBirth,
+            repeatingPayment: this.repeatingPayment
+          })
+          .then(response => {
+            console.log(response);
+            this.postResponse = response.data;
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      } else {
+        this.postResponse = this.formError;
+      }
     }
   },
-  beforeCreate() {
-    axios
+  async mounted() {
+    await axios
       .get(`/membership/types`)
       .then(response => {
         this.membershipTypes = response.data;
