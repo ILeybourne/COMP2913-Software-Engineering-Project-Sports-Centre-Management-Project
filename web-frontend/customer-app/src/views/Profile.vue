@@ -17,9 +17,6 @@
               <ul class="list-unstyled">
                 <li>{{ $auth.user.name }}</li>
                 <li>{{ $auth.user.email }}</li>
-              </ul>
-              <ul class="list-unstyled">
-                <li>Other stuff</li>
                 <li>
                   <a href="/bookingtable" title="BookingsTable">My Bookings</a>
                 </li>
