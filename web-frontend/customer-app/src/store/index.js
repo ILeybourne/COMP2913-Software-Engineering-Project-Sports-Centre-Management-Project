@@ -5,6 +5,7 @@ import AuthModule from "@/store/auth";
 import FacilitiesModule from "@/store/facilities";
 import TimetableModule from "@/store/timetable";
 import ValidationModule from "@/store/validation";
+import MembershipModule from "@/store/membership";
 
 Vue.use(Vuex);
 
@@ -17,6 +18,7 @@ export default new Vuex.Store({
     auth: AuthModule,
     facilities: FacilitiesModule,
     timetable: TimetableModule,
-    validation: ValidationModule
+    validation: ValidationModule,
+    membership: MembershipModule
   }
 });

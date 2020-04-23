@@ -2,8 +2,7 @@ import axios from "@/plugins/axios.plugin";
 
 const state = {
   membershipTypes: [],
-  selectedMembershipType: [],
-  postResponse: [] //how do I get the response from a post request?
+  selectedMembershipType: []
 };
 
 const getters = {
@@ -14,13 +13,7 @@ const getters = {
         formattedCost: "£" + membershipType.cost.toFixed(2)
       };
     }),
-  selectedMembershipType: state =>
-    state.selectedMembershipType.map(membershipType => {
-      return {
-        ...membershipType,
-        formattedCost: "£" + membershipType.cost.toFixed(2)
-      };
-    })
+  selectedMembershipType: state => state.selectedMembershipType
 };
 
 const mutations = {
@@ -36,19 +29,10 @@ const actions = {
     commit("SET_MEMBERSHIPTYPES", data._embedded.membershipTypeDToes);
     commit("loading/FINISH_LOADING", null, { root: true });
   },
-  async getSelectedMembershipType({ commit }, { membershipTypeId }) {
+  async getSelectedMembershipType({ commit }, selectedOption) {
     commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.get(`/membership/types/${membershipTypeId}`);
-    commit("SET_MEMBERSHIPTYPE", data);
-    commit("loading/FINISH_LOADING", null, { root: true });
-  },
-  async addMember({ commit }, { newMemberData, membershipTypeId }) {
-    commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.post(
-      `/membership/${membershipTypeId}`,
-      newMemberData
-    );
-    commit("SET_SESSIONS", data);
+    const { data } = await axios.get(`/membership/types/${selectedOption}`);
+    commit("SET_SELECTEDMEMBERSHIPTYPE", data);
     commit("loading/FINISH_LOADING", null, { root: true });
   }
 };

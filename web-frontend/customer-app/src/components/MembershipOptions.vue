@@ -1,37 +1,33 @@
 <template>
   <div class="membership-options">
-    <div class="membership-container" v-if="membershipTypes._embedded !== null">
-      <v-row
-        v-for="type in membershipTypes._embedded"
-        :key="type.id"
-        class="info-container"
-      >
+    <div class="membership-container">
+      <v-row class="info-container">
         <v-container
           class="membership-details"
-          v-for="dto in type"
-          :key="dto.id"
+          v-for="type in membershipTypes"
+          :key="type.id"
           ><v-row>
             <v-col
-              ><h3>{{ dto.name }}</h3></v-col
+              ><h3>{{ type.name }}</h3></v-col
             >
           </v-row>
           <v-spacer></v-spacer>
           <v-row>
             <v-col><b>Duration</b> (Days): </v-col>
-            <v-col>{{ dto.duration }}</v-col>
+            <v-col>{{ type.duration }}</v-col>
           </v-row>
           <v-spacer></v-spacer>
           <v-row>
             <v-col><b>Cost</b> (£): </v-col>
-            <v-col>{{ dto.cost }}</v-col>
+            <v-col>{{ type.cost }}</v-col>
           </v-row>
           <v-row class="text">
             <v-col
               ><p>
                 Purchase today and pay once to be a member for
-                {{ dto.duration }} days, or subscribe to have your membership
+                {{ type.duration }} days, or subscribe to have your membership
                 renewed automatically for as long as you like. Payments would be
-                taken every {{ dto.duration }} days and you can stop them any
+                taken every {{ type.duration }} days and you can stop them any
                 time.
               </p></v-col
             >
@@ -44,22 +40,22 @@
               icon
               x-large
               color="#242424"
-              v-if="selectedOption !== dto.id"
+              v-if="selectedOption !== type.id"
               class="button"
               v-on:click="
-                selectMembershipType(dto.id),
+                selectMembershipType(type.id),
                   getMembershipType(),
                   assignEmail($auth.user.email)
               "
-              @mouseover="hoverName = dto.name"
+              @mouseover="hoverName = type.name"
               @mouseleave="hoverName = null"
             >
-              <v-icon class="icon" v-if="hoverName === dto.name"
+              <v-icon class="icon" v-if="hoverName === type.name"
                 >mdi-checkbox-marked-circle-outline</v-icon
               >
               <v-icon
                 class="icon"
-                v-else-if="hoverName == null || hoverName !== dto.name"
+                v-else-if="hoverName == null || hoverName !== type.name"
                 >mdi-checkbox-blank-circle-outline</v-icon
               >
             </v-btn>
@@ -67,9 +63,9 @@
               icon
               x-large
               color="#242424"
-              v-if="selectedOption === dto.id"
+              v-if="selectedOption === type.id"
               class="button"
-              v-on:click="selectMembershipType(dto.id), getMembershipType()"
+              v-on:click="selectMembershipType(type.id), getMembershipType()"
             >
               <v-icon class="icon">mdi-checkbox-marked-circle</v-icon>
             </v-btn>
@@ -85,7 +81,7 @@
               <v-form class="form">
                 <v-text-field
                   class="text-field"
-                  v-model="emailAddress"
+                  v-model="formBody.email"
                   label="Email Address"
                   required
                   :rules="[rules.required, rules.email]"
@@ -96,13 +92,13 @@
                   id="date"
                   name="date"
                   label="Date Of Birth"
-                  v-model="selectedDateOfBirth"
+                  v-model="formBody.dateOfBirth"
                   required
                   :rules="[rules.required]"
                 />
                 <v-checkbox
                   class="text-field"
-                  v-model="repeatingPayment"
+                  v-model="formBody.repeatingPayment"
                   label="Automatic Renewal?"
                 ></v-checkbox>
               </v-form>
@@ -120,10 +116,8 @@
             v-if="selectedOption !== null"
           >
             <v-row><v-col>Membership Chosen</v-col></v-row>
-            <v-row>
-              <v-col>Type: </v-col>
-              <v-col>{{ membershipTypeDetails.name }}</v-col>
-            </v-row>
+            <v-col>Type: </v-col>
+            <v-col>{{ selectedMembershipType.name }}</v-col>
             <v-row>
               <v-col v-if="postResponse.id === 0"
                 >You already have a membership with Zenergy</v-col
@@ -131,8 +125,9 @@
               <v-col v-if="postResponse.id > 0"
                 >New Membership created with id {{ postResponse.id }}</v-col
               >
-              <v-col v-if="postResponse === formError"
-              > {{ postResponse }}</v-col>
+              <v-col v-if="postResponse === formError">
+                > {{ postResponse }}</v-col
+              >
             </v-row>
           </v-container>
           <v-spacer></v-spacer>
@@ -150,7 +145,7 @@
         </v-container>
       </v-row>
     </div>
-    <div v-if="membershipTypes._embedded == null">
+    <div v-if="membershipTypes == null">
       We're sorry, we currently have no memberships for sale
     </div>
   </div>
@@ -249,21 +244,26 @@
 </style>
 
 <script>
-import axios from "@/plugins/axios.plugin";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
+  ...mapActions("membership", [
+    "getMembershipTypes",
+    "getSelectedMembershipType"
+  ]),
+
   name: "Memberships",
   components: {},
   data: function() {
     return {
-      membershipTypes: [],
       selectedOption: null,
       hoverName: null,
-      repeatingPayment: null,
-      membershipTypeDetails: [],
-      selectedDateOfBirth: null,
-      emailAddress: null,
       formError: "Please Check From Data",
+      formBody: {
+        email: null,
+        dateOfBirth: null,
+        repeatingPayment: null
+      },
       postResponse: [],
       rules: {
         required: value => !!value || "Required.",
@@ -274,45 +274,33 @@ export default {
       }
     };
   },
+  computed: {
+    ...mapGetters("membership", ["membershipTypes", "selectedMembershipType"])
+  },
   methods: {
-    checkForm: function(e) {
-      if (this.emailAddress && this.date) {
-        return true;
-      }
-
-      this.errors = [];
-
-      if (!this.name) {
-        this.errors.push("Name required.");
-      }
-      if (!this.age) {
-        this.errors.push("Age required.");
-      }
-
-      e.preventDefault();
-    },
+    ...mapActions("membership", [
+      "getMembershipTypes",
+      "getSelectedMembershipType"
+    ]),
     selectMembershipType(id) {
       console.log(id);
       this.selectedOption = id;
     },
     assignEmail(email) {
       console.log(email);
-      this.emailAddress = email;
+      this.formBody.email = email;
     },
-    getMembershipType() {
-      axios.get(`/membership/types/` + this.selectedOption).then(response => {
-        this.membershipTypeDetails = response.data;
-      });
-      return this.membershipTypeDetails;
+    async getMembershipType() {
+      await this.getSelectedMembershipType(this.selectedOption);
     },
-    addMember() {
-      if (this.emailAddress !== null && this.selectedDateOfBirth !== null) {
-        axios
-          .post("/membership/" + this.selectedOption, {
-            email: this.emailAddress,
-            dateOfBirth: this.selectedDateOfBirth,
-            repeatingPayment: this.repeatingPayment
-          })
+    async addMember() {
+      if (this.formBody.email !== null && this.formBody.dateOfBirth !== null) {
+        console.log(this.formBody);
+        const body = {
+          ...this.formBody
+        };
+        await this.$http
+          .post("/membership/" + this.selectedOption, body)
           .then(response => {
             console.log(response);
             this.postResponse = response.data;
@@ -326,14 +314,7 @@ export default {
     }
   },
   async mounted() {
-    await axios
-      .get(`/membership/types`)
-      .then(response => {
-        this.membershipTypes = response.data;
-      })
-      .catch(e => {
-        this.errors.push(e);
-      });
+    await this.getMembershipTypes();
   }
 };
 </script>
