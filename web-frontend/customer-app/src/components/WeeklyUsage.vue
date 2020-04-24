@@ -3,8 +3,8 @@
     <v-data-table
       v-if="startDate"
       :headers="headers"
-      :items="activities"
-      group-by="resource.name"
+      :items="dataWithFacilities"
+      group-by="facility.name"
       class="elevation-1"
     >
     </v-data-table>
@@ -47,24 +47,50 @@ export default {
           text: "Cost",
           value: "formattedCost"
         }
-      ]
+      ],
+      dataWithFacilities: []
     };
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
+    ...mapGetters("facilities", ["facilities"]),
     ...mapGetters("timetable", ["sessions"])
   },
   methods: {
     ...mapActions("facilities", {
-      getActivity: "getActivities"
+      getActivity: "getActivities",
+      getFacilities: "getFacilities"
     }),
     ...mapActions("timetable", {
       getSessions: "getAllSessions"
     }),
-    async fillData() {}
+    async fillData() {},
+    async getRelatedFacility() {
+      let facilityArr = [];
+      for (const activity of this.activities) {
+        console.log(activity);
+        const facilityId = activity._links.resource.href
+          .split("/")
+          .slice(-1)[0];
+        const facilities = this.facilities;
+        console.log(
+          facilities.find(
+            facility => Number(facility.id) === Number(facilityId)
+          )
+        );
+        activity.facility = facilities.find(
+          facility => Number(facility.id) === Number(facilityId)
+        );
+        facilityArr.push(activity);
+      }
+      return facilityArr;
+    }
   },
-  mounted: async function() {
+  created: async function() {
     await this.getActivity();
+    await this.getFacilities();
+    this.dataWithFacilities = await this.getRelatedFacility();
+    console.log(this.dataWithFacilities);
   }
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <v-data-table :headers="headers" :items="activities">
+  <v-data-table :headers="headers" :items="dataWithFacilities" :loding="true" >
     <template v-slot:top>
       <v-toolbar flat color="white">
         <v-spacer></v-spacer>
@@ -67,7 +67,7 @@ export default {
           sortable: true
         },
         {
-          value: "resource.name",
+          value: "facility.name",
           text: "Facility"
         },
         {
@@ -86,21 +86,21 @@ export default {
         capacity: null,
         facility: null,
         cost: null
-      }
+      },
+      dataWithFacilities: []
     };
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
-    formTitle() {
-      return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    }
+    ...mapGetters("facilities", ["facilities"])
   },
 
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("facilities", {
       getActivity: "getActivities",
-      deleteActivity: "deleteActivity"
+      deleteActivity: "deleteActivity",
+      getFacilities: "getFacilities"
     }),
     showCancel() {
       this.$bvModal.show("edit-Activity-modal");
@@ -119,11 +119,31 @@ export default {
       console.log(index);
       confirm("Are you sure you want to delete this item?") &&
         this.deleteActivity(index);
+    },
+    async getRelatedFacility(){
+      let facilityArr = [];
+      for (const activity of this.activities) {
+        console.log(activity);
+        const facilityId = activity._links.resource.href.split("/").slice(-1)[0];
+        const facilities = this.facilities;
+        console.log(
+          facilities.find(
+            facility => Number(facility.id) === Number(facilityId)
+          )
+        );
+        activity.facility = facilities.find(
+          facility => Number(facility.id) === Number(facilityId)
+        );
+        facilityArr.push(activity)
+      }
+      return facilityArr;
     }
   },
 
-  mounted: async function() {
+  created: async function() {
     await this.getActivity();
+    await this.getFacilities();
+    this.dataWithFacilities = await this.getRelatedFacility();
   }
 };
 </script>
