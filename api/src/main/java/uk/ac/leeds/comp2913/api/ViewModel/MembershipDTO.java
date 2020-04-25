@@ -16,7 +16,7 @@ import javax.validation.constraints.Size;
 public class MembershipDTO extends RepresentationModel<MembershipDTO> {
 
     @NotEmpty(message = "email is required")
-    @Size(min = 3, max = 20)
+    @Size(min = 3, max = 40)
     private String emailAddress;
     @NotNull
     private Date dateOfBirth;

@@ -2,7 +2,8 @@ import axios from "@/plugins/axios.plugin";
 
 const state = {
   membershipTypes: [],
-  selectedMembershipType: []
+  selectedMembershipType: [],
+  purchasedMembership: []
 };
 
 const getters = {
@@ -13,13 +14,15 @@ const getters = {
         formattedCost: "£" + membershipType.cost.toFixed(2)
       };
     }),
-  selectedMembershipType: state => state.selectedMembershipType
+  selectedMembershipType: state => state.selectedMembershipType,
+  purchasedMembership: state => state.purchasedMembership
 };
 
 const mutations = {
   SET_MEMBERSHIPTYPES: (state, payload) => (state.membershipTypes = payload),
   SET_SELECTEDMEMBERSHIPTYPE: (state, payload) =>
-    (state.selectedMembershipType = payload)
+    (state.selectedMembershipType = payload),
+  SET_PURCHASEDMEMBERSHIP: (state, payload => (state.purchasedMembership = payload))
 };
 
 const actions = {
@@ -34,12 +37,18 @@ const actions = {
     const { data } = await axios.get(`/membership/types/${selectedOption}`);
     commit("SET_SELECTEDMEMBERSHIPTYPE", data);
     commit("loading/FINISH_LOADING", null, { root: true });
+  },
+  async getPurchasedMembership({ commit }, membershipId) {
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.get(`/membership/members/${membershipId}`);
+    commit("SET_PURCHASEDMEMBERSHIP", data);
+    commit("loading/FINISH_LOADING", null, { root: true });
   }
 };
 
 const namespaced = true;
 
-const membershipTypes = {
+const membership = {
   namespaced,
   state,
   getters,
@@ -47,4 +56,4 @@ const membershipTypes = {
   actions
 };
 
-export default membershipTypes;
+export default membership;

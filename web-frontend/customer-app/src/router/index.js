@@ -15,6 +15,7 @@ import ActivitiesTablePage from "@/views/ActivitiesTablePage";
 import WeeklyUsageGraphPage from "@/views/WeeklyUsageGraphPage";
 import FacilityPriceListing from "@/views/FacilityPriceListing";
 import WeeklyUsagePage from "@/views/WeeklyUsagePage";
+import Checkout from "@/views/Checkout";
 Vue.use(VueRouter);
 
 const routes = [
@@ -101,6 +102,11 @@ const routes = [
     path: "/weeklyusage",
     name: "WeeklyUsage",
     component: WeeklyUsagePage
+  },
+  {
+    path: "/checkout",
+    name: "Checkout",
+    component: Checkout
   }
 ];
 

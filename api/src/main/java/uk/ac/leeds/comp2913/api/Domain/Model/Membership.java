@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.lang.reflect.Member;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.persistence.*;
@@ -106,7 +107,10 @@ import javax.persistence.*;
     }
 
     public Date calculateEndDate(Date startDate, Integer duration){
-        Date endDate = new Date(startDate.getTime()+((24*60*60*1000) * duration)); //Math at the end converts a day into milliseconds
+        Calendar c = Calendar.getInstance();
+        c.setTime(startDate);
+        c.add(Calendar.DATE, duration);
+        endDate = c.getTime();
         return endDate;
     }
 

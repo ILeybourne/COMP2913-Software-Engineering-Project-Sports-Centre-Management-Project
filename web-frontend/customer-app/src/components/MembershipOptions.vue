@@ -6,74 +6,92 @@
           class="membership-details"
           v-for="type in membershipTypes"
           :key="type.id"
-          ><v-row>
-            <v-col
-              ><h3>{{ type.name }}</h3></v-col
+        >
+          <v-container class="pricing">
+            <v-row class="name" v-if="selectedOption === type.id"
+              ><h2>
+                <span>{{ type.name }}</span>
+              </h2></v-row
             >
-          </v-row>
+            <v-row class="name" v-if="selectedOption !== type.id"
+              ><h2>{{ type.name }}</h2></v-row
+            >
+            <v-row class="membership-price">
+              <div class="currency">£</div>
+              <h1>{{ type.cost }}</h1></v-row
+            >
+            <v-row class="duration"
+              ><p>/{{ type.duration }} Days</p></v-row
+            >
+          </v-container>
           <v-spacer></v-spacer>
-          <v-row>
-            <v-col><b>Duration</b> (Days): </v-col>
-            <v-col>{{ type.duration }}</v-col>
-          </v-row>
-          <v-spacer></v-spacer>
-          <v-row>
-            <v-col><b>Cost</b> (£): </v-col>
-            <v-col>{{ type.cost }}</v-col>
-          </v-row>
           <v-row class="text">
             <v-col
-              ><p>
-                Purchase today and pay once to be a member for
-                {{ type.duration }} days, or subscribe to have your membership
-                renewed automatically for as long as you like. Payments would be
-                taken every {{ type.duration }} days and you can stop them any
-                time.
-              </p></v-col
-            >
+              ><ul class="features">
+                <li>No Contract, cancel any time</li>
+                <li>Access to all facilities</li>
+                <li>
+                  Book onto regular sessions for a further discounted rate
+                </li>
+                <li>Any time access</li>
+                <li>
+                  Pay once for {{ type.duration }} days, or opt for automatic
+                  renewal
+                </li>
+              </ul>
+            </v-col>
           </v-row>
 
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
           <v-col class="btn-container">
-            <v-btn
-              icon
-              x-large
-              color="#242424"
-              v-if="selectedOption !== type.id"
-              class="button"
-              v-on:click="
-                selectMembershipType(type.id),
-                  getMembershipType(),
-                  assignEmail($auth.user.email)
-              "
-              @mouseover="hoverName = type.name"
-              @mouseleave="hoverName = null"
-            >
-              <v-icon class="icon" v-if="hoverName === type.name"
-                >mdi-checkbox-marked-circle-outline</v-icon
+            <v-container class="select" v-if="selectedOption !== type.id">
+              <v-btn
+                icon
+                x-large
+                color="#242424"
+                label="select"
+                class="button"
+                v-on:click="
+                  selectMembershipType(type.id),
+                    getMembershipType(),
+                    assignEmail($auth.user.email)
+                "
+                @mouseover="hoverName = type.name"
+                @mouseleave="hoverName = null"
               >
-              <v-icon
-                class="icon"
-                v-else-if="hoverName == null || hoverName !== type.name"
-                >mdi-checkbox-blank-circle-outline</v-icon
+                <v-icon class="icon" v-if="hoverName === type.name"
+                  >mdi-checkbox-marked-outline</v-icon
+                >
+                <v-icon
+                  class="icon"
+                  v-else-if="hoverName == null || hoverName !== type.name"
+                  >mdi-checkbox-blank-outline</v-icon
+                >
+              </v-btn>
+              <br />
+              <div class="select-text">SELECT</div>
+            </v-container>
+            <v-container class="selected" v-if="selectedOption === type.id">
+              <v-btn
+                icon
+                x-large
+                color="#242424"
+                class="button"
+                v-on:click="selectMembershipType(type.id), getMembershipType()"
               >
-            </v-btn>
-            <v-btn
-              icon
-              x-large
-              color="#242424"
-              v-if="selectedOption === type.id"
-              class="button"
-              v-on:click="selectMembershipType(type.id), getMembershipType()"
-            >
-              <v-icon class="icon">mdi-checkbox-marked-circle</v-icon>
-            </v-btn>
+                <v-icon class="icon">mdi-checkbox-marked</v-icon>
+              </v-btn>
+              <br />
+              <div class="select-text" id="selected-item">SELECTED</div>
+            </v-container>
           </v-col>
         </v-container>
-        <v-container class="account-creation-form">
+        <v-container class="account-creation-form" v-if="selectedOption">
           <v-row>
-            <v-col><h3>Sign Up Today!</h3></v-col>
+            <v-col
+              ><h2><span>Sign Up</span> Today!</h2></v-col
+            >
           </v-row>
           <v-spacer></v-spacer>
           <v-row>
@@ -106,31 +124,24 @@
           </v-row>
 
           <v-spacer></v-spacer>
-          <v-container
-            class="membershipTypeDetails"
-            v-if="selectedOption === null"
-            >Select a Membership</v-container
-          >
-          <v-container
-            class="membershipTypeDetails"
-            v-if="selectedOption !== null"
-          >
-            <v-row><v-col>Membership Chosen</v-col></v-row>
-            <v-col>Type: </v-col>
-            <v-col>{{ selectedMembershipType.name }}</v-col>
-            <v-row>
-              <v-col v-if="postResponse.id === 0"
-                >You already have a membership with Zenergy</v-col
-              >
-              <v-col v-if="postResponse.id > 0"
-                >New Membership created with id {{ postResponse.id }}</v-col
-              >
-              <v-col v-if="postResponse === formError">
-                > {{ postResponse }}</v-col
-              >
-            </v-row>
+          <ul class="membershipTypeDetails" v-if="selectedOption !== null">
+            <li class="form-details-title">MEMBERSHIP DETAILS</li>
+            <li>Type: {{ selectedMembershipType.name }}</li>
+            <li>Price: £{{ selectedMembershipType.cost }}</li>
+            <li>Start Date: {{ calculateDate(todaysDate) }}</li>
+            <li>
+              Expiry Date:
+              {{ calculateEndDate(selectedMembershipType.duration) }}
+            </li>
+          </ul>
+          <v-container class="response">
+            <v-row v-if="postResponse.id === 0"
+              ><v-col>You already have a membership with Zenergy</v-col></v-row
+            >
+            <v-row v-if="postResponse === formError"
+              ><v-col> {{ postResponse }}</v-col></v-row
+            >
           </v-container>
-          <v-spacer></v-spacer>
           <v-container class="submit-container">
             <button
               v-if="selectedOption !== null"
@@ -139,7 +150,7 @@
               class="site-btn"
               v-on:click="addMember()"
             >
-              Continue to Payment {{ selectedOption }}
+              SIGN UP
             </button>
           </v-container>
         </v-container>
@@ -168,10 +179,11 @@
 }
 
 .info-container {
+  color: #353535;
   display: flex;
   justify-content: center;
   flex-direction: row;
-  width: 100%;
+  width: auto;
   height: max-content;
 }
 
@@ -185,7 +197,7 @@
   width: 20%;
   min-height: 400px;
   background: #f6f9fa;
-  color: #242424;
+  color: #353535;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -193,13 +205,14 @@
   max-width: 400px;
   flex-basis: auto; /* default value */
   flex-grow: 1;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  padding: 30px 0 30px 0;
 }
 
-.membership-details h3 {
-  color: #242424;
+.membership-details:hover h2 {
+  background-color: yellow;
 }
-
-.membership-details:hover h3 {
+.name span {
   background: #fcff18;
 }
 
@@ -209,37 +222,91 @@
   min-height: 50%;
   text-align: center;
   background: #f6f9fa;
-  color: #242424;
+  color: #353535;
   min-width: 300px;
   max-width: 500px;
   flex-basis: auto; /* default value */
   flex-grow: 20;
   margin: 20px;
+  padding: 30px 15px 50px 15px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.account-creation-form h3 {
-  background: #fcff18;
-  color: #242424;
+.account-creation-form h2 {
+  color: #353535;
+  padding-bottom: 40px;
 }
 
-/*.submit-container {
-  text-align: right;
-  padding-top: 25px;
-  padding-right: 90px;
-}*/
 .form {
   text-align: center;
 }
 .submit-container {
   bottom: 0;
+  margin-top: 30px;
 }
 .membershipTypeDetails {
   margin: auto;
-  border: 2px solid #fff;
-  height: 100%;
+  height: auto;
+  width: 100%;
+  background-color: #e6e7e8;
+  padding: 15px;
+  display: table;
+  text-align: center;
+  text-overflow: ellipsis;
+  list-style-type: none;
 }
 .text-field {
   text-align: center;
+}
+.pricing {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: auto;
+}
+.pricing .name {
+  justify-content: center;
+}
+.pricing .duration {
+  justify-content: center;
+}
+.pricing .membership-price {
+  justify-content: center;
+}
+.select-text {
+  font-weight: bolder;
+}
+#selected-item {
+  /*background-color: yellow;*/
+  width: min-content;
+  text-align: center;
+  margin: 0 auto;
+}
+.features {
+  display: table;
+  text-align: center;
+  text-overflow: ellipsis;
+  list-style-type: none;
+}
+.features li {
+  padding: 15px;
+  background-color: transparent;
+}
+
+.features li:nth-of-type(2n + 1) {
+  background-color: #e6e7e8;
+}
+.account-creation-form span {
+  background: #fcff18;
+}
+
+.form-details-title {
+  font-weight: bolder;
+}
+.response {
+  height: 15px;
+  width: auto;
+  color: red;
 }
 </style>
 
@@ -257,8 +324,9 @@ export default {
   data: function() {
     return {
       selectedOption: null,
+      todaysDate: new Date(),
       hoverName: null,
-      formError: "Please Check From Data",
+      formError: "Please Check Form Data",
       formBody: {
         email: null,
         dateOfBirth: null,
@@ -293,6 +361,16 @@ export default {
     async getMembershipType() {
       await this.getSelectedMembershipType(this.selectedOption);
     },
+    calculateDate(date) {
+      return (
+        date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+      );
+    },
+    calculateEndDate(duration) {
+      const date = new Date();
+      date.setDate(date.getDate() + duration);
+      return this.calculateDate(date);
+    },
     async addMember() {
       if (this.formBody.email !== null && this.formBody.dateOfBirth !== null) {
         console.log(this.formBody);
@@ -304,6 +382,9 @@ export default {
           .then(response => {
             console.log(response);
             this.postResponse = response.data;
+            if (this.postResponse.id > 0) {
+              this.onSuccess();
+            }
           })
           .catch(function(error) {
             console.log(error);
@@ -311,6 +392,14 @@ export default {
       } else {
         this.postResponse = this.formError;
       }
+    },
+    async onSuccess() {
+      await this.$router.push({
+        name: "Checkout",
+        params: {
+          newMembership: this.postResponse
+        }
+      });
     }
   },
   async mounted() {
