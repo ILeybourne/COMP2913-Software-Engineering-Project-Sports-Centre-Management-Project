@@ -1,15 +1,31 @@
 <template>
   <div id="app" v-if="!blocking">
     <NavBar />
-    <div class="container">
+    <div id="content" class="container">
       <router-view />
     </div>
-    <Footer />
+    <Footer  id="footer"/>
   </div>
   <PreLoadSpinner v-else></PreLoadSpinner>
 </template>
 
-<style lang="scss"></style>
+<style scoped>
+  #app {
+    position: relative;
+    min-height: 80vh;
+  }
+
+  #content {
+    padding-bottom: 2.5rem;    /* Footer height */
+  }
+
+  #footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem;            /* Footer height */
+  }
+</style>
 
 <script>
 import PreLoadSpinner from "@/components/PreLoadComponent.vue";

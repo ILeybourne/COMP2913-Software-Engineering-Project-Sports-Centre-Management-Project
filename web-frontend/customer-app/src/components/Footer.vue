@@ -1,75 +1,100 @@
 <template>
-  <footer class="footer-container container-fluid">
+  <div>
+    <footer class="footer-container container-fluid">
+      <div class="row">
+        <div class="column-1 col-sm-5 text-left">
+          <h6 class="text-uppercase" data-cy="footerColumn1Header">About Us</h6>
+          <div class="row">
+            <div
+              id="about-us-paragraph"
+              data-cy="footerColumn1Body"
+              class="col"
+            >
+              <a class="text-muted"
+                >We exist to make sporting services and spaces better for
+                everyone. That means investing back into providing quality
+                leisure and health facilities for the good of the communities in
+                which we operate. We are always looking to improve our services,
+                and to give everything we can back to the community.</a
+              ><br />
+              <a class="text-muted">Learn more </a
+              ><a href="/about" title="About" data-cy="footerAboutLink">here</a>
+            </div>
+          </div>
+        </div>
+        <div class="column-2 col-sm-3">
+          <h6 class="text-uppercase" data-cy="footerColumn2Header">Contact</h6>
+          <div class="row" data-cy="footerColumn2Body">
+            <div class="link-icons col-2 text-left">
+              <!-- add proper icons -->
+              <p><font-awesome-icon icon="home" /></p>
+              <p><font-awesome-icon icon="at" /></p>
+              <p><font-awesome-icon icon="phone-alt" /></p>
+            </div>
+            <div class="col-10 text-left">
+              <p><a class="text-muted">Headingley Lane, Leeds LS6 2BT </a></p>
+              <p><a class="text-muted">customerservice@zenergy.com</a></p>
+              <p><a class="text-muted">0113 343 2401</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="column-3 col-sm-2 text-left">
+          <h6 class="text-uppercase" data-cy="footerColumn3Header">
+            Useful Links
+          </h6>
+          <div class="row">
+            <div class="col">
+              <div data-cy="footerColumn3Body">
+                <p><router-link to="/timetable">Timetable</router-link></p>
+                <p><router-link to="/facilities">Facilities</router-link></p>
+                <p><router-link to="/profile">Profile</router-link></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="column-4 col-sm-2 text-left" data-cy="footerColumn4">
+          <div class="line">
+            <a href="/" title="Home">
+              <div class="image text-center">
+                <img
+                  src="../assets/logo.png"
+                  style="height: 63.6px; width: 198.6px"
+                />
+              </div>
+            </a>
+          </div>
+          <div id="slogan" class="text-center text-muted">
+            <em>Respire, perspire,<br />ingest, retire</em>
+          </div>
+        </div>
+      </div>
+    </footer>
     <div class="row">
-      <div class="column-1 col-sm-5 text-left">
-        <h6 class="text-uppercase" data-cy="footerColumn1Header">About Us</h6>
-        <div class="row">
-          <div id="about-us-paragraph" data-cy="footerColumn1Body" class="col">
-            <a class="text-muted"
-              >We exist to make sporting services and spaces better for
-              everyone. That means investing back into providing quality leisure
-              and health facilities for the good of the communities in which we
-              operate. We are always looking to improve our services, and to
-              give everything we can back to the community.</a
-            ><br />
-            <a class="text-muted">Learn more </a
-            ><a href="/about" title="About" data-cy="footerAboutLink">here</a>
-          </div>
-        </div>
-      </div>
-      <div class="column-2 col-sm-3">
-        <h6 class="text-uppercase" data-cy="footerColumn2Header">Contact</h6>
-        <div class="row" data-cy="footerColumn2Body">
-          <div class="link-icons col-2 text-left">
-            <!-- add proper icons -->
-            <p><font-awesome-icon icon="home" /></p>
-            <p><font-awesome-icon icon="at" /></p>
-            <p><font-awesome-icon icon="phone-alt" /></p>
-          </div>
-          <div class="col-10 text-left">
-            <p><a class="text-muted">Headingley Lane, Leeds LS6 2BT </a></p>
-            <p><a class="text-muted">customerservice@zenergy.com</a></p>
-            <p><a class="text-muted">0113 343 2401</a></p>
-          </div>
-        </div>
-      </div>
-      <div class="column-3 col-sm-2 text-left">
-        <h6 class="text-uppercase" data-cy="footerColumn3Header">
-          Useful Links
-        </h6>
-        <div class="row">
-          <div class="col">
-            <div data-cy="footerColumn3Body">
-              <p><router-link to="/timetable">Timetable</router-link></p>
-              <p><router-link to="/facilities">Facilities</router-link></p>
-              <p><router-link to="/profile">Profile</router-link></p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="column-4 col-sm-2 text-left" data-cy="footerColumn4">
-        <div class="line">
-          <a href="/" title="Home">
-            <div class="image text-center">
-              <img
-                src="../assets/logo.png"
-                style="height: 63.6px; width: 198.6px"
-              />
-            </div>
-          </a>
-        </div>
-        <div id="slogan" class="text-center text-muted">
-          <em>Respire, perspire,<br />ingest, retire</em>
+      <div class="col-md-12 order-2 order-md-1">
+        <div class="copyright">
+          <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+          <p style="text-align: center">
+            Copyright &copy; {{ year }} All rights reserved | This template is
+            made with <i class="fa fa-heart" aria-hidden="true"></i> by
+            <a href="https://colorlib.com" target="_blank">Colorlib</a>
+          </p>
         </div>
       </div>
     </div>
-  </footer>
+  </div>
 </template>
 
 <style scoped>
+.copyright {
+  margin: auto;
+
+}
+
 .footer-container {
   display: flex;
-  padding: 5%;
+  padding-top: 5%;
+  padding-left: 5%;
+  padding-right: 5%;
 }
 .column-1 {
   padding-right: 5%;
@@ -103,6 +128,11 @@ export default {
   name: "Footer",
   components: {
     "font-awesome-icon": FontAwesomeIcon
+  },
+  computed: {
+    year: function (){
+      return new Date().getFullYear()
+    }
   },
   created: function() {
     library.add(faHome);
