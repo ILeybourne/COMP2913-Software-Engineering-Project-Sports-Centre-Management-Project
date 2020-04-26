@@ -78,29 +78,35 @@
         </div>
       </div>
       <div class="form-container">
-        <form class="form-inline">
+        <form class="form-inline col-lg-12">
           <div class="spacer"></div>
-          <div class="btn-container">
+          <div class="btn-container col-lg-3">
             <input
               type="radio"
               id="annual"
               name="membership-type"
-              value="annual"
+              value="annually"
+              v-model="pickedSubscription"
             />
           </div>
 
           <div class="spacer"></div>
-          <div class="btn-container">
+          <div class="btn-container col-lg-3">
             <input
               type="radio"
               id="monthly"
               name="membership-type"
               value="monthly"
+              v-model="pickedSubscription"
             />
           </div>
           <div class="spacer"></div>
-          <div class="submit-container">
-            <button type="submit" value="submit" class="btn btn-default">
+          <div class="submit-container col-lg-4">
+            <button
+              type="button"
+              value="submit"
+              class="btn btn-outline-primary"
+            >
               Buy Membership And Create Account
             </button>
           </div>
@@ -215,9 +221,9 @@ export default {
     return {
       firstName: "",
       surname: "",
-
       email: "",
-      phone: ""
+      phone: "",
+      pickedSubscription: null
     };
   },
   validations: {
@@ -240,6 +246,22 @@ export default {
       numeric,
       minLength: minLength(9),
       maxLength: maxLength(13)
+    }
+  },
+  methods: {
+    submitSubscriptionDetails(e) {
+      e.preventDefault();
+      if (
+        this.firstName !== "" &&
+        this.surname !== "" &&
+        this.email !== "" &&
+        this.phone !== "" &&
+        this.pickedSubscription !== null
+      ) {
+        this.$emit("submitSubscriptionDetails", this.$data);
+      } else {
+        //TODO Handle validation error
+      }
     }
   }
 };
