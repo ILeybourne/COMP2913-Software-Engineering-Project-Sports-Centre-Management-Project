@@ -231,7 +231,6 @@ export default {
       return this.$store
     },
     ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
-
   }
 ,
   methods: {
