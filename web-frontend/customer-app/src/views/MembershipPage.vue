@@ -89,6 +89,7 @@ export default {
         //TODO Handle error
         return
       }
+      console.log(plan)
 
 
       let paymentIntent = await this.$http.post(
@@ -107,6 +108,7 @@ export default {
                 stripeId: this.customer.stripeId
               }
       );
+      console.log(paymentIntent)
     }
   },
   async mounted() {
