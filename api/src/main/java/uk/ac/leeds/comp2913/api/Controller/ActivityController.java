@@ -95,7 +95,7 @@ public class ActivityController {
     @Transactional
     @Operation(summary = "create a new scheduled activity",
             description = "create a new scheduled activity, using activity type. Has the option to make regular session #12")
-    @PreAuthorize("hasAuthority('SCOPE_create:activity')")
+    //@PreAuthorize("hasAuthority('SCOPE_create:activity')")
     public ActivityDTO createActivity(@Parameter(description = "An ActivityDTO object, providing details needed to create an activity", required = true) @Valid @RequestBody ActivityDTO activityDTO,
                                    @Parameter(description = "An ActivityDTO object, providing details needed to create an activity", required = true) @PathVariable Long activity_type_id) {
         Activity activity = new Activity();

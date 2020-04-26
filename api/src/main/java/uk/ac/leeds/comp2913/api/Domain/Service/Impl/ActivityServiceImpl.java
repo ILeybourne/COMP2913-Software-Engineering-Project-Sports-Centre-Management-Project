@@ -69,9 +69,7 @@ public class ActivityServiceImpl implements ActivityService {
   public Activity createNewActivity(Activity activity, Long activity_type_id, RegularSession regularSession){
     ActivityType activityType = activityTypeRepository.findById(activity_type_id)
         .orElseThrow(() -> new ResourceNotFoundException("Activity type not found for ID" + activity_type_id));
-
     activity.setActivityType(activityType);
-
     if (regularSession != null){
       this.regularSessionRepository.save(regularSession);
       activity.setRegularSession(regularSession);

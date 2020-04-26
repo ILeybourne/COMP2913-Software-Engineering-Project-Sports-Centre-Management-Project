@@ -394,14 +394,14 @@ public class PaymentController {
                     ActivityType activityType = activityTypeService.findById(requestBody.getActivityTypeId());
 
                     //get list of payment methods
-                    PaymentMethodListParams params =
+                    PaymentMethodListParams params2 =
                             PaymentMethodListParams.builder()
                                     .setCustomer(internalCustomer.getStripeId())
                                     .setType(PaymentMethodListParams.Type.CARD)
                                     .build();
 
 
-                    PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
+                    PaymentMethodCollection paymentMethods = PaymentMethod.list(params2);
 
                     //Get first card
                     String paymentMethod = paymentMethods.getData().get(0).getId();
