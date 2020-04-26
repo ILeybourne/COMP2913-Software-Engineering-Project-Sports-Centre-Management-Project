@@ -98,7 +98,7 @@ export default {
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("facilities", {
-      getActivity: "getActivities",
+      getActivity: "getActivityTypes",
       deleteActivity: "deleteActivity",
       getFacilities: "getFacilities"
     }),
@@ -109,7 +109,7 @@ export default {
       console.log(item);
       this.selectedActivity.id = item.id;
       this.selectedActivity.name = item.name;
-      this.selectedActivity.facility = "Not Working";
+      this.selectedActivity.facility = item.facility.name;
       this.selectedActivity.capacity = item.totalCapacity;
       this.selectedActivity.cost = item.cost;
       this.$bvModal.show("edit-modal");

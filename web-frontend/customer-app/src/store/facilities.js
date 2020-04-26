@@ -1,5 +1,15 @@
 import axios from "@/plugins/axios.plugin";
 
+
+const addZero = value => ("0" + value).slice(-2);
+
+const formatDate = value => {
+  if (value) {
+    const dt = new Date(value);
+    return `${addZero(dt.getHours())}:${addZero(dt.getMinutes())}`;
+  }
+  return "";
+};
 const state = {
   paging: {
     facilities: {
@@ -8,14 +18,7 @@ const state = {
     }
   },
   facilities: [],
-  /*
-    account: null
-    activity: null
-    createdAt: 1584288689000
-    id: 1
-    receipt: null
-    updatedAt: 1584288692000
-    * */
+
   activities: []
 };
 
@@ -25,7 +28,8 @@ const getters = {
     state.activities.map(activity => {
       return {
         ...activity,
-        formattedCost: "£" + activity.cost.toFixed(2)
+        formattedCost: "£" + activity.cost.toFixed(2),
+        formattedStartAt: formatDate(activity.startTime)
       };
     }),
   getFacilityById: state => id => {
@@ -83,10 +87,18 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
     return data;
   },
-  async getActivities({ commit }) {
+  async getActivityTypes({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/activitytypes");
     const activities = data._embedded.activityTypeDToes;
+    commit("SET_ACTIVITIES", activities);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return activities;
+  },
+  async getActivities({ commit }){
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.get("/activities");
+    const activities = data._embedded.activityDToes;
     commit("SET_ACTIVITIES", activities);
     commit("loading/FINISH_LOADING", null, { root: true });
     return activities;

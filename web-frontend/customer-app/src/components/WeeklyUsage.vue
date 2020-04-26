@@ -36,7 +36,7 @@ export default {
   // ItemsPerPageDropdown
   data: function() {
     return {
-      bookings: [],
+      booking: [],
       startDate: null,
       headers: [
         {
@@ -46,29 +46,36 @@ export default {
         {
           text: "Cost",
           value: "formattedCost"
+        },
+        {
+          text: "Income",
+          value:" "
         }
       ],
-      dataWithFacilities: []
+      dataWithFacilities: [],
+      bookingWithActivity: []
     };
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("facilities", ["facilities"]),
-    ...mapGetters("timetable", ["sessions"])
+    ...mapGetters("timetable", ["sessions"]),
+    ...mapGetters("timetable", ["bookings"])
   },
   methods: {
     ...mapActions("facilities", {
-      getActivity: "getActivities",
+      getActivity: "getActivityTypes",
       getFacilities: "getFacilities"
     }),
     ...mapActions("timetable", {
-      getSessions: "getAllSessions"
+      getSessions: "getAllSessions",
+      getBookings: "getBookings"
     }),
     async fillData() {},
     async getRelatedFacility() {
       let facilityArr = [];
       for (const activity of this.activities) {
-        console.log(activity);
+        // console.log(activity);
         const facilityId = activity._links.resource.href
           .split("/")
           .slice(-1)[0];
@@ -84,13 +91,38 @@ export default {
         facilityArr.push(activity);
       }
       return facilityArr;
+    },
+    async getRelatedBookingActivity() {
+      let ActivityArr = [];
+      for (const booking of this.bookings) {
+        const ActivityId = booking._links.Activity.href.split("/").slice(-1)[0];
+        const activities = this.activities;
+        //console.log(Number(booking.id) === Number(ActivityId));
+        //console.log(Number(booking.id) + " " + Number(ActivityId));
+        console.log(activities);
+        for (const activity of activities){
+          console.log(activity.id + " " + Number(ActivityId));
+        }
+        booking.activity = activities.find(
+                activity => Number(activity.id) === Number(ActivityId)
+        );
+        ActivityArr.push(booking);
+      }
+      return ActivityArr;
+    },
+    async getNumberOfBooking(){
+
     }
   },
   created: async function() {
     await this.getActivity();
     await this.getFacilities();
+    await this.getBookings();
+    console.log(this.bookings);
+    this.bookingWithActivity = await this.getRelatedBookingActivity();
+    console.log(this.bookingWithActivity);
     this.dataWithFacilities = await this.getRelatedFacility();
-    console.log(this.dataWithFacilities);
+    //console.log(this.dataWithFacilities);
   }
 };
 </script>

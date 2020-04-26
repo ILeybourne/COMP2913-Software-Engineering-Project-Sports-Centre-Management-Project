@@ -11,7 +11,8 @@ const formatDate = value => {
 };
 
 const state = {
-  sessions: []
+  sessions: [],
+  bookings: []
 };
 
 const getters = {
@@ -22,6 +23,7 @@ const getters = {
         formattedStartAt: formatDate(activity.startTime)
       };
     }),
+  bookings: state => state.bookings,
   getSessionsForFacility: state => facilityId => {
     return state.sessions.filter(
       session => Number(session.resource.id) === Number(facilityId)
@@ -31,6 +33,7 @@ const getters = {
 
 const mutations = {
   SET_SESSIONS: (state, payload) => (state.sessions = payload),
+  SET_BOOKINGS: (state, payload) => (state.bookings = payload),
   ADD_SESSION: (state, payload) => state.sessions.push(payload)
 };
 
@@ -55,11 +58,27 @@ const actions = {
     commit("SET_SESSIONS", data);
     commit("loading/FINISH_LOADING", null, { root: true });
   },
+  async getActivities({ commit }) {
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.get("/activities");
+    let session = data._embedded.activityDToes;
+    commit("SET_SESSIONS", session);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return session;
+  },
   async deleteActivities({ commit }, activityId) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.delete(`/activities/${activityId}`);
     commit("SET_SESSIONS", data);
     commit("loading/FINISH_LOADING", null, { root: true });
+  },
+  async getBookings({ commit }){
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.get("/bookings");
+    let booking = data._embedded.bookingDToes;
+    commit("SET_BOOKINGS", booking);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return booking;
   },
   async createSession({ commit }, { activityId, ...session }) {
     commit("loading/START_LOADING", null, { root: true });
