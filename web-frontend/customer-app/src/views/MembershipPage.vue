@@ -1,14 +1,5 @@
 <template>
   <div class="payment-container">
-    <div class="padding-div">
-      <button
-        type="button"
-        class="btn btn-outline-secondary"
-        style="padding:15px;"
-      >
-        Back
-      </button>
-    </div>
     <div class="heading-div">
       <h1>Membership Options</h1>
     </div>
@@ -19,9 +10,6 @@
 </template>
 
 <style scoped>
-.padding-div {
-  padding: 15px;
-}
 
 .heading-div {
   margin: auto;

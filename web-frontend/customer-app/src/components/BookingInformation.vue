@@ -251,7 +251,7 @@ export default {
         this.dateValid = true;
         this.timeValid = true;
         this.$emit("getUserType", this.$data);
-        this.componentWidth = 60;
+
       } else {
         //Dont pass data and call validators
         this.callValidation();

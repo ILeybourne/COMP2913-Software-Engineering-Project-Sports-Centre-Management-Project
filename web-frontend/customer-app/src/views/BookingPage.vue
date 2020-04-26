@@ -11,13 +11,21 @@
             class="booking-info"
             @getUserType="showGuestInfo"
           ></BookingInformation> </b-col
-        ><b-col v-bind:class="{ 'd-none': hideGuest }">
-          <GuestInformation
+        >
+      </b-row>
+      <b-row class="row">
+        <b-col v-bind:class="{ 'd-none': hideGuest }">
+      <GuestInformation
             :activityType="this.selectedActivityId"
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
           ></GuestInformation> </b-col
-        ><b-col v-bind:class="{ 'd-none': hideCard }">
+        >
+      </b-row>
+      <b-row class="row">
+
+      <b-col v-bind:class="{ 'd-none': hideCard }">
+
           <div>
             <div v-bind:class="{ 'd-none': hideQuickPay }">
               <!--               v-if="customer.stripeId != null"-->
@@ -207,7 +215,7 @@ export default {
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("auth", ["user"]),
+    ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
     ...mapGetters("customers", ["customers"]),
     showQuickPay: function() {
       if (this.customer !== null) {
@@ -475,6 +483,8 @@ export default {
   },
   async mounted() {
     // this.getRoles()
+    console.log(this.$auth)
+    console.log(this.isEmployeeOrManager)
     await this.getActivities();
     this.configureStripe();
   }
