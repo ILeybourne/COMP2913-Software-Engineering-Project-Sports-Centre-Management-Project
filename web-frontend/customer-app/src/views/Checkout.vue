@@ -8,49 +8,65 @@
       <BillingInformation
         class="checkout-container"
         id="billing"
-        v-if="billingSuccess === false"
+        v-if="!billingSuccess"
         @submitBillingDetails="billingSuccessStatus"
       ></BillingInformation>
       <v-container
         class="checkout-container"
         id="billing-details"
-        v-if="billingSuccess === true"
-      ><v-row><v-col><h3>Billing Info</h3></v-col></v-row>
-        <v-row
-        ><v-col>Name: </v-col> <v-col>{{name}}</v-col></v-row
+        v-if="billingSuccess"
+        ><v-row
+          ><v-col><h3>Billing Info</h3></v-col></v-row
         >
         <v-row
-        ><v-col>Email </v-col>
-          <v-col>{{email}} </v-col></v-row
+          ><v-col>Name: </v-col> <v-col>{{ name }}</v-col></v-row
         >
         <v-row
-        ><v-col>House Number: </v-col>
-          <v-col>{{houseNumber}}</v-col></v-row
+          ><v-col>Email </v-col> <v-col>{{ email }} </v-col></v-row
         >
         <v-row
-        ><v-col>Street Name: </v-col> <v-col>{{streetName}}</v-col></v-row
+          ><v-col>House Number: </v-col> <v-col>{{ houseNumber }}</v-col></v-row
         >
         <v-row
-        ><v-col>City </v-col>
-          <v-col>{{city}}</v-col></v-row
+          ><v-col>Street Name: </v-col> <v-col>{{ streetName }}</v-col></v-row
         >
         <v-row
-        ><v-col>Post code </v-col>
-          <v-col>{{postCode}}</v-col></v-row
+          ><v-col>City </v-col> <v-col>{{ city }}</v-col></v-row
+        >
+        <v-row
+          ><v-col>Post code </v-col> <v-col>{{ postCode }}</v-col></v-row
         >
       </v-container>
-      <PaymentInformation
-        class="checkout-container"
-        id="payment"
-        v-if="billingSuccess ===true"
-      ></PaymentInformation>
-
+      <b-col v-bind:class="{ 'd-none': !billingSuccess }">
+        <div>
+          <form id="payment-form">
+            <div id="cardDiv">
+              <div id="card-element"></div>
+              <div id="buttonDiv">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  id="paymentButton"
+                  @click="submitSubscriptionPayment($event)"
+                >
+                  Pay £{{ membershipDetails.cost }}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </b-col>
     </v-row>
   </div>
 </template>
 
 <style scoped>
-.checkout-container{
+#cardDiv {
+  padding: 5%;
+  border: 3px solid #3183e5;
+  border-radius: 10px;
+}
+.checkout-container {
   display: flex;
   flex-direction: column;
   padding: 59px 0px 59px 0px;
@@ -64,20 +80,21 @@
   flex-basis: auto; /* default value */
   flex-grow: 1;
 }
+
 .checkout-container h3 {
   color: #242424;
 }
-#details{
-max-width: 20%;
+#details {
+  max-width: 20%;
 }
 
-#billing-details{
+#billing-details {
   display: flex;
   flex-direction: column;
   justify-content: center;
   max-width: 20%;
 }
-#billing{
+#billing {
   min-width: 30%;
 }
 .info-container {
@@ -110,23 +127,25 @@ max-width: 20%;
 .heading-div span {
   background: #fcff18;
 }
-.billing-info {
 
+#buttonDiv {
+  padding-top: 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
 
 <script>
 import CheckoutItem from "@/components/CheckoutItem.vue";
-import BillingInformation from "@/components/BillingInformation.vue"
-import PaymentInformation from "@/components/PaymentInformation.vue";
+import BillingInformation from "@/components/BillingInformation.vue";
 
 // @ is an alias to /src
 export default {
   name: "Checkout",
   components: {
     CheckoutItem,
-    BillingInformation,
-    PaymentInformation
+    BillingInformation
   },
   data() {
     return {
@@ -137,20 +156,54 @@ export default {
       streetName: "",
       city: "",
       postCode: "",
-
+      membershipDetails: {
+        type: null,
+        id: null,
+        name: null,
+        startDate: null,
+        endDate: null,
+        cost: null,
+        repeatingPayment: null
+      }
     };
   },
   methods: {
-    billingSuccessStatus(value){
+    billingSuccessStatus(value) {
       this.billingSuccess = true;
-      console.log(value)
-      this.name  = value.name
-      this.email = value.email
-      this.houseNumber = value.houseNumber
-      this.streetName = value.streetName
-      this.city = value.city
-      this.postCode = value.postCode
+      console.log(value);
+      this.name = value.name;
+      this.email = value.email;
+      this.houseNumber = value.houseNumber;
+      this.streetName = value.streetName;
+      this.city = value.city;
+      this.postCode = value.postCode;
+    },
+    configureStripe() {
+      //TODO get from env
+      // eslint-disable-next-line no-undef
+      this.stripe = Stripe("pk_test_crv9Zb7tvQtSJ82FhQwrnb8k00v3eIOvj8");
+      this.elements = this.stripe.elements();
+      this.card = this.elements.create("card");
+      this.card.mount("#card-element");
+      console.log("this");
+      console.log(this);
+    },
+    setMembershipDetails() {
+      this.membershipDetails.type = this.$route.params.newMembership.type;
+      this.membershipDetails.id = this.$route.params.newMembership.id;
+      this.membershipDetails.name = this.$route.params.newMembership.name;
+      this.membershipDetails.startDate = this.$route.params.newMembership.startDate;
+      this.membershipDetails.endDate = this.$route.params.newMembership.endDate;
+      this.membershipDetails.cost = this.$route.params.newMembership.amount;
+      this.membershipDetails.repeatingPayment = this.$route.params.newMembership.repeatingPayment;
+    },
+    submitSubscriptionPayment() {}
+  },
+  async mounted() {
+    if (this.$route.params.newMembership !== null) {
+      this.setMembershipDetails();
     }
+    this.configureStripe();
   }
 };
 </script>
