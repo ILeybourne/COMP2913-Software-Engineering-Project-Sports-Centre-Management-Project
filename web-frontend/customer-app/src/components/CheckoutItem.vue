@@ -2,26 +2,27 @@
   <v-container class="item-details"
     ><v-row
       ><v-col
-        ><h3>{{ membershipDetails.type }} details</h3></v-col
+        ><h3>Sale details</h3></v-col
       ></v-row
     >
     <v-row
-      ><v-col>sale: </v-col> <v-col>{{ membershipDetails.name }}</v-col></v-row
+      ><v-col>Item: </v-col>
+      <v-col>{{ membershipSaleDetails.name }} Membership</v-col></v-row
     >
     <v-row
       ><v-col>Starts: </v-col>
-      <v-col>{{ membershipDetails.startDate }}</v-col></v-row
+      <v-col>{{ membershipSaleDetails.startDate }}</v-col></v-row
     >
     <v-row
       ><v-col>Expires: </v-col>
-      <v-col>{{ membershipDetails.endDate }}</v-col></v-row
+      <v-col>{{ membershipSaleDetails.endDate }}</v-col></v-row
     >
     <v-row
-      ><v-col>Cost: </v-col> <v-col>{{ membershipDetails.cost }}</v-col></v-row
+      ><v-col>Cost: </v-col> <v-col>{{ membershipSaleDetails.cost }}</v-col></v-row
     >
     <v-row
       ><v-col>Automatic Renewal? </v-col>
-      <v-col>{{ membershipDetails.repeatingPayment }}</v-col></v-row
+      <v-col>{{ membershipSaleDetails.repeatingPayment }}</v-col></v-row
     >
   </v-container>
 </template>
@@ -58,9 +59,7 @@ export default {
   components: {},
   data: function() {
     return {
-      membershipDetails: {
-        type: null,
-        id: null,
+      membershipSaleDetails: {
         name: null,
         startDate: null,
         endDate: null,
@@ -72,17 +71,19 @@ export default {
   computed: {},
   methods: {
     setMembershipDetails() {
-      this.membershipDetails.type = this.$route.params.newMembership.type;
-      this.membershipDetails.id = this.$route.params.newMembership.id;
-      this.membershipDetails.name = this.$route.params.newMembership.name;
-      this.membershipDetails.startDate = this.$route.params.newMembership.startDate;
-      this.membershipDetails.endDate = this.$route.params.newMembership.endDate;
-      this.membershipDetails.cost = this.$route.params.newMembership.amount;
-      this.membershipDetails.repeatingPayment = this.$route.params.newMembership.repeatingPayment;
+      this.membershipSaleDetails.name = this.$route.params.membershipDetails.name;
+      this.membershipSaleDetails.startDate = this.$route.params.membershipDetails.startDate;
+      this.membershipSaleDetails.endDate = this.$route.params.membershipDetails.endDate;
+      this.membershipSaleDetails.cost = this.$route.params.membershipDetails.amount;
+      if (this.$route.params.membershipDetails.repeatingPayment !== null) {
+        this.membershipSaleDetails.repeatingPayment = this.$route.params.membershipDetails.repeatingPayment;
+      } else {
+        this.membershipSaleDetails.repeatingPayment = false;
+      }
     }
   },
   async mounted() {
-    if (this.$route.params.newMembership !== null) {
+    if (this.$route.params.membershipDetails !== null) {
       this.setMembershipDetails();
     }
   }

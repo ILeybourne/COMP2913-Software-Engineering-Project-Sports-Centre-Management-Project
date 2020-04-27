@@ -49,7 +49,7 @@
                   id="paymentButton"
                   @click="submitSubscriptionPayment($event)"
                 >
-                  Pay £{{ membershipDetails.cost }}
+                  Pay £{{ membershipSaleDetails.cost }}
                 </button>
               </div>
             </div>
@@ -156,8 +156,7 @@ export default {
       streetName: "",
       city: "",
       postCode: "",
-      membershipDetails: {
-        type: null,
+      membershipSaleDetails: {
         id: null,
         name: null,
         startDate: null,
@@ -189,18 +188,16 @@ export default {
       console.log(this);
     },
     setMembershipDetails() {
-      this.membershipDetails.type = this.$route.params.newMembership.type;
-      this.membershipDetails.id = this.$route.params.newMembership.id;
-      this.membershipDetails.name = this.$route.params.newMembership.name;
-      this.membershipDetails.startDate = this.$route.params.newMembership.startDate;
-      this.membershipDetails.endDate = this.$route.params.newMembership.endDate;
-      this.membershipDetails.cost = this.$route.params.newMembership.amount;
-      this.membershipDetails.repeatingPayment = this.$route.params.newMembership.repeatingPayment;
+      this.membershipSaleDetails.name = this.$route.params.membershipDetails.name;
+      this.membershipSaleDetails.startDate = this.$route.params.membershipDetails.startDate;
+      this.membershipSaleDetails.endDate = this.$route.params.membershipDetails.endDate;
+      this.membershipSaleDetails.cost = this.$route.params.membershipDetails.amount;
+      this.membershipSaleDetails.repeatingPayment = this.$route.params.membershipDetails.repeatingPayment;
     },
     submitSubscriptionPayment() {}
   },
   async mounted() {
-    if (this.$route.params.newMembership !== null) {
+    if (this.$route.params.membershipDetails !== null) {
       this.setMembershipDetails();
     }
     this.configureStripe();

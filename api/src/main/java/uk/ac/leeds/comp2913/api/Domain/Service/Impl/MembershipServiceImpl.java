@@ -1,5 +1,7 @@
 package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import uk.ac.leeds.comp2913.api.Controller.PaymentController;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipRepository;
@@ -34,6 +37,8 @@ public class MembershipServiceImpl implements MembershipService {
     private final MembershipTypeRepository membershipTypeRepository;
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
+    Logger logger = LoggerFactory.getLogger(MembershipServiceImpl.class);
+
 
     @Autowired
     public MembershipServiceImpl(MembershipRepository membershipRepository, MembershipTypeRepository membershipTypeRepository, AccountRepository accountRepository, CustomerRepository customerRepository) {
@@ -68,37 +73,43 @@ public class MembershipServiceImpl implements MembershipService {
 
     //Checks existing customers don't have active memberships
     @Transactional
-    public String validateMembership(Customer customer) {
-        String response = "valid";
-        List<Account> customerAccounts = accountRepository.findAllByCustomerId(customer.getId());
-        if (customerAccounts.size()>0) {
-            Account lastAccount = customerAccounts.get(customerAccounts.size() - 1);
-            List<Membership> allMemberships = membershipRepository.findAllByAccountIdOrderByEndDateAsc(lastAccount.getId());
-            if (allMemberships.size()>0) {
-                Membership lastMembership = allMemberships.get(allMemberships.size() - 1);
-                Date lastMembershipEndDate = lastMembership.getEndDate();
-                if (lastMembershipEndDate.after(new Date())) { //checks to make sure old membership has expired
-                    response = "not valid";
+    public Boolean activeMemberCheck(String email) {
+        Boolean activeMember = false;
+        Customer existingCustomer = customerRepository.findByEmailAddress(email);
+        logger.info(email);
+        if(existingCustomer != null) {
+            List<Account> customerAccounts = accountRepository.findAllByCustomerId(existingCustomer.getId());
+            if (customerAccounts.size() > 0) {
+                Account lastAccount = customerAccounts.get(customerAccounts.size() - 1);
+                logger.info(lastAccount.toString());
+                List<Membership> allMemberships = membershipRepository.findAllByAccountIdOrderByEndDateAsc(lastAccount.getId());
+                if (allMemberships.size() > 0) {
+                    Membership lastMembership = allMemberships.get(allMemberships.size() - 1);
+                    Date lastMembershipEndDate = lastMembership.getEndDate();
+                    logger.info(lastMembershipEndDate.toString());
+                    if (lastMembershipEndDate.after(new Date())) { //checks to make sure old membership has expired
+                        activeMember = true;
+                    }
                 }
             }
         }
-        return response;
+        logger.info(activeMember.toString());
+        return activeMember;
     }
 
-
     //Check to see if customer data exists, if so, create new account using that, otherwise create new customer
-    //set the new membership to newly created account
+//set the new membership to newly created account
     @Override
     public Membership addMember(Long membership_type_id, Membership membership, Account account, Customer customer) {
         MembershipType membershipType = membershipTypeRepository.findById(membership_type_id)
                 .orElseThrow(() -> new ResourceNotFoundException("Membership type not found for ID" + membership_type_id));
         Customer existingCustomer = customerRepository.findByEmailAddress(customer.getEmailAddress());
-        if(existingCustomer !=null && validateMembership(existingCustomer).equals("not valid")) {
+        if(existingCustomer !=null && activeMemberCheck(existingCustomer.getEmailAddress())) {
             Membership falseMembership = new Membership();
             falseMembership.setMembershipType(membershipType);
             return falseMembership; // returns an empty membership object
         }
-        else if(existingCustomer!=null && validateMembership(existingCustomer).equals("valid")){
+        else if(existingCustomer!=null && !activeMemberCheck(existingCustomer.getEmailAddress())){
             account.setCustomer(existingCustomer);
         }
         else {

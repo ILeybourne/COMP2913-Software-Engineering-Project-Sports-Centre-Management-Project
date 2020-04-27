@@ -135,7 +135,7 @@
             </li>
           </ul>
           <v-container class="response">
-            <v-row v-if="postResponse.id === 0"
+            <v-row v-if="postResponse === true"
               ><v-col>You already have a membership with Zenergy</v-col></v-row
             >
             <v-row v-if="postResponse === formError"
@@ -148,7 +148,7 @@
               type="submit"
               value="submit"
               class="site-btn"
-              v-on:click="addMember()"
+              v-on:click="checkForActiveMembership()"
             >
               SIGN UP
             </button>
@@ -339,6 +339,13 @@ export default {
           const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
           return pattern.test(value) || "Invalid e-mail.";
         }
+      },
+      membershipDetails: {
+        name: null,
+        startDate: null,
+        endDate: null,
+        amount: null,
+        repeatingPayment: null
       }
     };
   },
@@ -369,21 +376,23 @@ export default {
     calculateEndDate(duration) {
       const date = new Date();
       date.setDate(date.getDate() + duration);
-      return this.calculateDate(date);
+      this.membershipDetails.endDate = this.calculateDate(date);
+      return this.membershipDetails.endDate;
     },
-    async addMember() {
+
+    async checkForActiveMembership() {
       if (this.formBody.email !== null && this.formBody.dateOfBirth !== null) {
-        //console.log(this.formBody);
+        console.log(this.formBody);
         const body = {
-          ...this.formBody,
-          accountId: 1
+          ...this.formBody
         };
         await this.$http
-          .post("/membership/" + this.selectedOption, body)
+          .post("/membership/membercheck", body)
           .then(response => {
-            //console.log(response);
+            console.log(response);
             this.postResponse = response.data;
-            if (this.postResponse.id > 0) {
+            if (this.postResponse === false) {
+                  this.setMembershipDetails();
               this.onSuccess();
             }
           })
@@ -394,11 +403,43 @@ export default {
         this.postResponse = this.formError;
       }
     },
+     setMembershipDetails(){
+       this.membershipDetails.name= this.selectedMembershipType.name;
+       this.membershipDetails.startDate = this.calculateDate(this.todaysDate);
+       this.membershipDetails.endDate = this.calculateEndDate(this.selectedMembershipType.duration);
+       this.membershipDetails.amount = this.selectedMembershipType.cost;
+       this.membershipDetails.repeatingPayment = this.formBody.repeatingPayment
+     },
+
+    // async addMember() {
+    //   if (this.formBody.email !== null && this.formBody.dateOfBirth !== null) {
+    //     //console.log(this.formBody);
+    //     const body = {
+    //       ...this.formBody,
+    //       accountId: 1
+    //     };
+    //     await this.$http
+    //       .post("/membership/" + this.selectedOption, body)
+    //       .then(response => {
+    //         //console.log(response);
+    //         this.postResponse = response.data;
+    //         if (this.postResponse.id > 0) {
+    //           this.onSuccess();
+    //         }
+    //       })
+    //       .catch(function() {
+    //         //console.log(error);
+    //       });
+    //   } else {
+    //     this.postResponse = this.formError;
+    //   }
+    // },
     async onSuccess() {
       await this.$router.push({
         name: "Checkout",
         params: {
-          newMembership: this.postResponse
+          formData: this.formBody,
+          membershipDetails: this.membershipDetails
         }
       });
     }

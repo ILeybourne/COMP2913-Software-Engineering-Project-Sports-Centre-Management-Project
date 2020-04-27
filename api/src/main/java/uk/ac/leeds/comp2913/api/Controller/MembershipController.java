@@ -85,6 +85,11 @@ public class MembershipController {
         return pagedResourcesAssembler.toModel(allMembers, membershipPagedResourcesAssembler);
     }
 
+    @PostMapping("/membercheck")
+    @Operation(summary = "Checks to see if a member has an active membership")
+    public Boolean checkMember( @Parameter(description = "A membership DTO Object", required = true)@Valid @RequestBody MembershipDTO membership){
+        return membershipService.activeMemberCheck(membership.getEmailAddress());
+    }
 
     //Add a member, create an account in the database and store customer details
     @PostMapping("/{membership_type_id}")
