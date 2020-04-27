@@ -1,14 +1,5 @@
 <template>
   <div class="payment-container">
-    <div class="padding-div">
-      <button
-        type="button"
-        class="btn btn-outline-secondary"
-        style="padding:15px;"
-      >
-        Back
-      </button>
-    </div>
     <div class="heading-div">
       <h1><span>Membership</span> Options</h1>
       <p>

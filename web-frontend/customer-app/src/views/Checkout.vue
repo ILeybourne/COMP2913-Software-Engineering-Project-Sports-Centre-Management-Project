@@ -1,14 +1,5 @@
 <template>
   <div class="payment-container">
-    <div class="padding-div">
-      <button
-        type="button"
-        class="btn btn-outline-secondary"
-        style="padding:15px;"
-      >
-        Back
-      </button>
-    </div>
     <div class="heading-div">
       <h1><span>Checkout</span></h1>
     </div>
@@ -26,26 +17,26 @@
         v-if="billingSuccess === true"
       ><v-row><v-col><h3>Billing Info</h3></v-col></v-row>
         <v-row
-        ><v-col>Name: </v-col> <v-col>Name to pass here</v-col></v-row
+        ><v-col>Name: </v-col> <v-col>{{name}}</v-col></v-row
         >
         <v-row
         ><v-col>Email </v-col>
-          <v-col>Pass email </v-col></v-row
+          <v-col>{{email}} </v-col></v-row
         >
         <v-row
         ><v-col>House Number: </v-col>
-          <v-col>House number here</v-col></v-row
+          <v-col>{{houseNumber}}</v-col></v-row
         >
         <v-row
-        ><v-col>Street Name: </v-col> <v-col>Pass street name</v-col></v-row
+        ><v-col>Street Name: </v-col> <v-col>{{streetName}}</v-col></v-row
         >
         <v-row
         ><v-col>City </v-col>
-          <v-col>Pass city</v-col></v-row
+          <v-col>{{city}}</v-col></v-row
         >
         <v-row
         ><v-col>Post code </v-col>
-          <v-col>Pass post code</v-col></v-row
+          <v-col>{{postCode}}</v-col></v-row
         >
       </v-container>
       <PaymentInformation
@@ -139,12 +130,26 @@ export default {
   },
   data() {
     return {
-      billingSuccess: false
+      billingSuccess: false,
+      name: "",
+      email: "",
+      houseNumber: "",
+      streetName: "",
+      city: "",
+      postCode: "",
+
     };
   },
   methods: {
-    billingSuccessStatus(){
+    billingSuccessStatus(value){
       this.billingSuccess = true;
+      console.log(value)
+      this.name  = value.name
+      this.email = value.email
+      this.houseNumber = value.houseNumber
+      this.streetName = value.streetName
+      this.city = value.city
+      this.postCode = value.postCode
     }
   }
 };
