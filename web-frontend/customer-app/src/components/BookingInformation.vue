@@ -22,7 +22,7 @@
         <div class="form-row">
           <label for="activity">Activity:</label>
           <b-form-select
-            v-model="selectedActivityId"
+            v-model="selectedActivityTypeId"
             :options="activityOptions"
             name="activity"
             id="activity"
@@ -146,9 +146,10 @@ export default {
       activityOptions: [],
       timeOptions: ["Please Select"],
 
-      selectedActivityId: null,
+      selectedActivityTypeId: null,
       selectedFacilityId: null,
       selectedActivityName: null,
+      selectedActivity: null,
       selectedTime: null,
       price: null,
       selectedDate: null,
@@ -171,9 +172,9 @@ export default {
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
     getPrice(e) {
-      if (this.selectedActivityId != null) {
-        let selectedActivity = this.activities.find(x => x.id == e);
-        this.price = selectedActivity.cost;
+      if (this.selectedActivityTypeId != null) {
+        let selectedActivityType = this.activities.find(x => x.id == e);
+        this.price = selectedActivityType.cost;
       }
     },
 
@@ -217,7 +218,7 @@ export default {
       this.facilityValid = !(this.$data.selectedFacilityId == null);
     },
     validateActivity() {
-      this.activitiesValid = !(this.$data.selectedActivityId == null);
+      this.activitiesValid = !(this.$data.selectedActivityTypeId == null);
     },
     validateDate() {
       this.dateValid = this.$data.date != null;
@@ -242,7 +243,7 @@ export default {
     submitForm(e) {
       if (
         !(this.$data.selectedFacilityId == null) &&
-        !(this.$data.selectedActivityId == null) &&
+        !(this.$data.selectedActivityTypeId == null) &&
         this.$data.selectedDate != null &&
         this.$data.selectedTime != null
       ) {
@@ -251,7 +252,6 @@ export default {
         this.dateValid = true;
         this.timeValid = true;
         this.$emit("getUserType", this.$data);
-
       } else {
         //Dont pass data and call validators
         this.callValidation();
@@ -268,6 +268,15 @@ export default {
         }
       }
     },
+    getSelectedActivity() {
+      if (this.route.query.sessionId !== null) {
+        this.selectedActivity = this.$route.query.sessionId;
+      } else {
+        //this needs to return the activity/session Id
+        //this.selectedActivity = this.sessions.find()
+      }
+      return this.selectedActivity;
+    },
     // TODO, shouldn't access routes like this, use props and either inject with router or from booking page
     fillByQuery() {
       this.setFacilityOptions();
@@ -279,7 +288,7 @@ export default {
         //If query isn't empty fill ids, selectedDate and timeOptions
         this.selectedFacilityId = facilityId;
         this.setActivityTypeOptions(facilityId);
-        this.selectedActivityId = activityTypeId;
+        this.selectedActivityTypeId = activityTypeId;
         this.selectActivityName();
         let selectedDateUnix = this.sessions.find(x => x.id == activityId)
           .startTime;
@@ -305,7 +314,7 @@ export default {
       if (this.selectedDate != null) {
         if (
           this.selectedFacilityId != null &&
-          this.selectedActivityId != null
+          this.selectedActivityTypeId != null
         ) {
           let timeArray = ["Please Select"];
 
@@ -332,9 +341,9 @@ export default {
       }
     },
     selectActivityName() {
-      if (this.selectedActivityId != null) {
+      if (this.selectedActivityTypeId != null) {
         this.selectedActivityName = this.activities.find(
-          x => Number(x.id) === Number(this.selectedActivityId)
+          x => Number(x.id) === Number(this.selectedActivityTypeId)
         ).name;
       } else {
         this.selectedActivityName = "Please Select";

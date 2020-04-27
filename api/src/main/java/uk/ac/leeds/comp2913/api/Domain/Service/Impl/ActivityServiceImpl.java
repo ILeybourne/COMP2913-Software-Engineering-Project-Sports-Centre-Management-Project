@@ -1,5 +1,8 @@
 package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 
+import com.stripe.exception.CardException;
+import com.stripe.exception.StripeException;
+
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -13,7 +16,10 @@ import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.RegularSessionRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.*;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
+import uk.ac.leeds.comp2913.api.Domain.Service.PaymentService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.ViewModel.PayResponseBodyDTO;
+
 import org.springframework.data.domain.PageImpl;
 
 
@@ -24,19 +30,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.System.err;
+
 @Service
 public class ActivityServiceImpl implements ActivityService {
   private final ActivityRepository activityRepository;
   private final RegularSessionRepository regularSessionRepository;
   private final BookingRepository bookingRepository;
   private final ActivityTypeRepository activityTypeRepository;
+  private final PaymentService paymentService;
 
   @Autowired
-  public ActivityServiceImpl(ActivityRepository activityRepository, RegularSessionRepository regularSessionRepository, BookingRepository bookingRepository, ActivityTypeRepository activityTypeRepository) {
+  public ActivityServiceImpl(ActivityRepository activityRepository, RegularSessionRepository regularSessionRepository, BookingRepository bookingRepository, ActivityTypeRepository activityTypeRepository, PaymentService paymentService) {
     this.activityRepository = activityRepository;
     this.regularSessionRepository = regularSessionRepository;
     this.bookingRepository = bookingRepository;
     this.activityTypeRepository =activityTypeRepository;
+    this.paymentService = paymentService;
   }
 
   @Override
@@ -134,7 +144,7 @@ public class ActivityServiceImpl implements ActivityService {
    * SUGGESTION: timetable view front end, earliest viewable activities from today
    */
   @Override
-  public void automatedRegularSessionAndBookings(){
+  public void automatedRegularSessionAndBookings() throws StripeException {
     // // Log to stdout
     List<Activity> last_scheduled_activities = activityRepository.findAllWithRegularSession(); // custom query in  repo, SELECT MAX(start_time) from activty where repeat_activity_id = ?;
     for (Activity session : last_scheduled_activities) {
@@ -149,7 +159,12 @@ public class ActivityServiceImpl implements ActivityService {
           for (Booking booking : last_activity_bookings) {
             if (booking.getRegularSession() != (null)) {
               Booking new_booking = Booking.createBookingFromRegularSession(new_activity, booking);
-              this.bookingRepository.save(new_booking);
+              Customer customer = new_booking.getAccount().getCustomer();
+              try {
+                paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), new_booking.getActivity().getId());
+                this.bookingRepository.save(new_booking);
+              }catch (CardException err){
+              }
             }
           }
         }

@@ -340,6 +340,7 @@ export default {
           this.hideCardError = false;
         }
       }
+      console.log(this.selectedActivityId);
     },
 
     async sendTokenToServer(client_secret) {
