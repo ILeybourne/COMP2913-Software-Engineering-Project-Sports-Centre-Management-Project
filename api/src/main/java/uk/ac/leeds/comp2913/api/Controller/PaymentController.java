@@ -86,11 +86,20 @@ public class PaymentController {
     }
 
     static class  ActivityRequestBody {
+        private Object payment_method;
         private Long activityTypeId;
         private Boolean regularSession;
         private String email;
         private Long customerId;
         private String stripeId;
+
+        public Object getPayment_Method() {
+            return payment_method;
+        }
+
+        public void setPayment_Method(Object payment_method) {
+            this.payment_method = payment_method;
+        }
 
         public Long getActivityTypeId() {
             return activityTypeId;
@@ -213,7 +222,32 @@ public class PaymentController {
                             .build();
             intent = PaymentIntent.create(intentParams);
 
-            logger.info("💰 PaymentIntent created!");
+
+
+
+            Map<String, Object> customerParamsUpdate = new HashMap<String, Object>();
+
+//            PaymentMethodListParams params =
+//                    PaymentMethodListParams.builder()
+//                            .setCustomer(internalCustomer.getStripeId())
+//                            .setType(PaymentMethodListParams.Type.CARD)
+//                            .build();
+
+
+//            PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
+//
+//            //Get first card
+//            String paymentMethod = paymentMethods.getData().get(0).getId();
+
+            Map<String, Object> paymentParams = new HashMap<>();
+            paymentParams.put("default_payment_method", requestBody.getPayment_Method());
+            customerParamsUpdate.put("invoice_settings", paymentParams);
+
+            Customer customerWithDefault = customer.update(customerParamsUpdate);
+
+
+            logger.info("requestBody.toString()");
+            logger.info(requestBody.toString());
             responseBody.setClientSecret(intent.getClientSecret());
         } catch (CardException err) {
             // Handle "hard declines" e.g. insufficient funds, expired card, etc
@@ -227,7 +261,7 @@ public class PaymentController {
         return  responseBody;
     }
 
-    //Guest Payment
+    //Customer Payment
     //TODO Move into response body
     @PostMapping(path = "/intent/card/{customer_id}")
     public PayResponseBody createFromNewCard(@RequestBody ActivityRequestBody requestBody, @PathVariable Long customer_id) throws StripeException {
@@ -337,6 +371,8 @@ public class PaymentController {
                             .build();
 
                     intent = PaymentIntent.create(intentParams);
+
+
                     logger.info("💰 Payment received!");
 //                  The payment is complete and the money has been moved
 //                  You can add any post-payment code here (e.g. shipping, fulfillment, etc)
@@ -362,14 +398,13 @@ public class PaymentController {
     //Customer Saved Card Payment
     @PreAuthorize("hasAuthority('SCOPE_can:cash_booking')")
     @PostMapping(path = "/subscription/saved/{customer_id}")
-    public PayResponseBody addSubscriptionToCustomer(@RequestBody ActivityRequestBody requestBody, @PathVariable Long customer_id) throws StripeException {
+    public void addSubscriptionToCustomer(@RequestBody ActivityRequestBody requestBody, @PathVariable Long customer_id) throws StripeException {
         //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         PaymentIntent intent = null;
         uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer =null;
         Customer customer = null;
         PayResponseBody responseBody = new PayResponseBody();
-        logger.info("cumsterid request");
         try {
             if(customerRepository.findById(customer_id).isPresent()) {
                 //get api customer
@@ -388,43 +423,7 @@ public class PaymentController {
                 params.put("items", items);
                 params.put("expand", expand);
                 Subscription subscription = Subscription.create(params);
-
-                if (requestBody.getActivityTypeId() != null) {
-                    //get activity type
-                    ActivityType activityType = activityTypeService.findById(requestBody.getActivityTypeId());
-
-                    //get list of payment methods
-                    PaymentMethodListParams params =
-                            PaymentMethodListParams.builder()
-                                    .setCustomer(internalCustomer.getStripeId())
-                                    .setType(PaymentMethodListParams.Type.CARD)
-                                    .build();
-
-
-                    PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
-
-                    //Get first card
-                    String paymentMethod = paymentMethods.getData().get(0).getId();
-
-                    PaymentIntentCreateParams intentParams = PaymentIntentCreateParams.builder()
-                            .setCurrency("gbp")
-                            .setAmount((activityType.getCost().multiply(new BigDecimal(100.0))).longValue())
-                            .setCustomer(internalCustomer.getStripeId())
-                            .setPaymentMethod(paymentMethod)
-                            .setConfirm(true)
-                            .setOffSession(true)
-                            // Verify your integration in this guide by including this parameter
-                            .putMetadata("integration_check", "accept_a_payment")
-                            .build();
-
-                    intent = PaymentIntent.create(intentParams);
-                    logger.info("💰 Payment received!");
-//                  The payment is complete and the money has been moved
-//                  You can add any post-payment code here (e.g. shipping, fulfillment, etc)
-                    responseBody.setClientSecret(intent.getClientSecret());
-                }else{
-                    responseBody.setError("Activity id not Found!");
-                }
+                responseBody = null;
             }else {
                 responseBody.setError("Customer id not Found!");
             }
@@ -437,7 +436,6 @@ public class PaymentController {
                 responseBody.setError(err.getMessage());
             }
         }
-        return responseBody;
     }
 
     @PostMapping(path = "/customer/stripe_id/{customer_id}")

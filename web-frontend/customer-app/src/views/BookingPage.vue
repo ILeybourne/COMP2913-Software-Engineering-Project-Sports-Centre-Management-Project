@@ -295,6 +295,12 @@ export default {
       // Talk to our server to get encrpyted prices
       this.paymentSubmit = true;
       let paymentIntent = null;
+      let payment_method= {
+        card: this.card,
+        billing_details: {
+          name: this.firstName
+        }}
+      console.log(payment_method)
       if (this.userType === "guest") {
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
