@@ -5,7 +5,7 @@ describe("login", () => {
     //   return resp.body;
     // })
     // .then(body => {
-    //   //console.log(body);
+    //   ////console.log(body);
     //   const { access_token, expires_in, id_token } = body;
     //   const auth0State = {
     //     nonce: "",
@@ -15,7 +15,7 @@ describe("login", () => {
     //   const callbackUrl = `?access_token=${access_token}&scope=openid&id_token=${id_token}&expires_in=${expires_in}&token_type=Bearer&state=${auth0State.state}`;
     //   cy.log(callbackUrl);
     //
-    //   //console.log(callbackUrl);
+    //   ////console.log(callbackUrl);
     //   cy.visit(callbackUrl, {
     //     onBeforeLoad(win) {
     //       win.document.cookie =

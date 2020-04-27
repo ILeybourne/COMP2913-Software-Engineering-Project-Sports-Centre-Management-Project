@@ -351,11 +351,11 @@ export default {
       "getSelectedMembershipType"
     ]),
     selectMembershipType(id) {
-      console.log(id);
+      //console.log(id);
       this.selectedOption = id;
     },
     assignEmail(email) {
-      console.log(email);
+      //console.log(email);
       this.formBody.email = email;
     },
     async getMembershipType() {
@@ -373,21 +373,22 @@ export default {
     },
     async addMember() {
       if (this.formBody.email !== null && this.formBody.dateOfBirth !== null) {
-        console.log(this.formBody);
+        //console.log(this.formBody);
         const body = {
-          ...this.formBody
+          ...this.formBody,
+          accountId: 1
         };
         await this.$http
           .post("/membership/" + this.selectedOption, body)
           .then(response => {
-            console.log(response);
+            //console.log(response);
             this.postResponse = response.data;
             if (this.postResponse.id > 0) {
               this.onSuccess();
             }
           })
-          .catch(function(error) {
-            console.log(error);
+          .catch(function() {
+            //console.log(error);
           });
       } else {
         this.postResponse = this.formError;

@@ -234,9 +234,9 @@ export default {
 
       if (result.error) {
         // Show error to your customer (e.g., insufficient funds)
-        console.log(result.error.message);
+        //console.log(result.error.message);
       } else {
-        console.log("first else)");
+        //console.log("first else)");
         // The payment has been processed!
         if (result.paymentIntent.status === "succeeded") {
           await this.postAllFormData();
@@ -276,7 +276,7 @@ export default {
         let bookedActivity = this.activities.find(
           activity => activity.id == this.selectedActivityId
         );
-        console.log(this.$auth._uid);
+        //console.log(this.$auth._uid);
 
         const body = {
           //TODO PASS USER
@@ -296,11 +296,11 @@ export default {
         //   query: { status: "success" }
         // });
       } catch (e) {
-        console.log(e);
+        //console.log(e);
       }
     },
     showBillingInfo(value) {
-      console.log(value);
+      //console.log(value);
       this.firstName = value.firstName;
       this.surname = value.surname;
       this.email = value.email;
@@ -338,8 +338,8 @@ export default {
     }
   },
   mounted() {
-    console.log("this.user)");
-    console.log(this.user);
+    //console.log("this.user)");
+    //console.log(this.user);
     this.getActivities();
     this.configureStripe();
   }
