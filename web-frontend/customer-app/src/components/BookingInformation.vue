@@ -324,7 +324,12 @@ export default {
               .toString()
               .substr(-2);
             const date = ("0" + selectedTime.getDate()).substr(-2);
-            const hours = ("0" + selectedTime.getHours()).substr(-2);
+            let hours = null
+            if(parseInt(selectedTime.getHours()) > 0){
+              hours = ("0" + (parseInt(selectedTime.getHours()) - 1 ).toString().substr(-2));
+            }else{
+              hours = ("0" + ( 11 ).toString().substr(-2));
+            }
             const mins = ("0" + selectedTime.getMinutes()).substr(-2);
             let formattedDate = year + "-" + month + "-" + date;
             if (

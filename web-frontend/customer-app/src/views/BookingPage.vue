@@ -9,7 +9,7 @@
         <b-col col lg="maxColSize " v-bind:class="{ 'd-none': hideBooking }">
           <BookingInformation
             class="booking-info"
-            @getUserType="showGuestInfo"
+            @getUserType="[showGuestInfo($event) ,getActivitySelected()]"
           ></BookingInformation> </b-col
         >
       </b-row>
@@ -217,6 +217,8 @@ export default {
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
     ...mapGetters("customers", ["customers"]),
+    ...mapGetters("timetable", ["sessions"]),
+
     showQuickPay: function() {
       if (this.customer !== null) {
         return this.customer.stripeId !== null;
@@ -228,6 +230,39 @@ export default {
   methods: {
     ...mapActions("facilities", ["getActivities"]),
     ...mapActions("customers", ["getAllCustomers"]),
+    ...mapActions("timetable", ["getAllSessions"]),
+
+
+    getActivitySelected(){
+      debugger
+      let activity = null
+      for(const session of this.sessions){
+        if (this.selectedFacility == session.resource.id){
+          if(this.selectedActivityName === session.name ){
+            let date = session.startTime.substring(0,10)
+            let time =  session.startTime.split("T")[1].substring(0,5)
+            if (this.date.toString() === date.toString()){
+              if (this.selectedTime === time){
+                activity = session
+              }
+            }
+          }
+        }
+      }
+      console.log(activity)
+
+    },
+    addZero(value) {
+      return ("0" + value.toString()).slice(-2)
+    },
+
+    formatDate(value) {
+      if (value) {
+        const dt = new Date(value);
+        return `${this.addZero(dt.getHours())}|${this.addZero(dt.getMinutes())}`;
+      }
+      return "";
+    },
 
     async getCustomer() {
       this.customer = this.customers.find(
@@ -434,6 +469,7 @@ export default {
     },
 
     async showGuestInfo(value) {
+      debugger
       this.selectedFacility = value.selectedFacilityId;
       this.selectedActivity = value.selectedActivityName;
       this.selectedActivityId = value.selectedActivityId;
@@ -470,16 +506,6 @@ export default {
         }
       }
     },
-
-    getRoles() {
-      let roles = this.$http
-        .get(
-          "https://prod-comp2931/api/v2/users/" + this.customer.id + "/roles"
-        )
-        .header("authorization", "Bearer MGMT_API_ACCESS_TOKEN");
-
-      console.log(roles);
-    }
   },
   async created() {
     if (!this.isEmpty(this.user)) {
@@ -492,6 +518,8 @@ export default {
     console.log(this.$auth)
     console.log(this.isEmployeeOrManager)
     await this.getActivities();
+    await this.getAllSessions;
+    await this.getActivitySelected();
     this.configureStripe();
   }
 };
