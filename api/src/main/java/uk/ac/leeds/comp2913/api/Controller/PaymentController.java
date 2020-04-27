@@ -59,7 +59,9 @@ public class PaymentController {
         Boolean repeating = requestBody.getRepeating();
         Long activityId= requestBody.getActivityId();
         Long membershipTypeId = requestBody.getMembershipId();
-        return paymentService.create(emailAddress, activityId, repeating, membershipTypeId);
+        Integer participants = requestBody.getParticipants();
+        Boolean schedule = false;
+        return paymentService.create(emailAddress, activityId, repeating, membershipTypeId, participants, schedule);
     }
 
     //Guest Payment
@@ -70,7 +72,9 @@ public class PaymentController {
         Long activityId= requestBody.getActivityId();
         Long membershipId = requestBody.getMembershipId();
         Boolean repeating = requestBody.getRepeating();
-        return  paymentService.createFromNewCard(customer_id, emailAddress, activityId, repeating, membershipId);
+        Integer participants = requestBody.getParticipants();
+        Boolean schedule = false;
+        return  paymentService.createFromNewCard(customer_id, emailAddress, activityId, repeating, membershipId, participants, schedule);
     }
 
     //Customer Saved Card Payment
@@ -81,7 +85,9 @@ public class PaymentController {
         Long activityId = requestBody.getActivityId();
         Long membershipId = requestBody.getMembershipId();
         Boolean repeating = requestBody.getRepeating();
-        return paymentService.createFromSavedCard(customer_id, emailAddress, activityId, repeating, membershipId);
+        Integer participants = requestBody.getParticipants();
+        Boolean schedule = false;
+        return paymentService.createFromSavedCard(customer_id, emailAddress, activityId, repeating, membershipId, participants, schedule);
     }
 
     //Customer Saved Card Payment

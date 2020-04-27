@@ -20,6 +20,7 @@ import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipTypeRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
+import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
@@ -60,7 +61,6 @@ public class MembershipServiceImpl implements MembershipService {
     public Page<Membership> findMembershipByAccountId(Pageable pageable, Long account_id){
         return membershipRepository.findByAccountId(pageable, account_id);
     }
-
 
     @Override
     public Membership addMember(Long account_id, Long membership_type_id, Membership membership) {

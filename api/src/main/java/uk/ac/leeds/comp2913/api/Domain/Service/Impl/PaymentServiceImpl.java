@@ -28,9 +28,14 @@ import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
+import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
+import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
+import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
 import uk.ac.leeds.comp2913.api.Domain.Service.CustomerService;
+import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
+import uk.ac.leeds.comp2913.api.Domain.Service.MembershipTypeService;
 import uk.ac.leeds.comp2913.api.Domain.Service.PaymentService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.PayResponseBodyDTO;
@@ -40,14 +45,20 @@ public class PaymentServiceImpl implements PaymentService {
     private final ActivityService activityService;
     private final CustomerService customerService;
     private final CustomerRepository customerRepository;
+    private final MembershipTypeService membershipTypeService;
+    private final MembershipService membershipService;
+    private final BookingService bookingService;
     Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
 
     @Autowired
-    public PaymentServiceImpl(ActivityService activityService, CustomerService customerService, CustomerRepository customerRepository){
+    public PaymentServiceImpl(ActivityService activityService, CustomerService customerService, CustomerRepository customerRepository, MembershipService membershipService, MembershipTypeService membershipTypeService, BookingService bookingService){
         this.activityService = activityService;
         this.customerService = customerService;
         this.customerRepository = customerRepository;
+        this.membershipService = membershipService;
+        this.membershipTypeService = membershipTypeService;
+        this.bookingService = bookingService;
     }
 
     @Override
@@ -64,7 +75,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PayResponseBodyDTO createFromNewCard(Long customer_id, String email, Long activity_id) throws StripeException {
+    public PayResponseBodyDTO createFromNewCard(Long customer_id, String email, Long activity_id, Boolean repeating, Long membership_type_id, Integer participants, Boolean schedule) throws StripeException {
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
         //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
@@ -72,6 +83,25 @@ public class PaymentServiceImpl implements PaymentService {
         uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer = null;
         Customer customer = null;
         logger.info("/intent/card/customer id");
+        BigDecimal cost = null;
+        Booking b = new Booking();
+        Membership m = new Membership();
+        if(!schedule) {
+            //create booking
+            if (activity_id != null) {
+                Activity a = activityService.findActivityById(activity_id);
+                b.setParticipants(participants);
+                cost = a.getCost();
+                m = null;
+            }
+            //create membership
+            if (membership_type_id != null) {
+                MembershipType membershipType = membershipTypeService.findMembershipTypeById(membership_type_id);
+                cost = membershipType.getCost();
+                b = null;
+            }
+        }
+
         try {
             if(customerRepository.findById(customer_id).isPresent()) {
                 //get api customer
@@ -123,6 +153,14 @@ public class PaymentServiceImpl implements PaymentService {
 
                     logger.info("💰 PaymentIntent created!");
                     responseBody.setClientSecret(intent.getClientSecret());
+                    if(!schedule && b != null){
+                        //b.setTransactionId(); How do we obtain this?
+                        bookingService.createNewBookingForActivity(b, activity_id, accountId, repeating);
+                    }
+                    if(!schedule && m != null){
+                        //b.setTransactionId(); How do we obtain this?
+                        membershipService.addMember(accountId, membership_type_id, m);
+                    }
                 }}
         } catch (CardException err) {
 
@@ -138,7 +176,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PayResponseBodyDTO create(String email, Long activity_id) throws StripeException{
+    public PayResponseBodyDTO create(String email, Long activity_id, Boolean repeating, Long membershipTypeId, Integer participants, Boolean schedule) throws StripeException{
         //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         PaymentIntent intent = null;
@@ -193,7 +231,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PayResponseBodyDTO createFromSavedCard(Long customer_id, String email, Long activity_id) throws StripeException{
+    public PayResponseBodyDTO createFromSavedCard(Long customer_id, String email, Long activity_id, Boolean repeating, Long membershipTypeId, Integer participants, Boolean schedule) throws StripeException{
         //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         PaymentIntent intent = null;

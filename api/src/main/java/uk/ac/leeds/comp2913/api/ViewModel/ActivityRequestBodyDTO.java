@@ -10,6 +10,7 @@ public class ActivityRequestBodyDTO {
     private Long customerId;
     private String email;
     private String stripeId;
+    private Integer participants;
 
 
     public Long getActivityId() {
@@ -58,5 +59,13 @@ public class ActivityRequestBodyDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Integer getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(Integer participants) {
+        this.participants = participants;
     }
 }
