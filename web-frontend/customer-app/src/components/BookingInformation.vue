@@ -76,7 +76,7 @@
             name="guest"
             @click="getUserType($event)"
             :disabled="!timeValid"
-            v-if="user.email === null"
+            v-if="!account"
           >
             Checkout As Guest
           </button>
@@ -86,7 +86,7 @@
             name="account"
             @click="getUserType($event)"
             :disabled="!timeValid"
-            v-if="user.email !== null"
+            v-if="account"
           >
             Checkout With Account
           </button>
@@ -166,7 +166,10 @@ export default {
   computed: {
     ...mapGetters("facilities", ["facilities", "activities"]),
     ...mapGetters("timetable", ["sessions"]),
-    ...mapGetters("auth", ["user"])
+    ...mapGetters("auth", ["user"]),
+    account: function() {
+      return !this.isEmpty(this.user);
+    }
   },
   methods: {
     ...mapActions("facilities", ["getFacilities", "getActivities"]),

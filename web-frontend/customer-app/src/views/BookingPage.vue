@@ -47,7 +47,7 @@
                     Pay £{{ price }}
                   </button>
                 </div>
-                <h2 id="cardText">Or</h2>
+                <h2 id="cardText" v-if="showQuickPay">Or</h2>
                 <div class="buttonDiv">
                   <button
                     @click="submitQuickPayment()"
@@ -254,14 +254,12 @@ export default {
       );
       return hasStripeId.data;
     },
-
     bookByCash() {
       this.hideBooking = true;
       this.hideGuest = true;
       this.hideCard = true;
       this.hideSuccess = false;
     },
-
     configureStripe() {
       //TODO get from env
       // eslint-disable-next-line no-undef
@@ -483,16 +481,6 @@ export default {
         }
       }
     },
-
-    getRoles() {
-      let roles = this.$http
-        .get(
-          "https://prod-comp2931/api/v2/users/" + this.customer.id + "/roles"
-        )
-        .header("authorization", "Bearer MGMT_API_ACCESS_TOKEN");
-
-      console.log(roles);
-    }
   },
   async created() {
     if (!this.isEmpty(this.user)) {
@@ -501,7 +489,6 @@ export default {
     }
   },
   async mounted() {
-    // this.getRoles()
     console.log(this.$auth)
     console.log(this.isEmployeeOrManager)
     await this.getActivities();
