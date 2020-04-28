@@ -28,7 +28,7 @@
       <div id="right-column" class="col-sm-5 align-self-center">
         <div id="membership-card" class="card">
           <h2>Membership</h2>
-          {{}}
+          {{ memberships }}
         </div>
         <div class="text-center">
           <button
@@ -99,7 +99,7 @@ export default {
   mounted() {
     this.getAccounts();
     this.getAllCustomers();
-    //this.getAccountMemberships();
+    this.getMemberships();
   }
 };
 </script>
