@@ -1,23 +1,17 @@
-import axios from "@/plugins/axios.plugin";
-
 const state = {
   user: null,
-  error: null,
-  customers: [],
-  membership: null
+  error: null
 };
 
 const getters = {
   isAuthenticated: state => state.user !== null,
   user: state => state.user || {},
-  permissions: state => state.claims,
-  customers: state => state.customers
+  permissions: state => state.claims
 };
 
 const mutations = {
   LOGIN: (state, payload) => (state.user = payload),
-  LOGOUT: state => (state.user = null),
-  SET_CUSTOMERS: (state, payload) => (state.customers = payload)
+  LOGOUT: state => (state.user = null)
 };
 
 const actions = {
@@ -27,13 +21,7 @@ const actions = {
   logout({ commit }) {
     commit("LOGOUT");
   },
-  loginWithRedirect() {},
-  async getCustomers({ commit }) {
-    commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.get("/customer");
-    commit("SET_CUSTOMERS", data._embedded.customerDToes);
-    commit("loading/FINISH_LOADING", null, { root: true });
-  }
+  loginWithRedirect() {}
 };
 
 const namespaced = true;

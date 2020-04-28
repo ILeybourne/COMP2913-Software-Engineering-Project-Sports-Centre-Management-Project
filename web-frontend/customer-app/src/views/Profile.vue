@@ -13,10 +13,10 @@
               />
             </div>
             <div class="col-xl-7">
-              <h2>{{ $auth.user.nickname }}</h2>
+              <h2>{{ user.nickname }}</h2>
               <ul class="list-unstyled">
-                <li>{{ $auth.user.name }}</li>
-                <li>{{ $auth.user.email }}</li>
+                <li>{{ user.name }}</li>
+                <li>{{ user.email }}</li>
                 <li>
                   <a href="/bookingtable" title="BookingsTable">My Bookings</a>
                 </li>
@@ -28,7 +28,7 @@
       <div id="right-column" class="col-sm-5 align-self-center">
         <div id="membership-card" class="card">
           <h2>Membership</h2>
-          <a>{{ customers }}</a>
+          <a>{{ JSON.stringify(customer, null, 2) }}</a>
         </div>
         <div class="text-center">
           <button
@@ -50,14 +50,19 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Profile",
+  data() {
+    return {};
+  },
   computed: {
-    ...mapGetters("auth", ["user", "customers"])
+    ...mapGetters("auth", ["user"]),
+    ...mapGetters("customers", ["customer"])
   },
   methods: {
-    ...mapActions("auth", ["getCustomers", "getMatch"])
+    ...mapActions("auth", ["getMatch"]),
+    ...mapActions("customers", ["getCustomerByEmail"])
   },
   mounted() {
-    return this.getCustomers();
+    this.getCustomerByEmail(this.$auth.user.email);
   }
 };
 </script>

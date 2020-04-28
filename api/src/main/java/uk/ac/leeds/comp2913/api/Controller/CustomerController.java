@@ -8,6 +8,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,5 +47,10 @@ public class CustomerController {
         return customer;
     }
 
-
+    @GetMapping("/user")
+    @Operation(summary = "Get a customer by email",
+            description = "Get a customer by an email matching the currently signed in user")
+    public CustomerDTO getCustomerByEmail(@RequestParam(value = "email") String email) {
+        return customerPagedResourcesAssembler.toModel(customerService.getCustomerByEmailAddress(email));
+    }
 }
