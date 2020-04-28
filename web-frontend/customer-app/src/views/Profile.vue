@@ -39,7 +39,6 @@
             Cancel Membership
           </button>
         </div>
-        <!--<pre>{{ JSON.stringify(user, null, 2) }}</pre>-->
       </div>
     </div>
   </div>
@@ -88,10 +87,9 @@ export default {
               account._links["Customer Details"].href.split("/").slice(-1)[0]
             )
           );
-          /*return accounts.map(accountId =>
+          return accounts.map(accountId =>
             this.getAccountMemberships(accountId)
-          );*/
-          return null;
+          );
         }
       }
     }
