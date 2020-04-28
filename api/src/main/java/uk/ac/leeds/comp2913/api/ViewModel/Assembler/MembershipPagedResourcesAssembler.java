@@ -29,12 +29,12 @@ public class MembershipPagedResourcesAssembler extends RepresentationModelAssemb
         membershipDTO.setName(membership.getName());
         membershipDTO.setStartDate(membership.getStartDate());
         membershipDTO.setEndDate(membership.getEndDate());
-        membershipDTO.setRepeatingPayment(membership.getRepeatingPayment());
+        //membershipDTO.setRepeatingPayment(membership.getRepeatingPayment());
         membershipDTO.setCreated_at(membership.getCreatedAt());
         membershipDTO.setUpdated_at(membership.getUpdatedAt());
-        if(membership.getRepeatingPayment() == true){
+        /*if(membership.getRepeatingPayment() == true){
             membershipDTO.add(linkTo(MembershipController.class).slash("members").slash(membership.getId()).slash("stop").withRel("stop auto renewal"));
-        }
+        }*/
         return membershipDTO;
     }
 }

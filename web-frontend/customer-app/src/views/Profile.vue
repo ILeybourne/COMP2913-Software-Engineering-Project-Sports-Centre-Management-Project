@@ -17,9 +17,6 @@
               <ul class="list-unstyled">
                 <li>{{ $auth.user.name }}</li>
                 <li>{{ $auth.user.email }}</li>
-              </ul>
-              <ul class="list-unstyled">
-                <li>Other stuff</li>
                 <li>
                   <a href="/bookingtable" title="BookingsTable">My Bookings</a>
                 </li>
@@ -31,7 +28,7 @@
       <div id="right-column" class="col-sm-5 align-self-center">
         <div id="membership-card" class="card">
           <h2>Membership</h2>
-          <a>Membership details</a>
+          {{}}
         </div>
         <div class="text-center">
           <button
@@ -49,12 +46,60 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Profile",
+  data() {
+    return {
+      accountId: null
+    };
+  },
   computed: {
-    ...mapGetters("auth", ["user"])
+    ...mapGetters("auth", ["user"]),
+    ...mapGetters("accounts", ["accounts"]),
+    ...mapGetters("customers", ["customers"]),
+    ...mapGetters("memberships", ["memberships", "accountMemberships"])
+  },
+  methods: {
+    ...mapActions("accounts", ["getAccounts"]),
+    ...mapActions("customers", ["getAllCustomers"]),
+    ...mapActions("memberships", ["getMemberships", "getAccountMemberships"]),
+    activeMemberships() {
+      let customers = this.customers;
+      if (customers == null) {
+        return null;
+      } else {
+        const emailFilter = customer =>
+          customer.emailAddress === this.$auth.user.email;
+        customers = this.customers.filter(emailFilter);
+        let customerId = customers[0].id;
+        let accounts = this.accounts;
+        if (accounts == null) {
+          return null;
+        } else {
+          const accountFilter = account =>
+            Number(
+              account._links["Customer Details"].href.split("/").slice(-1)[0]
+            ) === Number(customerId);
+          accounts = this.accounts.filter(accountFilter);
+          accounts = accounts.map(account =>
+            Number(
+              account._links["Customer Details"].href.split("/").slice(-1)[0]
+            )
+          );
+          /*return accounts.map(accountId =>
+            this.getAccountMemberships(accountId)
+          );*/
+          return null;
+        }
+      }
+    }
+  },
+  mounted() {
+    this.getAccounts();
+    this.getAllCustomers();
+    //this.getAccountMemberships();
   }
 };
 </script>
