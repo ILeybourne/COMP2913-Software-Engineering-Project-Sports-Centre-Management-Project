@@ -234,7 +234,6 @@ export default {
 
 
     getActivitySelected(){
-      debugger
       let activity = null
       for(const session of this.sessions){
         if (this.selectedFacility == session.resource.id){
@@ -274,6 +273,7 @@ export default {
       this.hideBooking = true;
       this.hideGuest = true;
       this.hideCard = true;
+      this.hideCash = true;
       this.hideSuccess = false;
     },
 
@@ -420,7 +420,8 @@ export default {
     },
 
     async handleCashPayment(value) {
-      if (value.change >= 0) {
+      console.log(value)
+      if (value.changeVal >= 0) {
         await this.postAllFormData();
         this.showTempPage();
       } else {
@@ -469,7 +470,6 @@ export default {
     },
 
     async showGuestInfo(value) {
-      debugger
       this.selectedFacility = value.selectedFacilityId;
       this.selectedActivity = value.selectedActivityName;
       this.selectedActivityId = value.selectedActivityId;

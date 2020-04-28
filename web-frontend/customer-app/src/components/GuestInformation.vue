@@ -199,7 +199,7 @@ export default {
       phone: "",
       health: "",
       // cardCash: "card",
-      componentWidth: 60,
+      componentWidth: 90,
       firstNameValid: null,
       surnameValid: null,
       emailValid: null,
