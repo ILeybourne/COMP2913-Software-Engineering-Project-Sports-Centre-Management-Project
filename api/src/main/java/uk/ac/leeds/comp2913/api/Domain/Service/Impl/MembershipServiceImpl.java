@@ -1,29 +1,31 @@
 package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 
+import com.stripe.exception.CardException;
+import com.stripe.exception.StripeException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.transaction.Transactional;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
+import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipTypeRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
-import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
+import uk.ac.leeds.comp2913.api.Domain.Service.PaymentService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 
 @Service
@@ -31,12 +33,18 @@ public class MembershipServiceImpl implements MembershipService {
     private final MembershipRepository membershipRepository;
     private final MembershipTypeRepository membershipTypeRepository;
     private final AccountRepository accountRepository;
+    private final PaymentService paymentService;
+    private final CustomerRepository customerRepository;
+    Logger logger = LoggerFactory.getLogger(MembershipServiceImpl.class);
+
 
     @Autowired
-    public MembershipServiceImpl(MembershipRepository membershipRepository, MembershipTypeRepository membershipTypeRepository, AccountRepository accountRepository) {
+    public MembershipServiceImpl(MembershipRepository membershipRepository, MembershipTypeRepository membershipTypeRepository, AccountRepository accountRepository, PaymentService paymentService, CustomerRepository customerRepository) {
         this.membershipRepository = membershipRepository;
         this.membershipTypeRepository = membershipTypeRepository;
+        this.paymentService = paymentService;
         this.accountRepository = accountRepository;
+        this.customerRepository = customerRepository;
     }
 
     @Override
@@ -58,8 +66,45 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public Page<Membership> findMembershipByAccountId(Pageable pageable, Long account_id){
+    public Page<Membership> findMembershipByAccountId(Pageable pageable, Long account_id) {
         return membershipRepository.findByAccountId(pageable, account_id);
+    }
+
+    //Checks existing customers don't have active memberships
+    @Override
+    @Transactional
+    public Boolean activeMemberCheck(String email) {
+        Boolean activeMember = false;
+        Customer existingCustomer = customerRepository.findByEmailAddress(email);
+        logger.info(email);
+        if(existingCustomer != null) {
+            List<Account> customerAccounts = accountRepository.findAllByCustomerId(existingCustomer.getId());
+            if (customerAccounts.size() > 0) {
+                Account lastAccount = customerAccounts.get(customerAccounts.size() - 1);
+                logger.info(lastAccount.toString());
+                List<Membership> allMemberships = membershipRepository.findAllByAccountIdOrderByEndDateAsc(lastAccount.getId());
+                if (allMemberships.size() > 0) {
+                    Membership lastMembership = allMemberships.get(allMemberships.size() - 1);
+                    Date lastMembershipEndDate = lastMembership.getEndDate();
+                    logger.info(lastMembershipEndDate.toString());
+                    if (lastMembershipEndDate.after(new Date())) { //checks to make sure old membership has expired
+                        activeMember = true;
+                    }
+                }
+            }
+        }
+        logger.info(activeMember.toString());
+        return activeMember;
+    }
+    @Override
+    public Account getMemberAccount(Long customer_id){
+        Account account = null;
+        List<Account> customerAccounts = accountRepository.findAllByCustomerId(customer_id);
+        if (customerAccounts.size() > 0) {
+            account = customerAccounts.get(customerAccounts.size() - 1);
+            logger.info(account.toString());
+        }
+        return account;
     }
 
     @Override
@@ -105,15 +150,23 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public void automatedMembershipRenewals() {
+    public void automatedMembershipRenewals() throws StripeException {
         List<Membership> lastPayments = membershipRepository.findLastWithRepeatPayments();
         for (Membership lastMembership : lastPayments) {
+            Calendar c = Calendar.getInstance();
             Date now = new Date();
-            Date paymentDueDate = new Date(now.getTime()-((24*60*60*1000) * 7)); //Takes payment 7 days before membership expires
+            c.setTime(now);
+            c.add(Calendar.DATE, -7);
+            Date paymentDueDate = c.getTime(); //Takes payment 7 days before membership expires
 
-            if(lastMembership.getEndDate().after(paymentDueDate) && lastMembership.getEndDate().before(now)){ //only takes payments that enter this window
+            if (lastMembership.getEndDate().after(paymentDueDate) && lastMembership.getEndDate().before(now)) { //only takes payments that enter this window
                 Membership renewedMembership = Membership.renewMembership(lastMembership);
-                this.membershipRepository.save(renewedMembership);
+                Customer customer = renewedMembership.getAccount().getCustomer();
+                try {
+                    paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), renewedMembership.getAmount(), false);
+                    this.membershipRepository.save(renewedMembership);
+                } catch (CardException err) {
+                }
             }
         }
     }

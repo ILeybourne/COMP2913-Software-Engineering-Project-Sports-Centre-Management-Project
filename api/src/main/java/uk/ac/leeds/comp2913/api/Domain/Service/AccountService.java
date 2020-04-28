@@ -19,4 +19,5 @@ public interface AccountService {
 
     @Transactional
     Account getAccountById(Long account_id);
+
 }

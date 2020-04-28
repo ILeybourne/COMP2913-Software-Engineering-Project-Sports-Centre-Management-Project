@@ -1,11 +1,8 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,26 +13,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.LogManager;
-
 import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
-import uk.ac.leeds.comp2913.api.Domain.Model.Account;
-import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
-import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
-import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
-import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.Assembler.BookingPagedResourcesAssembler;
 import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
@@ -107,6 +92,8 @@ public class BookingController {
         boolean regularBooking = booking.isRegularBooking();
         Long account_id = booking.getAccountId();
         b.setParticipants(booking.getParticipants());
+        b.setTransactionId(booking.getTransactionId());
+        b.setAmount(booking.getAmount());
         return bookingService.createNewBookingForActivity(b, activity_id, account_id, regularBooking);
     }
 

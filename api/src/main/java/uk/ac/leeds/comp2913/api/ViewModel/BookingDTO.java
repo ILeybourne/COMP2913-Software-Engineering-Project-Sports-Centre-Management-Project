@@ -19,6 +19,8 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
   @NotNull(message = "Account Id is required")
   private Long accountId;
   private Long id;
+  private String transactionId;
+  private BigDecimal amount;
 
   public BookingDTO() {
   }
@@ -26,13 +28,17 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
   @JsonCreator
   public BookingDTO(@JsonProperty("participants") Integer participants,
                     @JsonProperty("accountId") Long accountId,
-                    @JsonProperty(value = "regularBooking") Boolean regularBooking) {
+                    @JsonProperty(value = "regularBooking") Boolean regularBooking,
+                    @JsonProperty(value = "transactionId") String transactionId,
+                    @JsonProperty(value = "amount") BigDecimal amount){
     if (regularBooking == null) {
       regularBooking = false;
     }
     this.regularBooking = (boolean) regularBooking;
     this.participants = participants;
     this.accountId = accountId;
+    this.transactionId = transactionId;
+    this.amount = amount;
   }
 
   public Integer getParticipants() {
@@ -68,4 +74,22 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
   public void setId(Long id) {
     this.id = id;
   }
+
+
+  public String getTransactionId() {
+    return transactionId;
+  }
+
+  public void setTransactionId(String transactionId) {
+    this.transactionId = transactionId;
+  }
+
+  public BigDecimal getAmount() {
+    return amount;
+  }
+
+  public void setAmount(BigDecimal amount) {
+    this.amount = amount;
+  }
+
 }

@@ -150,6 +150,7 @@ import BookingInformation from "@/components/BookingInformation.vue";
 import GuestInformation from "@/components/GuestInformation.vue";
 import CashInformation from "@/components/CashInformation.vue";
 import { mapGetters, mapActions } from "vuex";
+//TODO If regular booking they MUST pay by card only
 
 // @ is an alias to /src
 export default {
@@ -210,7 +211,12 @@ export default {
       paymentSubmit: false,
       hideCardError: true,
       authEmail: String,
-      customer: null
+      customer: null,
+      paymentResponse: {
+        accountId: null,
+        amountPaid: null,
+        transactionId: null
+      }
     };
   },
   computed: {
@@ -234,7 +240,6 @@ export default {
         x => x.emailAddress === this.user.email
       );
     },
-
     showTempPage() {
       this.hideBooking = true;
       this.hideGuest = true;
@@ -280,12 +285,15 @@ export default {
               name: this.firstName
             }
           },
-          activityTypeId: this.selectedActivityId,
-          regularSession: 1,
-          email: this.email
+          cost: this.price,
+          email: this.email,
+          regularSession: this.regularBooking //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
         }
       );
       if (paymentIntent.status === 200) {
+        this.paymentResponse.accountId = paymentIntent.data.accountId;
+        this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
+        this.paymentResponse.transactionId = paymentIntent.data.transactionId;
         this.showTempPage();
       }
     },
@@ -306,13 +314,16 @@ export default {
                 name: this.firstName
               }
             },
-            activityTypeId: this.selectedActivityId,
-            regularSession: 1,
-            email: this.email
+            cost: this.price,
+            email: this.email,
+            regularSession: false //guests cannot book onto reg sessions
           }
         );
         if (paymentIntent != null) {
           this.sendTokenToServer(paymentIntent.data.clientSecret);
+          this.paymentResponse.accountId = paymentIntent.data.accountId;
+          this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
+          this.paymentResponse.transactionId = paymentIntent.data.transactionId;
         }
       }
       if (this.userType === "account") {
@@ -326,16 +337,18 @@ export default {
                 name: this.firstName
               }
             },
-            activityTypeId: this.selectedActivityId,
-            regularSession: 1,
+            cost: this.price,
             email: this.email,
-            customerId: this.customer.id,
-            stripeId: this.customer.stripeId
+            regularSession: this.regularBooking //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
           }
         );
         if (paymentIntent.status === 200) {
           this.sendTokenToServer(paymentIntent.data.clientSecret);
           this.showTempPage();
+          this.paymentResponse.accountId = paymentIntent.data.accountId;
+          this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
+          this.paymentResponse.transactionId = paymentIntent.data.transactionId;
+          console.log(paymentIntent)
         } else {
           this.hideCardError = false;
         }
@@ -391,23 +404,28 @@ export default {
     async postAllFormData() {
       try {
         /* TODO: Validate and check server response */
-        let bookedActivity = this.activities.find(
-          activity => activity.id == this.selectedActivityId
-        );
+       // let bookedActivity = this.activities.find(
+       //   activity => activity.id == this.selectedActivityId
+       // );
         const body = {
           //TODO PASS USER
-          account: null,
-          activity: bookedActivity,
-          createdAt: Date.now(),
-          receipt: null,
-          updatedAt: null,
-          type: "booking",
-          amount: this.price,
-          regularBooking: false,
+        //  account: null,
+        //  activity: bookedActivity,
+        //  createdAt: Date.now(),
+        //  receipt: null,
+        //  updatedAt: null,
+        //  type: "booking",
+        //  amount: this.price,
+        //  regularBooking: false,
+        //  participants: 1,
+        //  accountId: 1
+          accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
           participants: 1,
-          accountId: 1
+          regularBooking: false,
+          transactionId: this.paymentResponse.transactionId, //if cash then send cash // can we get the card transaction from stripe in the response body?
+          amount: this.paymentResponse.amountPaid //get from payment response body
         };
-        await this.$http.post(`/bookings/` + this.selectedActivityId, body);
+        await this.$http.post(`/bookings/` + 18561, body); //needs to post session id
       } catch (e) {
         console.log(e);
       }

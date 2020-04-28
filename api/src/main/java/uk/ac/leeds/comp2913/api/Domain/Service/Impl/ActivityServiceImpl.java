@@ -3,7 +3,6 @@ package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 import com.stripe.exception.CardException;
 import com.stripe.exception.StripeException;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -161,7 +160,7 @@ public class ActivityServiceImpl implements ActivityService {
               Booking new_booking = Booking.createBookingFromRegularSession(new_activity, booking);
               Customer customer = new_booking.getAccount().getCustomer();
               try {
-                paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), new_booking.getActivity().getId());
+                PayResponseBodyDTO paymentResponseDTO = paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), new_booking.getAmount(), false);
                 this.bookingRepository.save(new_booking);
               }catch (CardException err){
               }

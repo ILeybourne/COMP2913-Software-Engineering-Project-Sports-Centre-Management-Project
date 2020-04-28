@@ -5,7 +5,7 @@
     </div>
     <div>
       <MembershipOptions
-              @submitCustomerDetails="receiveSubscriptionInfo"
+        @submitCustomerDetails="receiveSubscriptionInfo"
       ></MembershipOptions>
       <form id="payment-form">
         <div id="cardDiv">
@@ -19,7 +19,7 @@
               type="button"
               class="btn btn-outline-primary"
               id="paymentButton"
-              @click = "submitMembershipPayment()"
+              @click="submitMembershipPayment()"
             >
               Pay £10
             </button>
@@ -36,7 +36,7 @@
   width: 50%;
 }
 
-#cardDiv{
+#cardDiv {
   width: 50%;
 }
 </style>
@@ -67,53 +67,52 @@ export default {
       this.card = this.elements.create("card");
       this.card.mount("#card-element");
     },
-    receiveSubscriptionInfo(value){
-      this.subscriptionType = value.pickedSubscription
-      this.firstName = value.firstName
-      this.surname  = value.surname
-      this.email = value.email
-      this.phone = value.phone
+    receiveSubscriptionInfo(value) {
+      this.subscriptionType = value.pickedSubscription;
+      this.firstName = value.firstName;
+      this.surname = value.surname;
+      this.email = value.email;
+      this.phone = value.phone;
     },
     async getCustomer() {
       this.customer = this.customers.find(
-              x => x.emailAddress === this.user.email
+        x => x.emailAddress === this.user.email
       );
     },
     async submitMembershipPayment() {
-      let plan = null
-      if(this.subscriptionType === 'annually'){
-        plan = "prod_HAUwmE1Fe2eW0O"
-      } else if (this.subscriptionType === 'monthly') {
-        plan = "prod_HAUv0ylHXQNAYo"
-      }else{
+      let plan = null;
+      if (this.subscriptionType === "annually") {
+        plan = "prod_HAUwmE1Fe2eW0O";
+      } else if (this.subscriptionType === "monthly") {
+        plan = "prod_HAUv0ylHXQNAYo";
+      } else {
         //TODO Handle error
-        return
+        return;
       }
-      console.log(plan)
-
+      console.log(plan);
 
       let paymentIntent = await this.$http.post(
-              `/subscription/saved/` +"23",// this.customer.id, //this.customerId,
-              {
-                payment_method: {
-                  card: this.card,
-                  billing_details: {
-                    name: this.firstName
-                  }
-                },
-                activityTypeId: this.selectedActivityId,
-                regularSession: 1,
-                email: this.email,
-                customerId: this.customer.id,
-                stripeId: this.customer.stripeId
-              }
+        `/subscription/saved/` + "23", // this.customer.id, //this.customerId,
+        {
+          payment_method: {
+            card: this.card,
+            billing_details: {
+              name: this.firstName
+            }
+          },
+          activityTypeId: this.selectedActivityId,
+          regularSession: 1,
+          email: this.email,
+          customerId: this.customer.id,
+          stripeId: this.customer.stripeId
+        }
       );
-      console.log(paymentIntent)
+      console.log(paymentIntent);
     }
   },
   async mounted() {
     this.configureStripe();
-    this.getCustomer()
+    this.getCustomer();
   }
 };
 </script>

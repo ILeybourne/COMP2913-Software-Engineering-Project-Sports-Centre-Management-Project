@@ -61,18 +61,19 @@ public class Booking extends Sale {
         return b;
     }
 
-    @Override
-    public void setAmount(BigDecimal amount) {
-        if (regularSession != null) {
-            this.amount = (calculateRegularSessionAmount(amount));
-        } else {
-            this.amount = (amount);
-        }
-    }
+    //Payments are taken prior to the creation of sale objects, so this is calculated in the payment service
+  // @Override
+  // public void setAmount(BigDecimal amount) {
+  //     if (regularSession != null) {
+  //         this.amount = (calculateRegularSessionAmount(amount));
+  //     } else {
+  //         this.amount = (amount);
+  //     }
+  // }
 
-    public BigDecimal calculateRegularSessionAmount(BigDecimal originalAmount) {
-        return originalAmount.multiply(BigDecimal.valueOf(0.7));
-    }
+  // public BigDecimal calculateRegularSessionAmount(BigDecimal originalAmount) {
+  //     return originalAmount.multiply(BigDecimal.valueOf(0.7));
+  // }
 
     @JsonIgnore
     public Date getCreatedAt() {
