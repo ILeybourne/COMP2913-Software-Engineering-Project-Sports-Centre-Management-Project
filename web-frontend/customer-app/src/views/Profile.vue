@@ -29,6 +29,7 @@
         <div id="membership-card" class="card">
           <h2>Membership</h2>
           <a>{{ JSON.stringify(customer, null, 2) }}</a>
+          <a>{{ JSON.stringify(userMemberships, null, 2) }}</a>
         </div>
         <div class="text-center">
           <button
