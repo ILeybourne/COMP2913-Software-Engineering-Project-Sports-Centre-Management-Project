@@ -226,15 +226,13 @@ export default {
       numeric
     }
   },
-  computed:{
-    store: function () {
-      return this.$store
+  computed: {
+    store: function() {
+      return this.$store;
     },
-    ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
-  }
-,
+    ...mapGetters("auth", ["user", "isEmployeeOrManager"])
+  },
   methods: {
-
     getUserType(e) {
       this.userType = e.toElement.name;
     },

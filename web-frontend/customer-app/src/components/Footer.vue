@@ -87,7 +87,6 @@
 <style scoped>
 .copyright {
   margin: auto;
-
 }
 
 .footer-container {
@@ -130,8 +129,8 @@ export default {
     "font-awesome-icon": FontAwesomeIcon
   },
   computed: {
-    year: function (){
-      return new Date().getFullYear()
+    year: function() {
+      return new Date().getFullYear();
     }
   },
   created: function() {

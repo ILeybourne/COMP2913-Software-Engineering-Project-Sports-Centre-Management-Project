@@ -247,11 +247,6 @@
           </div>
         </div>
       </div>
-      <div style="display: none">
-        <img src="../assets/heroImg.jpg" ref="heroImg" />
-        <img src="../assets/addSectionImg.jpg" ref="addImg" />
-        <img src="../assets/healthyFood.jpeg" ref="foodImg" />
-      </div>
     </section>
     <!-- BMI section end -->
     <section>
@@ -279,9 +274,9 @@ export default {
       height: null,
       weight: null,
 
-      heroUrl: require('@/assets/heroImg.jpg'),
-      addUrl: require('@/assets/addSectionImg.jpg'),
-      foodUrl:  require('@/assets/healthyFood.jpeg')
+      heroUrl: require("@/assets/heroImg.jpg"),
+      addUrl: require("@/assets/addSectionImg.jpg"),
+      foodUrl: require("@/assets/healthyFood.jpeg")
     };
   },
   computed: {

@@ -9,23 +9,21 @@
         <b-col col lg="maxColSize " v-bind:class="{ 'd-none': hideBooking }">
           <BookingInformation
             class="booking-info"
-            @getUserType="[showGuestInfo($event) ,getActivitySelected()]"
-          ></BookingInformation> </b-col
-        >
+            @getUserType="[showGuestInfo($event), getActivitySelected()]"
+          ></BookingInformation>
+        </b-col>
       </b-row>
       <b-row class="row">
         <b-col v-bind:class="{ 'd-none': hideGuest }">
-      <GuestInformation
+          <GuestInformation
             :activityType="this.selectedActivityId"
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
-          ></GuestInformation> </b-col
-        >
+          ></GuestInformation>
+        </b-col>
       </b-row>
       <b-row class="row">
-
-      <b-col v-bind:class="{ 'd-none': hideCard }">
-
+        <b-col v-bind:class="{ 'd-none': hideCard }">
           <div>
             <div v-bind:class="{ 'd-none': hideQuickPay }">
               <!--               v-if="customer.stripeId != null"-->
@@ -47,7 +45,7 @@
                     Pay £{{ price }}
                   </button>
                 </div>
-                <h2 id="cardText">Or</h2>
+                <h2 id="cardText" v-if="showQuickPay">Or</h2>
                 <div class="buttonDiv">
                   <button
                     @click="submitQuickPayment()"
@@ -232,33 +230,33 @@ export default {
     ...mapActions("customers", ["getAllCustomers"]),
     ...mapActions("timetable", ["getAllSessions"]),
 
-
-    getActivitySelected(){
-      let activity = null
-      for(const session of this.sessions){
-        if (this.selectedFacility == session.resource.id){
-          if(this.selectedActivityName === session.name ){
-            let date = session.startTime.substring(0,10)
-            let time =  session.startTime.split("T")[1].substring(0,5)
-            if (this.date.toString() === date.toString()){
-              if (this.selectedTime === time){
-                activity = session
+    getActivitySelected() {
+      let activity = null;
+      for (const session of this.sessions) {
+        if (this.selectedFacility == session.resource.id) {
+          if (this.selectedActivityName === session.name) {
+            let date = session.startTime.substring(0, 10);
+            let time = session.startTime.split("T")[1].substring(0, 5);
+            if (this.date.toString() === date.toString()) {
+              if (this.selectedTime === time) {
+                activity = session;
               }
             }
           }
         }
       }
-      console.log(activity)
-
+      console.log(activity);
     },
     addZero(value) {
-      return ("0" + value.toString()).slice(-2)
+      return ("0" + value.toString()).slice(-2);
     },
 
     formatDate(value) {
       if (value) {
         const dt = new Date(value);
-        return `${this.addZero(dt.getHours())}|${this.addZero(dt.getMinutes())}`;
+        return `${this.addZero(dt.getHours())}|${this.addZero(
+          dt.getMinutes()
+        )}`;
       }
       return "";
     },
@@ -330,12 +328,13 @@ export default {
       // Talk to our server to get encrpyted prices
       this.paymentSubmit = true;
       let paymentIntent = null;
-      let payment_method= {
+      let payment_method = {
         card: this.card,
         billing_details: {
           name: this.firstName
-        }}
-      console.log(payment_method)
+        }
+      };
+      console.log(payment_method);
       if (this.userType === "guest") {
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
@@ -420,7 +419,7 @@ export default {
     },
 
     async handleCashPayment(value) {
-      console.log(value)
+      console.log(value);
       if (value.changeVal >= 0) {
         await this.postAllFormData();
         this.showTempPage();
@@ -505,7 +504,7 @@ export default {
           return false;
         }
       }
-    },
+    }
   },
   async created() {
     if (!this.isEmpty(this.user)) {
@@ -515,8 +514,8 @@ export default {
   },
   async mounted() {
     // this.getRoles()
-    console.log(this.$auth)
-    console.log(this.isEmployeeOrManager)
+    console.log(this.$auth);
+    console.log(this.isEmployeeOrManager);
     await this.getActivities();
     await this.getAllSessions;
     await this.getActivitySelected();

@@ -145,17 +145,14 @@ export default {
       facilityOptions: [],
       activityOptions: [],
       timeOptions: ["Please Select"],
-
       selectedActivityId: null,
       selectedFacilityId: null,
       selectedActivityName: null,
       selectedTime: null,
       price: null,
       selectedDate: null,
-
       userType: null,
       componentWidth: 90,
-
       facilityValid: null,
       activitiesValid: null,
       dateValid: null,
@@ -166,12 +163,8 @@ export default {
     ...mapGetters("facilities", ["facilities", "activities"]),
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("auth", ["user"]),
-    account: function () {
-      if (this.isEmpty(this.user)){
-        return false
-      }else{
-        return true
-      }
+    account: function() {
+      return !this.isEmpty(this.user);
     }
   },
   methods: {
@@ -222,7 +215,7 @@ export default {
 
     validateFacility() {
       this.facilityValid = !(this.$data.selectedFacilityId == null);
-      console.log(this.user.email)
+      console.log(this.user.email);
     },
     validateActivity() {
       this.activitiesValid = !(this.$data.selectedActivityId == null);
@@ -259,7 +252,6 @@ export default {
         this.dateValid = true;
         this.timeValid = true;
         this.$emit("getUserType", this.$data);
-
       } else {
         //Dont pass data and call validators
         this.callValidation();
@@ -324,11 +316,13 @@ export default {
               .toString()
               .substr(-2);
             const date = ("0" + selectedTime.getDate()).substr(-2);
-            let hours = null
-            if(parseInt(selectedTime.getHours()) > 0){
-              hours = ("0" + (parseInt(selectedTime.getHours()) - 1 ).toString().substr(-2));
-            }else{
-              hours = ("0" + ( 11 ).toString().substr(-2));
+            let hours = null;
+            if (parseInt(selectedTime.getHours()) > 0) {
+              hours =
+                "0" +
+                (parseInt(selectedTime.getHours()) - 1).toString().substr(-2);
+            } else {
+              hours = "0" + (11).toString().substr(-2);
             }
             const mins = ("0" + selectedTime.getMinutes()).substr(-2);
             let formattedDate = year + "-" + month + "-" + date;
