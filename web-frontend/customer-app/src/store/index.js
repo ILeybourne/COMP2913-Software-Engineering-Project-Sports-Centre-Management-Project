@@ -6,6 +6,7 @@ import FacilitiesModule from "@/store/facilities";
 import TimetableModule from "@/store/timetable";
 import ValidationModule from "@/store/validation";
 import CustomerModule from "@/store/customers";
+import MembershipsModule from "@/store/memberships";
 
 Vue.use(Vuex);
 
@@ -19,6 +20,7 @@ export default new Vuex.Store({
     facilities: FacilitiesModule,
     timetable: TimetableModule,
     validation: ValidationModule,
-    customers: CustomerModule
+    customers: CustomerModule,
+    memberships: MembershipsModule
   }
 });

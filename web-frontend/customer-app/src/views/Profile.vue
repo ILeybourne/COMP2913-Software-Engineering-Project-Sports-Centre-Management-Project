@@ -55,14 +55,17 @@ export default {
   },
   computed: {
     ...mapGetters("auth", ["user"]),
-    ...mapGetters("customers", ["customer"])
+    ...mapGetters("customers", ["customer"]),
+    ...mapGetters("memberships", ["userMemberships"])
   },
   methods: {
     ...mapActions("auth", ["getMatch"]),
-    ...mapActions("customers", ["getCustomerByEmail"])
+    ...mapActions("customers", ["getCustomerByEmail"]),
+    ...mapActions("memberships", ["getUserMemberships"])
   },
   mounted() {
     this.getCustomerByEmail(this.$auth.user.email);
+    this.getUserMemberships(1);
   }
 };
 </script>

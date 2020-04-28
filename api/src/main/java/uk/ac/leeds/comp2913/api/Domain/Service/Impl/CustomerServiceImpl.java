@@ -31,7 +31,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer getCustomerByEmailAddress(String emailAddress) {
-        return this.customerRepository.findByEmailAddress(emailAddress)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found for ID" + emailAddress));
+        return this.customerRepository.findByEmailAddress(emailAddress);
     }
 }
