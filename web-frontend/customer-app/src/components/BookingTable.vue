@@ -5,17 +5,57 @@
         <v-spacer></v-spacer>
         <v-dialog max-width="500px"> </v-dialog>
       </v-toolbar>
-      <b-modal id="edit-modal" title="Edit Booking">
+      <v-btn color="primary" dark class="mb-2" @click="showNewBooking()"
+      >New Booking</v-btn
+      >
+      <b-modal id="new-booking-modal" title="Edit Booking" @ok="addBooking()">
+        <b-form>
+          <b-form-group
+                  id="resource.name"
+                  label="Facility"
+                  label-for="FacilityName"
+          ><b-form-select
+                  id="FacilityName"
+                  :options="setFacilityOptions()"
+                  v-model="selectedBooking.facility"
+                  required
+          ></b-form-select>
+          </b-form-group>
+          <b-form-group id="name" label="Booking" label-for="BookingName">
+            <b-form-input
+                    id="BookingName"
+                    v-model="selectedBooking.name"
+                    required
+            ></b-form-input>
+          </b-form-group>
+          <b-form-group id="startTime" label="Start Time" label-for="StartTime">
+            <b-form-input
+                    id="StartTime"
+                    v-model="selectedBooking.startTime"
+                    required
+            ></b-form-input>
+          </b-form-group>
+          <b-form-group id="endTime" label="End Time" label-for="EndTime">
+            <b-form-input
+                    id="EndTime"
+                    v-model="selectedBooking.endTime"
+                    required
+            ></b-form-input>
+          </b-form-group>
+        </b-form>
+      </b-modal>
+      <b-modal id="edit-modal" title="Edit Booking" @ok="updateTable()">
         <b-form>
           <b-form-group
             id="resource.name"
             label="Facility"
             label-for="FacilityName"
-            ><b-form-input
+            ><b-form-select
               id="FacilityName"
+              :options="setFacilityOptions()"
               v-model="selectedBooking.facility"
               required
-            ></b-form-input>
+            ></b-form-select>
           </b-form-group>
           <b-form-group id="name" label="Booking" label-for="BookingName">
             <b-form-input
@@ -108,12 +148,20 @@ export default {
         startTime: null,
         endTime: null
       },
+      newBooking: {
+        id: null,
+        name: null,
+        facility: null,
+        startTime: null,
+        endTime: null
+      },
       dataWithActivities: []
     };
   },
   computed: {
     ...mapGetters("timetable", ["bookings"]),
-    ...mapGetters("facilities", ["activities"])
+    ...mapGetters("facilities", ["activities"]),
+    ...mapGetters("facilities", ["facilities"])
   },
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
@@ -122,8 +170,12 @@ export default {
       deleteBooking: "deleteActivities"
     }),
     ...mapActions("facilities", {
-      getActivity: "getActivities"
+      getActivity: "getActivities",
+      getFacilities: "getFacilities"
   }),
+    showNewBooking() {
+      this.$bvModal.show("new-booking-modal");
+    },
     editItem(item) {
       console.log(item);
       this.selectedBooking.id = item.id;
@@ -141,6 +193,14 @@ export default {
         this.bookings.splice(index, 1) &&
         this.deleteBooking(index);
     },
+    setFacilityOptions() {
+      let facilities = this.facilities;
+      let facilityArray = [{ value: null, text: "Please Select" }];
+      for (const facility of facilities) {
+        facilityArray.push({ value: facility.name, text: facility.name });
+      }
+      return facilityArray;
+    },
     async getRelatedActivity() {
       let ActivityArr = [];
       for (const booking of this.bookings) {
@@ -155,6 +215,14 @@ export default {
         ActivityArr.push(booking);
       }
       return ActivityArr;
+    },
+    updateTable() {
+      const id = this.selectedBooking.id;
+      this.dataWithActivities.find(booking => booking.id === id);
+      console.log("updateBooking");
+    },
+    addBooking() {
+      console.log("addBooking");
     }
   },
 
@@ -162,6 +230,7 @@ export default {
     await this.getActivity();
     //console.log(this.activities);
     await this.getBooking();
+    await this.getFacilities();
     //console.log(this.bookings);
     this.dataWithActivities = await this.getRelatedActivity();
     //console.log(this.dataWithActivities);
