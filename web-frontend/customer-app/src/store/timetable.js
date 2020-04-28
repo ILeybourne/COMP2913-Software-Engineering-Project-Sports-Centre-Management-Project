@@ -12,7 +12,8 @@ const formatDate = value => {
 
 const state = {
   sessions: [],
-  bookings: []
+  bookings: [],
+  resources: []
 };
 
 const getters = {
@@ -24,6 +25,7 @@ const getters = {
       };
     }),
   bookings: state => state.bookings,
+  resources: state => state.resources,
   getSessionsForFacility: state => facilityId => {
     return state.sessions.filter(
       session => Number(session.resource.id) === Number(facilityId)
@@ -34,6 +36,7 @@ const getters = {
 const mutations = {
   SET_SESSIONS: (state, payload) => (state.sessions = payload),
   SET_BOOKINGS: (state, payload) => (state.bookings = payload),
+  SET_RESOURCES: (state, payload) => (state.resources = payload),
   ADD_SESSION: (state, payload) => state.sessions.push(payload)
 };
 
@@ -79,6 +82,14 @@ const actions = {
     commit("SET_BOOKINGS", booking);
     commit("loading/FINISH_LOADING", null, { root: true });
     return booking;
+  },
+  async getResources({ commit }){
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.get("/resources");
+    let resource = data._embedded.resourceDToes;
+    commit("SET_RESOURCES", resource);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return resource;
   },
   async createSession({ commit }, { activityId, ...session }) {
     commit("loading/START_LOADING", null, { root: true });

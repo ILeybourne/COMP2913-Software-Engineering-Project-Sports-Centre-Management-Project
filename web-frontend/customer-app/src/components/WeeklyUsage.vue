@@ -53,14 +53,16 @@ export default {
         }
       ],
       dataWithFacilities: [],
-      bookingWithActivity: []
+      bookingWithActivity: [],
+      bookingData:[]
     };
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("facilities", ["facilities"]),
     ...mapGetters("timetable", ["sessions"]),
-    ...mapGetters("timetable", ["bookings"])
+    ...mapGetters("timetable", ["bookings"]),
+    ...mapGetters("timetable", ["resources"])
   },
   methods: {
     ...mapActions("facilities", {
@@ -69,7 +71,8 @@ export default {
     }),
     ...mapActions("timetable", {
       getSessions: "getAllSessions",
-      getBookings: "getBookings"
+      getBookings: "getBookings",
+      getResources: "getResources"
     }),
     async fillData() {},
     async getRelatedFacility() {
@@ -99,7 +102,7 @@ export default {
         const activities = this.activities;
         //console.log(Number(booking.id) === Number(ActivityId));
         //console.log(Number(booking.id) + " " + Number(ActivityId));
-        console.log(activities);
+        //console.log(activities);
         for (const activity of activities){
           console.log(activity.id + " " + Number(ActivityId));
         }
@@ -110,7 +113,12 @@ export default {
       }
       return ActivityArr;
     },
-    async getNumberOfBooking(){
+    async getNumberOfBookings(){
+      //let Arr = [];
+      for (const booking of this.bookingWithActivity){
+        const resourceID = booking.id;
+        console.log(resourceID);
+      }
 
     }
   },
@@ -118,11 +126,14 @@ export default {
     await this.getActivity();
     await this.getFacilities();
     await this.getBookings();
-    console.log(this.bookings);
+    await this.getResources();
+    //console.log(this.resources);
+    //console.log(this.bookings);
     this.bookingWithActivity = await this.getRelatedBookingActivity();
     console.log(this.bookingWithActivity);
     this.dataWithFacilities = await this.getRelatedFacility();
-    //console.log(this.dataWithFacilities);
+    this.bookingData = await this.getNumberOfBookings()
+    console.log(this.dataWithFacilities);
   }
 };
 </script>

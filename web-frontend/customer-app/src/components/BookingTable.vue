@@ -77,7 +77,7 @@ export default {
       headers: [
         {
           value: "id",
-          text: "Booking reference",
+          text: "Booking Reference",
           sortable: true
         },
         {
@@ -102,13 +102,11 @@ export default {
         }
       ],
       selectedBooking: {
-        startDate: null,
-        startTime: null,
-        endDate: null,
-        endTime: null,
         id: null,
+        name: null,
         facility: null,
-        name: null
+        startTime: null,
+        endTime: null
       },
       dataWithActivities: []
     };
@@ -127,9 +125,8 @@ export default {
       getActivity: "getActivities"
   }),
     editItem(item) {
-      const index = item.id;
-      console.log(index);
-      this.selectedBooking.id = index;
+      console.log(item);
+      this.selectedBooking.id = item.id;
       this.selectedBooking.name = item.activity.name;
       this.selectedBooking.facility = item.activity.resource.name;
       this.selectedBooking.startTime = item.activity.startTime;
@@ -151,10 +148,7 @@ export default {
         const activities = this.activities;
         //console.log(Number(booking.id) === Number(ActivityId));
         //console.log(Number(booking.id) + " " + Number(ActivityId));
-        console.log(activities);
-        for (const activity of activities){
-          console.log(activity.id + " " + Number(ActivityId));
-        }
+        //console.log(activities);
         booking.activity = activities.find(
           activity => Number(activity.id) === Number(ActivityId)
         );
@@ -166,11 +160,11 @@ export default {
 
   async mounted() {
     await this.getActivity();
-    console.log(this.activities);
+    //console.log(this.activities);
     await this.getBooking();
-    console.log(this.bookings);
+    //console.log(this.bookings);
     this.dataWithActivities = await this.getRelatedActivity();
-    console.log(this.dataWithActivities);
+    //console.log(this.dataWithActivities);
   }
 };
 </script>
