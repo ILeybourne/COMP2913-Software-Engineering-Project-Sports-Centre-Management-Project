@@ -102,20 +102,10 @@ public class BookingServiceImpl implements BookingService {
     }).orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));
   }
 
-
-
-
-
-
-
-
-
-
-
-
   //Posts a new booking for an activity. The customer can pass a boolean to create automatic bookings for repeating sessions
   //at a reduced rate
   @Override
+  // TODO (@SebGarwood) Fix
   public Booking createNewBookingForActivity(Booking booking, Long activity_id, Long account_id, Boolean regularBooking){
     Activity a = activityRepository.findById(activity_id)
         .orElseThrow(() -> new ResourceNotFoundException("Activity not found for ID" + activity_id));

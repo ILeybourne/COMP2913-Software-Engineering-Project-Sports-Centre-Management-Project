@@ -117,9 +117,9 @@ button {
   margin: auto;
   width: 50%;
 }
-  h2{
-    text-align: center;
-  }
+h2 {
+  text-align: center;
+}
 </style>
 
 <script>
@@ -134,36 +134,26 @@ export default {
     };
   },
   computed: {
-    change:{
-      get(){
+    change: {
+      get() {
         return Number(this.cashGiven) - this.$attrs.activityPrice;
       },
-      set(){
+      set() {
         this.changeVal = Number(this.cashGiven) - this.$attrs.activityPrice;
       }
     }
   },
   methods: {
     setTwoNumberDecimal(event) {
-      console.log("event");
-      console.log(event);
       this.cashGiven = parseFloat(event).toFixed(2);
-      console.log("this.cashGiven");
-      console.log(this.cashGiven);
     },
 
     getChange() {
       this.changeVal = this.cashGiven - this.$attrs.activityPrice;
-      if (this.changeVal >= 0) {
-        this.changeValid = true;
-      } else {
-        this.changeValid = false;
-      }
-      // console.log(this.change)
+      this.changeValid = this.changeVal >= 0;
     },
-    submitCashPayment(e) {
+    submitCashPayment() {
       this.$emit("submitCashPayment", this.$data);
-      console.log(e);
       this.componentWidth = 60;
     }
   }

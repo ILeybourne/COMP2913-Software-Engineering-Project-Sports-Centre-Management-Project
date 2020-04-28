@@ -25,10 +25,12 @@ import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipTypeService;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -77,7 +79,8 @@ class MembershipTypeControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/membership/types")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(3)));
     }
 
     @Test
@@ -92,6 +95,7 @@ class MembershipTypeControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/membership/types/1")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 }

@@ -13,23 +13,43 @@
           ></BookingInformation> </b-col
         ><b-col v-bind:class="{ 'd-none': hideGuest }">
           <GuestInformation
-                  :activityType="this.selectedActivityId"
+            :activityType="this.selectedActivityId"
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
           ></GuestInformation> </b-col
         ><b-col v-bind:class="{ 'd-none': hideCard }">
           <div>
+            <div v-bind:class="{ 'd-none': hideQuickPay }">
+              <!--               v-if="customer.stripeId != null"-->
+            </div>
             <form id="payment-form">
               <div id="cardDiv">
                 <div id="card-element"></div>
-                <div id="buttonDiv">
+                <div id="cardError" v-bind:class="{ 'd-none': hideCardError }">
+                  An error has occurred please try again.
+                </div>
+                <div class="buttonDiv">
                   <button
                     type="button"
                     class="btn btn-outline-primary"
                     id="paymentButton"
-                    @click="submitPayment($event)"
+                    @click="submitPayment()"
+                    :disabled="paymentSubmit"
                   >
                     Pay £{{ price }}
+                  </button>
+                </div>
+                <h2 id="cardText">Or</h2>
+                <div class="buttonDiv">
+                  <button
+                    @click="submitQuickPayment()"
+                    :disabled="paymentSubmit"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    id="quickPayButton"
+                    v-if="showQuickPay"
+                  >
+                    Quick Pay
                   </button>
                 </div>
               </div>
@@ -51,7 +71,7 @@
           Booking confirmation Activity: {{ selectedActivityName }}<br />
           Booked on: {{ date }}<br />
           Time: {{ selectedTime }}<br />
-          Amount paid: {{ price }}<br />
+          Amount paid: £{{ price }}<br />
           Customer: {{ firstName }} {{ surname }}<br />
           Receipt send to: {{ email }}<br />
         </p>
@@ -89,7 +109,7 @@ h1 {
   text-align: center;
 }
 
-#buttonDiv {
+.buttonDiv {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,6 +117,17 @@ h1 {
 #paymentButton {
   margin-top: 3%;
   width: 50%;
+}
+
+#quickPayButton {
+  margin-top: 3%;
+  width: 50%;
+}
+
+#cardText {
+  text-align: center;
+  padding-top: 3%;
+  padding-bottom: 3%;
 }
 
 #cardDiv {
@@ -165,22 +196,51 @@ export default {
       elements: "",
       card: "",
       complete: false,
-      stripeOptions: {}
+      stripeOptions: {},
+      selectedActivityName: "",
+      hideQuickPay: true,
+      paymentSubmit: false,
+      hideCardError: true,
+      authEmail: String,
+      customer: null
     };
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("auth", ["user"]),
-    selectedActivityName: function() {
-      if (this.selectedActivityId != null) {
-        return this.activities.find(act => (act.id = this.selectedActivityId))
-          .name;
+    ...mapGetters("customers", ["customers"]),
+    showQuickPay: function() {
+      if (this.customer !== null) {
+        return this.customer.stripeId !== null;
+      } else {
+        return false;
       }
-      return null;
     }
   },
   methods: {
     ...mapActions("facilities", ["getActivities"]),
+    ...mapActions("customers", ["getAllCustomers"]),
+
+    async getCustomer() {
+      this.customer = this.customers.find(
+        x => x.emailAddress === this.user.email
+      );
+    },
+
+    showTempPage() {
+      this.hideBooking = true;
+      this.hideGuest = true;
+      this.hideCard = true;
+      this.hideSuccess = false;
+    },
+
+    async checkCustomerStripeId() {
+      const hasStripeId = await this.$http.post(
+        //TODO Remove static customer id
+        `/payments/customer/stripe_id/14`
+      );
+      return hasStripeId.data;
+    },
 
     bookByCash() {
       this.hideBooking = true;
@@ -199,23 +259,79 @@ export default {
       this.card.mount("#card-element");
     },
 
-    //To test stripe use the card: 4242 4242 4242 4242 and any postcode/cvc
-    async submitPayment(e) {
-      e.preventDefault();
-      // Talk to our server to get encrpyted prices
+    async submitQuickPayment() {
+      this.paymentSubmit = true;
+      let paymentIntent = null;
       // eslint-disable-next-line no-undef
-      const paymentIntent = await this.$http.post(
-        `/payments/intent/` + this.selectedActivityId,
+      paymentIntent = await this.$http.post(
+        `/payments/intent/saved/` + this.customer.id, //this.customerId,
         {
           payment_method: {
             card: this.card,
             billing_details: {
               name: this.firstName
             }
-          }
+          },
+          activityTypeId: this.selectedActivityId,
+          regularSession: 1,
+          email: this.email
         }
       );
-      this.sendTokenToServer(paymentIntent.data.clientSecret);
+      if (paymentIntent.status === 200) {
+        this.showTempPage();
+      }
+    },
+
+    //To test stripe use the card: 4242 4242 4242 4242 and any postcode/cvc
+    async submitPayment() {
+      // Talk to our server to get encrpyted prices
+      this.paymentSubmit = true;
+      let paymentIntent = null;
+      if (this.userType === "guest") {
+        // eslint-disable-next-line no-undef
+        paymentIntent = await this.$http.post(
+          `/payments/guest-intent/`, // + this.selectedActivityId,
+          {
+            payment_method: {
+              card: this.card,
+              billing_details: {
+                name: this.firstName
+              }
+            },
+            activityTypeId: this.selectedActivityId,
+            regularSession: 1,
+            email: this.email
+          }
+        );
+        if (paymentIntent != null) {
+          this.sendTokenToServer(paymentIntent.data.clientSecret);
+        }
+      }
+      if (this.userType === "account") {
+        // eslint-disable-next-line no-undef
+        paymentIntent = await this.$http.post(
+          `/payments/intent/card/` + this.customer.id, //this.customerId,
+          {
+            payment_method: {
+              card: this.card,
+              billing_details: {
+                name: this.firstName
+              }
+            },
+            activityTypeId: this.selectedActivityId,
+            regularSession: 1,
+            email: this.email,
+            customerId: this.customer.id,
+            stripeId: this.customer.stripeId
+          }
+        );
+        if (paymentIntent.status === 200) {
+          this.sendTokenToServer(paymentIntent.data.clientSecret);
+          this.showTempPage();
+        } else {
+          this.hideCardError = false;
+        }
+      }
     },
 
     async sendTokenToServer(client_secret) {
@@ -227,27 +343,22 @@ export default {
           card: this.card,
           billing_details: {
             name: this.firstName
-          },
+          }
         },
         setup_future_usage: "off_session"
       });
-
       if (result.error) {
         // Show error to your customer (e.g., insufficient funds)
-        console.log(result.error.message);
       } else {
-        console.log("first else)");
         // The payment has been processed!
         if (result.paymentIntent.status === "succeeded") {
           await this.postAllFormData();
           //TODO Set payment amount
-
-          this.hideBooking = true;
-          this.hideGuest = true;
-          this.hideCard = true;
-          this.hideSuccess = false;
+          this.showTempPage();
           //TODO Redirect
           successBol = true;
+        } else {
+          this.hideCardError = false;
         }
       }
       if (successBol == true) {
@@ -258,26 +369,22 @@ export default {
         // });
       }
     },
+
     async handleCashPayment(value) {
       if (value.change >= 0) {
         await this.postAllFormData();
-
-        this.hideBooking = true;
-        this.hideGuest = true;
-        this.hideCash = true;
-        this.hideSuccess = false;
+        this.showTempPage();
       } else {
         //invalid amount of cash given
       }
     },
+
     async postAllFormData() {
       try {
         /* TODO: Validate and check server response */
         let bookedActivity = this.activities.find(
           activity => activity.id == this.selectedActivityId
         );
-        console.log(this.$auth._uid);
-
         const body = {
           //TODO PASS USER
           account: null,
@@ -286,21 +393,18 @@ export default {
           receipt: null,
           updatedAt: null,
           type: "booking",
-          amount: this.price
+          amount: this.price,
+          regularBooking: false,
+          participants: 1,
+          accountId: 1
         };
-
-        await this.$http.post(`/bookings/`+this.selectedActivityId, body);
-
-        // await this.$router.push({
-        //   name: "BookingPage",
-        //   query: { status: "success" }
-        // });
+        await this.$http.post(`/bookings/` + this.selectedActivityId, body);
       } catch (e) {
         console.log(e);
       }
     },
+
     showBillingInfo(value) {
-      console.log(value);
       this.firstName = value.firstName;
       this.surname = value.surname;
       this.email = value.email;
@@ -314,33 +418,64 @@ export default {
         this.hideCard = true;
       }
     },
-    showGuestInfo(value) {
+
+    async showGuestInfo(value) {
+      this.selectedFacility = value.selectedFacilityId;
+      this.selectedActivity = value.selectedActivityName;
+      this.selectedActivityId = value.selectedActivityId;
+      this.selectedActivityName = value.selectedActivityName;
+      this.date = value.selectedDate;
+      this.selectedTime = value.selectedTime;
+      this.price = value.price;
       if (value.userType == "guest") {
-        // debugger
-        this.selectedFacility = value.selectedFacilityId;
-        this.selectedActivity = value.selectedActivityName;
-        this.selectedActivityId = value.selectedActivityId;
-        this.date = value.selectedDate;
-        this.selectedTime = value.selectedTime;
-        this.price = value.price;
         // this.setCashPrice()
         //Shows guest component
         this.hideGuest = false;
+        this.userType = "guest";
       }
       if (value.userType == "account") {
         this.hideGuest = false;
-        //TODO autofill with account information
+        this.userType = "account";
+        this.hideQuickPay = !(await this.checkCustomerStripeId());
+        //TODO autofill with customer information
         // this.firstName =
         // this.surname =
-        // this.email =
+        // this.email = this.user.email
         // this.phone =
       }
+    },
+
+    isEmpty(obj) {
+      if (Object.keys(obj).length === 0) {
+        return true;
+      } else {
+        if (Object.keys(obj)[0] == "success") {
+          return false;
+        } else {
+          return false;
+        }
+      }
+    },
+
+    getRoles() {
+      let roles = this.$http
+        .get(
+          "https://prod-comp2931/api/v2/users/" + this.customer.id + "/roles"
+        )
+        .header("authorization", "Bearer MGMT_API_ACCESS_TOKEN");
+
+      console.log(roles);
     }
   },
-  mounted() {
-    console.log("this.user)");
-    console.log(this.user);
-    this.getActivities();
+  async created() {
+    if (!this.isEmpty(this.user)) {
+      await this.getAllCustomers();
+      this.getCustomer();
+    }
+  },
+  async mounted() {
+    // this.getRoles()
+    await this.getActivities();
     this.configureStripe();
   }
 };

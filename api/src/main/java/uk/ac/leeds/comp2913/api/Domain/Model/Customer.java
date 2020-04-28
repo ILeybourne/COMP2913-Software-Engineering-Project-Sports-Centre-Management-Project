@@ -45,6 +45,16 @@ public class Customer {
         this.dateOfBirth = dateOfBirth;
     }
 
+    private String stripeId;
+
+    public String getStripeId() {
+        return stripeId;
+    }
+
+    public void setStripeId(String stripeId) {
+        this.stripeId = stripeId;
+    }
+
     @JsonIgnore
     public List<Receipt> getReceipts() {
         return receipts;

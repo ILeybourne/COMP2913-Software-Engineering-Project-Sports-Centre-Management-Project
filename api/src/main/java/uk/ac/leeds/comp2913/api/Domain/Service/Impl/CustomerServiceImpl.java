@@ -33,4 +33,9 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer getCustomerByEmailAddress(String emailAddress) {
         return this.customerRepository.findByEmailAddress(emailAddress);
     }
+
+    @Override
+    public Customer getCustomerByStripeId(String stripeId) {
+        return this.customerRepository.findByStripeId(stripeId);
+    }
 }

@@ -4,7 +4,7 @@ import router from "@/router";
 import store from "@/store";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 
-import "./assets/css/style.scss";
+import "@/assets/css/style.scss";
 
 import { domain, clientId, audience } from "../auth_config.json";
 import { Auth0Plugin } from "@/plugins/auth.plugin";

@@ -2,6 +2,7 @@ package uk.ac.leeds.comp2913.api.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -25,11 +26,14 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -85,7 +89,8 @@ public class ActivityTypeControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/activitytypes")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(3)));
     }
 
     @Test
@@ -100,7 +105,8 @@ public class ActivityTypeControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/activitytypes/1")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
     @Test
@@ -130,19 +136,45 @@ public class ActivityTypeControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/activitytypes/resource/4")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(3)));
     }
 
-    @Disabled
     @Test
-    void addActivityType() {
-        // TODO Additional clarification required
+    void addActivityType() throws Exception {
+        // Create activity type
+        ActivityType activityType = new ActivityType();
+        activityType.setId(1L);
+        activityType.setName("Test Activity Type");
+        activityType.setResource(resource);
+
+        // Tie response to service
+        when(activityTypeService.addActivityType(any(), any())).thenReturn(activityType);
+
+        // Perform post and assert
+        mockMvc.perform(post("/activitytypes/resource/1")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsBytes(activityType)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
-    @Disabled
     @Test
-    void updateActivityType() {
-        // TODO Additional clarification required
+    void updateActivityType() throws Exception {
+        // Create activity type
+        ActivityType activityType = new ActivityType();
+        activityType.setId(1L);
+        activityType.setName("Test Activity Type");
+
+        // Tie response to service
+        when(activityTypeService.updateActivityType(any(), any())).thenReturn(activityType);
+
+        // Perform put and assert
+        mockMvc.perform(put("/activitytypes/1")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsBytes(activityType)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
     @Disabled

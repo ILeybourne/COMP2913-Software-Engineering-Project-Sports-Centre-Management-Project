@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.AfterEach;
@@ -19,19 +20,32 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
+import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
+import uk.ac.leeds.comp2913.api.Domain.Model.RegularSession;
 import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
+import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -48,6 +62,9 @@ class ActivityControllerTest {
     @MockBean
     ActivityService activityService;
 
+    @MockBean
+    ActivityRepository activityRepository;
+
     @BeforeEach
     void setUp() {
     }
@@ -56,7 +73,6 @@ class ActivityControllerTest {
     void tearDown() {
     }
 
-    @Disabled
     @Test
     // TODO Failing due to "Page must not be null!" issue
     void getActivities() throws Exception {
@@ -77,12 +93,13 @@ class ActivityControllerTest {
         Page<Activity> response = new PageImpl<>(List.of(activity1, activity2, activity3), request, 1);
 
         // Tie response to service
-        when(activityService.findAllWithResources(any())).thenReturn(response);
+        when(activityService.getActivities(any())).thenReturn(response);
 
         // Perform get and assert
         mockMvc.perform(get("/activities")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(3)));
     }
 
     @Test
@@ -97,7 +114,8 @@ class ActivityControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/activities/1")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
     @Test
@@ -131,19 +149,76 @@ class ActivityControllerTest {
         // Perform get and assert
         mockMvc.perform(get("/activities/resource/4")
                 .contentType("application/json"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements", is(3)));
+    }
+
+    @Test
+    @WithMockUser(username = "test@comp2913.com", authorities = {"SCOPE_create:activity"})
+    void createActivity() throws Exception {
+        // Create activity
+        Activity activity = new Activity();
+        activity.setId(1L);
+        activity.setName("Test Activity");
+
+        // Create activity
+        ActivityDTO activityDTO = new ActivityDTO();
+        activityDTO.setId(1L);
+        activityDTO.setName("Test Activity");
+        activityDTO.setRegularSession(false);
+        activityDTO.setSocial(false);
+        activityDTO.setStartTime(new Date(120, Calendar.APRIL, 19));
+        activityDTO.setEndTime(new Date(120, Calendar.APRIL, 19));
+        activityDTO.setInterval(null);
+
+        // Tie response to service
+        when(activityService.createNewActivity(any(), any(), any())).thenReturn(activity);
+
+        // Perform put and assert
+        mockMvc.perform(post("/activities/activitytype/1")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsBytes(activityDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
     @Disabled
     @Test
-    void createActivity() {
-        // TODO Additional clarification required
-    }
+    // TODO Talk to Kirsty
+    void updateActivity() throws Exception {
+        // Create resource
+        Resource resource = new Resource();
+        resource.setId(2L);
 
-    @Disabled
-    @Test
-    void updateActivity() {
-        // TODO Additional clarification required
+        // Create activity type
+        ActivityType activityType = new ActivityType();
+        activityType.setId(3);
+        activityType.setName("Test AT");
+        activityType.setCost(BigDecimal.valueOf(10));
+        activityType.setTotalCapacity(20);
+
+        // Create activity
+        Activity activity = new Activity();
+        activity.setId(1L);
+        activity.setName("Test Activity");
+        activity.setCost(BigDecimal.valueOf(10));
+        activity.setStartTime(new Date(120, Calendar.APRIL, 19));
+        activity.setEndTime(new Date(120, Calendar.APRIL, 20));
+        activity.setCurrentCapacity(20);
+        activity.setResource(resource);
+        activity.setActivityType(activityType);
+
+        // Tie response to service
+        when(activityService.editActivity(any(), any())).thenReturn(activity);
+        when(activityRepository.findById(eq(1L))).thenReturn(Optional.of(activity));
+        when(activityRepository.save(activity)).thenReturn(activity);
+
+        // Perform put and assert
+        mockMvc.perform(put("/activities/1")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsBytes(activity)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)));
     }
 
     @Disabled
