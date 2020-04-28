@@ -384,7 +384,9 @@ export default {
       if (this.formBody.email !== null && this.formBody.dateOfBirth !== null) {
         console.log(this.formBody);
         const body = {
-          ...this.formBody
+          accountId: 0,
+          repeatingPayment: this.formBody.repeatingPayment,
+          email: this.formBody.email
         };
         await this.$http
           .post("/membership/membercheck", body)
@@ -392,7 +394,7 @@ export default {
             console.log(response);
             this.postResponse = response.data;
             if (this.postResponse === false) {
-                  this.setMembershipDetails();
+              this.setMembershipDetails();
               this.onSuccess();
             }
           })
@@ -403,43 +405,22 @@ export default {
         this.postResponse = this.formError;
       }
     },
-     setMembershipDetails(){
-       this.membershipDetails.name= this.selectedMembershipType.name;
-       this.membershipDetails.startDate = this.calculateDate(this.todaysDate);
-       this.membershipDetails.endDate = this.calculateEndDate(this.selectedMembershipType.duration);
-       this.membershipDetails.amount = this.selectedMembershipType.cost;
-       this.membershipDetails.repeatingPayment = this.formBody.repeatingPayment
-     },
-
-    // async addMember() {
-    //   if (this.formBody.email !== null && this.formBody.dateOfBirth !== null) {
-    //     //console.log(this.formBody);
-    //     const body = {
-    //       ...this.formBody,
-    //       accountId: 1
-    //     };
-    //     await this.$http
-    //       .post("/membership/" + this.selectedOption, body)
-    //       .then(response => {
-    //         //console.log(response);
-    //         this.postResponse = response.data;
-    //         if (this.postResponse.id > 0) {
-    //           this.onSuccess();
-    //         }
-    //       })
-    //       .catch(function() {
-    //         //console.log(error);
-    //       });
-    //   } else {
-    //     this.postResponse = this.formError;
-    //   }
-    // },
+    setMembershipDetails() {
+      this.membershipDetails.name = this.selectedMembershipType.name;
+      this.membershipDetails.startDate = this.calculateDate(this.todaysDate);
+      this.membershipDetails.endDate = this.calculateEndDate(
+        this.selectedMembershipType.duration
+      );
+      this.membershipDetails.amount = this.selectedMembershipType.cost;
+      this.membershipDetails.repeatingPayment = this.formBody.repeatingPayment;
+    },
     async onSuccess() {
       await this.$router.push({
         name: "Checkout",
         params: {
-          formData: this.formBody,
-          membershipDetails: this.membershipDetails
+          formBody: this.formBody,
+          membershipDetails: this.membershipDetails,
+          selectedOption: this.selectedOption
         }
       });
     }

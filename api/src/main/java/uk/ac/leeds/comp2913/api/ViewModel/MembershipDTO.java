@@ -19,7 +19,7 @@ public class MembershipDTO extends RepresentationModel<MembershipDTO> {
     @Size(min = 3, max = 40)
     private String emailAddress;
     @NotNull
-    private Date dateOfBirth;
+    private Long accountId;
     private boolean repeatingPayment;
     private Date created_at;
     private Date updated_at;
@@ -27,19 +27,23 @@ public class MembershipDTO extends RepresentationModel<MembershipDTO> {
     private Date endDate;
     private String name;
     private Long id;
+    private String transactionId;
 
     public MembershipDTO(){}
 
     @JsonCreator
-    public MembershipDTO(@JsonProperty("email") String emailAddress,
-                         @JsonProperty("dateOfBirth") Date dateOfBirth,
-                         @JsonProperty(value = "repeatingPayment") Boolean repeatingPayment){
+    public MembershipDTO(@JsonProperty(value = "email") String emailAddress,
+                         @JsonProperty("accountId") Long accountId,
+                         @JsonProperty(value = "repeatingPayment") Boolean repeatingPayment,
+                         @JsonProperty(value = "transactionId") String transactionId){
+
         if (repeatingPayment == null) {
             repeatingPayment = false;
         }
         this.emailAddress = emailAddress;
-        this.dateOfBirth = dateOfBirth;
         this.repeatingPayment = (boolean) repeatingPayment;
+        this.accountId = accountId;
+        this.transactionId = transactionId;
     }
 
     public boolean isRepeatingPayment() {
@@ -99,14 +103,6 @@ public class MembershipDTO extends RepresentationModel<MembershipDTO> {
         this.id = id;
     }
 
-    @JsonIgnore
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
 
     @JsonIgnore
     public String getEmailAddress() {
@@ -115,5 +111,21 @@ public class MembershipDTO extends RepresentationModel<MembershipDTO> {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 }

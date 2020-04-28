@@ -91,19 +91,15 @@ public class MembershipController {
         return membershipService.activeMemberCheck(membership.getEmailAddress());
     }
 
-    //Add a member, create an account in the database and store customer details
+    //Add a member, store membership with account Id and membership type id
     @PostMapping("/{membership_type_id}")
     @Operation(summary = "Take out a membership #3",
             description = "Purchase a membership, requires membership type, account and whether the payment should repeat")
     public Membership addMembership( @Parameter(description = "A membership DTO Object", required = true)@Valid @RequestBody MembershipDTO membership,
                                      @Parameter(description = "The membership type Id", required = true)@PathVariable Long membership_type_id){
         Membership m = new Membership();
-        Customer c = new Customer();
-        Account a = new Account();
-        c.setDateOfBirth(membership.getDateOfBirth());
-        c.setEmailAddress(membership.getEmailAddress());
         m.setRepeatingPayment(membership.isRepeatingPayment());
-        return membershipService.addMember(membership_type_id, m, a, c);
+        return membershipService.addMember(membership.getAccountId(), membership_type_id, m);
     }
 
     // Upgrade/downgrade membership type

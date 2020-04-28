@@ -16,7 +16,7 @@
         id="billing-details"
         v-if="billingSuccess"
         ><v-row
-          ><v-col><h3>Billing Info</h3></v-col></v-row
+          ><v-col><h3>Billing Info</h3><P>{{this.formData.email}}, {{this.formData.selectedOption}}</P></v-col></v-row
         >
         <v-row
           ><v-col>Name: </v-col> <v-col>{{ name }}</v-col></v-row
@@ -24,6 +24,7 @@
         <v-row
           ><v-col>Email </v-col> <v-col>{{ email }} </v-col></v-row
         >
+
         <v-row
           ><v-col>House Number: </v-col> <v-col>{{ houseNumber }}</v-col></v-row
         >
@@ -47,7 +48,7 @@
                   type="button"
                   class="btn btn-outline-primary"
                   id="paymentButton"
-                  @click="submitSubscriptionPayment($event)"
+                  @click="submitPayment($event)"
                 >
                   Pay £{{ membershipSaleDetails.cost }}
                 </button>
@@ -89,10 +90,18 @@
 }
 
 #billing-details {
+  margin: 20px;
+  text-align: center;
+  width: 20%;
+  min-height: 400px;
+  background: #f6f9fa;
+  color: #242424;
   display: flex;
   flex-direction: column;
   justify-content: center;
   max-width: 20%;
+  flex-basis: auto; /* default value */
+  flex-grow: 1;
 }
 #billing {
   min-width: 30%;
@@ -139,6 +148,7 @@
 <script>
 import CheckoutItem from "@/components/CheckoutItem.vue";
 import BillingInformation from "@/components/BillingInformation.vue";
+//TODO plug in payment and post membership on success
 
 // @ is an alias to /src
 export default {
@@ -163,7 +173,19 @@ export default {
         endDate: null,
         cost: null,
         repeatingPayment: null
-      }
+      },
+      paymentResponse: {
+        accountId: null,
+        amountPaid: null,
+        transactionId: null
+      },
+      formData: {
+        email: null,
+        dateOfBirth: null,
+        repeatingPayment: null,
+        selectedOption: null
+      },
+      postMembershipResponse: []
     };
   },
   methods: {
@@ -194,11 +216,72 @@ export default {
       this.membershipSaleDetails.cost = this.$route.params.membershipDetails.amount;
       this.membershipSaleDetails.repeatingPayment = this.$route.params.membershipDetails.repeatingPayment;
     },
-    submitSubscriptionPayment() {}
+    setFormData() {
+      this.formData.dateOfBirth = this.$route.params.formBody.dateOfBirth;
+      this.formData.email = this.$route.params.formBody.email;
+      this.formData.repeatingPayment = this.$route.params.formBody.repeatingPayment;
+      this.formData.selectedOption = this.$route.params.selectedOption;
+    },
+    submitPayment() {
+      this.checkCustomerStripeId();
+    },
+    async checkCustomerStripeId() {
+      const hasStripeId = await this.$http.post(
+        //TODO Remove static customer id
+        `/payments/customer/stripe_id/14`
+      );
+      return hasStripeId.data;
+    }
   },
+  async submitQuickPayment() {
+    this.paymentSubmit = true;
+    let paymentIntent = null;
+    // eslint-disable-next-line no-undef
+    paymentIntent = await this.$http.post(
+      `/payments/intent/saved/` + this.customer.id, //this.customerId,
+      {
+        payment_method: {
+          card: this.card,
+          billing_details: {
+            name: this.firstName
+          }
+        },
+        cost: this.price,
+        email: this.email,
+        regularSession: false
+      }
+    );
+    if (paymentIntent.status === 200) {
+      this.paymentResponse.accountId = paymentIntent.data.accountId;
+      this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
+      this.paymentResponse.transactionId = paymentIntent.data.transactionId;
+      await this.addMember();
+    }
+  },
+  async addMember() {
+    const body = {
+      accountId: this.paymentResponse.accountId,
+      transactionId: this.paymentResponse.transactionId,
+      repeatingPayment: this.formData.repeatingPayment,
+      email: this.formData.email
+    };
+    await this.$http
+      .post("/membership/" + this.formData.selectedOption, body)
+      .then(response => {
+        //console.log(response);
+        this.postMembershipResponse = response.data;
+      })
+      .catch(function() {
+        //console.log(error);
+      });
+  },
+
   async mounted() {
     if (this.$route.params.membershipDetails !== null) {
       this.setMembershipDetails();
+    }
+    if (this.$route.params.formBody !== null) {
+      this.setFormData();
     }
     this.configureStripe();
   }

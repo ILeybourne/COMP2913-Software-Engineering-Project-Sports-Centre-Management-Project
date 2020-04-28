@@ -25,7 +25,7 @@ public interface MembershipService {
 
     Page<Membership> findMembershipsByMembershipType(Pageable pageable, Long membership_type_id);
 
-    Membership addMember(Long membership_type_id, Membership membership, Account account, Customer customer);
+    Membership addMember(Long account_id, Long membership_type_id, Membership membership);
 
     Membership updateMembership(Long membership_id, Membership membershipRequest);
 

@@ -72,6 +72,7 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     //Checks existing customers don't have active memberships
+    @Override
     @Transactional
     public Boolean activeMemberCheck(String email) {
         Boolean activeMember = false;
@@ -97,31 +98,20 @@ public class MembershipServiceImpl implements MembershipService {
         return activeMember;
     }
 
-    //Check to see if customer data exists, if so, create new account using that, otherwise create new customer
-//set the new membership to newly created account
+
     @Override
-    public Membership addMember(Long membership_type_id, Membership membership, Account account, Customer customer) {
+    public Membership addMember(Long account_id, Long membership_type_id, Membership membership) {
         MembershipType membershipType = membershipTypeRepository.findById(membership_type_id)
                 .orElseThrow(() -> new ResourceNotFoundException("Membership type not found for ID" + membership_type_id));
-        Customer existingCustomer = customerRepository.findByEmailAddress(customer.getEmailAddress());
-        if(existingCustomer !=null && activeMemberCheck(existingCustomer.getEmailAddress())) {
-            Membership falseMembership = new Membership();
-            falseMembership.setMembershipType(membershipType);
-            return falseMembership; // returns an empty membership object
-        }
-        else if(existingCustomer!=null && !activeMemberCheck(existingCustomer.getEmailAddress())){
-            account.setCustomer(existingCustomer);
-        }
-        else {
-            customerRepository.save(customer);
-            account.setCustomer(customer);
-        }
-        accountRepository.save(account);
+        Account account = accountRepository.findById(account_id)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found for ID" + account_id));
+
         membership.setMembershipType(membershipType);
         membership.setAccount(account);
         membership.setStartDate(new Date());
         return membershipRepository.save(membership);
     }
+
 
     @Override
     public Membership updateMembership(Long membership_id, Membership membershipRequest) {
