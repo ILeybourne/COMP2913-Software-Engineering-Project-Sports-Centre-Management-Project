@@ -22,7 +22,7 @@
         <div class="form-row">
           <label for="activity">Activity:</label>
           <b-form-select
-            v-model="selectedActivityTypeId"
+            v-model="selectedActivityId"
             :options="activityOptions"
             name="activity"
             id="activity"
@@ -146,10 +146,9 @@ export default {
       activityOptions: [],
       timeOptions: ["Please Select"],
 
-      selectedActivityTypeId: null,
+      selectedActivityId: null,
       selectedFacilityId: null,
       selectedActivityName: null,
-      selectedActivity: null,
       selectedTime: null,
       price: null,
       selectedDate: null,
@@ -172,9 +171,9 @@ export default {
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
     getPrice(e) {
-      if (this.selectedActivityTypeId != null) {
-        let selectedActivityType = this.activities.find(x => x.id == e);
-        this.price = selectedActivityType.cost;
+      if (this.selectedActivityId != null) {
+        let selectedActivity = this.activities.find(x => x.id == e);
+        this.price = selectedActivity.cost;
       }
     },
 
@@ -218,7 +217,7 @@ export default {
       this.facilityValid = !(this.$data.selectedFacilityId == null);
     },
     validateActivity() {
-      this.activitiesValid = !(this.$data.selectedActivityTypeId == null);
+      this.activitiesValid = !(this.$data.selectedActivityId == null);
     },
     validateDate() {
       this.dateValid = this.$data.date != null;
@@ -243,7 +242,7 @@ export default {
     submitForm(e) {
       if (
         !(this.$data.selectedFacilityId == null) &&
-        !(this.$data.selectedActivityTypeId == null) &&
+        !(this.$data.selectedActivityId == null) &&
         this.$data.selectedDate != null &&
         this.$data.selectedTime != null
       ) {
@@ -288,7 +287,7 @@ export default {
         //If query isn't empty fill ids, selectedDate and timeOptions
         this.selectedFacilityId = facilityId;
         this.setActivityTypeOptions(facilityId);
-        this.selectedActivityTypeId = activityTypeId;
+        this.selectedActivityId = activityTypeId;
         this.selectActivityName();
         let selectedDateUnix = this.sessions.find(x => x.id == activityId)
           .startTime;
@@ -314,7 +313,7 @@ export default {
       if (this.selectedDate != null) {
         if (
           this.selectedFacilityId != null &&
-          this.selectedActivityTypeId != null
+          this.selectedActivityId != null
         ) {
           let timeArray = ["Please Select"];
 
@@ -341,9 +340,9 @@ export default {
       }
     },
     selectActivityName() {
-      if (this.selectedActivityTypeId != null) {
+      if (this.selectedActivityId != null) {
         this.selectedActivityName = this.activities.find(
-          x => Number(x.id) === Number(this.selectedActivityTypeId)
+          x => Number(x.id) === Number(this.selectedActivityId)
         ).name;
       } else {
         this.selectedActivityName = "Please Select";

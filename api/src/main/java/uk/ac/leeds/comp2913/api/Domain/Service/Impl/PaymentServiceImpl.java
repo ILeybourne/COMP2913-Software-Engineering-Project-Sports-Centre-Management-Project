@@ -26,35 +26,43 @@ import java.util.Map;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
+import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
+import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
 import uk.ac.leeds.comp2913.api.Domain.Service.CustomerService;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
+import uk.ac.leeds.comp2913.api.Domain.Service.MembershipTypeService;
 import uk.ac.leeds.comp2913.api.Domain.Service.PaymentService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import uk.ac.leeds.comp2913.api.ViewModel.PayResponseBodyDTO;
 
+//TODO clean up
 @Service
 public class PaymentServiceImpl implements PaymentService {
     private final CustomerService customerService;
     private final CustomerRepository customerRepository;
     private final AccountRepository accountRepository;
     private final MembershipService membershipService;
+    private final ActivityTypeService activityTypeService;
+    private final MembershipTypeService membershipTypeService;
     Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
 
     @Autowired
-    public PaymentServiceImpl(CustomerService customerService, CustomerRepository customerRepository, AccountRepository accountRepository, @Lazy MembershipService membershipService){
+    public PaymentServiceImpl(CustomerService customerService, CustomerRepository customerRepository, AccountRepository accountRepository, @Lazy MembershipService membershipService, ActivityTypeService activityTypeService, MembershipTypeService membershipTypeService) {
         this.customerService = customerService;
         this.customerRepository = customerRepository;
         this.accountRepository = accountRepository;
         this.membershipService = membershipService;
+        this.activityTypeService = activityTypeService;
+        this.membershipTypeService = membershipTypeService;
     }
 
     @Override
-    public Boolean isStripeCustomer(Long customer_id){
+    public Boolean isStripeCustomer(Long customer_id) {
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         logger.info("/customer/stripe_id/customerid");
-        if(customer_id != null){
-            if(customerRepository.findById(customer_id).isPresent()) {
+        if (customer_id != null) {
+            if (customerRepository.findById(customer_id).isPresent()) {
                 uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer = customerRepository.findById(customer_id).get();
                 if (internalCustomer.getStripeId() != null) {
                     return true;
@@ -71,13 +79,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     //Guest Checkout
     @Override
-    public PayResponseBodyDTO create(String email, BigDecimal cost, Boolean regularSessionBooking) throws StripeException{
+    public PayResponseBodyDTO create(String email, BigDecimal cost, Boolean regularSessionBooking) throws StripeException {
         //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         PaymentIntent intent = null;
         Customer customer = null;
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
-        logger.info( "request" );
+        logger.info("request");
         logger.info("/guest-intent");
         Long newCost = ((cost.multiply(new BigDecimal(100.0))).longValue());
         Account account = new Account();
@@ -123,76 +131,75 @@ public class PaymentServiceImpl implements PaymentService {
                 responseBody.setError(err.getMessage());
             }
         }
-        return  responseBody;
+        return responseBody;
     }
 
     //Quick Payement (from those who have cards saved on stripe)
     @Override
-    public PayResponseBodyDTO createFromSavedCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking) throws StripeException{
+    public PayResponseBodyDTO createFromSavedCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking) throws StripeException {
         //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         PaymentIntent intent = null;
-        uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer =null;
+        uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer = null;
         Customer customer = null;
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
         logger.info("/intent/saved/customer id");
         Account account = null;
         BigDecimal cost = null;
-        if(!regularSessionBooking){
+        if (!regularSessionBooking) {
             cost = inputCost;
-        }else if (regularSessionBooking){
+        } else if (regularSessionBooking) {
             cost = regularBookingPayment(inputCost);
         }
         Long newCost = (cost.multiply(new BigDecimal(100.0))).longValue();
         logger.info("new: " + cost.toString());
-        if(membershipService.activeMemberCheck(email)){
+        if (membershipService.activeMemberCheck(email)) {
             account = membershipService.getMemberAccount(customer_id);
-        }
-        else if(!membershipService.activeMemberCheck(email)){
+        } else if (!membershipService.activeMemberCheck(email)) {
             account = new Account();
         }
         try {
-            if(customerRepository.findById(customer_id).isPresent()) {
+            if (customerRepository.findById(customer_id).isPresent()) {
                 //get api customer
                 internalCustomer = customerRepository.findById(customer_id).get();
                 //get stripe customer
                 customer = Customer.retrieve(internalCustomer.getStripeId());
-                    //get list of payment methods
-                    PaymentMethodListParams params =
-                            PaymentMethodListParams.builder()
-                                    .setCustomer(internalCustomer.getStripeId())
-                                    .setType(PaymentMethodListParams.Type.CARD)
-                                    .build();
+                //get list of payment methods
+                PaymentMethodListParams params =
+                        PaymentMethodListParams.builder()
+                                .setCustomer(internalCustomer.getStripeId())
+                                .setType(PaymentMethodListParams.Type.CARD)
+                                .build();
 
-                    PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
+                PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
 
-                    //Get first card
-                    String paymentMethod = paymentMethods.getData().get(0).getId();
+                //Get first card
+                String paymentMethod = paymentMethods.getData().get(0).getId();
 
-                    PaymentIntentCreateParams intentParams = PaymentIntentCreateParams.builder()
-                            .setCurrency("gbp")
-                            .setAmount(newCost)
-                            .setCustomer(internalCustomer.getStripeId())
-                            .setPaymentMethod(paymentMethod)
-                            .setConfirm(true)
-                            .setOffSession(true)
-                            // Verify your integration in this guide by including this parameter
-                            .putMetadata("integration_check", "accept_a_payment")
-                            .build();
+                PaymentIntentCreateParams intentParams = PaymentIntentCreateParams.builder()
+                        .setCurrency("gbp")
+                        .setAmount(newCost)
+                        .setCustomer(internalCustomer.getStripeId())
+                        .setPaymentMethod(paymentMethod)
+                        .setConfirm(true)
+                        .setOffSession(true)
+                        // Verify your integration in this guide by including this parameter
+                        .putMetadata("integration_check", "accept_a_payment")
+                        .build();
 
-                    intent = PaymentIntent.create(intentParams);
-                    logger.info("💰 Payment received!");
+                intent = PaymentIntent.create(intentParams);
+                logger.info("💰 Payment received!");
 //                  The payment is complete and the money has been moved
 //                  You can add any post-payment code here (e.g. shipping, fulfillment, etc)
-                if(!membershipService.activeMemberCheck(email)) { //creating a new account if user is not a member
+                if (!membershipService.activeMemberCheck(email)) { //creating a new account if user is not a member
                     account.setCustomer(internalCustomer);
                     accountRepository.save(account);
                 }
-                 responseBody.setClientSecret(intent.getClientSecret());
-                 responseBody.setTransactionId(intent.getId());
-                 responseBody.setAccountId(account.getId());
-                 responseBody.setAmountPaid(cost);
-                 Long account_id = account.getId();
+                responseBody.setClientSecret(intent.getClientSecret());
+                responseBody.setTransactionId(intent.getId());
+                responseBody.setAccountId(account.getId());
+                responseBody.setAmountPaid(cost);
+                Long account_id = account.getId();
                 logger.info("account: " + account_id.toString());
 
             } else {
@@ -222,28 +229,27 @@ public class PaymentServiceImpl implements PaymentService {
         Customer customer = null;
         logger.info("/intent/card/customer id");
         Account account = null;
-        if(!regularSessionBooking){
+        if (!regularSessionBooking) {
             cost = inputCost;
-        }else if (regularSessionBooking){
+        } else if (regularSessionBooking) {
             cost = regularBookingPayment(inputCost);
         }
         Long newCost = (cost.multiply(new BigDecimal(100.0))).longValue();
         logger.info("new: " + cost.toString());
-        if(membershipService.activeMemberCheck(email)){
+        if (membershipService.activeMemberCheck(email)) {
             account = membershipService.getMemberAccount(customer_id);
-        }
-        else if(!membershipService.activeMemberCheck(email)){
+        } else if (!membershipService.activeMemberCheck(email)) {
             account = new Account();
         }
 
         try {
-            if(customerRepository.findById(customer_id).isPresent()) {
+            if (customerRepository.findById(customer_id).isPresent()) {
                 //get api customer
                 internalCustomer = customerRepository.findById(customer_id)
                         .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id " + customer_id));
 
                 //get stripe customer
-                if(internalCustomer.getStripeId() == null){
+                if (internalCustomer.getStripeId() == null) {
                     CustomerCreateParams customerParams =
                             CustomerCreateParams.builder()
                                     .setEmail(email)
@@ -253,7 +259,7 @@ public class PaymentServiceImpl implements PaymentService {
                     customerRepository.save(internalCustomer);
                 }
 
-                if(!membershipService.activeMemberCheck(email)) { //creating a new account if user is not a member
+                if (!membershipService.activeMemberCheck(email)) { //creating a new account if user is not a member
                     account.setCustomer(internalCustomer);
                     accountRepository.save(account);
                 }
@@ -311,5 +317,14 @@ public class PaymentServiceImpl implements PaymentService {
         return responseBody;
     }
 
+    public BigDecimal getActivityTypeCost(Long activityTypeId) {
+        BigDecimal cost = activityTypeService.findById(activityTypeId).getCost();
+        return cost;
+    }
+
+    public BigDecimal getMembershipTypeCost(Long membershipTypeId) {
+        BigDecimal cost = membershipTypeService.findMembershipTypeById(membershipTypeId).getCost();
+        return cost;
+    }
 }
 

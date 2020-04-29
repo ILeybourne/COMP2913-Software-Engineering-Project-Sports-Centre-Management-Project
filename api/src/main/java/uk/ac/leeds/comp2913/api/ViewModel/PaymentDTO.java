@@ -3,14 +3,29 @@ package uk.ac.leeds.comp2913.api.ViewModel;
 
 import java.math.BigDecimal;
 
-//Not sure whether this is required. See if it can be incorporated into existing dto?
 public class PaymentDTO {
     PaymentDTO(){}
     private String email;
-    private BigDecimal cost;
     private Long customerId;
     private Boolean regularSession;
+    private Long membershipTypeId;
+    private Long activityTypeId;
 
+    public Long getMembershipTypeId() {
+        return membershipTypeId;
+    }
+
+    public void setMembershipTypeId(Long membershipTypeId) {
+        this.membershipTypeId = membershipTypeId;
+    }
+
+    public Long getActivityTypeId() {
+        return activityTypeId;
+    }
+
+    public void setActivityTypeId(Long activityTypeId) {
+        this.activityTypeId = activityTypeId;
+    }
 
     public String getEmail() {
         return email;
@@ -18,14 +33,6 @@ public class PaymentDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public BigDecimal getCost() {
-        return cost;
-    }
-
-    public void setCost(BigDecimal cost) {
-        this.cost = cost;
     }
 
     public Long getCustomerId() {

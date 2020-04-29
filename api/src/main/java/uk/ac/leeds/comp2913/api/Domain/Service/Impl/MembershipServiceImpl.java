@@ -27,6 +27,8 @@ import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
 import uk.ac.leeds.comp2913.api.Domain.Service.PaymentService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.ViewModel.PayResponseBodyDTO;
+import uk.ac.leeds.comp2913.api.ViewModel.PaymentDTO;
 
 @Service
 public class MembershipServiceImpl implements MembershipService {
@@ -152,19 +154,22 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public void automatedMembershipRenewals() throws StripeException {
         List<Membership> lastPayments = membershipRepository.findLastWithRepeatPayments();
+
         for (Membership lastMembership : lastPayments) {
+            Integer days = -7;
             Calendar c = Calendar.getInstance();
             Date now = new Date();
             c.setTime(now);
-            c.add(Calendar.DATE, -7);
+            c.add(Calendar.DATE, days);
             Date paymentDueDate = c.getTime(); //Takes payment 7 days before membership expires
 
             if (lastMembership.getEndDate().after(paymentDueDate) && lastMembership.getEndDate().before(now)) { //only takes payments that enter this window
                 Membership renewedMembership = Membership.renewMembership(lastMembership);
                 Customer customer = renewedMembership.getAccount().getCustomer();
                 try {
-                    paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), renewedMembership.getAmount(), false);
-                    this.membershipRepository.save(renewedMembership);
+                    PayResponseBodyDTO payResponse = paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), renewedMembership.getAmount(), false);
+                    renewedMembership.setTransactionId(payResponse.getTransactionId());
+                    membershipRepository.save(renewedMembership);
                 } catch (CardException err) {
                 }
             }

@@ -14,4 +14,6 @@ public interface PaymentService {
     PayResponseBodyDTO createFromNewCard(Long customer_id, String email, BigDecimal cost, Boolean regularSessionBooking) throws StripeException;
     PayResponseBodyDTO create(String email, BigDecimal cost, Boolean regularSessionBooking) throws StripeException;
     PayResponseBodyDTO createFromSavedCard(Long customer_id, String email, BigDecimal cost, Boolean regularSessionBooking) throws StripeException;
-}
+    BigDecimal getActivityTypeCost(Long ActivityTypeId);
+    BigDecimal getMembershipTypeCost(Long membershipTypeId);
+    }
