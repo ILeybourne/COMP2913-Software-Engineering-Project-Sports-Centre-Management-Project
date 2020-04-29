@@ -1,13 +1,8 @@
 <template>
   <div class="facility-header">
     <b-card :title="'Details for ' + facility.name" :img-src="imageUrl">
-      <!--      img-alt="Image"-->
-      <!--      img-top-->
-      <!--      tag="article"-->
-      <!--      style="max-width: 20rem;"-->
-      <!--      class="mb-2"-->
-      <b-card-text>{{ facility.description }}</b-card-text>
-      <b-button class="float-right" variant="danger">Delete</b-button>
+      <b-card-text>{{ facility.description || "No description available..." }}</b-card-text>
+      <b-button v-if="isEmployeeOrManager" class="float-right" variant="danger">Delete</b-button>
     </b-card>
   </div>
 </template>

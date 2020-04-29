@@ -1,7 +1,7 @@
 <template>
   <div class="facilities">
     <h1>Our Facilities</h1>
-    <v-alert show>
+    <v-alert show v-if="isEmployeeOrManager">
       <b-button
         variant="primary"
         :to="{ name: 'FacilityPage', params: { id: 'create' } }"
@@ -18,7 +18,9 @@
     </b-card-group>
     <div class="row">
       <div class="col text-center">
-        <b-button v-if="facilitiesLoading" variant="outline-primary">Load more</b-button>
+        <b-button v-if="facilitiesLoading" variant="outline-primary"
+          >Load more</b-button
+        >
       </div>
     </div>
   </div>
@@ -36,6 +38,8 @@ export default {
     Facility
   },
   computed: {
-    ...mapGetters("facilities", ["facilities", "facilitiesLoading"])
-  }};
+    ...mapGetters("facilities", ["facilities", "facilitiesLoading"]),
+    ...mapGetters("auth", ["isEmployeeOrManager"])
+  }
+};
 </script>
