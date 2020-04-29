@@ -10,15 +10,13 @@
               data-cy="footerColumn1Body"
               class="col"
             >
-              <a class="text-muted"
-                >We exist to make sporting services and spaces better for
+              <p class="text-muted">
+                We exist to make sporting services and spaces better for
                 everyone. That means investing back into providing quality
                 leisure and health facilities for the good of the communities in
                 which we operate. We are always looking to improve our services,
-                and to give everything we can back to the community.</a
-              ><br />
-              <a class="text-muted">Learn more </a
-              ><a href="/about" title="About" data-cy="footerAboutLink">here</a>
+                and to give everything we can back to the community.
+              </p>
             </div>
           </div>
         </div>
@@ -54,14 +52,14 @@
         </div>
         <div class="column-4 col-sm-2 text-left" data-cy="footerColumn4">
           <div class="line">
-            <a href="/" title="Home">
+            <router-link to="/" title="Home">
               <div class="image text-center">
                 <img
                   src="../assets/logo.png"
                   style="height: 63.6px; width: 198.6px"
                 />
               </div>
-            </a>
+            </router-link>
           </div>
           <div id="slogan" class="text-center text-muted">
             <em>Respire, perspire,<br />ingest, retire</em>
