@@ -10,22 +10,20 @@
           <BookingInformation
             class="booking-info"
             @getUserType="showGuestInfo"
-          ></BookingInformation> </b-col
-        >
+          ></BookingInformation>
+        </b-col>
       </b-row>
       <b-row class="row">
         <b-col v-bind:class="{ 'd-none': hideGuest }">
-      <GuestInformation
+          <GuestInformation
             :activityType="this.selectedActivityId"
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
-          ></GuestInformation> </b-col
-        >
+          ></GuestInformation>
+        </b-col>
       </b-row>
       <b-row class="row">
-
-      <b-col v-bind:class="{ 'd-none': hideCard }">
-
+        <b-col v-bind:class="{ 'd-none': hideCard }">
           <div>
             <div v-bind:class="{ 'd-none': hideQuickPay }">
               <!--               v-if="customer.stripeId != null"-->
@@ -150,7 +148,12 @@ import BookingInformation from "@/components/BookingInformation.vue";
 import GuestInformation from "@/components/GuestInformation.vue";
 import CashInformation from "@/components/CashInformation.vue";
 import { mapGetters, mapActions } from "vuex";
-//TODO If regular booking they MUST pay by card only
+//TODO If regular booking (auto booking) they MUST pay by card only (need it to charge in auto payments)
+//TODO Get session ID for posting bookings
+//TODO fix guest checkout (error to do with email)
+//TODO quick pay checkout is taking payment but not posting bookings
+//TODO add validation on guest checkout to ensure the email doesn't exist in our customer DB
+//TODO body of booking post will vary on cash or card payment (if card most details can be taken from intent/response)
 
 // @ is an alias to /src
 export default {
@@ -283,7 +286,7 @@ export default {
               name: this.firstName
             }
           },
-          cost: this.price,
+          activityTypeId: this.selectedActivityId,
           email: this.email,
           regularSession: this.regularBooking //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
         }
@@ -312,7 +315,7 @@ export default {
                 name: this.firstName
               }
             },
-            cost: this.price,
+            activityTypeId: this.selectedActivityId,
             email: this.email,
             regularSession: false //guests cannot book onto reg sessions
           }
@@ -335,7 +338,7 @@ export default {
                 name: this.firstName
               }
             },
-            cost: this.price,
+            activityTypeId: this.selectedActivityId,
             email: this.email,
             regularSession: this.regularBooking //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
           }
@@ -346,12 +349,11 @@ export default {
           this.paymentResponse.accountId = paymentIntent.data.accountId;
           this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
           this.paymentResponse.transactionId = paymentIntent.data.transactionId;
-          console.log(paymentIntent)
+          console.log(paymentIntent);
         } else {
           this.hideCardError = false;
         }
       }
-      console.log(this.selectedActivityId);
     },
 
     async sendTokenToServer(client_secret) {
@@ -402,26 +404,27 @@ export default {
     async postAllFormData() {
       try {
         /* TODO: Validate and check server response */
-       // let bookedActivity = this.activities.find(
-       //   activity => activity.id == this.selectedActivityId
-       // );
+        // let bookedActivity = this.activities.find(
+        //   activity => activity.id == this.selectedActivityId
+        // );
         const body = {
           //TODO PASS USER
-        //  account: null,
-        //  activity: bookedActivity,
-        //  createdAt: Date.now(),
-        //  receipt: null,
-        //  updatedAt: null,
-        //  type: "booking",
-        //  amount: this.price,
-        //  regularBooking: false,
-        //  participants: 1,
-        //  accountId: 1
+          //  account: null,
+          //  activity: bookedActivity,
+          //  createdAt: Date.now(),
+          //  receipt: null,
+          //  updatedAt: null,
+          //  type: "booking",
+          //  amount: this.price,
+          //  regularBooking: false,
+          //  participants: 1,
+          //  accountId: 1
+          //We only require this data to post a booking
           accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
           participants: 1,
-          regularBooking: false,
-          transactionId: this.paymentResponse.transactionId, //if cash then send cash // can we get the card transaction from stripe in the response body?
-          amount: this.paymentResponse.amountPaid //get from payment response body
+          regularBooking: false, //need to be dynamic (cash payment defaulted to false, same for guest)
+          transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
+          amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
         };
         await this.$http.post(`/bookings/` + 18561, body); //needs to post session id
       } catch (e) {
@@ -480,7 +483,7 @@ export default {
           return false;
         }
       }
-    },
+    }
   },
   async created() {
     if (!this.isEmpty(this.user)) {
@@ -489,8 +492,8 @@ export default {
     }
   },
   async mounted() {
-    console.log(this.$auth)
-    console.log(this.isEmployeeOrManager)
+    console.log(this.$auth);
+    console.log(this.isEmployeeOrManager);
     await this.getActivities();
     this.configureStripe();
   }
