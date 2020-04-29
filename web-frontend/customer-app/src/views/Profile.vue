@@ -28,7 +28,7 @@
       <div id="right-column" class="col-sm-5 align-self-center">
         <div id="membership-card" class="card">
           <h2>Membership</h2>
-          {{ /*activeMemberships()*/ }}
+          {{ activeMemberships }}
         </div>
         <div class="text-center">
           <button
@@ -51,7 +51,8 @@ export default {
   name: "Profile",
   data() {
     return {
-      accounts: []
+      activeAccounts: [],
+      activeMemberships: []
     };
   },
   computed: {
@@ -64,7 +65,7 @@ export default {
     ...mapActions("accounts", ["getAccounts"]),
     ...mapActions("customers", ["getAllCustomers"]),
     ...mapActions("memberships", ["getMemberships", "getAccountMemberships"]),
-    activeAccountIds() {
+    activeCustomerIds() {
       let customers = this.customers;
       if (customers == null) {
         return null;
@@ -72,32 +73,33 @@ export default {
         const emailFilter = customer =>
           customer.emailAddress === this.$auth.user.email;
         customers = this.customers.filter(emailFilter);
-        let customerId = customers[0].id;
-        let accounts = this.accounts;
-        if (accounts == null) {
-          return null;
-        } else {
-          const accountFilter = account =>
-            Number(
-              account._links["Customer Details"].href.split("/").slice(-1)[0]
-            ) === Number(customerId);
-          accounts = this.accounts.filter(accountFilter);
-          accounts = accounts.map(account =>
-            Number(
-              account._links["Customer Details"].href.split("/").slice(-1)[0]
-            )
-          );
-          return accounts;
-        }
+        return Number(customers[0].id);
+      }
+    },
+    activeAccountIds(customerId) {
+      let accounts = this.accounts;
+      if (accounts == null) {
+        return null;
+      } else {
+        const accountFilter = account =>
+          Number(
+            account._links["Customer Details"].href.split("/").slice(-1)[0]
+          ) === customerId;
+        accounts = this.accounts.filter(accountFilter);
+        accounts = accounts.map(account =>
+          Number(account._links.self.href.split("/").slice(-1)[0])
+        );
+        return accounts;
       }
     }
   },
   mounted() {
     this.getAccounts();
     this.getAllCustomers();
-    this.getMemberships();
-    this.accounts = this.activeAccountIds();
-    this.getAccountMemberships(...this.accounts);
+    this.activeAccounts = this.activeAccountIds(this.activeCustomerIds());
+    this.activeMemberships = this.activeAccounts.map(account =>
+      this.getAccountMemberships(account) //TODO: fix getting memberships
+    );
   }
 };
 </script>
