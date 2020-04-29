@@ -28,7 +28,7 @@
       <div id="right-column" class="col-sm-5 align-self-center">
         <div id="membership-card" class="card">
           <h2>Membership</h2>
-          {{ memberships }}
+          {{ /*activeMemberships()*/ }}
         </div>
         <div class="text-center">
           <button
@@ -51,7 +51,7 @@ export default {
   name: "Profile",
   data() {
     return {
-      accountId: null
+      accounts: []
     };
   },
   computed: {
@@ -64,7 +64,7 @@ export default {
     ...mapActions("accounts", ["getAccounts"]),
     ...mapActions("customers", ["getAllCustomers"]),
     ...mapActions("memberships", ["getMemberships", "getAccountMemberships"]),
-    activeMemberships() {
+    activeAccountIds() {
       let customers = this.customers;
       if (customers == null) {
         return null;
@@ -87,9 +87,7 @@ export default {
               account._links["Customer Details"].href.split("/").slice(-1)[0]
             )
           );
-          return accounts.map(accountId =>
-            this.getAccountMemberships(accountId)
-          );
+          return accounts;
         }
       }
     }
@@ -98,6 +96,8 @@ export default {
     this.getAccounts();
     this.getAllCustomers();
     this.getMemberships();
+    this.accounts = this.activeAccountIds();
+    this.getAccountMemberships(...this.accounts);
   }
 };
 </script>
