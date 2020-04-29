@@ -9,7 +9,6 @@
         Create a new Facility
       </b-button>
     </v-alert>
-
     <b-card-group>
       <Facility
         v-for="facility in facilities"
@@ -17,6 +16,11 @@
         :facility="facility"
       ></Facility>
     </b-card-group>
+    <div class="row">
+      <div class="col text-center">
+        <b-button v-if="facilitiesLoading" variant="outline-primary">Load more</b-button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -24,7 +28,7 @@
 
 <script>
 import Facility from "@/components/Facility.vue";
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Facilities",
@@ -32,13 +36,6 @@ export default {
     Facility
   },
   computed: {
-    ...mapGetters("facilities", ["facilities"])
-  },
-  methods: {
-    ...mapActions("facilities", ["getFacilities"])
-  },
-  mounted() {
-    this.getFacilities();
-  }
-};
+    ...mapGetters("facilities", ["facilities", "facilitiesLoading"])
+  }};
 </script>
