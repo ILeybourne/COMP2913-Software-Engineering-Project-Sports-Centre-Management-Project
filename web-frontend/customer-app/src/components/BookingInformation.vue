@@ -22,7 +22,7 @@
         <div class="form-row">
           <label for="activity">Activity:</label>
           <b-form-select
-            v-model="selectedActivityTypeId"
+            v-model="selectedActivityId"
             :options="activityOptions"
             name="activity"
             id="activity"
@@ -145,18 +145,14 @@ export default {
       facilityOptions: [],
       activityOptions: [],
       timeOptions: ["Please Select"],
-
-      selectedActivityTypeId: null,
+      selectedActivityId: null,
       selectedFacilityId: null,
       selectedActivityName: null,
-      selectedActivity: null,
       selectedTime: null,
       price: null,
       selectedDate: null,
-
       userType: null,
       componentWidth: 90,
-
       facilityValid: null,
       activitiesValid: null,
       dateValid: null,
@@ -175,9 +171,9 @@ export default {
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
     getPrice(e) {
-      if (this.selectedActivityTypeId != null) {
-        let selectedActivityType = this.activities.find(x => x.id == e);
-        this.price = selectedActivityType.cost;
+      if (this.selectedActivityId != null) {
+        let selectedActivity = this.activities.find(x => x.id == e);
+        this.price = selectedActivity.cost;
       }
     },
 
@@ -219,9 +215,10 @@ export default {
 
     validateFacility() {
       this.facilityValid = !(this.$data.selectedFacilityId == null);
+      console.log(this.user.email);
     },
     validateActivity() {
-      this.activitiesValid = !(this.$data.selectedActivityTypeId == null);
+      this.activitiesValid = !(this.$data.selectedActivityId == null);
     },
     validateDate() {
       this.dateValid = this.$data.date != null;
@@ -246,7 +243,7 @@ export default {
     submitForm(e) {
       if (
         !(this.$data.selectedFacilityId == null) &&
-        !(this.$data.selectedActivityTypeId == null) &&
+        !(this.$data.selectedActivityId == null) &&
         this.$data.selectedDate != null &&
         this.$data.selectedTime != null
       ) {
@@ -271,15 +268,6 @@ export default {
         }
       }
     },
-    getSelectedActivity() {
-      if (this.route.query.sessionId !== null) {
-        this.selectedActivity = this.$route.query.sessionId;
-      } else {
-        //this needs to return the activity/session Id
-        //this.selectedActivity = this.sessions.find()
-      }
-      return this.selectedActivity;
-    },
     // TODO, shouldn't access routes like this, use props and either inject with router or from booking page
     fillByQuery() {
       this.setFacilityOptions();
@@ -291,7 +279,7 @@ export default {
         //If query isn't empty fill ids, selectedDate and timeOptions
         this.selectedFacilityId = facilityId;
         this.setActivityTypeOptions(facilityId);
-        this.selectedActivityTypeId = activityTypeId;
+        this.selectedActivityId = activityTypeId;
         this.selectActivityName();
         let selectedDateUnix = this.sessions.find(x => x.id == activityId)
           .startTime;
@@ -317,19 +305,20 @@ export default {
       if (this.selectedDate != null) {
         if (
           this.selectedFacilityId != null &&
-          this.selectedActivityTypeId != null
+          this.selectedActivityId != null
         ) {
           let timeArray = ["Please Select"];
 
           for (const activity of this.sessions) {
+            console.log(activity);
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
-            const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))
-              .toString()
-              .substr(-2);
-            const date = ("0" + selectedTime.getDate()).substr(-2);
-            const hours = ("0" + selectedTime.getHours()).substr(-2);
-            const mins = ("0" + selectedTime.getMinutes()).substr(-2);
+            const month = this.addZero(
+              (parseInt(selectedTime.getMonth()) + 1).toString()
+            );
+            const date = this.addZero(selectedTime.getDate());
+            let hours = this.addZero(selectedTime.getUTCHours());
+            const mins = this.addZero(selectedTime.getMinutes());
             let formattedDate = year + "-" + month + "-" + date;
             if (
               activity.name == this.selectedActivityName &&
@@ -343,10 +332,13 @@ export default {
         }
       }
     },
+    addZero(value) {
+      return ("0" + value.toString()).slice(-2);
+    },
     selectActivityName() {
-      if (this.selectedActivityTypeId != null) {
+      if (this.selectedActivityId != null) {
         this.selectedActivityName = this.activities.find(
-          x => Number(x.id) === Number(this.selectedActivityTypeId)
+          x => Number(x.id) === Number(this.selectedActivityId)
         ).name;
       } else {
         this.selectedActivityName = "Please Select";

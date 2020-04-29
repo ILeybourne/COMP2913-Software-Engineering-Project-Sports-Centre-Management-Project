@@ -97,7 +97,7 @@
             class="form-control"
           />
         </div>
-        <div class="form-row" v-if="$store.getters['auth/isEmployeeOrManager']">
+        <div class="form-row" v-if="isEmployeeOrManager">
           <label for="cardRadio">Card or Cash:</label>
           <b-form-group>
             <b-form-radio-group
@@ -174,7 +174,7 @@ button {
 import Vue from "vue";
 import Vuelidate from "vuelidate";
 Vue.use(Vuelidate);
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters } from "vuex";
 
 import {
   required,
@@ -230,16 +230,9 @@ export default {
     store: function() {
       return this.$store;
     },
-    ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
-    ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
-    ...mapGetters("customers", ["customers"]),
-    account: function() {
-      return !this.isEmpty(this.user);
-    }
+    ...mapGetters("auth", ["user", "isEmployeeOrManager"])
   },
   methods: {
-    ...mapActions("customers", ["getAllCustomers"]),
-
     getUserType(e) {
       this.userType = e.toElement.name;
     },
@@ -251,14 +244,7 @@ export default {
       this.surnameValid = this.$data.surname !== "";
     },
     validateEmail() {
-      //TODO handle inputs of same email due to customer constraint
-      // let emailUsed = false;
-      // if(this.account === true){
-      //   if(this.customers.includes(customer => customer.email === this.email)){
-      //     emailUsed = true;
-      //   }
-      // }
-      this.emailValid = this.$data.email !== ""; // && emailUsed);
+      this.emailValid = this.$data.email !== "";
     },
     validatePhone() {
       this.phoneValid =
@@ -287,21 +273,7 @@ export default {
       } else {
         this.callValidation();
       }
-    },
-    isEmpty(obj) {
-      if (Object.keys(obj).length === 0) {
-        return true;
-      } else {
-        if (Object.keys(obj)[0] == "success") {
-          return false;
-        } else {
-          return false;
-        }
-      }
     }
-  },
-  async mounted() {
-    await this.getAllCustomers();
   }
 };
 </script>
