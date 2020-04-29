@@ -213,7 +213,7 @@ export default {
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
+    ...mapGetters("auth", ["user", "isEmployeeOrManager" , "permissions"]),
     ...mapGetters("customers", ["customers"]),
     ...mapGetters("timetable", ["sessions"]),
 
@@ -328,13 +328,6 @@ export default {
       // Talk to our server to get encrpyted prices
       this.paymentSubmit = true;
       let paymentIntent = null;
-      let payment_method = {
-        card: this.card,
-        billing_details: {
-          name: this.firstName
-        }
-      };
-      console.log(payment_method);
       if (this.userType === "guest") {
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
@@ -419,7 +412,6 @@ export default {
     },
 
     async handleCashPayment(value) {
-      console.log(value);
       if (value.changeVal >= 0) {
         await this.postAllFormData();
         this.showTempPage();
@@ -513,9 +505,6 @@ export default {
     }
   },
   async mounted() {
-    // this.getRoles()
-    console.log(this.$auth);
-    console.log(this.isEmployeeOrManager);
     await this.getActivities();
     await this.getAllSessions;
     await this.getActivitySelected();

@@ -137,8 +137,6 @@ label {
 <script>
 import { mapActions, mapGetters } from "vuex";
 export default {
-  ...mapActions("facilities", ["getFacilities", "getActivities"]),
-  ...mapActions("timetable", ["getAllSessions"]),
   name: "BookingInformation",
   data() {
     return {
@@ -215,7 +213,6 @@ export default {
 
     validateFacility() {
       this.facilityValid = !(this.$data.selectedFacilityId == null);
-      console.log(this.user.email);
     },
     validateActivity() {
       this.activitiesValid = !(this.$data.selectedActivityId == null);
@@ -224,9 +221,6 @@ export default {
       this.dateValid = this.$data.date != null;
     },
     validateTime() {
-      console.log(this.user);
-      console.log(this.$data.selectedTime == null);
-      console.log(this.$data.selectedTime === "Please Select");
       this.timeValid = !(
         this.selectedTime == null || this.selectedTime === this.timeOptions[0]
       );
@@ -312,19 +306,12 @@ export default {
           for (const activity of this.sessions) {
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
-            const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))
-              .toString()
-              .substr(-2);
-            const date = ("0" + selectedTime.getDate()).substr(-2);
-            let hours = null;
-            if (parseInt(selectedTime.getHours()) > 0) {
-              hours =
-                "0" +
-                (parseInt(selectedTime.getHours()) - 1).toString().substr(-2);
-            } else {
-              hours = "0" + (11).toString().substr(-2);
-            }
-            const mins = ("0" + selectedTime.getMinutes()).substr(-2);
+            const month = this.addZero(
+              (parseInt(selectedTime.getMonth()) + 1).toString()
+            );
+            const date = this.addZero(selectedTime.getDate());
+            let hours = this.addZero(selectedTime.getUTCHours());
+            const mins = this.addZero(selectedTime.getMinutes());
             let formattedDate = year + "-" + month + "-" + date;
             if (
               activity.name == this.selectedActivityName &&
@@ -337,6 +324,9 @@ export default {
           this.timeOptions = timeArray;
         }
       }
+    },
+    addZero(value) {
+      return ("0" + value.toString()).slice(-2);
     },
     selectActivityName() {
       if (this.selectedActivityId != null) {

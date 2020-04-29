@@ -7,8 +7,8 @@ const getters = {
   isEmployeeOrManager: function(state) {
     if (state.user !== null) {
       return (
-        state.user["https://customer-app.com/userRoles"].includes("Manager") ||
-        state.user["https://customer-app.com/userRoles"].includes("Employee")
+        state.permissions.includes("Manager") ||
+        state.permissions.includes("Employee")
       );
     } else {
       return false;
@@ -16,7 +16,7 @@ const getters = {
   },
   isEmployee: function(state) {
     if (state.user !== null) {
-      return state.user["https://customer-app.com/userRoles"].includes(
+      return state.permissions.includes(
         "Employee"
       );
     } else {
@@ -25,7 +25,7 @@ const getters = {
   },
   isManager: function(state) {
     if (state.user !== null) {
-      return state.user["https://customer-app.com/userRoles"].includes(
+      return state.permissions.includes(
         "Manager"
       );
     } else {
@@ -34,7 +34,7 @@ const getters = {
   },
   isCustomer: function(state) {
     if (state.user !== null) {
-      return state.user["https://customer-app.com/userRoles"].includes(
+      return state.permissions.includes(
         "Customer"
       );
     } else {
@@ -43,17 +43,21 @@ const getters = {
   },
   isAuthenticated: state => state.user !== null,
   user: state => state.user || {},
-  permissions: state => state.claims
+  permissions: state => state.permissions
 };
 
 const mutations = {
   LOGIN: (state, payload) => (state.user = payload),
+  SET_PERMISSIONS: (state, payload) => (state.permissions = payload),
   LOGOUT: state => (state.user = null)
 };
+
+const namespace = "https://customer-app.com/userRoles";
 
 const actions = {
   login({ commit }, data) {
     commit("LOGIN", data);
+    commit('SET_PERMISSIONS', data[namespace]);
   },
   logout({ commit }) {
     commit("LOGOUT");
