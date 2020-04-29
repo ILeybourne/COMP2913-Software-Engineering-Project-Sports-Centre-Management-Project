@@ -1,11 +1,12 @@
 const state = {
   user: null,
-  error: null
+  error: null,
+  permissions: null
 };
 
 const getters = {
   isEmployeeOrManager: function(state) {
-    if (state.user !== null) {
+    if (state.permissions !== null) {
       return (
         state.permissions.includes("Manager") ||
         state.permissions.includes("Employee")
@@ -15,28 +16,22 @@ const getters = {
     }
   },
   isEmployee: function(state) {
-    if (state.user !== null) {
-      return state.permissions.includes(
-        "Employee"
-      );
+    if (state.permissions !== null) {
+      return state.permissions.includes("Employee");
     } else {
       return false;
     }
   },
   isManager: function(state) {
-    if (state.user !== null) {
-      return state.permissions.includes(
-        "Manager"
-      );
+    if (state.permissions !== null) {
+      return state.permissions.includes("Manager");
     } else {
       return false;
     }
   },
   isCustomer: function(state) {
-    if (state.user !== null) {
-      return state.permissions.includes(
-        "Customer"
-      );
+    if (state.permissions !== null) {
+      return state.permissions.includes("Customer");
     } else {
       return false;
     }
@@ -57,7 +52,7 @@ const namespace = "https://customer-app.com/userRoles";
 const actions = {
   login({ commit }, data) {
     commit("LOGIN", data);
-    commit('SET_PERMISSIONS', data[namespace]);
+    commit("SET_PERMISSIONS", data[namespace]);
   },
   logout({ commit }) {
     commit("LOGOUT");
