@@ -224,7 +224,7 @@ export default {
         this.$data.postCode !== ""
       ) {
         this.$emit("submitBillingDetails", this.$data);
-        this.componentWidth = 60;
+
         this.billingNameValid = true;
         this.emailValid = true;
         this.houseNumberValid = true;

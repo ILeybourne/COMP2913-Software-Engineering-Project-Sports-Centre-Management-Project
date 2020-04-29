@@ -9,15 +9,21 @@
         <b-col col lg="maxColSize " v-bind:class="{ 'd-none': hideBooking }">
           <BookingInformation
             class="booking-info"
-            @getUserType="showGuestInfo"
-          ></BookingInformation> </b-col
-        ><b-col v-bind:class="{ 'd-none': hideGuest }">
+            @getUserType="[showGuestInfo($event), getActivitySelected()]"
+          ></BookingInformation>
+        </b-col>
+      </b-row>
+      <b-row class="row">
+        <b-col v-bind:class="{ 'd-none': hideGuest }">
           <GuestInformation
             :activityType="this.selectedActivityId"
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
-          ></GuestInformation> </b-col
-        ><b-col v-bind:class="{ 'd-none': hideCard }">
+          ></GuestInformation>
+        </b-col>
+      </b-row>
+      <b-row class="row">
+        <b-col v-bind:class="{ 'd-none': hideCard }">
           <div>
             <div v-bind:class="{ 'd-none': hideQuickPay }">
               <!--               v-if="customer.stripeId != null"-->
@@ -39,7 +45,7 @@
                     Pay £{{ price }}
                   </button>
                 </div>
-                <h2 id="cardText">Or</h2>
+                <h2 id="cardText" v-if="showQuickPay">Or</h2>
                 <div class="buttonDiv">
                   <button
                     @click="submitQuickPayment()"
@@ -207,8 +213,10 @@ export default {
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("auth", ["user"]),
+    ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
     ...mapGetters("customers", ["customers"]),
+    ...mapGetters("timetable", ["sessions"]),
+
     showQuickPay: function() {
       if (this.customer !== null) {
         return this.customer.stripeId !== null;
@@ -220,6 +228,38 @@ export default {
   methods: {
     ...mapActions("facilities", ["getActivities"]),
     ...mapActions("customers", ["getAllCustomers"]),
+    ...mapActions("timetable", ["getAllSessions"]),
+
+    getActivitySelected() {
+      let activity = null;
+      for (const session of this.sessions) {
+        if (this.selectedFacility == session.resource.id) {
+          if (this.selectedActivityName === session.name) {
+            let date = session.startTime.substring(0, 10);
+            let time = session.startTime.split("T")[1].substring(0, 5);
+            if (this.date.toString() === date.toString()) {
+              if (this.selectedTime === time) {
+                activity = session;
+              }
+            }
+          }
+        }
+      }
+      console.log(activity);
+    },
+    addZero(value) {
+      return ("0" + value.toString()).slice(-2);
+    },
+
+    formatDate(value) {
+      if (value) {
+        const dt = new Date(value);
+        return `${this.addZero(dt.getHours())}|${this.addZero(
+          dt.getMinutes()
+        )}`;
+      }
+      return "";
+    },
 
     async getCustomer() {
       this.customer = this.customers.find(
@@ -231,6 +271,7 @@ export default {
       this.hideBooking = true;
       this.hideGuest = true;
       this.hideCard = true;
+      this.hideCash = true;
       this.hideSuccess = false;
     },
 
@@ -287,6 +328,13 @@ export default {
       // Talk to our server to get encrpyted prices
       this.paymentSubmit = true;
       let paymentIntent = null;
+      let payment_method = {
+        card: this.card,
+        billing_details: {
+          name: this.firstName
+        }
+      };
+      console.log(payment_method);
       if (this.userType === "guest") {
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
@@ -371,7 +419,8 @@ export default {
     },
 
     async handleCashPayment(value) {
-      if (value.change >= 0) {
+      console.log(value);
+      if (value.changeVal >= 0) {
         await this.postAllFormData();
         this.showTempPage();
       } else {
@@ -455,16 +504,6 @@ export default {
           return false;
         }
       }
-    },
-
-    getRoles() {
-      let roles = this.$http
-        .get(
-          "https://prod-comp2931/api/v2/users/" + this.customer.id + "/roles"
-        )
-        .header("authorization", "Bearer MGMT_API_ACCESS_TOKEN");
-
-      console.log(roles);
     }
   },
   async created() {
@@ -475,7 +514,11 @@ export default {
   },
   async mounted() {
     // this.getRoles()
+    console.log(this.$auth);
+    console.log(this.isEmployeeOrManager);
     await this.getActivities();
+    await this.getAllSessions;
+    await this.getActivitySelected();
     this.configureStripe();
   }
 };

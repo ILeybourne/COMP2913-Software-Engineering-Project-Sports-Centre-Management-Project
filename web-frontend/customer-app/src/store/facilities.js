@@ -18,7 +18,6 @@ const state = {
     }
   },
   facilities: [],
-
   activities: []
 };
 

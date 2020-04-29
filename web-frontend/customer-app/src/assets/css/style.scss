@@ -769,11 +769,13 @@ Footer section
 }
 
 .copyright a {
-  color: #fff;
+  color: #007bff;
+  text-decoration: underline;
 }
 
 .copyright a:hover {
   color: #fcff18;
+  background-color: #505050;
 }
 
 .footer-menu {

@@ -247,11 +247,6 @@
           </div>
         </div>
       </div>
-      <div style="display: none">
-        <img src="../assets/heroImg.jpg" ref="heroImg" />
-        <img src="../assets/addSectionImg.jpg" ref="addImg" />
-        <img src="../assets/healthyFood.jpeg" ref="foodImg" />
-      </div>
     </section>
     <!-- BMI section end -->
     <section>
@@ -271,16 +266,17 @@
   </div>
 </template>
 <script>
+// import "~./assests/heroImg.jpg";
 export default {
-  name: "About",
+  name: "Home",
   data() {
     return {
       height: null,
       weight: null,
 
-      heroUrl: null,
-      addUrl: null,
-      foodUrl: null
+      heroUrl: require("@/assets/heroImg.jpg"),
+      addUrl: require("@/assets/addSectionImg.jpg"),
+      foodUrl: require("@/assets/healthyFood.jpeg")
     };
   },
   computed: {
@@ -293,17 +289,6 @@ export default {
         return 0;
       }
     }
-  },
-  methods: {
-    //TODO use webservice to get url
-    getUrls() {
-      this.heroUrl = this.$refs.heroImg.src;
-      this.addUrl = this.$refs.addImg.src;
-      this.foodUrl = this.$refs.foodImg.src;
-    }
-  },
-  mounted() {
-    this.getUrls();
   }
 };
 </script>

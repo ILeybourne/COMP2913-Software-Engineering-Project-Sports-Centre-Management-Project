@@ -9,6 +9,7 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentMethod;
 import com.stripe.model.PaymentMethodCollection;
+import com.stripe.model.Subscription;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentMethodListParams;
@@ -26,7 +27,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
@@ -40,6 +43,8 @@ public class PaymentController {
     private final ActivityTypeService activityTypeService;
     private final CustomerService customerService;
     private final CustomerRepository customerRepository;
+
+
 
     public PaymentController(ActivityTypeService activityTypeService, CustomerService customerService, CustomerRepository customerRepository) {
         this.activityTypeService = activityTypeService;
@@ -81,11 +86,20 @@ public class PaymentController {
     }
 
     static class  ActivityRequestBody {
+        private Object payment_method;
         private Long activityTypeId;
         private Boolean regularSession;
         private String email;
         private Long customerId;
         private String stripeId;
+
+        public Object getPayment_Method() {
+            return payment_method;
+        }
+
+        public void setPayment_Method(Object payment_method) {
+            this.payment_method = payment_method;
+        }
 
         public Long getActivityTypeId() {
             return activityTypeId;
@@ -101,6 +115,45 @@ public class PaymentController {
 
         public void setRegularSession(Boolean regularSession) {
             this.regularSession = regularSession;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public Long getCustomerId() {
+            return customerId;
+        }
+
+        public void setCustomerId(Long customerId) {
+            this.customerId = customerId;
+        }
+
+        public String getStripeId() {
+            return stripeId;
+        }
+
+        public void setStripeId(String stripeId) {
+            this.stripeId = stripeId;
+        }
+    }
+
+    static class  SubscriptionRequestBody {
+        private String planType;
+        private String email;
+        private Long customerId;
+        private String stripeId;
+
+        public String getPlanType() {
+            return planType;
+        }
+
+        public void setPlanType(String planType) {
+            this.planType = planType;
         }
 
         public String getEmail() {
@@ -169,7 +222,32 @@ public class PaymentController {
                             .build();
             intent = PaymentIntent.create(intentParams);
 
-            logger.info("💰 PaymentIntent created!");
+
+
+
+            Map<String, Object> customerParamsUpdate = new HashMap<String, Object>();
+
+//            PaymentMethodListParams params =
+//                    PaymentMethodListParams.builder()
+//                            .setCustomer(internalCustomer.getStripeId())
+//                            .setType(PaymentMethodListParams.Type.CARD)
+//                            .build();
+
+
+//            PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
+//
+//            //Get first card
+//            String paymentMethod = paymentMethods.getData().get(0).getId();
+
+            Map<String, Object> paymentParams = new HashMap<>();
+            paymentParams.put("default_payment_method", requestBody.getPayment_Method());
+            customerParamsUpdate.put("invoice_settings", paymentParams);
+
+            Customer customerWithDefault = customer.update(customerParamsUpdate);
+
+
+            logger.info("requestBody.toString()");
+            logger.info(requestBody.toString());
             responseBody.setClientSecret(intent.getClientSecret());
         } catch (CardException err) {
             // Handle "hard declines" e.g. insufficient funds, expired card, etc
@@ -183,7 +261,7 @@ public class PaymentController {
         return  responseBody;
     }
 
-    //Guest Payment
+    //Customer Payment
     //TODO Move into response body
     @PostMapping(path = "/intent/card/{customer_id}")
     public PayResponseBody createFromNewCard(@RequestBody ActivityRequestBody requestBody, @PathVariable Long customer_id) throws StripeException {
@@ -257,7 +335,6 @@ public class PaymentController {
         uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer =null;
         Customer customer = null;
         PayResponseBody responseBody = new PayResponseBody();
-        logger.info("cumsterid request");
         try {
             if(customerRepository.findById(customer_id).isPresent()) {
                 //get api customer
@@ -294,6 +371,8 @@ public class PaymentController {
                             .build();
 
                     intent = PaymentIntent.create(intentParams);
+
+
                     logger.info("💰 Payment received!");
 //                  The payment is complete and the money has been moved
 //                  You can add any post-payment code here (e.g. shipping, fulfillment, etc)
@@ -314,6 +393,49 @@ public class PaymentController {
             }
         }
         return responseBody;
+    }
+
+    //Customer Saved Card Payment
+    @PreAuthorize("hasAuthority('SCOPE_can:cash_booking')")
+    @PostMapping(path = "/subscription/saved/{customer_id}")
+    public void addSubscriptionToCustomer(@RequestBody ActivityRequestBody requestBody, @PathVariable Long customer_id) throws StripeException {
+        //TODO Move to env
+        Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
+        PaymentIntent intent = null;
+        uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer =null;
+        Customer customer = null;
+        PayResponseBody responseBody = new PayResponseBody();
+        try {
+            if(customerRepository.findById(customer_id).isPresent()) {
+                //get api customer
+                internalCustomer = customerRepository.findById(customer_id).get();
+                //get stripe customer
+                customer = Customer.retrieve(internalCustomer.getStripeId());
+
+                Map<String, Object> item = new HashMap<>();
+                item.put("plan", "plan_FSDjyHWis0QVwl");
+                Map<String, Object> items = new HashMap<>();
+                items.put("0", item);
+                Map<String, Object> expand = new HashMap<>();
+                expand.put("0", "latest_invoice.payment_intent");
+                Map<String, Object> params = new HashMap<>();
+                params.put("customer", customer.getId());
+                params.put("items", items);
+                params.put("expand", expand);
+                Subscription subscription = Subscription.create(params);
+                responseBody = null;
+            }else {
+                responseBody.setError("Customer id not Found!");
+            }
+        } catch (CardException err) {
+            // Handle "hard declines" e.g. insufficient funds, expired card, etc
+            // See https://stripe.com/docs/declines/codes for more
+            if (err.getCode().equals("authentication_required")) {
+                responseBody.setError("This card requires authentication in order to proceeded. Please use a different card");
+            } else {
+                responseBody.setError(err.getMessage());
+            }
+        }
     }
 
     @PostMapping(path = "/customer/stripe_id/{customer_id}")
