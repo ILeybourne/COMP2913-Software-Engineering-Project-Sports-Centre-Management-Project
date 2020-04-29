@@ -10,20 +10,22 @@
           <BookingInformation
             class="booking-info"
             @getUserType="showGuestInfo"
-          ></BookingInformation>
-        </b-col>
+          ></BookingInformation> </b-col
+        >
       </b-row>
       <b-row class="row">
         <b-col v-bind:class="{ 'd-none': hideGuest }">
-          <GuestInformation
+      <GuestInformation
             :activityType="this.selectedActivityId"
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
-          ></GuestInformation>
-        </b-col>
+          ></GuestInformation> </b-col
+        >
       </b-row>
       <b-row class="row">
-        <b-col v-bind:class="{ 'd-none': hideCard }">
+
+      <b-col v-bind:class="{ 'd-none': hideCard }">
+
           <div>
             <div v-bind:class="{ 'd-none': hideQuickPay }">
               <!--               v-if="customer.stripeId != null"-->
@@ -45,7 +47,7 @@
                     Pay £{{ price }}
                   </button>
                 </div>
-                <h2 id="cardText">Or</h2>
+                <h2 id="cardText" v-if="showQuickPay">Or</h2>
                 <div class="buttonDiv">
                   <button
                     @click="submitQuickPayment()"
@@ -148,10 +150,7 @@ import BookingInformation from "@/components/BookingInformation.vue";
 import GuestInformation from "@/components/GuestInformation.vue";
 import CashInformation from "@/components/CashInformation.vue";
 import { mapGetters, mapActions } from "vuex";
-//TODO If regular booking (auto booking) they MUST pay by card only (need it to charge in auto payments)
-//TODO Get session ID for posting bookings
-//TODO fix guest checkout and check end point is working as expected
-//TODO body of booking post will vary on cash or card payment (if card most details can be taken from intent/response)
+//TODO If regular booking they MUST pay by card only
 
 // @ is an alias to /src
 export default {
@@ -255,14 +254,12 @@ export default {
       );
       return hasStripeId.data;
     },
-
     bookByCash() {
       this.hideBooking = true;
       this.hideGuest = true;
       this.hideCard = true;
       this.hideSuccess = false;
     },
-
     configureStripe() {
       //TODO get from env
       // eslint-disable-next-line no-undef
@@ -286,7 +283,7 @@ export default {
               name: this.firstName
             }
           },
-          activityTypeId: this.selectedActivityId,
+          cost: this.price,
           email: this.email,
           regularSession: this.regularBooking //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
         }
@@ -315,7 +312,7 @@ export default {
                 name: this.firstName
               }
             },
-            activityTypeId: this.selectedActivityId,
+            cost: this.price,
             email: this.email,
             regularSession: false //guests cannot book onto reg sessions
           }
@@ -338,10 +335,10 @@ export default {
                 name: this.firstName
               }
             },
-            activityTypeId: this.selectedActivityId,
+            cost: this.price,
             email: this.email,
             regularSession: this.regularBooking //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
-          },
+          }
         );
         if (paymentIntent.status === 200) {
           this.sendTokenToServer(paymentIntent.data.clientSecret);
@@ -349,11 +346,12 @@ export default {
           this.paymentResponse.accountId = paymentIntent.data.accountId;
           this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
           this.paymentResponse.transactionId = paymentIntent.data.transactionId;
-          console.log(paymentIntent);
+          console.log(paymentIntent)
         } else {
           this.hideCardError = false;
         }
       }
+      console.log(this.selectedActivityId);
     },
 
     async sendTokenToServer(client_secret) {
@@ -404,27 +402,26 @@ export default {
     async postAllFormData() {
       try {
         /* TODO: Validate and check server response */
-        // let bookedActivity = this.activities.find(
-        //   activity => activity.id == this.selectedActivityId
-        // );
+       // let bookedActivity = this.activities.find(
+       //   activity => activity.id == this.selectedActivityId
+       // );
         const body = {
           //TODO PASS USER
-          //  account: null,
-          //  activity: bookedActivity,
-          //  createdAt: Date.now(),
-          //  receipt: null,
-          //  updatedAt: null,
-          //  type: "booking",
-          //  amount: this.price,
-          //  regularBooking: false,
-          //  participants: 1,
-          //  accountId: 1
-          //We only require this data to post a booking
+        //  account: null,
+        //  activity: bookedActivity,
+        //  createdAt: Date.now(),
+        //  receipt: null,
+        //  updatedAt: null,
+        //  type: "booking",
+        //  amount: this.price,
+        //  regularBooking: false,
+        //  participants: 1,
+        //  accountId: 1
           accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
           participants: 1,
-          regularBooking: false, //need to be dynamic (cash payment defaulted to false, same for guest)
-          transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
-          amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
+          regularBooking: false,
+          transactionId: this.paymentResponse.transactionId, //if cash then send cash // can we get the card transaction from stripe in the response body?
+          amount: this.paymentResponse.amountPaid //get from payment response body
         };
         await this.$http.post(`/bookings/` + 18561, body); //needs to post session id
       } catch (e) {
@@ -484,16 +481,6 @@ export default {
         }
       }
     },
-
-    getRoles() {
-      let roles = this.$http
-        .get(
-          "https://prod-comp2931/api/v2/users/" + this.customer.id + "/roles"
-        )
-        .header("authorization", "Bearer MGMT_API_ACCESS_TOKEN");
-
-      console.log(roles);
-    }
   },
   async created() {
     if (!this.isEmpty(this.user)) {
@@ -502,9 +489,8 @@ export default {
     }
   },
   async mounted() {
-    // this.getRoles()
-    console.log(this.$auth);
-    console.log(this.isEmployeeOrManager);
+    console.log(this.$auth)
+    console.log(this.isEmployeeOrManager)
     await this.getActivities();
     this.configureStripe();
   }

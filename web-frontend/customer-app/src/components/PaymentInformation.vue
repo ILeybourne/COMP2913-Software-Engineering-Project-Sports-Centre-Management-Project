@@ -141,7 +141,7 @@ export default {
       cardNumber: "",
       date: "",
       secureCode: "",
-      componentWidth: 60,
+      componentWidth: 90,
       nameValid: "",
       cardTypeValid: "",
       cardNumberValid: "",

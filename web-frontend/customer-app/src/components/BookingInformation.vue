@@ -76,7 +76,7 @@
             name="guest"
             @click="getUserType($event)"
             :disabled="!timeValid"
-            v-if="user.email === null"
+            v-if="!account"
           >
             Checkout As Guest
           </button>
@@ -86,7 +86,7 @@
             name="account"
             @click="getUserType($event)"
             :disabled="!timeValid"
-            v-if="user.email !== null"
+            v-if="account"
           >
             Checkout With Account
           </button>
@@ -145,17 +145,14 @@ export default {
       facilityOptions: [],
       activityOptions: [],
       timeOptions: ["Please Select"],
-
       selectedActivityId: null,
       selectedFacilityId: null,
       selectedActivityName: null,
       selectedTime: null,
       price: null,
       selectedDate: null,
-
       userType: null,
       componentWidth: 90,
-
       facilityValid: null,
       activitiesValid: null,
       dateValid: null,
@@ -165,7 +162,10 @@ export default {
   computed: {
     ...mapGetters("facilities", ["facilities", "activities"]),
     ...mapGetters("timetable", ["sessions"]),
-    ...mapGetters("auth", ["user"])
+    ...mapGetters("auth", ["user"]),
+    account: function() {
+      return !this.isEmpty(this.user);
+    }
   },
   methods: {
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
@@ -215,6 +215,7 @@ export default {
 
     validateFacility() {
       this.facilityValid = !(this.$data.selectedFacilityId == null);
+      console.log(this.user.email);
     },
     validateActivity() {
       this.activitiesValid = !(this.$data.selectedActivityId == null);
@@ -267,15 +268,6 @@ export default {
         }
       }
     },
-    getSelectedActivity() {
-      if (this.route.query.sessionId !== null) {
-        this.selectedActivity = this.$route.query.sessionId;
-      } else {
-        //this needs to return the activity/session Id
-        //this.selectedActivity = this.sessions.find()
-      }
-      return this.selectedActivity;
-    },
     // TODO, shouldn't access routes like this, use props and either inject with router or from booking page
     fillByQuery() {
       this.setFacilityOptions();
@@ -318,14 +310,15 @@ export default {
           let timeArray = ["Please Select"];
 
           for (const activity of this.sessions) {
+            console.log(activity);
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
-            const month = ("0" + (parseInt(selectedTime.getMonth()) + 1))
-              .toString()
-              .substr(-2);
-            const date = ("0" + selectedTime.getDate()).substr(-2);
-            const hours = ("0" + selectedTime.getHours()).substr(-2);
-            const mins = ("0" + selectedTime.getMinutes()).substr(-2);
+            const month = this.addZero(
+              (parseInt(selectedTime.getMonth()) + 1).toString()
+            );
+            const date = this.addZero(selectedTime.getDate());
+            let hours = this.addZero(selectedTime.getUTCHours());
+            const mins = this.addZero(selectedTime.getMinutes());
             let formattedDate = year + "-" + month + "-" + date;
             if (
               activity.name == this.selectedActivityName &&
@@ -338,6 +331,9 @@ export default {
           this.timeOptions = timeArray;
         }
       }
+    },
+    addZero(value) {
+      return ("0" + value.toString()).slice(-2);
     },
     selectActivityName() {
       if (this.selectedActivityId != null) {

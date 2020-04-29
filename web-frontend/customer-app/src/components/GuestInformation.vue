@@ -97,7 +97,7 @@
             class="form-control"
           />
         </div>
-        <div class="form-row" v-if="$store.getters['auth/isEmployeeOrManager']">
+        <div class="form-row" v-if="isEmployeeOrManager">
           <label for="cardRadio">Card or Cash:</label>
           <b-form-group>
             <b-form-radio-group
@@ -199,7 +199,7 @@ export default {
       phone: "",
       health: "",
       // cardCash: "card",
-      componentWidth: 60,
+      componentWidth: 90,
       firstNameValid: null,
       surnameValid: null,
       emailValid: null,
@@ -226,15 +226,13 @@ export default {
       numeric
     }
   },
-  computed:{
-    store: function () {
-      return this.$store
+  computed: {
+    store: function() {
+      return this.$store;
     },
-    ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
-  }
-,
+    ...mapGetters("auth", ["user", "isEmployeeOrManager"])
+  },
   methods: {
-
     getUserType(e) {
       this.userType = e.toElement.name;
     },
