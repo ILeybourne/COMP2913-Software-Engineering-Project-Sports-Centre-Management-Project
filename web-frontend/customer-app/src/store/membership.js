@@ -1,9 +1,12 @@
 import axios from "@/plugins/axios.plugin";
+import { formatCurrency } from "../util/format.helpers";
 
 const state = {
   membershipTypes: [],
   selectedMembershipType: [],
-  purchasedMembership: []
+  purchasedMembership: [],
+  memberships: [],
+  accountMemberships: []
 };
 
 const getters = {
@@ -11,18 +14,24 @@ const getters = {
     state.membershipTypes.map(membershipType => {
       return {
         ...membershipType,
-        formattedCost: "£" + membershipType.cost.toFixed(2)
+        formattedCost: formatCurrency(membershipType)
       };
     }),
   selectedMembershipType: state => state.selectedMembershipType,
-  purchasedMembership: state => state.purchasedMembership
+  purchasedMembership: state => state.purchasedMembership,
+  memberships: state => state.memberships,
+  accountMemberships: state => state.accountMemberships
 };
 
 const mutations = {
   SET_MEMBERSHIPTYPES: (state, payload) => (state.membershipTypes = payload),
   SET_SELECTEDMEMBERSHIPTYPE: (state, payload) =>
     (state.selectedMembershipType = payload),
-  SET_PURCHASEDMEMBERSHIP: (state, payload => (state.purchasedMembership = payload))
+  SET_PURCHASEDMEMBERSHIP:
+    (state, payload => (state.purchasedMembership = payload)),
+  SET_MEMBERSHIPS: (state, payload) => (state.memberships = payload),
+  SET_ACCOUNTMEMBERSHIPS: (state, payload) =>
+    (state.accountMemberships = payload)
 };
 
 const actions = {
@@ -43,6 +52,22 @@ const actions = {
     const { data } = await axios.get(`/membership/members/${membershipId}`);
     commit("SET_PURCHASEDMEMBERSHIP", data);
     commit("loading/FINISH_LOADING", null, { root: true });
+  },
+  async getMemberships({ commit }) {
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.get("/membership");
+    commit("SET_MEMBERSHIPS", data._embedded.membershipDToes);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return data;
+  },
+  async getAccountMemberships({ commit }, accountId) {
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.get(
+      `/membership/members/account/${accountId}`
+    );
+    commit("SET_ACCOUNTMEMBERSHIPS", data._embedded.membershipDToes);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return data;
   }
 };
 
