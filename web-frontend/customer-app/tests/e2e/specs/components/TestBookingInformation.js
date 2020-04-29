@@ -1,6 +1,6 @@
 describe("TestBookingInformation", () => {
   it("Navigate to home page", function() {
-    cy.visit("/");
+    cy.visit("/bookings");
   });
 
   it("Check labels exist", function() {

@@ -11,7 +11,9 @@ const formatDate = value => {
 };
 
 const state = {
-  sessions: []
+  sessions: [],
+  bookings: [],
+  resources: []
 };
 
 const getters = {
@@ -22,6 +24,8 @@ const getters = {
         formattedStartAt: formatDate(activity.startTime)
       };
     }),
+  bookings: state => state.bookings,
+  resources: state => state.resources,
   getSessionsForFacility: state => facilityId => {
     return state.sessions.filter(
       session => Number(session.resource.id) === Number(facilityId)
@@ -31,6 +35,8 @@ const getters = {
 
 const mutations = {
   SET_SESSIONS: (state, payload) => (state.sessions = payload),
+  SET_BOOKINGS: (state, payload) => (state.bookings = payload),
+  SET_RESOURCES: (state, payload) => (state.resources = payload),
   ADD_SESSION: (state, payload) => state.sessions.push(payload)
 };
 
@@ -55,11 +61,29 @@ const actions = {
     commit("SET_SESSIONS", data);
     commit("loading/FINISH_LOADING", null, { root: true });
   },
-  async deleteActivities({ commit }, activityId) {
+  async getActivities({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.delete(`/activities/${activityId}`);
-    commit("SET_SESSIONS", data);
+    const { data } = await axios.get("/activities");
+    let session = data._embedded.activityDToes;
+    commit("SET_SESSIONS", session);
     commit("loading/FINISH_LOADING", null, { root: true });
+    return session;
+  },
+  async getBookings({ commit }){
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.get("/bookings");
+    let booking = data._embedded.bookingDToes;
+    commit("SET_BOOKINGS", booking);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return booking;
+  },
+  async getResources({ commit }){
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.get("/resources");
+    let resource = data._embedded.resourceDToes;
+    commit("SET_RESOURCES", resource);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return resource;
   },
   async createSession({ commit }, { activityId, ...session }) {
     commit("loading/START_LOADING", null, { root: true });
