@@ -28,6 +28,9 @@ authHttp.interceptors.response.use(
     return response;
   },
   error => {
+    if (!error.response) {
+      router.push({ name: "ServerError" });
+    }
     if (error.response.status === 400) {
       store.dispatch("validation/setValidationErrors", error.response.data);
     }
