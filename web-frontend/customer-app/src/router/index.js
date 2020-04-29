@@ -17,6 +17,7 @@ import PageNotFound from "@/views/PageNotFound";
 import Unauthorised from "@/views/Unauthorised";
 import FacilityTimetable from "@/components/FacilityTimetable";
 import FacilityCreate from "@/components/FacilityCreate";
+import Checkout from "@/views/Checkout";
 
 Vue.use(VueRouter);
 
@@ -139,6 +140,11 @@ const routes = [
   {
     path: "*",
     component: PageNotFound
+  },
+  {
+    path: "/checkout",
+    name: "Checkout",
+    component: Checkout
   }
 ];
 

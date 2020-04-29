@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
+import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
@@ -84,6 +85,11 @@ public class MembershipController {
         return pagedResourcesAssembler.toModel(allMembers, membershipPagedResourcesAssembler);
     }
 
+    @PostMapping("/membercheck")
+    @Operation(summary = "Checks to see if a member has an active membership")
+    public Boolean checkMember( @Parameter(description = "A membership DTO Object", required = true)@Valid @RequestBody MembershipDTO membership){
+        return membershipService.activeMemberCheck(membership.getEmailAddress());
+    }
 
     //Add a member, store membership with account Id and membership type id
     @PostMapping("/{membership_type_id}")

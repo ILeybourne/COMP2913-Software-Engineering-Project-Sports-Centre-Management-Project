@@ -44,14 +44,10 @@ export default {
       getActivity: "getAllSessions"
     }),
     async fillData() {
-      // //console.log(this.startDate);
       const endDate = this.$moment(this.startDate);
       const startDate = endDate.clone().subtract("days", 6);
-      // //console.log(startDate);
-      // //console.log(endDate);
       const data = {};
       const response = await this.getActivity();
-      console.log(response);
       const thisWeek = response
         .map(session => {
           const startTimestamp = this.$moment(session.startTime);
@@ -69,7 +65,6 @@ export default {
           );
         });
       const grouped = groupBy(thisWeek, "dayOfYear");
-      // //console.log(grouped);
       let day0 = startDate.dayOfYear();
       const weeklyUsage = [];
       const dates = [
@@ -88,12 +83,10 @@ export default {
         if (!y) {
           y = [];
         }
-        // //console.log(y);
         weeklyUsage.push(y.length);
       }
 
       data.labels = dates.map(date => date.format("DD-MMM"));
-      // //console.log(data.labels);
       data.datasets = [
         {
           label: "Weekly Usage",

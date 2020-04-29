@@ -1,16 +1,12 @@
 <template>
   <div class="payment-container">
-    <div class="padding-div">
-      <button
-        type="button"
-        class="btn btn-outline-secondary"
-        style="padding:15px;"
-      >
-        Back
-      </button>
-    </div>
     <div class="heading-div">
-      <h1>Membership Options</h1>
+      <h1><span>Membership</span> Options</h1>
+      <p>
+        All our memberships include access to the facilities and activities we
+        we offer at a reduced rate, with the option to book onto regular
+        sessions at a discounted price.
+      </p>
     </div>
     <div>
       <MembershipOptions></MembershipOptions>
@@ -22,10 +18,25 @@
 .padding-div {
   padding: 15px;
 }
-
-.heading-div {
+.heading-div{
+  padding: 10px;
   margin: auto;
+}
+@media screen and (max-width: 600px) {
+  .heading-div h1 {
+    font-size: 10vw;
+  }
+}
+.heading-div h1{
   width: 50%;
+  margin: auto;
+}
+.heading-div p{
+  width: 100%;
+  padding: 10px;
+}
+.heading-div span{
+  background: #fcff18;
 }
 </style>
 

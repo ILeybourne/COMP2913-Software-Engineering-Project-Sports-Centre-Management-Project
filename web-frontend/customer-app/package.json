@@ -29,6 +29,7 @@
     "canvas": "^2.6.1",
     "chart.js": "^2.9.3",
     "core-js": "^3.6.4",
+    "cypress": "^4.4.1",
     "fibers": "^4.0.2",
     "lodash.orderby": "^4.6.0",
     "moment": "^2.24.0",
