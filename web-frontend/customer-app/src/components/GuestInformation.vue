@@ -97,7 +97,7 @@
             class="form-control"
           />
         </div>
-        <div class="form-row" v-if="$store.getters['auth/isEmployeeOrManager']">
+        <div class="form-row" v-if="isEmployeeOrManager">
           <label for="cardRadio">Card or Cash:</label>
           <b-form-group>
             <b-form-radio-group
