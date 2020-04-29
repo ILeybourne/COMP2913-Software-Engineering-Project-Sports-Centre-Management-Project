@@ -154,20 +154,19 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public void automatedMembershipRenewals() throws StripeException {
         List<Membership> lastPayments = membershipRepository.findLastWithRepeatPayments();
-
+        Integer subtractDays = -7;
+        Integer addDays = 2;
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        Date now = new Date();
+        c1.setTime(now);
+        c1.add(Calendar.DATE, subtractDays);
+        Date paymentDueDate = c1.getTime(); //Takes payment 7 days before membership expires
+        c2.setTime(now);
+        c2.add(Calendar.DATE, addDays);
+        Date paymentDueEndDate = c2.getTime();
         for (Membership lastMembership : lastPayments) {
-            Integer subtractDays = -7;
-            Integer addDays = 1;
-            Calendar c1 = Calendar.getInstance();
-            Calendar c2 = Calendar.getInstance();
-            Date now = new Date();
-            c1.setTime(now);
-            c1.add(Calendar.DATE, subtractDays);
-            Date paymentDueDate = c1.getTime(); //Takes payment 7 days before membership expires
-            c2.setTime(now);
-            c2.add(Calendar.DATE, addDays);
-            Date paymentDueEndDate = c2.getTime();
-            if (lastMembership.getEndDate().after(paymentDueDate) && lastMembership.getEndDate().before(now)) { //only takes payments that enter this window
+            if (lastMembership.getEndDate().after(paymentDueDate) && lastMembership.getEndDate().before(paymentDueEndDate)) { //only takes payments that enter this window
                 Membership renewedMembership = Membership.renewMembership(lastMembership);
                 Customer customer = renewedMembership.getAccount().getCustomer();
                 try {

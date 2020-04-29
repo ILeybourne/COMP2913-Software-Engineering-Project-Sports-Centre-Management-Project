@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.lang.reflect.Member;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.persistence.*;
@@ -14,9 +15,9 @@ import javax.persistence.*;
 /**
  * Membership data, including account number & membership type chosen
  * Start date and end date (based on duration of chosen membership)
-*/
+ */
 @Entity
- public class Membership extends Sale {
+public class Membership extends Sale {
 
     @CreationTimestamp
     private Date created_at;
@@ -89,16 +90,16 @@ import javax.persistence.*;
     }
 
     public Date getStartDate() {
-      return startDate;
+        return startDate;
     }
 
     public void setStartDate(Date startDate) {
-      this.startDate = startDate;
-      setEndDate(startDate);
+        this.startDate = startDate;
+        setEndDate(startDate);
     }
 
     public Date getEndDate() {
-      return endDate;
+        return endDate;
     }
 
     public void setEndDate(Date startDate) {
@@ -106,7 +107,10 @@ import javax.persistence.*;
     }
 
     public Date calculateEndDate(Date startDate, Integer duration){
-        Date endDate = new Date(startDate.getTime()+((24*60*60*1000) * duration)); //Math at the end converts a day into milliseconds
+        Calendar c = Calendar.getInstance();
+        c.setTime(startDate);
+        c.add(Calendar.DATE, duration);
+        endDate = c.getTime();
         return endDate;
     }
 
