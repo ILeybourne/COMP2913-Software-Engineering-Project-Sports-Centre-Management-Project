@@ -70,6 +70,7 @@ export default {
     ...mapActions("timetable", ["deleteSession"]),
     async deleteASession() {
       await this.deleteSession(this.session.id);
+      // TODO, close modal and clear from state.
     }
   }
 };

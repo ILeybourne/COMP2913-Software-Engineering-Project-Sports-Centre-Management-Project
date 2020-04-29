@@ -57,7 +57,7 @@ const actions = {
   },
   async deleteSession({ commit }, sessionId) {
     commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.delete(`/activity/${sessionId}`);
+    const { data } = await axios.delete(`/activities/${sessionId}`);
     commit("SET_SESSIONS", data);
     commit("loading/FINISH_LOADING", null, { root: true });
   },
