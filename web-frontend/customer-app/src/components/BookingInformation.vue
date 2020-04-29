@@ -215,7 +215,6 @@ export default {
 
     validateFacility() {
       this.facilityValid = !(this.$data.selectedFacilityId == null);
-      console.log(this.user.email);
     },
     validateActivity() {
       this.activitiesValid = !(this.$data.selectedActivityId == null);
@@ -224,9 +223,6 @@ export default {
       this.dateValid = this.$data.date != null;
     },
     validateTime() {
-      console.log(this.user);
-      console.log(this.$data.selectedTime == null);
-      console.log(this.$data.selectedTime === "Please Select");
       this.timeValid = !(
         this.selectedTime == null || this.selectedTime === this.timeOptions[0]
       );
@@ -310,7 +306,6 @@ export default {
           let timeArray = ["Please Select"];
 
           for (const activity of this.sessions) {
-            console.log(activity);
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
             const month = this.addZero(
