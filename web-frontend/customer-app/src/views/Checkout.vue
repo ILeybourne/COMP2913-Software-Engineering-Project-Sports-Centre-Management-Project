@@ -50,7 +50,7 @@
                   id="paymentButton"
                   @click="submitPayment($event)"
                 >
-                  Pay £{{ membershipSaleDetails.cost }}
+                  Pay {{ formatCurrency(membershipSaleDetails.cost) }}
                 </button>
               </div>
             </div>
@@ -148,6 +148,7 @@
 <script>
 import CheckoutItem from "@/components/CheckoutItem.vue";
 import BillingInformation from "@/components/BillingInformation.vue";
+import { formatCurrency } from "@/util/format.helpers";
 //TODO plug in payment and post membership on success
 
 // @ is an alias to /src
@@ -189,6 +190,7 @@ export default {
     };
   },
   methods: {
+    formatCurrency: formatCurrency,
     billingSuccessStatus(value) {
       this.billingSuccess = true;
       console.log(value);

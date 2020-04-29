@@ -127,7 +127,7 @@
           <ul class="membershipTypeDetails" v-if="selectedOption !== null">
             <li class="form-details-title">MEMBERSHIP DETAILS</li>
             <li>Type: {{ selectedMembershipType.name }}</li>
-            <li>Price: £{{ selectedMembershipType.cost }}</li>
+            <li>Price: {{ formatCurrency(selectedMembershipType.cost) }}</li>
             <li>Start Date: {{ calculateDate(todaysDate) }}</li>
             <li>
               Expiry Date:
@@ -312,6 +312,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { formatCurrency } from "@/util/format.helpers";
 
 export default {
   ...mapActions("membership", [
@@ -353,6 +354,7 @@ export default {
     ...mapGetters("membership", ["membershipTypes", "selectedMembershipType"])
   },
   methods: {
+    formatCurrency: formatCurrency,
     ...mapActions("membership", [
       "getMembershipTypes",
       "getSelectedMembershipType"

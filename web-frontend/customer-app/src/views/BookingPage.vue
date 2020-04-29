@@ -42,7 +42,7 @@
                     @click="submitPayment()"
                     :disabled="paymentSubmit"
                   >
-                    Pay £{{ price }}
+                    Pay {{ formatCurrency(price) }}
                   </button>
                 </div>
                 <h2 id="cardText" v-if="showQuickPay">Or</h2>
@@ -148,6 +148,7 @@ import BookingInformation from "@/components/BookingInformation.vue";
 import GuestInformation from "@/components/GuestInformation.vue";
 import CashInformation from "@/components/CashInformation.vue";
 import { mapGetters, mapActions } from "vuex";
+import { formatCurrency } from "@/util/format.helpers";
 
 // @ is an alias to /src
 export default {
@@ -213,7 +214,7 @@ export default {
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("auth", ["user", "isEmployeeOrManager" , "permissions"]),
+    ...mapGetters("auth", ["user", "isEmployeeOrManager", "permissions"]),
     ...mapGetters("customers", ["customers"]),
     ...mapGetters("timetable", ["sessions"]),
 
@@ -229,6 +230,7 @@ export default {
     ...mapActions("facilities", ["getActivities"]),
     ...mapActions("customers", ["getAllCustomers"]),
     ...mapActions("timetable", ["getAllSessions"]),
+    formatCurrency: formatCurrency,
 
     getActivitySelected() {
       let activity = null;
@@ -247,26 +249,11 @@ export default {
       }
       console.log(activity);
     },
-    addZero(value) {
-      return ("0" + value.toString()).slice(-2);
-    },
-
-    formatDate(value) {
-      if (value) {
-        const dt = new Date(value);
-        return `${this.addZero(dt.getHours())}|${this.addZero(
-          dt.getMinutes()
-        )}`;
-      }
-      return "";
-    },
-
     async getCustomer() {
       this.customer = this.customers.find(
         x => x.emailAddress === this.user.email
       );
     },
-
     showTempPage() {
       this.hideBooking = true;
       this.hideGuest = true;
