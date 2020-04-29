@@ -69,12 +69,6 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return session;
   },
-  async deleteActivities({ commit }, activityId) {
-    commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.delete(`/activities/${activityId}`);
-    commit("SET_SESSIONS", data);
-    commit("loading/FINISH_LOADING", null, { root: true });
-  },
   async getBookings({ commit }){
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/bookings");
