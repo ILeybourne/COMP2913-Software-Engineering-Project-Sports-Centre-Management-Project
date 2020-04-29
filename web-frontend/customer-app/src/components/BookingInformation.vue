@@ -137,8 +137,6 @@ label {
 <script>
 import { mapActions, mapGetters } from "vuex";
 export default {
-  ...mapActions("facilities", ["getFacilities", "getActivities"]),
-  ...mapActions("timetable", ["getAllSessions"]),
   name: "BookingInformation",
   data() {
     return {
