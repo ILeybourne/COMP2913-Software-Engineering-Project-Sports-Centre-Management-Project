@@ -65,7 +65,6 @@ public class PaymentController {
     }
 
     //Customer Saved Card Payment
-    @PreAuthorize("hasAuthority('SCOPE_can:cash_booking')")
     @PostMapping(path = "/intent/saved/{customer_id}")
     public PayResponseBodyDTO createFromSavedCard(@RequestBody PaymentDTO requestBody, @PathVariable Long customer_id) throws StripeException {
         String emailAddress = requestBody.getEmail();

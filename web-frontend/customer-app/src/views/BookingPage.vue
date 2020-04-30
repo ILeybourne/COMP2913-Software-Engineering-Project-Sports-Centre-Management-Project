@@ -35,12 +35,12 @@
                   An error has occurred please try again.
                 </div>
                 <div class="buttonDiv">
-                  <!--                    :disabled="paymentSubmit"-->
                   <button
                     type="button"
                     class="btn btn-outline-primary"
                     id="paymentButton"
                     @click="submitPayment()"
+                    :disabled="paymentSubmit"
                   >
                     Pay £{{ price }}
                   </button>
@@ -49,11 +49,11 @@
                 <div class="buttonDiv">
                   <button
                     @click="submitQuickPayment()"
-                    :disabled="paymentSubmit"
                     type="button"
                     class="btn btn-outline-primary"
                     id="quickPayButton"
                     v-if="showQuickPay"
+                    :disabled="paymentSubmit"
                   >
                     Quick Pay
                   </button>
@@ -243,7 +243,7 @@ export default {
     //assumes that duplicate session at the same facility, with the same name, at the same time do not exist
     getSessionSelected() {
       let activity = null;
-      console.log(this.sessions)
+      console.log(this.sessions);
       for (const session of this.sessions) {
         if (this.selectedFacility == session.resource.id) {
           if (this.selectedActivityName === session.name) {
@@ -261,11 +261,10 @@ export default {
     },
 
     async getCustomer() {
-      console
       this.customer = this.customers.find(
         x => x.emailAddress === this.user.email
-      )
-      if(!this.customer){
+      );
+      if (!this.customer) {
         //TODO CREATE NEW CUSTOMER
       }
     },
@@ -348,8 +347,8 @@ export default {
       }
       if (this.userType === "account" && this.customer) {
         // eslint-disable-next-line no-undef
-        console.log(this.customer)
-        console.log(this.customerId)
+        console.log(this.customer);
+        console.log(this.customerId);
         paymentIntent = await this.$http.post(
           `/payments/intent/card/` + this.customer.id,
           {
@@ -471,7 +470,7 @@ export default {
       if (value.userType == "account") {
         this.hideGuest = false;
         this.userType = "account";
-        this.hideQuickPay = !(this.isEmployeeOrManager);
+        this.hideQuickPay = !this.isEmployeeOrManager;
         //TODO autofill with customer information (Props to guest info)
         // this.firstName =
         // this.surname =

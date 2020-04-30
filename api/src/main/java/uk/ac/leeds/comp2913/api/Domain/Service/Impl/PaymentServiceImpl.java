@@ -46,7 +46,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final MembershipTypeService membershipTypeService;
     Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
-
     @Autowired
     public PaymentServiceImpl(CustomerService customerService, CustomerRepository customerRepository, AccountRepository accountRepository, @Lazy MembershipService membershipService, ActivityTypeService activityTypeService, MembershipTypeService membershipTypeService) {
         this.customerService = customerService;
@@ -76,7 +75,6 @@ public class PaymentServiceImpl implements PaymentService {
         return originalAmount.multiply(BigDecimal.valueOf(0.7));
     }
 
-
     //Guest Checkout
     @Override
     public PayResponseBodyDTO create(String email, BigDecimal cost, Boolean regularSessionBooking) throws StripeException {
@@ -90,16 +88,18 @@ public class PaymentServiceImpl implements PaymentService {
         Long newCost = ((cost.multiply(new BigDecimal(100.0))).longValue());
         Account account = new Account();
         try {
-            //guest payment
-            //new stripe customer
-            CustomerCreateParams customerParams =
-                    CustomerCreateParams.builder()
-                            .setEmail(email)
-                            .build();
-            customer = Customer.create(customerParams);
-
-            //new customer
-            uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer = new uk.ac.leeds.comp2913.api.Domain.Model.Customer();
+            uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer = customerRepository.findByEmailAddress(email);
+            if (internalCustomer == null) {
+                //If customer does not already exist create new API Customer and Stripe Customer
+                internalCustomer = new uk.ac.leeds.comp2913.api.Domain.Model.Customer();
+                CustomerCreateParams customerParams =
+                        CustomerCreateParams.builder()
+                                .setEmail(email)
+                                .build();
+                customer = Customer.create(customerParams);
+            } else {
+                customer = Customer.retrieve(internalCustomer.getStripeId());
+            }
             account.setCustomer(internalCustomer);
             internalCustomer.setEmailAddress(email);
             internalCustomer.setStripeId(customer.getId());
@@ -118,6 +118,7 @@ public class PaymentServiceImpl implements PaymentService {
             intent = PaymentIntent.create(intentParams);
 
             logger.info("💰 PaymentIntent created!");
+
             responseBody.setClientSecret(intent.getClientSecret());
             responseBody.setAccountId(account.getId());
             responseBody.setAmountPaid(cost);
@@ -160,7 +161,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
         try {
             if (customerRepository.findById(customer_id).isPresent()) {
-                //get api customer
+                //Get API Customer
                 internalCustomer = customerRepository.findById(customer_id).get();
                 //get stripe customer
                 customer = Customer.retrieve(internalCustomer.getStripeId());
@@ -183,12 +184,12 @@ public class PaymentServiceImpl implements PaymentService {
                         .setPaymentMethod(paymentMethod)
                         .setConfirm(true)
                         .setOffSession(true)
-                        // Verify your integration in this guide by including this parameter
                         .putMetadata("integration_check", "accept_a_payment")
                         .build();
 
                 intent = PaymentIntent.create(intentParams);
                 logger.info("💰 Payment received!");
+
 //                  The payment is complete and the money has been moved
 //                  You can add any post-payment code here (e.g. shipping, fulfillment, etc)
                 if (!membershipService.activeMemberCheck(email)) { //creating a new account if user is not a member
@@ -268,27 +269,6 @@ public class PaymentServiceImpl implements PaymentService {
                 customer = Customer.retrieve(internalCustomer.getStripeId());
                 logger.info(customer.getId(), customer.getAddress());
 
-                // if (activity_id != null) {
-                //get activity type
-                //   Activity activity = activityService.findActivityById(activity_id);
-                //guest payment
-
-                //new stripe customer
-//            CustomerCreateParams customerParams =
-//                    CustomerCreateParams.builder()
-//                            .setEmail(requestBody.getEmail())
-//                            .build();
-//
-//            customer = Customer.create(customerParams);
-
-                //new customer
-//            uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer = new uk.ac.leeds.comp2913.api.Domain.Model.Customer();
-//            internalCustomer.setEmailAddress(requestBody.getEmail());
-//            internalCustomer.setStripeId(customer.getId());
-//            //TODO get DOB
-//            internalCustomer.setDateOfBirth(new Date());
-//            customerRepository.save(internalCustomer);
-
                 //Create Payment Intent
                 PaymentIntentCreateParams intentParams = PaymentIntentCreateParams.builder()
                         .setCurrency("gbp")
@@ -299,15 +279,14 @@ public class PaymentServiceImpl implements PaymentService {
                 intent = PaymentIntent.create(intentParams);
 
                 logger.info("💰 PaymentIntent created!");
+
                 responseBody.setClientSecret(intent.getClientSecret());
                 responseBody.setTransactionId(intent.getId());
                 responseBody.setAccountId(account.getId());
                 responseBody.setAmountPaid(cost);
-
                 //get last account and assign it to response
             }
         } catch (CardException err) {
-
             // Handle "hard declines" e.g. insufficient funds, expired card, etc
             // See https://stripe.com/docs/declines/codes for more
             if (err.getCode().equals("authentication_required")) {
