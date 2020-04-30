@@ -208,12 +208,10 @@ export default {
             });
           }
           this.activityOptions = activityOptionsArray;
-          // this.selectedActivityName = "Please Select";
         } else {
           this.activityOptions = [
             { value: null, text: "No Activities found for this facility" }
           ];
-          // this.selectedActivityName = "No Activities found for this facility";
         }
         this.selectedTime = "Please Select";
       }

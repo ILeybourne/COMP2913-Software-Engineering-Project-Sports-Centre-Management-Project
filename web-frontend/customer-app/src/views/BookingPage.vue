@@ -264,9 +264,6 @@ export default {
       this.customer = this.customers.find(
         x => x.emailAddress === this.user.email
       );
-      if (!this.customer) {
-        //TODO CREATE NEW CUSTOMER
-      }
     },
     showTempPage() {
       this.hideBooking = true;
@@ -286,7 +283,6 @@ export default {
       // eslint-disable-next-line no-undef
       this.stripe = Stripe("pk_test_crv9Zb7tvQtSJ82FhQwrnb8k00v3eIOvj8");
       this.elements = this.stripe.elements();
-
       this.card = this.elements.create("card");
       this.card.mount("#card-element");
     },
