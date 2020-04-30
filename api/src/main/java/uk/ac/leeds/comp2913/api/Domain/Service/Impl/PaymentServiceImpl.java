@@ -102,7 +102,6 @@ public class PaymentServiceImpl implements PaymentService {
             }
             account.setCustomer(internalCustomer);
             internalCustomer.setEmailAddress(email);
-            internalCustomer.setStripeId(customer.getId());
             //TODO get DOB
             internalCustomer.setDateOfBirth(new Date());
             customerRepository.save(internalCustomer);
