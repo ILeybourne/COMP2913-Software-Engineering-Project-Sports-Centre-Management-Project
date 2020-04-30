@@ -1,10 +1,38 @@
 <template>
   <div class="weeklyusagegraph">
-    <h1>Weekly Usage</h1>
-    <WeeklyUsageGraph></WeeklyUsageGraph>
+    <div class="heading-div">
+      <h1>Weekly <span>Usage</span></h1>
+    </div>
+    <v-row class="info-container">
+      <WeeklyUsageGraph></WeeklyUsageGraph>
+    </v-row>
   </div>
 </template>
-
+<style scoped>
+.info-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  width: 100%;
+  height: max-content;
+}
+@media screen and (max-width: 600px) {
+  .heading-div h1 {
+    font-size: 10vw;
+  }
+}
+.heading-div h1 {
+  width: 50%;
+  margin: auto;
+}
+.heading-div p {
+  width: 100%;
+  padding: 10px;
+}
+.heading-div span {
+  background: #fcff18;
+}
+</style>
 <script>
 import WeeklyUsageGraph from "@/components/WeeklyUsageGraph.vue";
 

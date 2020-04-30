@@ -1,18 +1,57 @@
-<template
-  ><div class="small">
-    <line-chart v-if="startDate" :chart-data="datacollection"></line-chart>
-    <button @click="fillData()">Randomize</button>
-    <div class="input-group">
-      <label>Start Date</label>
-      <v-date-picker @change="fillData" v-model="startDate"></v-date-picker>
+<template>
+  <div class="usage-container">
+    <div class="inner-container">
+      <v-date-picker
+        class="child-container"
+        @change="fillData"
+        v-model="startDate"
+      ></v-date-picker>
+      <line-chart class="chart" :chart-data="datacollection"></line-chart>
     </div>
   </div>
 </template>
 
 <style scoped>
-.small {
-  max-width: 600px;
-  margin: 150px auto;
+.usage-container {
+  padding: 59px 0px 59px 0px;
+  min-height: 50%;
+  height: auto;
+  display: flex;
+}
+.inner-container {
+  /*margin: auto;*/
+  /*width: 50%;*/
+  padding: 10px;
+  min-height: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.child-container {
+  margin: 20px;
+  width: 40%;
+  min-height: auto;
+  background: #f6f9fa;
+  color: #353535;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  max-width: 400px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  padding: 30px 0 30px 0;
+}
+.chart {
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 500px;
+  min-height: 500px;
+  flex-basis: auto; /* default value */
+  flex-grow: 10;
+  padding: 10px;
 }
 </style>
 <script>
@@ -90,8 +129,13 @@ export default {
       data.datasets = [
         {
           label: "Weekly Usage",
-          data: weeklyUsage
-        }
+          data: weeklyUsage,
+          backgroundColor: '#f87979',
+          pointBackgroundColor: 'white',
+          borderWidth: 5,
+          pointBorderColor: '#249EBF',
+          fill: false
+        },
       ];
       this.datacollection = data;
     }
