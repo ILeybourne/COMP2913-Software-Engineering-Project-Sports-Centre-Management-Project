@@ -35,12 +35,12 @@
                   An error has occurred please try again.
                 </div>
                 <div class="buttonDiv">
+                  <!--                    :disabled="paymentSubmit"-->
                   <button
                     type="button"
                     class="btn btn-outline-primary"
                     id="paymentButton"
                     @click="submitPayment()"
-                    :disabled="paymentSubmit"
                   >
                     Pay £{{ price }}
                   </button>
@@ -226,8 +226,9 @@ export default {
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
     ...mapGetters("customers", ["customers"]),
+    ...mapGetters("timetable", ["sessions"]),
     showQuickPay: function() {
-      if (this.customer !== null) {
+      if (this.customer) {
         return this.customer.stripeId !== null;
       } else {
         return false;
@@ -237,11 +238,35 @@ export default {
   methods: {
     ...mapActions("facilities", ["getActivities"]),
     ...mapActions("customers", ["getAllCustomers"]),
+    ...mapActions("timetable", ["getAllSessions"]),
+
+    //assumes that duplicate session at the same facility, with the same name, at the same time do not exist
+    getSessionSelected() {
+      let activity = null;
+      console.log(this.sessions)
+      for (const session of this.sessions) {
+        if (this.selectedFacility == session.resource.id) {
+          if (this.selectedActivityName === session.name) {
+            let date = session.startTime.substring(0, 10);
+            let time = session.startTime.split("T")[1].substring(0, 5);
+            if (this.date.toString() === date.toString()) {
+              if (this.selectedTime === time) {
+                activity = session;
+              }
+            }
+          }
+        }
+      }
+      return activity;
+    },
 
     async getCustomer() {
       this.customer = this.customers.find(
         x => x.emailAddress === this.user.email
-      );
+      )
+      if(!this.customer){
+        //TODO CREATE NEW CUSTOMER
+      }
     },
     showTempPage() {
       this.hideBooking = true;
@@ -250,13 +275,6 @@ export default {
       this.hideSuccess = false;
     },
 
-    async checkCustomerStripeId() {
-      const hasStripeId = await this.$http.post(
-        //TODO Remove static customer id
-        `/payments/customer/stripe_id/14`
-      );
-      return hasStripeId.data;
-    },
     bookByCash() {
       this.hideBooking = true;
       this.hideGuest = true;
@@ -329,8 +347,10 @@ export default {
       }
       if (this.userType === "account") {
         // eslint-disable-next-line no-undef
+        console.log(this.customer)
+        console.log(this.customerId)
         paymentIntent = await this.$http.post(
-          `/payments/intent/card/` + this.customer.id, //this.customerId,
+          `/payments/intent/card/` + this.customer.id,
           {
             payment_method: {
               card: this.card,
@@ -374,7 +394,7 @@ export default {
       } else {
         // The payment has been processed!
         if (result.paymentIntent.status === "succeeded") {
-          await this.postAllFormData();
+          await this.createBooking();
           //TODO Set payment amount
           this.showTempPage();
           //TODO Redirect
@@ -394,39 +414,25 @@ export default {
 
     async handleCashPayment(value) {
       if (value.change >= 0) {
-        await this.postAllFormData();
+        await this.createBooking();
         this.showTempPage();
       } else {
         //invalid amount of cash given
       }
     },
 
-    async postAllFormData() {
+    async createBooking() {
       try {
-        /* TODO: Validate and check server response */
-        // let bookedActivity = this.activities.find(
-        //   activity => activity.id == this.selectedActivityId
-        // );
         const body = {
-          //TODO PASS USER
-          //  account: null,
-          //  activity: bookedActivity,
-          //  createdAt: Date.now(),
-          //  receipt: null,
-          //  updatedAt: null,
-          //  type: "booking",
-          //  amount: this.price,
-          //  regularBooking: false,
-          //  participants: 1,
-          //  accountId: 1
-          //We only require this data to post a booking
           accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
+          //TODO ADD participant field
           participants: 1,
           regularBooking: false, //need to be dynamic (cash payment defaulted to false, same for guest)
           transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
           amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
         };
-        await this.$http.post(`/bookings/` + 18561, body); //needs to post session id
+        let session = this.getSessionSelected();
+        await this.$http.post(`/bookings/` + session.id, body); //needs to post session id
       } catch (e) {
         console.log(e);
       }
@@ -464,8 +470,8 @@ export default {
       if (value.userType == "account") {
         this.hideGuest = false;
         this.userType = "account";
-        this.hideQuickPay = !(await this.checkCustomerStripeId());
-        //TODO autofill with customer information
+        this.hideQuickPay = !(this.isEmployeeOrManager);
+        //TODO autofill with customer information (Props to guest info)
         // this.firstName =
         // this.surname =
         // this.email = this.user.email

@@ -249,6 +249,8 @@ public class PaymentServiceImpl implements PaymentService {
                         .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id " + customer_id));
 
                 //get stripe customer
+                logger.info("get stripe Customer");
+                logger.info(internalCustomer.getStripeId());
                 if (internalCustomer.getStripeId() == null) {
                     CustomerCreateParams customerParams =
                             CustomerCreateParams.builder()

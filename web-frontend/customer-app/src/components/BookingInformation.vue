@@ -28,7 +28,7 @@
             id="activity"
             @change="
               [
-                selectActivityName(),
+                // selectActivityName(),
                 validateActivity(),
                 getPrice($event),
                 getTimes()
@@ -147,7 +147,6 @@ export default {
       timeOptions: ["Please Select"],
       selectedActivityId: null,
       selectedFacilityId: null,
-      selectedActivityName: null,
       selectedTime: null,
       price: null,
       selectedDate: null,
@@ -165,7 +164,22 @@ export default {
     ...mapGetters("auth", ["user"]),
     account: function() {
       return !this.isEmpty(this.user);
-    }
+    },
+    // selectedActivityName: function() {
+    //   if (this.activityOptions.length === 1){
+    //     if (
+    //             this.activityOptions[0].text === "No Activities found for this facility"
+    //     ) {
+    //       return "No Activities found for this facility";
+    //     } else {
+    //       return "Please Select";
+    //     }
+    //   }else{
+    //     return this.activities.find(
+    //             x => Number(x.id) === Number(this.selectedActivityId)
+    //     ).name;
+    //   }
+    // }
   },
   methods: {
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
@@ -177,25 +191,32 @@ export default {
       }
     },
 
-    setActivityTypeOptions(e) {
-      let activityArray = [{ value: null, text: "Please Select" }];
-      let activities = this.activities;
-
+    async setActivityTypeOptions(e) {
+      this.selectedActivityId = null
       if (!(e == null)) {
-        const filter = activity =>
-          Number(activity._links.resource.href.split("/").slice(-1)[0]) ===
-          Number(e);
-        activities = this.activities.filter(filter);
-        for (const activity of activities) {
-          activityArray.push({ value: activity.id, text: activity.name });
+        const activityTypesRequest = await this.$http.get(
+          "http://localhost:8000/activitytypes/resource/" + e
+        );
+        if ("_embedded" in activityTypesRequest.data) {
+          const activityTypeArray =
+            activityTypesRequest.data._embedded.activityTypeDToes;
+          let activityOptionsArray = [{ value: null, text: "Please Select" }];
+          for (const activity of activityTypeArray) {
+            activityOptionsArray.push({
+              value: activity.id,
+              text: activity.name
+            });
+          }
+          this.activityOptions = activityOptionsArray;
+          // this.selectedActivityName = "Please Select";
+        } else {
+          this.activityOptions = [
+            { value: null, text: "No Activities found for this facility" }
+          ];
+          // this.selectedActivityName = "No Activities found for this facility";
         }
-      } else {
-        this.activityOptions = activityArray;
-        this.selectedActivityName = "Please Select";
+        this.selectedTime = "Please Select";
       }
-
-      this.activityOptions = activityArray;
-      this.selectedTime = "Please Select";
     },
 
     setFacilityOptions() {
@@ -280,6 +301,9 @@ export default {
         this.selectedFacilityId = facilityId;
         this.setActivityTypeOptions(facilityId);
         this.selectedActivityId = activityTypeId;
+        this.selectedActivityName = this.activities.find(
+          x => Number(x.id) === Number(this.selectedActivityId)
+        ).name;
         this.selectActivityName();
         let selectedDateUnix = this.sessions.find(x => x.id == activityId)
           .startTime;
@@ -308,9 +332,8 @@ export default {
           this.selectedActivityId != null
         ) {
           let timeArray = ["Please Select"];
-
+          console.log(this.sessions)
           for (const activity of this.sessions) {
-            console.log(activity);
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
             const month = this.addZero(
@@ -321,11 +344,14 @@ export default {
             const mins = this.addZero(selectedTime.getMinutes());
             let formattedDate = year + "-" + month + "-" + date;
             if (
-              activity.name == this.selectedActivityName &&
+              activity.name == this.activities.find(act => act.id === this.selectedActivityId).name &&
               formattedDate == this.selectedDate
             ) {
               let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
-              timeArray.push(formattedTime);
+              if(!timeArray.includes(formattedDate)){
+
+                timeArray.push(formattedTime);
+              }
             }
           }
           this.timeOptions = timeArray;
@@ -334,15 +360,6 @@ export default {
     },
     addZero(value) {
       return ("0" + value.toString()).slice(-2);
-    },
-    selectActivityName() {
-      if (this.selectedActivityId != null) {
-        this.selectedActivityName = this.activities.find(
-          x => Number(x.id) === Number(this.selectedActivityId)
-        ).name;
-      } else {
-        this.selectedActivityName = "Please Select";
-      }
     }
   },
   async mounted() {

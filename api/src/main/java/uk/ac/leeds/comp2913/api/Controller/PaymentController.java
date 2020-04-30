@@ -45,7 +45,7 @@ public class PaymentController {
         return paymentService.create(emailAddress, cost, false);
     }
 
-    //Guest Payment
+    //Customer New Card Payment
     //TODO Move into response body
     @PostMapping(path = "/intent/card/{customer_id}")
     public PayResponseBodyDTO createFromNewCard(@RequestBody PaymentDTO requestBody, @PathVariable Long customer_id) throws StripeException {
