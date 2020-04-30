@@ -261,6 +261,7 @@ export default {
     },
 
     async getCustomer() {
+      console
       this.customer = this.customers.find(
         x => x.emailAddress === this.user.email
       )
@@ -322,7 +323,7 @@ export default {
       // Talk to our server to get encrpyted prices
       this.paymentSubmit = true;
       let paymentIntent = null;
-      if (this.userType === "guest") {
+      if (this.userType === "guest" || !this.customer) {
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
           `/payments/guest-intent/`, // + this.selectedActivityId,
@@ -345,7 +346,7 @@ export default {
           this.paymentResponse.transactionId = paymentIntent.data.transactionId;
         }
       }
-      if (this.userType === "account") {
+      if (this.userType === "account" && this.customer) {
         // eslint-disable-next-line no-undef
         console.log(this.customer)
         console.log(this.customerId)
