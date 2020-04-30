@@ -98,7 +98,15 @@ public class PaymentServiceImpl implements PaymentService {
                                 .build();
                 customer = Customer.create(customerParams);
             } else {
-                customer = Customer.retrieve(internalCustomer.getStripeId());
+                if(internalCustomer.getStripeId()!= null) {
+                    customer = Customer.retrieve(internalCustomer.getStripeId());
+                }else{
+                    CustomerCreateParams customerParams =
+                            CustomerCreateParams.builder()
+                                    .setEmail(email)
+                                    .build();
+                    customer = Customer.create(customerParams);
+                }
             }
             account.setCustomer(internalCustomer);
             internalCustomer.setEmailAddress(email);

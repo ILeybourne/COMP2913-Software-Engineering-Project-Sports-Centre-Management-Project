@@ -428,6 +428,7 @@ export default {
           amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
         };
         let session = this.getSessionSelected();
+        console.log(session);
         await this.$http.post(`/bookings/` + session.id, body); //needs to post session id
       } catch (e) {
         console.log(e);
