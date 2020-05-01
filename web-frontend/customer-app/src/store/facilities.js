@@ -1,21 +1,22 @@
 import axios from "@/plugins/axios.plugin";
+import { formatDate } from "@/util/format.helpers";
+import { formatCurrency } from "../util/format.helpers";
 
 const state = {
   paging: {
     facilities: {
-      number: 0,
-      size: 50
+      pages: [],
+      number: null,
+      size: null,
+      totalElements: null,
+      totalPages: null,
+      currentPageHref: null,
+      nextPageHref: `/resources?page=${0}&size=${10}`, // just need first page to initialise store
+      lastPageHref: null,
+      isDataToLoad: true
     }
   },
   facilities: [],
-  /*
-    account: null
-    activity: null
-    createdAt: 1584288689000
-    id: 1
-    receipt: null
-    updatedAt: 1584288692000
-    * */
   activities: []
 };
 
@@ -25,33 +26,103 @@ const getters = {
     state.activities.map(activity => {
       return {
         ...activity,
-        formattedCost: "£" + activity.cost.toFixed(2)
+        formattedCost: formatCurrency(activity.cost),
+        formattedStartAt: formatDate(activity.startTime)
       };
     }),
   getFacilityById: state => id => {
     return state.facilities.find(
       facility => Number(facility.id) === Number(id)
     );
-  }
+  },
+  getActivitiesForFacilityId: state => fid => {
+    return state.activities.filter(
+      activity => Number(activity.resource.id) === Number(fid)
+    );
+  },
+  facilitiesLoading: state => state.paging.facilities.isDataToLoad
 };
 
 const mutations = {
+  SET_FACILITIES_LOADING: (state, payload) =>
+    (state.paging.facilities.isDataToLoad = payload),
   SET_FACILITIES: (state, payload) => (state.facilities = payload),
-  SET_ACTIVITIES: (state, payload) => (state.activities = payload)
+  APPEND_FACILITIES: (state, { pageId, page }) => {
+    if (state.paging.facilities.pages.includes(pageId)) {
+      // already got this page, don't want duplicates!!
+      return;
+    }
+    state.paging.facilities.pages.push(pageId);
+    state.facilities.push(...page);
+  },
+  SET_ACTIVITIES: (state, payload) => (state.activities = payload),
+  SET_FACILITY_PAGE_INFO: (state, payload) => {
+    state.paging.facilities = {
+      ...state.paging.facilities,
+      ...payload
+    };
+  }
 };
+//
+// function isNextPage(paging) {
+//   // If the next page is not null and the last page (current page) is not the same as the last page
+//   return paging.nextPageHref && paging.currentPageHref !== paging.lastPageHref;
+// }
 
 const actions = {
-  async getFacilities({ commit }) {
+  /**
+   * Get the paginated data in the store
+   *
+   * If we are doing searching in the store then we may
+   * need to load all data in
+   *
+   * If this isn't the first call and we we haven't reached the last page yet we get
+   * the next page until we get to the last page
+   * */
+  async getFacilities({ state, commit, dispatch }) {
+    const paging = state.paging.facilities;
+    if (!paging.isDataToLoad) {
+      // Don't need to do anything, we have all the data, just return what we have in the store
+      return state.facilities;
+    }
+    // We don't have all the data from the server and we need to load it
     commit("loading/START_LOADING", null, { root: true });
-    const p = state.paging.facilities.number;
-    const s = state.paging.facilities.size;
-    const url = `/resources?page=${p}&size=${s}`;
-    const { data } = await axios.get(url);
-    const list = data._embedded.resourceDToes;
-    // commit("SET_FACILITIES_PAGE_NUMBER", p + 1);
-    commit("SET_FACILITIES", list);
+    let { data } = await axios.get(paging.nextPageHref);
+    const pageIdentifier = data._links.self.href;
+    if (data._embedded) {
+      const facilityPage = data._embedded.resourceDToes;
+      commit("APPEND_FACILITIES", {
+        pageId: pageIdentifier,
+        page: facilityPage
+      });
+    }
+    // Which page have we just retrieved
+    commit("SET_FACILITY_PAGE_INFO", {
+      currentPageHref: pageIdentifier
+    });
+
+    // load next pages if there are any
+    if (data._links && data._links.last && data._links.next) {
+      // Bookkeeping for pagination
+      commit("SET_FACILITY_PAGE_INFO", {
+        nextPageHref: data._links.next.href,
+        lastPageHref: data._links.last.href
+      });
+
+      if (pageIdentifier === data._links.last.href) {
+        // if this was the last page then we are done
+        commit("SET_FACILITIES_LOADING", false);
+      } else {
+        // There are other pages
+        // Keep getting the next page, we don't need to wait as we have enough to do a first render of the page
+        dispatch("getFacilities");
+      }
+    } else {
+      // no pagination
+      commit("SET_FACILITIES_LOADING", false);
+    }
     commit("loading/FINISH_LOADING", null, { root: true });
-    return list;
+    return facilities;
   },
   async createFacility({ commit, state, dispatch }, request) {
     commit("loading/START_LOADING", null, { root: true });
@@ -83,7 +154,7 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
     return data;
   },
-  async getActivities({ commit }) {
+  async getActivityTypes({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/activitytypes");
     const activities = data._embedded.activityTypeDToes;
@@ -91,10 +162,18 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return activities;
   },
+  async getActivities({ commit }) {
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.get("/activities");
+    const activities = data._embedded.activityDToes;
+    commit("SET_ACTIVITIES", activities);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return activities;
+  },
   async deleteActivity({ commit }, activityId) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.delete(`/activitytypes/${activityId}`);
-    commit("SET_SESSIONS", data);
+    commit("SET_ACTIVITIES", data);
     commit("loading/FINISH_LOADING", null, { root: true });
   }
 };

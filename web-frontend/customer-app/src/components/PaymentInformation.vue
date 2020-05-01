@@ -152,7 +152,7 @@ export default {
   computed: {},
   methods: {
     setPaymentInfoToParent() {
-      this.componentWidth = 60;
+
       this.$emit("setPaymentInfoToParent", this.$data);
     },
     validateName() {
@@ -189,7 +189,7 @@ export default {
         this.$data.secureCode !== ""
       ) {
         this.$emit("submitCustomerDetails", this.$data);
-        this.componentWidth = 60;
+
         this.nameValid = true;
         this.cardTypeValid = true;
         this.cardNumberValid = true;

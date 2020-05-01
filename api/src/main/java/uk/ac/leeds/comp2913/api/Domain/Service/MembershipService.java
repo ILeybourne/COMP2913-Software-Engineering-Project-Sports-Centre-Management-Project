@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import uk.ac.leeds.comp2913.api.Domain.Model.Account;
+import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 
@@ -34,4 +36,6 @@ public interface MembershipService {
     void automatedMembershipRenewals();
 
     Page<Membership> findMembershipByAccountId(Pageable pageable, Long account_id);
+
+    Boolean activeMemberCheck(String email);
 }

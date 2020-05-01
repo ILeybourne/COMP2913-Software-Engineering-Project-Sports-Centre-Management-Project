@@ -14,8 +14,11 @@ import FacilityPriceListing from "@/views/FacilityPriceListing";
 import WeeklyUsagePage from "@/views/WeeklyUsagePage";
 import FacilityPage from "@/views/FacilityPage";
 import PageNotFound from "@/views/PageNotFound";
+import Unauthorised from "@/views/Unauthorised";
+import ServerError from "@/views/ServerError";
 import FacilityTimetable from "@/components/FacilityTimetable";
 import FacilityCreate from "@/components/FacilityCreate";
+import Checkout from "@/views/Checkout";
 
 Vue.use(VueRouter);
 
@@ -131,8 +134,23 @@ const routes = [
     }
   },
   {
+    path: "/unauthorised",
+    name: "Unauthorised",
+    component: Unauthorised
+  },
+  {
     path: "*",
     component: PageNotFound
+  },
+  {
+    path: "/checkout",
+    name: "Checkout",
+    component: Checkout
+  },
+  {
+    path: "/error",
+    name: "ServerError",
+    component: ServerError
   }
 ];
 

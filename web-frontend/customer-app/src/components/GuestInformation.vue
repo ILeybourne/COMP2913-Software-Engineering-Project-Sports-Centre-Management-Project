@@ -97,7 +97,7 @@
             class="form-control"
           />
         </div>
-        <div class="form-row">
+        <div class="form-row" v-if="isEmployeeOrManager">
           <label for="cardRadio">Card or Cash:</label>
           <b-form-group>
             <b-form-radio-group
@@ -174,6 +174,8 @@ button {
 import Vue from "vue";
 import Vuelidate from "vuelidate";
 Vue.use(Vuelidate);
+import { mapGetters } from "vuex";
+
 import {
   required,
   minLength,
@@ -224,23 +226,13 @@ export default {
       numeric
     }
   },
+  computed: {
+    store: function() {
+      return this.$store;
+    },
+    ...mapGetters("auth", ["user", "isEmployeeOrManager"])
+  },
   methods: {
-    // async getClientSecretOfCustomer() {
-    //   // Talk to our server to get encrpyted prices
-    //   // eslint-disable-next-line no-undef
-    //   const paymentIntent = await this.$http.post(
-    //           `/payments/intent/` + this.$attrs.activityType +"/1",
-    //           {
-    //             payment_method: {
-    //               card: this.card,
-    //               billing_details: {
-    //                 name: this.firstName
-    //               }
-    //             }
-    //           }
-    //   );
-    //   this.sendTokenToServer(paymentIntent.data.clientSecret);
-    // },
     getUserType(e) {
       this.userType = e.toElement.name;
     },
@@ -273,7 +265,7 @@ export default {
         this.$data.phone !== ""
       ) {
         this.$emit("submitCustomerDetails", this.$data);
-        this.componentWidth = 60;
+
         this.firstNameValid = true;
         this.surnameValid = true;
         this.emailValid = true;

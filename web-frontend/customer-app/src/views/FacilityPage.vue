@@ -9,6 +9,7 @@
           <b-card-header header-tag="nav">
             <b-nav card-header tabs>
               <b-nav-item
+                v-if="isEmployeeOrManager"
                 :to="{ name: 'FacilityEdit', params: { id: facility.id } }"
                 >Edit</b-nav-item
               >
@@ -35,7 +36,7 @@ import store from "@/store";
 import Facilities from "@/views/Facilities";
 import FacilityHeader from "@/components/FacilityHeader";
 import FacilityCreate from "@/components/FacilityCreate";
-import { mapActions } from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "FacilityPage",
@@ -46,6 +47,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters("auth", ["isEmployeeOrManager"]),
     facility() {
       return store.getters["facilities/getFacilityById"](this.id) || null;
     }

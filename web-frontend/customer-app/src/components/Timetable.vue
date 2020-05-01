@@ -18,6 +18,7 @@ export default {
   },
   data() {
     return {
+      error: null,
       calendarPlugins: [
         dayGridPlugin,
         resourceTimelinePlugin,
@@ -51,7 +52,7 @@ export default {
       });
     },
     events() {
-      /*Transform the server format into full calendar format*/
+      // Transform the server format into full calendar format
       return this.sessions.map(sessionToEvent);
     }
   },
@@ -64,6 +65,7 @@ export default {
       const totalCapacity = options.totalCapacity || 0;
       const currentCapacity = options.currentCapacity || 0;
       const content = `Current Capacity: ${currentCapacity} Total Capacity: ${totalCapacity}`;
+      // Popover for preview
       const popover = new BPopover({
         propsData: {
           title: event.title,
@@ -87,10 +89,17 @@ export default {
       eventInfo.el.innerText = `${event.title}${capacity}`;
     },
     drawResource(e) {
-      console.log(this.$router);
-      // console.log(this.$route.router.resolve(e.resource.id));
-      console.log(e);
-      // e.el.
+      // Add a link to the timetable for that facility
+      e.el.addEventListener("click", () => {
+        const facility = e.resource._resource;
+        console.log(facility);
+        this.$router.push({
+          name: "FacilityTimetable",
+          params: {
+            id: facility.id
+          }
+        });
+      });
       return e;
     },
     activityClick(eventInfo) {
@@ -102,6 +111,8 @@ export default {
 
       if (this.previewSession) {
         this.$bvModal.show("preview-activity-modal");
+      } else {
+        this.error = "The session you selected could not be previewed";
       }
     },
     onSelect(event) {
@@ -113,6 +124,9 @@ export default {
       this.selectedSession.resourceId = Number(event.resource.id);
 
       this.$bvModal.show("create-activity-modal");
+    },
+    onSessionDelete() {
+      this.$bvModal.hide("preview-activity-modal");
     },
     onSessionCreate({ createBooking: redirectToBooking, ...event }) {
       console.log(event);
@@ -140,49 +154,53 @@ export default {
 </script>
 
 <template>
-  <div id="calendar">
-    <FullCalendar
-      :resources="resources"
-      :events="events"
-      :plugins="calendarPlugins"
-      :header="header"
-      :selectable="true"
-      :selectMirror="true"
-      :eventRender="drawEvent"
-      :resourceRender="drawResource"
-      :resize="false"
-      schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-      defaultView="resourceTimelineDay"
-      aspectRatio="1"
-      minTime="06:00:00"
-      maxTime="23:00:00"
-      @eventClick="activityClick($event)"
-      @select="onSelect($event)"
-    />
-    <b-modal
-      id="create-activity-modal"
-      title="Create a new Session"
-      hide-footer
-    >
-      <SessionCreate
-        @post="onSessionCreate($event)"
-        :startTime="selectedSession.startTime"
-        :endTime="selectedSession.endTime"
-        :facilityId="selectedSession.resourceId"
-      ></SessionCreate>
-      <b-button
-        type="reset"
-        variant="danger"
-        @click="$bvModal.hide('create-activity-modal')"
-        >Cancel
-      </b-button>
-    </b-modal>
-    <b-modal id="preview-activity-modal" title="Session Details">
-      <SessionInfo
-        v-if="this.previewSession"
-        :session="this.previewSession"
-      ></SessionInfo>
-    </b-modal>
+  <div>
+    <div class="alert alert-warning" v-if="error">{{ error }}</div>
+    <div id="calendar">
+      <FullCalendar
+        :resources="resources"
+        :events="events"
+        :plugins="calendarPlugins"
+        :header="header"
+        :selectable="true"
+        :selectMirror="true"
+        :eventRender="drawEvent"
+        :resourceRender="drawResource"
+        :resize="false"
+        schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+        defaultView="resourceTimelineDay"
+        aspectRatio="1"
+        minTime="06:00:00"
+        maxTime="23:00:00"
+        @eventClick="activityClick($event)"
+        @select="onSelect($event)"
+      />
+      <b-modal
+        id="create-activity-modal"
+        title="Create a new Session"
+        hide-footer
+      >
+        <SessionCreate
+          @post="onSessionCreate($event)"
+          :startTime="selectedSession.startTime"
+          :endTime="selectedSession.endTime"
+          :facilityId="selectedSession.resourceId"
+        ></SessionCreate>
+        <b-button
+          type="reset"
+          variant="danger"
+          @click="$bvModal.hide('create-activity-modal')"
+          >Cancel
+        </b-button>
+      </b-modal>
+      <b-modal id="preview-activity-modal" title="Session Details">
+        <SessionInfo
+          v-if="this.previewSession"
+          :session="this.previewSession"
+          @sessionDeleted="onSessionDelete($event)"
+        ></SessionInfo>
+      </b-modal>
+    </div>
   </div>
 </template>
 

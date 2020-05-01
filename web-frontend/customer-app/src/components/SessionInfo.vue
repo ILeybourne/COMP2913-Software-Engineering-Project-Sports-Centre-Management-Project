@@ -1,53 +1,71 @@
 <template>
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">{{ session.name }}</h5>
-      <p class="card-text">
-        This would be an example of a description that the staff could write
-        about the activity for users to read before they book
-      </p>
-      <table class="card-table table">
-        <tbody>
-          <tr>
-            <td>Current Capacity</td>
-            <td>{{ this.session.currentCapacity || 0 }}</td>
-          </tr>
-          <tr v-if="session.totalCapacity">
-            <td>Total Capacity</td>
-            <td>{{ this.session.totalCapacity }}</td>
-          </tr>
-          <tr>
-            <td>Price</td>
-            <!--TODO: Price-->
-            <td>12.00</td>
-          </tr>
-        </tbody>
-      </table>
-      <router-link
-        v-if="this.placesAvailableForSession"
-        :to="this.link"
-        class="btn btn-primary"
-        >Book Activity</router-link
-      >
-      <b-button class="btn btn-danger" @click="deleteASession(e)">
-        Delete
-      </b-button>
-    </div>
+  <div>
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>Session:</td>
+          <td>{{ session.name }}</td>
+        </tr>
+        <tr>
+          <td>Start Time:</td>
+          <td>{{ session.formattedStartAt }}</td>
+        </tr>
+        <tr>
+          <td>Current Capacity</td>
+          <td>{{ session.currentCapacity || 0 }}</td>
+        </tr>
+        <tr v-if="session.totalCapacity">
+          <td>Total Capacity</td>
+          <td>{{ session.totalCapacity }}</td>
+        </tr>
+        <tr v-if="session.regularSession">
+          <td>Is Regular Session</td>
+          <td>{{ session.regularSession ? "Yes" : "No" }}</td>
+        </tr>
+        <tr v-if="session.interval && session.regularSession">
+          <td>Interval (days)</td>
+          <td>{{ session.interval }}</td>
+        </tr>
+        <tr>
+          <td>Price</td>
+          <td>{{ formatCurrency(session.cost) }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="alert alert-danger" v-if="error">{{ error }}</div>
+    <b-button variant="primary" v-if="userCanBook" :to="bookingLink"
+      >Book this Session</b-button
+    >
+    <b-button variant="danger" v-if="userCanDelete" @click="deleteASession">
+      Delete Session
+    </b-button>
   </div>
 </template>
 
-<style scoped></style>
-<!--TODO: Cancel booking if already booked on-->
 <script>
-import { mapActions } from "vuex";
-
+import { mapActions, mapGetters } from "vuex";
+import { formatCurrency } from "@/util/format.helpers";
 export default {
   name: "SessionInfo",
-  props: { session: Object },
+  props: {
+    session: {
+      required: true,
+      type: Object
+    }
+  },
   data() {
     return {
-      link: {
+      error: null,
+      bookingLink: {
         name: "BookingPage",
+        query: {
+          facilityId: this.session.resource.id,
+          activityId: this.session.activityId,
+          sessionId: this.session.id
+        }
+      },
+      cancelLink: {
+        name: "CancelBooking",
         query: {
           facilityId: this.session.resource.id,
           activityId: this.session.id
@@ -56,6 +74,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("auth", ["isEmployeeOrManager"]),
     placesAvailableForSession() {
       if (!this.session) {
         return false;
@@ -64,13 +83,26 @@ export default {
         this.session.currentCapacity < this.session.totalCapacity ||
         this.session.totalCapacity === null
       );
+    },
+    userCanDelete() {
+      return this.isEmployeeOrManager;
+    },
+    userCanBook() {
+      // TODO check if member
+      return !this.session.isFull;
     }
   },
   methods: {
     ...mapActions("timetable", ["deleteSession"]),
     async deleteASession() {
-      await this.deleteSession(this.session.id);
-    }
+      const result = await this.deleteSession(this.session.id);
+      if (result) {
+        this.$emit("sessionDeleted");
+      } else {
+        this.error = "Could not delete session";
+      }
+    },
+    formatCurrency: formatCurrency
   }
 };
 </script>

@@ -9,15 +9,21 @@
         <b-col col lg="maxColSize " v-bind:class="{ 'd-none': hideBooking }">
           <BookingInformation
             class="booking-info"
-            @getUserType="showGuestInfo"
-          ></BookingInformation> </b-col
-        ><b-col v-bind:class="{ 'd-none': hideGuest }">
+            @getUserType="[showGuestInfo($event), getActivitySelected()]"
+          ></BookingInformation>
+        </b-col>
+      </b-row>
+      <b-row class="row">
+        <b-col v-bind:class="{ 'd-none': hideGuest }">
           <GuestInformation
             :activityType="this.selectedActivityId"
             class="guest-info"
             @submitCustomerDetails="showBillingInfo"
-          ></GuestInformation> </b-col
-        ><b-col v-bind:class="{ 'd-none': hideCard }">
+          ></GuestInformation>
+        </b-col>
+      </b-row>
+      <b-row class="row">
+        <b-col v-bind:class="{ 'd-none': hideCard }">
           <div>
             <div v-bind:class="{ 'd-none': hideQuickPay }">
               <!--               v-if="customer.stripeId != null"-->
@@ -36,10 +42,10 @@
                     @click="submitPayment()"
                     :disabled="paymentSubmit"
                   >
-                    Pay £{{ price }}
+                    Pay {{ formatCurrency(price) }}
                   </button>
                 </div>
-                <h2 id="cardText">Or</h2>
+                <h2 id="cardText" v-if="showQuickPay">Or</h2>
                 <div class="buttonDiv">
                   <button
                     @click="submitQuickPayment()"
@@ -142,6 +148,7 @@ import BookingInformation from "@/components/BookingInformation.vue";
 import GuestInformation from "@/components/GuestInformation.vue";
 import CashInformation from "@/components/CashInformation.vue";
 import { mapGetters, mapActions } from "vuex";
+import { formatCurrency } from "@/util/format.helpers";
 
 // @ is an alias to /src
 export default {
@@ -207,8 +214,10 @@ export default {
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("auth", ["user"]),
+    ...mapGetters("auth", ["user", "isEmployeeOrManager", "permissions"]),
     ...mapGetters("customers", ["customers"]),
+    ...mapGetters("timetable", ["sessions"]),
+
     showQuickPay: function() {
       if (this.customer !== null) {
         return this.customer.stripeId !== null;
@@ -220,17 +229,36 @@ export default {
   methods: {
     ...mapActions("facilities", ["getActivities"]),
     ...mapActions("customers", ["getAllCustomers"]),
+    ...mapActions("timetable", ["getAllSessions"]),
+    formatCurrency: formatCurrency,
 
+    getActivitySelected() {
+      let activity = null;
+      for (const session of this.sessions) {
+        if (this.selectedFacility == session.resource.id) {
+          if (this.selectedActivityName === session.name) {
+            let date = session.startTime.substring(0, 10);
+            let time = session.startTime.split("T")[1].substring(0, 5);
+            if (this.date.toString() === date.toString()) {
+              if (this.selectedTime === time) {
+                activity = session;
+              }
+            }
+          }
+        }
+      }
+      console.log(activity);
+    },
     async getCustomer() {
       this.customer = this.customers.find(
         x => x.emailAddress === this.user.email
       );
     },
-
     showTempPage() {
       this.hideBooking = true;
       this.hideGuest = true;
       this.hideCard = true;
+      this.hideCash = true;
       this.hideSuccess = false;
     },
 
@@ -371,7 +399,7 @@ export default {
     },
 
     async handleCashPayment(value) {
-      if (value.change >= 0) {
+      if (value.changeVal >= 0) {
         await this.postAllFormData();
         this.showTempPage();
       } else {
@@ -455,16 +483,6 @@ export default {
           return false;
         }
       }
-    },
-
-    getRoles() {
-      let roles = this.$http
-        .get(
-          "https://prod-comp2931/api/v2/users/" + this.customer.id + "/roles"
-        )
-        .header("authorization", "Bearer MGMT_API_ACCESS_TOKEN");
-
-      console.log(roles);
     }
   },
   async created() {
@@ -474,8 +492,9 @@ export default {
     }
   },
   async mounted() {
-    // this.getRoles()
     await this.getActivities();
+    await this.getAllSessions;
+    await this.getActivitySelected();
     this.configureStripe();
   }
 };

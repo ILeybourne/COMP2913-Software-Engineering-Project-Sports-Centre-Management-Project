@@ -19,8 +19,8 @@ describe("TestBookingPageResourcesAreFilledByServer", () => {
         url: "http://localhost:8000/activitytypes"
       }).then(res => {
         activityTypes = res;
-        cy.log("activityTypes")
-        cy.log(activityTypes)
+        cy.log("activityTypes");
+        cy.log(activityTypes);
         //console.log("response token", activityTypes);
       });
     });
@@ -42,14 +42,24 @@ describe("TestBookingPageWithCard", () => {
 
     cy.get('select[id="facility"] > option')
       .eq(1)
-      .then(element => cy.get('select[id="facility"]').select(element.val()).trigger("change"));
+      .then(element =>
+        cy
+          .get('select[id="facility"]')
+          .select(element.val())
+          .trigger("change")
+      );
 
     // const activities = await cy.request("/activitytypes").its("body")
     // cy.log(activities)
 
     cy.get('select[id="activity"] > option')
       .eq(1)
-      .then(element => cy.get('select[id="activity"]').select(element.val()).trigger("change"));
+      .then(element =>
+        cy
+          .get('select[id="activity"]')
+          .select(element.val())
+          .trigger("change")
+      );
 
     cy.get('input[id="date"]')
       .type("2020-04-11")
@@ -59,7 +69,12 @@ describe("TestBookingPageWithCard", () => {
     // cy.get('select[id="time"]').type("13:00");
     cy.get('select[id="time"] > option')
       .eq(2)
-      .then(element => cy.get('select[id="time"]').select(element.val()).trigger("change"));
+      .then(element =>
+        cy
+          .get('select[id="time"]')
+          .select(element.val())
+          .trigger("change")
+      );
 
     // cy.get('input[id="price"]').type("£10.00");
   });
@@ -104,14 +119,24 @@ describe("TestBookingPageWithCash", () => {
 
     cy.get('select[id="facility"] > option')
       .eq(1)
-      .then(element => cy.get('select[id="facility"]').select(element.val()).trigger("change"));
+      .then(element =>
+        cy
+          .get('select[id="facility"]')
+          .select(element.val())
+          .trigger("change")
+      );
 
     // const activities = await cy.request("/activitytypes").its("body")
     // cy.log(activities)
 
     cy.get('select[id="activity"] > option')
       .eq(1)
-      .then(element => cy.get('select[id="activity"]').select(element.val()).trigger("change"));
+      .then(element =>
+        cy
+          .get('select[id="activity"]')
+          .select(element.val())
+          .trigger("change")
+      );
 
     cy.get('input[id="date"]')
       .type("2020-04-11")
@@ -121,7 +146,12 @@ describe("TestBookingPageWithCash", () => {
     // cy.get('select[id="time"]').type("13:00");
     cy.get('select[id="time"] > option')
       .eq(2)
-      .then(element => cy.get('select[id="time"]').select(element.val()).trigger("change"));
+      .then(element =>
+        cy
+          .get('select[id="time"]')
+          .select(element.val())
+          .trigger("change")
+      );
 
     // cy.get('input[id="price"]').type("£10.00");
   });

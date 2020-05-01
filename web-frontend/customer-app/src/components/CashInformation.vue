@@ -154,7 +154,6 @@ export default {
     },
     submitCashPayment() {
       this.$emit("submitCashPayment", this.$data);
-      this.componentWidth = 60;
     }
   }
 };

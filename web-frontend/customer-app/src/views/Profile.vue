@@ -40,7 +40,6 @@
             Cancel Membership
           </button>
         </div>
-        <!--<pre>{{ JSON.stringify(user, null, 2) }}</pre>-->
       </div>
     </div>
   </div>
@@ -52,21 +51,56 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Profile",
   data() {
-    return {};
+    return {
+      activeAccounts: [],
+      activeMemberships: []
+    };
   },
   computed: {
     ...mapGetters("auth", ["user"]),
-    ...mapGetters("customers", ["customer"]),
-    ...mapGetters("memberships", ["userMemberships"])
+    ...mapGetters("accounts", ["accounts"]),
+    ...mapGetters("customers", ["customers"]),
+    ...mapGetters("memberships", ["memberships", "accountMemberships"])
   },
   methods: {
-    ...mapActions("auth", ["getMatch"]),
-    ...mapActions("customers", ["getCustomerByEmail"]),
-    ...mapActions("memberships", ["getUserMemberships"])
+    ...mapActions("accounts", ["getAccounts"]),
+    ...mapActions("customers", ["getAllCustomers"]),
+    ...mapActions("memberships", ["getMemberships", "getAccountMemberships"]),
+    activeCustomerIds() {
+      let customers = this.customers;
+      if (customers == null) {
+        return null;
+      } else {
+        const emailFilter = customer =>
+          customer.emailAddress === this.$auth.user.email;
+        customers = this.customers.filter(emailFilter);
+        return Number(customers[0].id);
+      }
+    },
+    activeAccountIds(customerId) {
+      let accounts = this.accounts;
+      if (accounts == null) {
+        return null;
+      } else {
+        const accountFilter = account =>
+          Number(
+            account._links["Customer Details"].href.split("/").slice(-1)[0]
+          ) === customerId;
+        accounts = this.accounts.filter(accountFilter);
+        accounts = accounts.map(account =>
+          Number(account._links.self.href.split("/").slice(-1)[0])
+        );
+        return accounts;
+      }
+    }
   },
   mounted() {
-    this.getCustomerByEmail(this.$auth.user.email);
-    this.getUserMemberships(1);
+    this.getAccounts();
+    this.getAllCustomers();
+    this.activeAccounts = this.activeAccountIds(this.activeCustomerIds());
+    this.activeMemberships = this.activeAccounts.map(account =>
+      this.getAccountMemberships(account) //TODO: fix getting memberships
+    );
   }
 };
 </script>

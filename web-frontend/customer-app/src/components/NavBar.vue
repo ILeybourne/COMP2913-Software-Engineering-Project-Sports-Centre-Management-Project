@@ -16,10 +16,12 @@
           <b-nav-item to="/timetable">Timetable</b-nav-item>
           <b-nav-item to="/facilities">Facilities</b-nav-item>
           <b-nav-item to="/activitiestable">Activities</b-nav-item>
-          <b-nav-item to="/bookings">Bookings</b-nav-item>
           <b-nav-item to="/membership">Membership</b-nav-item>
-          <b-nav-item to="/bookingtable">Manage Bookings</b-nav-item>
-          <b-nav-item-dropdown text="Usage">
+          <b-nav-item-dropdown text="Bookings">
+            <b-dropdown-item to="/bookings">Create</b-dropdown-item>
+            <b-dropdown-item to="/bookingtable">Manage</b-dropdown-item>
+          </b-nav-item-dropdown>
+          <b-nav-item-dropdown text="Usage" v-if="isEmployeeOrManager">
             <b-dropdown-item to="/weeklyusage">Table</b-dropdown-item>
             <b-dropdown-item to="/weeklyusagegraph">Graph</b-dropdown-item>
           </b-nav-item-dropdown>
@@ -55,7 +57,7 @@ import { mapActions, mapGetters } from "vuex";
 export default {
   name: "NavBar",
   computed: {
-    ...mapGetters("auth", ["isAuthenticated", "user"])
+    ...mapGetters("auth", ["isAuthenticated", "user", "isEmployeeOrManager"])
   },
   methods: {
     ...mapActions("auth", { login: "loginWithRedirect", logout: "logout" })
