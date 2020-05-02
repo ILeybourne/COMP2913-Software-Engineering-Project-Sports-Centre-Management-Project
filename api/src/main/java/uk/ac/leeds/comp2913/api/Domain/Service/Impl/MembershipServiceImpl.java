@@ -162,7 +162,7 @@ public class MembershipServiceImpl implements MembershipService {
         c1.setTime(now);
         c1.add(Calendar.DATE, subtractDays);
         Date paymentDueDate = c1.getTime(); //Takes payment 7 days before membership expires
-        c2.setTime(now);\
+        c2.setTime(now);
         c2.add(Calendar.DATE, addDays);
         Date paymentDueEndDate = c2.getTime();
         for (Membership lastMembership : lastPayments) {
