@@ -1,11 +1,20 @@
 <template>
   <div class="usage-container">
     <div class="inner-container">
-      <v-date-picker
-        class="child-container"
-        @change="fillData"
-        v-model="startDate"
-      ></v-date-picker>
+      <v-container class="date-picker-container">
+        <h2>Console</h2>
+        <v-date-picker
+          dark
+          no-title
+          class="date-picker"
+          @change="fillData"
+          v-model="startDate"
+        >
+        </v-date-picker>
+        <p>
+          <b>Activities {{ formatDate(startDate) }} to {{ formatDate(endDate) }}</b>
+        </p>
+      </v-container>
       <line-chart class="chart" :chart-data="datacollection"></line-chart>
     </div>
   </div>
@@ -13,10 +22,10 @@
 
 <style scoped>
 .usage-container {
-  padding: 59px 0px 59px 0px;
   min-height: 50%;
   height: auto;
   display: flex;
+  width: 100%;
 }
 .inner-container {
   /*margin: auto;*/
@@ -24,34 +33,55 @@
   padding: 10px;
   min-height: 50%;
   display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.child-container {
+  justify-content: space-between;
+  height: auto;
   margin: 20px;
-  width: 40%;
-  min-height: auto;
-  background: #f6f9fa;
-  color: #353535;
+  width: 100%;
+}
+.date-picker-container {
+  text-align: center;
+  width: min-content;
+  min-width: min-content;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  min-width: 150px;
-  max-width: 400px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  padding: 30px 0 30px 0;
+  justify-content: flex-start;
+  min-height: 500px;
+  flex-basis: auto; /* default value */
+  flex-grow: 10;
+  padding: 10px;
+  border: 5px solid #353535;
+  border-radius: 10px;
+  background-color: #353535;
+}
+.date-picker-container h2 {
+  text-align: center;
+  margin-bottom: 40px;
+  color: white;
+}
+.date-picker {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+}
+.date-picker-container p{
+  color: white;
 }
 .chart {
+  justify-content: flex-end;
   text-align: center;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   min-width: 500px;
   min-height: 500px;
   flex-basis: auto; /* default value */
   flex-grow: 10;
   padding: 10px;
+  padding-left: 50px !important;
 }
 </style>
 <script>
@@ -72,7 +102,8 @@ export default {
   data() {
     return {
       datacollection: {},
-      startDate: null
+      startDate: null,
+      endDate: null
     };
   },
   computed: {
@@ -82,9 +113,22 @@ export default {
     ...mapActions("timetable", {
       getActivity: "getAllSessions"
     }),
+    //So data fills table from the previous week- todays date
+    async defaultStartDate() {
+      const endDate = this.$moment(new Date());
+      this.startDate = endDate.clone().subtract("days", 6);
+      this.startDate = this.startDate.toJSON();
+    },
+    formatDate(stringDate) {
+      var date = new Date(stringDate);
+      return (
+        date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear()
+      );
+    },
     async fillData() {
-      const endDate = this.$moment(this.startDate);
-      const startDate = endDate.clone().subtract("days", 6);
+      const startDate = this.$moment(this.startDate);
+      const endDate = startDate.clone().add("days", 6);
+      this.endDate = endDate.toJSON();
       const data = {};
       const response = await this.getActivity();
       const thisWeek = response
@@ -130,15 +174,19 @@ export default {
         {
           label: "Weekly Usage",
           data: weeklyUsage,
-          backgroundColor: '#f87979',
-          pointBackgroundColor: 'white',
+          backgroundColor: "yellow",
+          pointBackgroundColor: "#353535",
           borderWidth: 5,
-          pointBorderColor: '#249EBF',
-          fill: false
-        },
+          pointBorderColor: "#353535",
+          fill: true
+        }
       ];
       this.datacollection = data;
     }
+  },
+  async mounted() {
+    await this.defaultStartDate();
+    await this.fillData();
   }
 };
 </script>
