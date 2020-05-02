@@ -26,6 +26,4 @@ public interface MembershipRepository extends JpaRepository<Membership, Long>, C
     List<Membership> findLastWithRepeatPayments();
 
     List<Membership> findAllByAccountIdOrderByEndDateAsc(Long accountId);
-    }
-
-
+}

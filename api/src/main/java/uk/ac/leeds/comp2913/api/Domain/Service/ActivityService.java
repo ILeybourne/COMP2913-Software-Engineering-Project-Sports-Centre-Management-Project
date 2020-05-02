@@ -1,5 +1,7 @@
 package uk.ac.leeds.comp2913.api.Domain.Service;
 
+import com.stripe.exception.StripeException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,6 @@ public interface ActivityService {
 
   Page<Activity> findAllWithResources(Pageable pageable);
 
-  void automatedRegularSessionAndBookings();
+  void automatedRegularSessionAndBookings() throws StripeException;
 
   }
