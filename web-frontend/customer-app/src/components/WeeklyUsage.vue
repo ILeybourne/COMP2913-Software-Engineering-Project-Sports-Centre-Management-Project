@@ -4,9 +4,17 @@
       v-if="startDate"
       :headers="headers"
       :items="dataWithFacilities"
+      item-key="id"
       group-by="facility.name"
-      class="elevation-1"
     >
+      <template v-slot:group.header="{items, isOpen, toggle}">
+        <th colspan="3">
+          <v-icon @click="toggle"
+          >{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}
+          </v-icon>
+          {{ items[0].facility.name }}
+        </th>
+      </template>
     </v-data-table>
     <button @click="fillData()">Randomize</button>
     <div class="input-group">
@@ -40,7 +48,7 @@ export default {
       startDate: null,
       headers: [
         {
-          text: "Resource",
+          text: "Facility",
           value: "name"
         },
         {
