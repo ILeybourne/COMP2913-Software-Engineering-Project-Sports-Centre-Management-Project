@@ -20,6 +20,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { formatCurrency } from "../util/format.helpers";
 /*
 const groupBy = (xs, key) => {
   return xs.reduce(function(rv, x) {
@@ -49,12 +50,12 @@ export default {
         },
         {
           text: "Income",
-          value: "income"
+          value: "formattedIncome"
         }
       ],
       dataWithFacilities: [],
       bookingWithActivity: [],
-      bookingData:[]
+      bookingData: []
     };
   },
   computed: {
@@ -121,6 +122,9 @@ export default {
           activity.income = income;
         }
         Arr.push(booking);
+      }
+      for (const activity of this.activities){
+        activity.formattedIncome = formatCurrency(activity.income);
       }
       console.log(Arr);
     }
