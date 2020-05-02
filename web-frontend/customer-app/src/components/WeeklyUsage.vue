@@ -49,7 +49,7 @@ export default {
         },
         {
           text: "Income",
-          value:" "
+          value: "income"
         }
       ],
       dataWithFacilities: [],
@@ -83,11 +83,13 @@ export default {
           .split("/")
           .slice(-1)[0];
         const facilities = this.facilities;
+        /*
         console.log(
           facilities.find(
             facility => Number(facility.id) === Number(facilityId)
           )
         );
+        */
         activity.facility = facilities.find(
           facility => Number(facility.id) === Number(facilityId)
         );
@@ -100,26 +102,27 @@ export default {
       for (const booking of this.bookings) {
         const ActivityId = booking._links.Activity.href.split("/").slice(-1)[0];
         const activities = this.activities;
-        //console.log(Number(booking.id) === Number(ActivityId));
-        //console.log(Number(booking.id) + " " + Number(ActivityId));
-        //console.log(activities);
-        for (const activity of activities){
-          console.log(activity.id + " " + Number(ActivityId));
-        }
         booking.activity = activities.find(
-                activity => Number(activity.id) === Number(ActivityId)
+          activity => Number(activity.id) === Number(ActivityId)
         );
         ActivityArr.push(booking);
       }
+      //console.log(ActivityArr);
       return ActivityArr;
     },
-    async getNumberOfBookings(){
-      //let Arr = [];
-      for (const booking of this.bookingWithActivity){
-        const resourceID = booking.id;
-        console.log(resourceID);
+    async getNumberOfBookings() {
+      let Arr = [];
+      let income = 0;
+      for (const booking of this.bookingWithActivity) {
+        for (const activity of this.activities) {
+          if (booking.activity.name === activity.name) {
+            income = activity.income + activity.cost;
+          }
+          activity.income = income;
+        }
+        Arr.push(booking);
       }
-
+      console.log(Arr);
     }
   },
   created: async function() {
@@ -127,12 +130,11 @@ export default {
     await this.getFacilities();
     await this.getBookings();
     await this.getResources();
-    //console.log(this.resources);
-    //console.log(this.bookings);
+
     this.bookingWithActivity = await this.getRelatedBookingActivity();
-    console.log(this.bookingWithActivity);
     this.dataWithFacilities = await this.getRelatedFacility();
-    this.bookingData = await this.getNumberOfBookings()
+    this.bookingData = await this.getNumberOfBookings();
+    this.dataWithFacilities = await this.getRelatedFacility();
     console.log(this.dataWithFacilities);
   }
 };
