@@ -90,6 +90,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { formatCurrency } from "../util/format.helpers";
 /*
 const groupBy = (xs, key) => {
   return xs.reduce(function(rv, x) {
@@ -122,7 +123,7 @@ export default {
         },
         {
           text: "Income",
-          value: " "
+          value: "formattedIncome"
         }
       ],
       dataWithFacilities: [],
@@ -165,11 +166,13 @@ export default {
           .split("/")
           .slice(-1)[0];
         const facilities = this.facilities;
+        /*
         console.log(
           facilities.find(
             facility => Number(facility.id) === Number(facilityId)
           )
         );
+        */
         activity.facility = facilities.find(
           facility => Number(facility.id) === Number(facilityId)
         );
@@ -182,19 +185,31 @@ export default {
       for (const booking of this.bookings) {
         const ActivityId = booking._links.Activity.href.split("/").slice(-1)[0];
         const activities = this.activities;
-        //console.log(Number(booking.id) === Number(ActivityId));
-        //console.log(Number(booking.id) + " " + Number(ActivityId));
-        //console.log(activities);
-        for (const activity of activities) {
-          console.log(activity.id + " " + Number(ActivityId));
-        }
         booking.activity = activities.find(
           activity => Number(activity.id) === Number(ActivityId)
         );
         ActivityArr.push(booking);
       }
-      console.log("Activity Array 194 " + ActivityArr);
+      //console.log(ActivityArr);
       return ActivityArr;
+    },
+    async getNumberOfBookings() {
+      let Arr = [];
+      let income = 0;
+      for (const booking of this.bookingWithActivity) {
+        for (const activity of this.activities) {
+          if (booking.activity.name === activity.name) {
+            income = activity.income + activity.cost;
+          }
+          activity.income = income;
+        }
+        Arr.push(booking);
+      }
+      for (const activity of this.activities){
+        activity.formattedIncome = formatCurrency(activity.income);
+      }
+      console.log(Arr);
+    }
     },
     async defaultStartDate() {
       const endDate = this.$moment(new Date());
@@ -206,27 +221,17 @@ export default {
       return (
         date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear()
       );
-    },
-    async getNumberOfBookings() {
-      //let Arr = [];
-      for (const booking of this.bookingWithActivity) {
-        const resourceID = booking.id;
-        console.log(resourceID);
-      }
-    }
   },
   created: async function() {
     await this.getActivity();
     await this.getFacilities();
     await this.getBookings();
-    console.log(this.getBookings());
     await this.getResources();
-    //console.log(this.resources);
-    //console.log(this.bookings);
+
     this.bookingWithActivity = await this.getRelatedBookingActivity();
-    console.log(this.bookingWithActivity);
     this.dataWithFacilities = await this.getRelatedFacility();
     this.bookingData = await this.getNumberOfBookings();
+    this.dataWithFacilities = await this.getRelatedFacility();
     await this.defaultStartDate();
     await this.fillData();
     console.log(this.dataWithFacilities);

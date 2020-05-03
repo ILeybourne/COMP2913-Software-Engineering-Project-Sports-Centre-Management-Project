@@ -5,45 +5,9 @@
         <v-spacer></v-spacer>
         <v-dialog max-width="500px"> </v-dialog>
       </v-toolbar>
-      <v-btn color="primary" dark class="mb-2" @click="showNewBooking()"
+      <v-btn color="primary" dark class="mb-2" @click="showBookings()"
       >New Booking</v-btn
       >
-      <b-modal id="new-booking-modal" title="Edit Booking" @ok="addBooking()">
-        <b-form>
-          <b-form-group
-                  id="resource.name"
-                  label="Facility"
-                  label-for="FacilityName"
-          ><b-form-select
-                  id="FacilityName"
-                  :options="setFacilityOptions()"
-                  v-model="selectedBooking.facility"
-                  required
-          ></b-form-select>
-          </b-form-group>
-          <b-form-group id="name" label="Booking" label-for="BookingName">
-            <b-form-input
-                    id="BookingName"
-                    v-model="selectedBooking.name"
-                    required
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group id="startTime" label="Start Time" label-for="StartTime">
-            <b-form-input
-                    id="StartTime"
-                    v-model="selectedBooking.startTime"
-                    required
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group id="endTime" label="End Time" label-for="EndTime">
-            <b-form-input
-                    id="EndTime"
-                    v-model="selectedBooking.endTime"
-                    required
-            ></b-form-input>
-          </b-form-group>
-        </b-form>
-      </b-modal>
       <b-modal id="edit-modal" title="Edit Booking" @ok="updateTable()">
         <b-form>
           <b-form-group
@@ -173,9 +137,6 @@ export default {
       getActivity: "getActivities",
       getFacilities: "getFacilities"
   }),
-    showNewBooking() {
-      this.$bvModal.show("new-booking-modal");
-    },
     editItem(item) {
       console.log(item);
       this.selectedBooking.id = item.id;
@@ -192,6 +153,9 @@ export default {
       confirm("Are you sure you want to delete this item?") &&
         this.bookings.splice(index, 1) &&
         this.deleteBooking(index);
+    },
+    showBookings() {
+      this.$router.push("/bookings");
     },
     setFacilityOptions() {
       let facilities = this.facilities;
