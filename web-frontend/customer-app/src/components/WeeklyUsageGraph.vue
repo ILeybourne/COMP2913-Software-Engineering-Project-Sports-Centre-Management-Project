@@ -1,20 +1,18 @@
 <template>
   <v-app class="usage-container" align="center" justify="center">
     <v-row class="inner-container" align="center" justify="center">
-      <v-col xs="12" align="center" justify="center">
+      <v-card xs="12" align="center" justify="center" class="usage-contents">
         <v-container class="date">
+          <h3>Date Range</h3>
           <v-dialog ref="dialog" v-model="modal" persistent width="290px" dark>
             <template v-slot:activator="{ on }">
               <v-text-field
                 v-model="calculateDateRange"
-                label="Date Range"
-                prepend-icon="mdi-calendar-today"
                 readonly
                 v-on="on"
                 color="yellow"
                 hint="Select a Week Commencing Date"
                 persistent-hint
-                outlined
               ></v-text-field>
             </template>
             <v-date-picker
@@ -36,9 +34,10 @@
         </v-container>
         <v-col>
           <v-container class="chart-container">
+            <h3>Results</h3>
             <line-chart :chart-data="datacollection"></line-chart> </v-container
         ></v-col>
-      </v-col>
+      </v-card>
     </v-row>
   </v-app>
 </template>
@@ -71,6 +70,11 @@
   flex-grow: 1;
   min-height: 0;
 }
+.usage-contents {
+  padding: 30px 0 30px 0;
+  margin: 0;
+  width: 90%;
+}
 </style>
 <script>
 import { mapActions, mapGetters } from "vuex";
@@ -100,7 +104,7 @@ export default {
     ...mapGetters("timetable", ["sessions"]),
     calculateDateRange() {
       const dateString =
-        this.formatDate(this.startDate) + "-" + this.formatDate(this.endDate);
+        this.formatDate(this.startDate) + " - " + this.formatDate(this.endDate);
       return dateString;
     }
   },

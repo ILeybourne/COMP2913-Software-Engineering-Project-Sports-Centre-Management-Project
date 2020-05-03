@@ -1,20 +1,18 @@
 <template>
   <v-app class="usage-container" align="center" justify="center">
     <v-row class="inner-container" align="center" justify="center">
-      <v-col xs="12" align="center" justify="center">
+      <v-card xs="12" align="center" justify="center" class="usage-contents">
         <v-container class="date">
+          <h3>Date Range</h3>
           <v-dialog ref="dialog" v-model="modal" persistent width="290px" dark>
             <template v-slot:activator="{ on }">
               <v-text-field
                 v-model="calculateDateRange"
-                label="Date Range"
-                prepend-icon="mdi-calendar-today"
                 readonly
                 v-on="on"
                 color="yellow"
                 hint="Select a Week Commencing Date"
                 persistent-hint
-                outlined
               ></v-text-field>
             </template>
             <v-date-picker
@@ -36,12 +34,12 @@
         </v-container>
         <v-col>
           <v-container class="data-table-container">
+            <h3>Results</h3>
             <v-data-table
               :headers="headers"
               :items="dataWithFacilities"
               item-key="id"
               group-by="facility.name"
-              dark
             >
               <template v-slot:group.header="{ items, isOpen, toggle }">
                 <th colspan="3">
@@ -54,7 +52,7 @@
             </v-data-table>
           </v-container>
         </v-col>
-      </v-col>
+      </v-card>
     </v-row>
   </v-app>
 </template>
@@ -68,7 +66,6 @@
 .inner-container {
   /*margin: auto;*/
   /*width: 50%;*/
-  padding: 20px;
   min-height: 50%;
   height: min-content;
   margin: 20px;
@@ -85,6 +82,11 @@
   width: 100%;
   flex-grow: 1;
   min-height: 0;
+}
+.usage-contents {
+  padding: 30px 0 30px 0;
+  margin: 0;
+  width: 90%;
 }
 </style>
 
@@ -139,7 +141,7 @@ export default {
     ...mapGetters("timetable", ["resources"]),
     calculateDateRange() {
       const dateString =
-        this.formatDate(this.startDate) + "-" + this.formatDate(this.endDate);
+        this.formatDate(this.startDate) + " - " + this.formatDate(this.endDate);
       return dateString;
     }
   },
@@ -153,6 +155,17 @@ export default {
       getBookings: "getBookings",
       getResources: "getResources"
     }),
+    formatDate(stringDate) {
+      var date = new Date(stringDate);
+      return (
+        date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear()
+      );
+    },
+    async defaultStartDate() {
+      const endDate = this.$moment(new Date());
+      const startDate = endDate.clone().subtract("days", 6);
+      this.startDate = startDate.toJSON();
+    },
     async fillData() {
       const startDate = this.$moment(this.startDate);
       const endDate = startDate.clone().add("days", 6);
@@ -180,6 +193,7 @@ export default {
       }
       return facilityArr;
     },
+
     async getRelatedBookingActivity() {
       let ActivityArr = [];
       for (const booking of this.bookings) {
@@ -193,6 +207,7 @@ export default {
       //console.log(ActivityArr);
       return ActivityArr;
     },
+
     async getNumberOfBookings() {
       let Arr = [];
       let income = 0;
@@ -205,24 +220,16 @@ export default {
         }
         Arr.push(booking);
       }
-      for (const activity of this.activities){
+      for (const activity of this.activities) {
         activity.formattedIncome = formatCurrency(activity.income);
       }
       console.log(Arr);
     }
-    },
-    async defaultStartDate() {
-      const endDate = this.$moment(new Date());
-      const startDate = endDate.clone().subtract("days", 6);
-      this.startDate = startDate.toJSON();
-    },
-    formatDate(stringDate) {
-      var date = new Date(stringDate);
-      return (
-        date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear()
-      );
   },
+
   created: async function() {
+    await this.defaultStartDate();
+    await this.fillData();
     await this.getActivity();
     await this.getFacilities();
     await this.getBookings();
@@ -232,8 +239,6 @@ export default {
     this.dataWithFacilities = await this.getRelatedFacility();
     this.bookingData = await this.getNumberOfBookings();
     this.dataWithFacilities = await this.getRelatedFacility();
-    await this.defaultStartDate();
-    await this.fillData();
     console.log(this.dataWithFacilities);
   }
 };
