@@ -3,14 +3,27 @@
     <div class="heading-div">
       <h1>Weekly <span>Usage</span></h1>
     </div>
-    <WeeklyUsage></WeeklyUsage>
+    <v-row class="info-container">
+      <WeeklyUsage></WeeklyUsage>
+    </v-row>
   </div>
 </template>
 <style scoped>
+.info-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  width: 100%;
+  height: auto;
+}
+
 @media screen and (max-width: 600px) {
   .heading-div h1 {
     font-size: 10vw;
   }
+}
+.heading-div {
+  margin-bottom: 20px;
 }
 .heading-div h1 {
   width: 50%;
