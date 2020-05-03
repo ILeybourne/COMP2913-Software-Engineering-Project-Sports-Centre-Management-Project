@@ -173,6 +173,13 @@ export default {
       streetName: "",
       city: "",
       postCode: "",
+      bookingDetails: {
+        facility: null,
+        activity: null,
+        date: null,
+        time: null,
+        price: null
+      },
       membershipSaleDetails: {
         id: null,
         name: null,
@@ -221,6 +228,15 @@ export default {
       this.card.mount("#card-element");
       console.log("this");
       console.log(this);
+    },
+    setBookingDetails() {
+      this.bookingDetails.facility = this.$route.params.bookingDetails.facility;
+      this.bookingDetails.activity = this.$route.params.bookingDetails.activity;
+      this.bookingDetails.date = this.$route.params.bookingDetails.date;
+      this.bookingDetails.time = this.$route.params.bookingDetails.time;
+      this.bookingDetails.price = this.$route.params.bookingDetails.price;
+      this.isBooking = true
+      this.isMembership = false
     },
     setMembershipDetails() {
       this.membershipSaleDetails.id = this.$route.params.selectedOption;
@@ -302,10 +318,13 @@ export default {
 
   async mounted() {
     await this.getAllCustomers();
-    if (this.$route.params.membershipDetails !== null) {
+    if (this.$route.params.membershipDetails != null) {
       this.setMembershipDetails();
     }
-    if (this.$route.params.formBody !== null) {
+    if (this.$route.params.bookingDetails != null) {
+      this.setBookingDetails();
+    }
+    if (this.$route.params.formBody != null) {
       this.setFormData();
     }
     this.configureStripe();

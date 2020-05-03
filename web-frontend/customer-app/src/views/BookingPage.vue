@@ -216,7 +216,8 @@ export default {
       hideCardError: true,
       authEmail: String,
       customer: null,
-      selectedSessionId:null,
+      selectedSessionId: null,
+      selectedFacilityName: null,
       paymentResponse: {
         accountId: null,
         amountPaid: null,
@@ -243,43 +244,6 @@ export default {
     ...mapActions("timetable", ["getAllSessions"]),
     formatCurrency: formatCurrency,
 
-    //assumes that duplicate session at the same facility, with the same name, at the same time do not exist
-    getSessionSelected() {
-      let activity = null;
-      console.log(this.sessions);
-      for (const session of this.sessions) {
-        if (this.selectedFacility == session.resource.id) {
-          if (this.selectedActivityName === session.name) {
-            let date = session.startTime.substring(0, 10);
-            let time = session.startTime.split("T")[1].substring(0, 5);
-            if (this.date.toString() === date.toString()) {
-              if (this.selectedTime === time) {
-                activity = session;
-              }
-            }
-          }
-        }
-      }
-      return activity;
-    },
-
-    getActivitySelected() {
-      let activity = null;
-      for (const session of this.sessions) {
-        if (this.selectedFacility == session.resource.id) {
-          if (this.selectedActivityName === session.name) {
-            let date = session.startTime.substring(0, 10);
-            let time = session.startTime.split("T")[1].substring(0, 5);
-            if (this.date.toString() === date.toString()) {
-              if (this.selectedTime === time) {
-                activity = session;
-              }
-            }
-          }
-        }
-      }
-      console.log(activity);
-    },
     async getCustomer() {
       this.customer = this.customers.find(
         x => x.emailAddress === this.user.email
@@ -364,8 +328,6 @@ export default {
       }
       if (this.userType === "account" && this.customer) {
         // eslint-disable-next-line no-undef
-        console.log(this.customer);
-        console.log(this.customerId);
         paymentIntent = await this.$http.post(
           `/payments/intent/card/` + this.customer.id,
           {
@@ -386,7 +348,6 @@ export default {
           this.paymentResponse.accountId = paymentIntent.data.accountId;
           this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
           this.paymentResponse.transactionId = paymentIntent.data.transactionId;
-          console.log(paymentIntent);
         } else {
           this.hideCardError = false;
         }
@@ -461,6 +422,8 @@ export default {
       this.phone = value.phone;
       this.health = value.health;
       if (value.cardCashSelection == "card") {
+        //TODO Push to checkout
+        this.onSuccess();
         this.hideCard = false;
         this.hideCash = true;
       } else {
@@ -478,14 +441,13 @@ export default {
       this.date = value.selectedDate;
       this.selectedTime = value.selectedTime;
       this.price = value.price;
+      this.selectedFacilityName = value.selectedFacilityName;
+      //Shows guest component
+      this.hideGuest = false;
       if (value.userType == "guest") {
-        // this.setCashPrice()
-        //Shows guest component
-        this.hideGuest = false;
         this.userType = "guest";
       }
       if (value.userType == "account") {
-        this.hideGuest = false;
         this.userType = "account";
         this.hideQuickPay = !this.isEmployeeOrManager;
         //TODO autofill with customer information (Props to guest info)
@@ -494,6 +456,27 @@ export default {
         // this.email = this.user.email
         // this.phone =
       }
+    },
+
+    async onSuccess() {
+      let formatDate = this.date.toString().split("-");
+      let newFormatDate =
+        formatDate[2] + "-" + formatDate[1] + "-" + formatDate[0];
+      let bookingDetails = {
+        facility: this.selectedFacilityName,
+        activity: this.selectedActivity,
+        date: newFormatDate,
+        time: this.selectedTime,
+        price: this.price
+      };
+      await this.$router.push({
+        name: "Checkout",
+        params: {
+          formBody: this.formBody,
+          bookingDetails: bookingDetails,
+          selectedOption: this.selectedOption
+        }
+      });
     },
 
     isEmpty(obj) {
@@ -517,7 +500,6 @@ export default {
   async mounted() {
     await this.getActivities();
     await this.getAllSessions;
-    await this.getActivitySelected();
     this.configureStripe();
   }
 };

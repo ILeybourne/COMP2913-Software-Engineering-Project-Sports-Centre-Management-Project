@@ -265,7 +265,6 @@ export default {
         this.$data.phone !== ""
       ) {
         this.$emit("submitCustomerDetails", this.$data);
-
         this.firstNameValid = true;
         this.surnameValid = true;
         this.emailValid = true;
@@ -273,7 +272,8 @@ export default {
       } else {
         this.callValidation();
       }
-    }
+    },
+
   }
 };
 </script>

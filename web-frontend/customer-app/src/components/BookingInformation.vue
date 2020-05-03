@@ -12,7 +12,7 @@
             :options="facilityOptions"
             name="facility"
             id="facility"
-            @change="[setActivityTypeOptions($event), validateFacility()]"
+            @change="[setActivityTypeOptions($event), validateFacility(), setFacilityName($event)]"
             @load="setFormDefaults($event)"
             v-bind:state="facilityValid"
             required
@@ -31,7 +31,8 @@
                 // selectActivityName(),
                 validateActivity(),
                 getPrice($event),
-                getTimes()
+                getTimes(),
+                getSelectedActivityName($event)
               ]
             "
             v-bind:state="activitiesValid"
@@ -144,7 +145,9 @@ export default {
       activityOptions: [],
       timeOptions: ["Please Select"],
       selectedActivityId: null,
+      selectedActivityName: null,
       selectedFacilityId: null,
+      selectedFacilityName: null,
       selectedSessionId: null,
       selectedTime: null,
       price: null,
@@ -154,7 +157,10 @@ export default {
       facilityValid: null,
       activitiesValid: null,
       dateValid: null,
-      timeValid: null
+      timeValid: null,
+      // bookingDetails: {
+      //
+      // }
     };
   },
   computed: {
@@ -163,19 +169,28 @@ export default {
     ...mapGetters("auth", ["user"]),
     account: function() {
       return !this.isEmpty(this.user);
-    }
+    },
     // selectedActivityName: function () {
-    //   return this.activities.find(x => x.id == )
+    //   return this.activityTypes.find(x => x.id === this.selectedActivityId )
     //
     // }
   },
   methods: {
     ...mapActions("facilities", ["getFacilities", "getActivityTypes"]),
     ...mapActions("timetable", ["getAllSessions"]),
+    getSelectedActivityName(e) {
+      if (e != null){
+        this.selectedActivityName = this.activityTypes.find(x => x.id  === e ).name
+      }
+    },
+
+    setFacilityName(e) {
+      if (e != null)
+        this.selectedFacilityName = this.facilityOptions.find(x => x .value === e).text
+    },
+
     getPrice(e) {
       if (this.selectedActivityId != null) {
-        console.log(e)
-        console.log(this.activityTypes)
         let selectedActivity = this.activityTypes.find(x => x.id === e);
         this.price = selectedActivity.cost;
       }
@@ -229,7 +244,6 @@ export default {
 
     validateFacility() {
       this.facilityValid = !(this.$data.selectedFacilityId == null);
-      console.log(this.user.email);
     },
     validateActivity() {
       this.activitiesValid = !(this.$data.selectedActivityId == null);
@@ -262,6 +276,13 @@ export default {
         this.activitiesValid = true;
         this.dateValid = true;
         this.timeValid = true;
+        // this.bookingData = {
+        //   facility: this.fac;
+        //   activity: this.$route.params.bookingDetails.activity;
+        //   date: this.$route.params.bookingDetails.date;
+        //   time: this.$route.params.bookingDetails.time;
+        //   price: this.$route.params.bookingDetails.price;
+        // }
         this.$emit("getUserType", this.$data);
       } else {
         //Dont pass data and call validators
@@ -325,8 +346,6 @@ export default {
                   value: null,
                   text: "Please Select"
         }];
-          console.log(this.sessions);
-          console.log(this.activities);
           for (const activity of this.sessions) {
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
@@ -341,10 +360,6 @@ export default {
             let activityName = this.activityOptions.find(
               x => x.value == this.selectedActivityId
             ).text
-
-            console.log(activityName +"=="+ activity.name)
-            console.log(formattedDate +"=="+ this.selectedDate)
-
 
             if (
               activity.name == activityName &&

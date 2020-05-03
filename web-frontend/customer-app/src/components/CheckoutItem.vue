@@ -7,21 +7,23 @@
     >
     <v-row
       ><v-col>Item: </v-col>
-      <v-col>{{ membershipSaleDetails.name }} Membership</v-col></v-row
+      <v-col>{{ membershipSaleDetails.name || bookingDetails.activity}} <p v-if="isMembership">Membership</p></v-col></v-row
     >
     <v-row
       ><v-col>Starts: </v-col>
-      <v-col>{{ membershipSaleDetails.startDate }}</v-col></v-row
+      <v-col>{{ membershipSaleDetails.startDate || bookingDetails.time + ' ' + bookingDetails.date}}</v-col></v-row
     >
     <v-row
+            v-if="isMembership"
       ><v-col>Expires: </v-col>
       <v-col>{{ membershipSaleDetails.endDate }}</v-col></v-row
     >
     <v-row
-      ><v-col>Cost: </v-col> <v-col>{{ membershipSaleDetails.cost }}</v-col></v-row
+      ><v-col>Cost: </v-col> <v-col>£{{ membershipSaleDetails.cost || bookingDetails.price}}</v-col></v-row
     >
     <v-row
-      ><v-col>Automatic Renewal? </v-col>
+            v-if="isMembership"
+    ><v-col>Automatic Renewal? </v-col>
       <v-col>{{ membershipSaleDetails.repeatingPayment }}</v-col></v-row
     >
   </v-container>
@@ -72,7 +74,9 @@ export default {
         date: null,
         time: null,
         price: null
-      }
+      },
+      isBooking: false,
+      isMembership: false
     };
   },
   computed: {},
@@ -83,6 +87,8 @@ export default {
       this.bookingDetails.date = this.$route.params.bookingDetails.date;
       this.bookingDetails.time = this.$route.params.bookingDetails.time;
       this.bookingDetails.price = this.$route.params.bookingDetails.price;
+      this.isBooking = true
+      this.isMembership = false
     },
 
     setMembershipDetails() {
@@ -90,6 +96,8 @@ export default {
       this.membershipSaleDetails.startDate = this.$route.params.membershipDetails.startDate;
       this.membershipSaleDetails.endDate = this.$route.params.membershipDetails.endDate;
       this.membershipSaleDetails.cost = this.$route.params.membershipDetails.amount;
+      this.isBooking = false
+      this.isMembership = true
       if (this.$route.params.membershipDetails.repeatingPayment !== null) {
         this.membershipSaleDetails.repeatingPayment = this.$route.params.membershipDetails.repeatingPayment;
       } else {
@@ -98,11 +106,15 @@ export default {
     }
   },
   async mounted() {
-    if (this.$route.params.bookingDetails !== null) {
-      this.setMembershipDetails();
+    console.log(this.$route.params.bookingDetails)
+    console.log(this.$route.params.bookingDetails == null)
+    console.log(this.$route.params.membershipDetails  )
+    console.log(this.$route.params.membershipDetails == null )
+    if (this.$route.params.bookingDetails != null) {
+      this.setBookingDetails();
     }
 
-    if (this.$route.params.membershipDetails !== null) {
+    if (this.$route.params.membershipDetails != null) {
       this.setMembershipDetails();
     }
   }
