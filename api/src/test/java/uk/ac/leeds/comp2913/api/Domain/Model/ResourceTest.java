@@ -53,15 +53,15 @@ class ResourceTest {
     static Stream<Arguments> resourceJsonVal() {
         return Stream.of(
                 Arguments.of("TestResource1", 1,
-                        "{\"createdAt\":null,\"id\":1,\"name\":\"TestResource1\",\"updatedAt\":null}"),
+                        "{\"createdAt\":null,\"description\":null,\"filePath\":null,\"id\":1,\"imageName\":\"resource-1\",\"name\":\"TestResource1\",\"updatedAt\":null}"),
                 Arguments.of("TestResource2", 2,
-                        "{\"createdAt\":null,\"id\":2,\"name\":\"TestResource2\",\"updatedAt\":null}"),
+                        "{\"createdAt\":null,\"description\":null,\"filePath\":null,\"id\":2,\"imageName\":\"resource-2\",\"name\":\"TestResource2\",\"updatedAt\":null}"),
                 Arguments.of("TestResource3", 3,
-                        "{\"createdAt\":null,\"id\":3,\"name\":\"TestResource3\",\"updatedAt\":null}"),
+                        "{\"createdAt\":null,\"description\":null,\"filePath\":null,\"id\":3,\"imageName\":\"resource-3\",\"name\":\"TestResource3\",\"updatedAt\":null}"),
                 Arguments.of("TestResource4", 4,
-                        "{\"createdAt\":null,\"id\":4,\"name\":\"TestResource4\",\"updatedAt\":null}"),
+                        "{\"createdAt\":null,\"description\":null,\"filePath\":null,\"id\":4,\"imageName\":\"resource-4\",\"name\":\"TestResource4\",\"updatedAt\":null}"),
                 Arguments.of("TestResource5", 5,
-                        "{\"createdAt\":null,\"id\":5,\"name\":\"TestResource5\",\"updatedAt\":null}")
+                        "{\"createdAt\":null,\"description\":null,\"filePath\":null,\"id\":5,\"imageName\":\"resource-5\",\"name\":\"TestResource5\",\"updatedAt\":null}")
         );
     }
 

@@ -59,15 +59,15 @@ class ReceiptTest {
     static Stream<Arguments> receiptJsonVal() {
         return Stream.of(
                 Arguments.of("a@a.com", 111, new Date(120, Calendar.JANUARY, 1), BigInteger.valueOf(100), "Product Description 1", "a:/",
-                        "{\"createdAt\":1577836800000,\"customer\":{\"dateOfBirth\":null,\"emailAddress\":\"a@a.com\",\"id\":null},\"id\":111,\"pdfLocation\":\"a:/\",\"productDescription\":\"Product Description 1\",\"sales\":[],\"total\":100}"),
+                        "{\"createdAt\":1577836800000,\"customer\":{\"dateOfBirth\":null,\"emailAddress\":\"a@a.com\",\"id\":null,\"stripeId\":null},\"id\":111,\"pdfLocation\":\"a:/\",\"productDescription\":\"Product Description 1\",\"sales\":[],\"total\":100}"),
                 Arguments.of("b@b.com", 222, new Date(121, Calendar.FEBRUARY, 2), BigInteger.valueOf(200), "Product Description 2", "b:/",
-                        "{\"createdAt\":1612224000000,\"customer\":{\"dateOfBirth\":null,\"emailAddress\":\"b@b.com\",\"id\":null},\"id\":222,\"pdfLocation\":\"b:/\",\"productDescription\":\"Product Description 2\",\"sales\":[],\"total\":200}"),
+                        "{\"createdAt\":1612224000000,\"customer\":{\"dateOfBirth\":null,\"emailAddress\":\"b@b.com\",\"id\":null,\"stripeId\":null},\"id\":222,\"pdfLocation\":\"b:/\",\"productDescription\":\"Product Description 2\",\"sales\":[],\"total\":200}"),
                 Arguments.of("c@c.com", 333, new Date(122, Calendar.MARCH, 3), BigInteger.valueOf(300), "Product Description 3", "c:/",
-                        "{\"createdAt\":1646265600000,\"customer\":{\"dateOfBirth\":null,\"emailAddress\":\"c@c.com\",\"id\":null},\"id\":333,\"pdfLocation\":\"c:/\",\"productDescription\":\"Product Description 3\",\"sales\":[],\"total\":300}"),
+                        "{\"createdAt\":1646265600000,\"customer\":{\"dateOfBirth\":null,\"emailAddress\":\"c@c.com\",\"id\":null,\"stripeId\":null},\"id\":333,\"pdfLocation\":\"c:/\",\"productDescription\":\"Product Description 3\",\"sales\":[],\"total\":300}"),
                 Arguments.of("d@d.com", 444, new Date(123, Calendar.APRIL, 4), BigInteger.valueOf(400), "Product Description 4", "d:/",
-                        "{\"createdAt\":1680562800000,\"customer\":{\"dateOfBirth\":null,\"emailAddress\":\"d@d.com\",\"id\":null},\"id\":444,\"pdfLocation\":\"d:/\",\"productDescription\":\"Product Description 4\",\"sales\":[],\"total\":400}"),
+                        "{\"createdAt\":1680562800000,\"customer\":{\"dateOfBirth\":null,\"emailAddress\":\"d@d.com\",\"id\":null,\"stripeId\":null},\"id\":444,\"pdfLocation\":\"d:/\",\"productDescription\":\"Product Description 4\",\"sales\":[],\"total\":400}"),
                 Arguments.of("e@e.com", 555, new Date(124, Calendar.MAY, 5), BigInteger.valueOf(500), "Product Description 5", "e:/",
-                        "{\"createdAt\":1714863600000,\"customer\":{\"dateOfBirth\":null,\"emailAddress\":\"e@e.com\",\"id\":null},\"id\":555,\"pdfLocation\":\"e:/\",\"productDescription\":\"Product Description 5\",\"sales\":[],\"total\":500}")
+                        "{\"createdAt\":1714863600000,\"customer\":{\"dateOfBirth\":null,\"emailAddress\":\"e@e.com\",\"id\":null,\"stripeId\":null},\"id\":555,\"pdfLocation\":\"e:/\",\"productDescription\":\"Product Description 5\",\"sales\":[],\"total\":500}")
         );
     }
 
