@@ -10,6 +10,7 @@ export default {
     // If you want to pass options please create a local options object
     this.renderChart(this.chartData, this.options, {
       responsive: true, // my new default options
-      maintainAspectRatio: false});
-  },
+      maintainAspectRatio: false
+    });
+  }
 };

@@ -3,7 +3,7 @@
     <v-row class="inner-container" align="center" justify="center">
       <v-card xs="12" align="center" justify="center" class="usage-contents">
         <v-container class="date">
-          <h3>Date Range</h3>
+          <h3>Week</h3>
           <v-dialog ref="dialog" v-model="modal" persistent width="290px" dark>
             <template v-slot:activator="{ on }">
               <v-text-field
@@ -174,10 +174,12 @@ export default {
           label: "Weekly Usage",
           data: weeklyUsage,
           backgroundColor: "yellow",
-          pointBackgroundColor: "#353535",
-          borderWidth: 5,
+          pointBackgroundColor: "yellow",
+          borderWidth: 2,
           pointBorderColor: "#353535",
-          fill: true
+          borderColor: "#353535",
+          fill: true,
+          defaultFontSize: 20
         }
       ];
       this.datacollection = data;
