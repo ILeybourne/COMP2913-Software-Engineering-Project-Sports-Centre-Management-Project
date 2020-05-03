@@ -189,8 +189,6 @@ import CheckoutItem from "@/components/CheckoutItem.vue";
 import BillingInformation from "@/components/BillingInformation.vue";
 import { formatCurrency } from "@/util/format.helpers";
 import { mapActions, mapGetters } from "vuex";
-//TODO plug in payment and post membership on success
-
 // @ is an alias to /src
 export default {
   name: "Checkout",
@@ -234,6 +232,7 @@ export default {
         selectedOption: null
       },
       postMembershipResponse: [],
+      price: null,
       customer: null
     };
   },
@@ -269,8 +268,7 @@ export default {
       this.bookingDetails.date = this.$route.params.bookingDetails.date;
       this.bookingDetails.time = this.$route.params.bookingDetails.time;
       this.bookingDetails.price = this.$route.params.bookingDetails.price;
-      this.isBooking = true
-      this.isMembership = false
+      this.price =  this.$route.params.bookingDetails.price;
     },
     setMembershipDetails() {
       this.membershipSaleDetails.id = this.$route.params.selectedOption;
@@ -279,6 +277,7 @@ export default {
       this.membershipSaleDetails.endDate = this.$route.params.membershipDetails.endDate;
       this.membershipSaleDetails.cost = this.$route.params.membershipDetails.amount;
       this.membershipSaleDetails.repeatingPayment = this.$route.params.membershipDetails.repeatingPayment;
+      this.price = this.$route.params.membershipDetails.amount;
     },
     setFormData() {
       this.formData.dateOfBirth = this.$route.params.formBody.dateOfBirth;
@@ -310,7 +309,7 @@ export default {
           },
           email: this.email,
           regularSession: false,
-          cost: this.membershipSaleDetails.cost,
+          cost: this.price,
           membershipTypeId: this.membershipSaleDetails.id
         }
       );
