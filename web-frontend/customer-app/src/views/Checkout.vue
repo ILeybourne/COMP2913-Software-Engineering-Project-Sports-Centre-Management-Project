@@ -4,6 +4,7 @@
       <h1><span>Checkout</span></h1>
     </div>
     <v-row class="info-container">
+
       <CheckoutItem class="checkout-container" id="details"></CheckoutItem>
       <BillingInformation
         class="checkout-container"
@@ -11,39 +12,45 @@
         v-if="!billingSuccess"
         @submitBillingDetails="billingSuccessStatus"
       ></BillingInformation>
-      <v-container
-        class="checkout-container"
-        id="billing-details"
-        v-if="billingSuccess"
+        <v-container
+                class="checkout-container"
+                id="billing-details"
+                v-if="billingSuccess"
         ><v-row
-          ><v-col
-            ><h3>Billing Info</h3>
-            <P
-              >{{ this.formData.email }}, {{ this.formData.selectedOption }}</P
-            ></v-col
-          ></v-row
+        ><v-col
+        ><h3>Billing Info</h3>
+          <P
+          >{{ this.formData.email }}, {{ this.formData.selectedOption }}</P
+          ></v-col
+        ></v-row
         >
-        <v-row
+          <v-row
           ><v-col>Name: </v-col> <v-col>{{ name }}</v-col></v-row
-        >
-        <v-row
+          >
+          <v-row
           ><v-col>Email </v-col> <v-col>{{ email }} </v-col></v-row
-        >
+          >
 
-        <v-row
+          <v-row
           ><v-col>House Number: </v-col> <v-col>{{ houseNumber }}</v-col></v-row
-        >
-        <v-row
+          >
+          <v-row
           ><v-col>Street Name: </v-col> <v-col>{{ streetName }}</v-col></v-row
-        >
-        <v-row
+          >
+          <v-row
           ><v-col>City </v-col> <v-col>{{ city }}</v-col></v-row
-        >
-        <v-row
+          >
+          <v-row
           ><v-col>Post code </v-col> <v-col>{{ postCode }}</v-col></v-row
-        >
-      </v-container>
-      <b-col v-bind:class="{ 'd-none': !billingSuccess }">
+          >
+        </v-container>
+    </v-row>
+
+    <v-row>
+
+    <v-container         class="checkout-container" id="card-bg"
+                           v-bind:class="{ 'd-none': !billingSuccess }"
+      >
         <div>
           <form id="payment-form">
             <div id="cardDiv">
@@ -55,22 +62,36 @@
                   id="paymentButton"
                   @click="submitMembershipPayment()"
                 >
-                  Pay {{ formatCurrency(membershipSaleDetails.cost) }}
+                  Pay {{ formatCurrency(membershipSaleDetails.cost || bookingDetails.price)}}
                 </button>
               </div>
             </div>
           </form>
         </div>
-      </b-col>
+      </v-container>
     </v-row>
   </div>
 </template>
 
 <style scoped>
+
+
+  #card-bg{
+    max-height: 80%;
+    padding-left: 5%;
+    padding-right: 5%;
+    margin-left: 3%;
+    max-width: 90%;
+    -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+    -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+    box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+
+  }
 #cardDiv {
   padding: 5%;
   border: 3px solid #3183e5;
   border-radius: 10px;
+
 }
 .checkout-container {
   display: flex;
@@ -91,7 +112,11 @@
   color: #242424;
 }
 #details {
-  max-width: 20%;
+  /*max-width: 20%;*/
+  min-width: 45%;
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+  box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
 }
 
 #billing-details {
@@ -104,12 +129,21 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 20%;
+  min-width: 45%;
+  max-width: 45%;
   flex-basis: auto; /* default value */
   flex-grow: 1;
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+  box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
 }
 #billing {
   min-width: 30%;
+  max-width: 45%;
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+  box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+
 }
 .info-container {
   display: flex;
@@ -252,16 +286,6 @@ export default {
       this.formData.repeatingPayment = this.$route.params.formBody.repeatingPayment;
       this.formData.selectedOption = this.$route.params.selectedOption;
     },
-    // submitPayment() {
-    //   this.checkCustomerStripeId();
-    // },
-    // async checkCustomerStripeId() {
-    //   const hasStripeId = await this.$http.post(
-    //     //TODO Remove static customer id
-    //     `/payments/customer/stripe_id/14`
-    //   );
-    //   return hasStripeId.data;
-    // },
     async getCustomer() {
       console.log(this.customers);
       this.customer = this.customers.find(
@@ -308,7 +332,6 @@ export default {
       await this.$http
         .post("/membership/" + this.formData.selectedOption, body)
         .then(response => {
-          //console.log(response);
           this.postMembershipResponse = response.data;
         })
         .catch(function() {

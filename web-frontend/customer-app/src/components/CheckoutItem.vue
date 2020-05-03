@@ -1,31 +1,52 @@
 <template>
   <v-container class="item-details"
     ><v-row
-      ><v-col
-        ><h3>Sale details</h3></v-col
+      ><v-col align="center"><h3>Sale details</h3></v-col></v-row
+    >
+    <hr v-if="isBooking" />
+    <v-row v-if="isBooking"
+      ><v-col>Facility: </v-col>
+      <v-col>{{ bookingDetails.facility }} </v-col></v-row
+    >
+    <hr v-if="isBooking || isMembership" />
+    <v-row
+      ><v-col v-if="isMembership">Item: </v-col>
+      <v-col v-if="isBooking">Activity: </v-col>
+      <v-col
+        >{{ membershipSaleDetails.name || bookingDetails.activity }}
+        <p v-if="isMembership">Membership</p></v-col
       ></v-row
     >
-    <v-row
-      ><v-col>Item: </v-col>
-      <v-col>{{ membershipSaleDetails.name || bookingDetails.activity}} <p v-if="isMembership">Membership</p></v-col></v-row
-    >
+    <hr v-if="isBooking || isMembership" />
+
     <v-row
       ><v-col>Starts: </v-col>
-      <v-col>{{ membershipSaleDetails.startDate || bookingDetails.time + ' ' + bookingDetails.date}}</v-col></v-row
+      <v-col>{{
+        membershipSaleDetails.startDate ||
+          bookingDetails.time + " " + bookingDetails.date
+      }}</v-col></v-row
     >
-    <v-row
-            v-if="isMembership"
+    <hr v-if="isBooking || isMembership" />
+
+    <v-row v-if="isMembership"
       ><v-col>Expires: </v-col>
       <v-col>{{ membershipSaleDetails.endDate }}</v-col></v-row
     >
+    <hr v-if="isMembership" />
+
     <v-row
-      ><v-col>Cost: </v-col> <v-col>£{{ membershipSaleDetails.cost || bookingDetails.price}}</v-col></v-row
+      ><v-col>Cost: </v-col>
+      <v-col
+        >£{{ membershipSaleDetails.cost || bookingDetails.price }}</v-col
+      ></v-row
     >
-    <v-row
-            v-if="isMembership"
-    ><v-col>Automatic Renewal? </v-col>
+    <hr v-if="isBooking || isMembership" />
+
+    <v-row v-if="isMembership"
+      ><v-col>Automatic Renewal? </v-col>
       <v-col>{{ membershipSaleDetails.repeatingPayment }}</v-col></v-row
     >
+    <hr v-if="isMembership" />
   </v-container>
 </template>
 
@@ -48,6 +69,7 @@
 
 .item-details h3 {
   color: #242424;
+  width: 80%;
 }
 
 .item-details:hover h3 {
@@ -57,7 +79,7 @@
 
 <script>
 export default {
-  name: "Checkout",
+  name: "CheckoutItem",
   components: {},
   data: function() {
     return {
@@ -87,8 +109,8 @@ export default {
       this.bookingDetails.date = this.$route.params.bookingDetails.date;
       this.bookingDetails.time = this.$route.params.bookingDetails.time;
       this.bookingDetails.price = this.$route.params.bookingDetails.price;
-      this.isBooking = true
-      this.isMembership = false
+      this.isBooking = true;
+      this.isMembership = false;
     },
 
     setMembershipDetails() {
@@ -96,8 +118,8 @@ export default {
       this.membershipSaleDetails.startDate = this.$route.params.membershipDetails.startDate;
       this.membershipSaleDetails.endDate = this.$route.params.membershipDetails.endDate;
       this.membershipSaleDetails.cost = this.$route.params.membershipDetails.amount;
-      this.isBooking = false
-      this.isMembership = true
+      this.isBooking = false;
+      this.isMembership = true;
       if (this.$route.params.membershipDetails.repeatingPayment !== null) {
         this.membershipSaleDetails.repeatingPayment = this.$route.params.membershipDetails.repeatingPayment;
       } else {
@@ -106,10 +128,10 @@ export default {
     }
   },
   async mounted() {
-    console.log(this.$route.params.bookingDetails)
-    console.log(this.$route.params.bookingDetails == null)
-    console.log(this.$route.params.membershipDetails  )
-    console.log(this.$route.params.membershipDetails == null )
+    console.log(this.$route.params.bookingDetails);
+    console.log(this.$route.params.bookingDetails == null);
+    console.log(this.$route.params.membershipDetails);
+    console.log(this.$route.params.membershipDetails == null);
     if (this.$route.params.bookingDetails != null) {
       this.setBookingDetails();
     }

@@ -65,8 +65,18 @@
           </b-form-select>
         </div>
         <div class="form-row">
-          <label for="price">Price:</label>
-          <input type="text" id="price" name="price" v-model="price" disabled />
+          <label for="price" style="padding-top: 10px">Price:</label>
+          <b-input-group size="lg" prepend="£" style="width: 90%">
+            <b-form-input
+                    type="text"
+                    step="0.01"
+                    id="price"
+                    name="price"
+                    v-model="price"
+                    class="form-control"
+                    readonly
+            ></b-form-input>
+          </b-input-group>
         </div>
 
         <div class="button-container">
@@ -107,6 +117,7 @@
   border: 3px solid #3183e5;
   padding: 10px;
   border-radius: 10px;
+
 }
 
 .button-container {

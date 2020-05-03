@@ -98,8 +98,8 @@
           />
         </div>
         <div class="form-row" v-if="isEmployeeOrManager">
-          <label for="cardRadio">Card or Cash:</label>
-          <b-form-group>
+          <label for="cardRadio">Card or<br/>Cash:</label>
+          <b-form-group style="width: 90%;">
             <b-form-radio-group
               id="btn-radios-2"
               v-model="cardCashSelection"
@@ -108,6 +108,7 @@
               button-variant="outline-primary"
               size="lg"
               name="radio-btn-outline"
+              style="width: 100%"
             ></b-form-radio-group>
           </b-form-group>
         </div>
