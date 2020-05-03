@@ -3,16 +3,15 @@
     <v-row class="inner-container" align="center" justify="center">
       <v-card xs="12" align="center" justify="center" class="usage-contents">
         <v-container class="date">
-          <h3>Week</h3>
           <v-dialog ref="dialog" v-model="modal" persistent width="290px" dark>
             <template v-slot:activator="{ on }">
               <v-text-field
+                title="week"
+                label="Week"
                 v-model="calculateDateRange"
                 readonly
                 v-on="on"
                 color="yellow"
-                hint="Select a Week Commencing Date"
-                persistent-hint
               ></v-text-field>
             </template>
             <v-date-picker
@@ -34,7 +33,7 @@
         </v-container>
         <v-col>
           <v-container class="chart-container">
-            <h3>Results</h3>
+            <h3><span>Results</span></h3>
             <line-chart :chart-data="datacollection"></line-chart> </v-container
         ></v-col>
       </v-card>
@@ -74,6 +73,9 @@
   padding: 30px 0 30px 0;
   margin: 0;
   width: 90%;
+}
+.usage-contents span{
+  background: #fcff18;
 }
 </style>
 <script>
