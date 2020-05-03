@@ -3,7 +3,7 @@
     <div class="heading-div">
       <h1>Weekly <span>Usage</span></h1>
     </div>
-    <v-row class="info-container">
+    <v-row align="center" justify="center" class="info-container">
       <WeeklyUsage></WeeklyUsage>
     </v-row>
   </div>
@@ -12,7 +12,8 @@
 .info-container {
   display: flex;
   justify-content: center;
-  flex-direction: row;
+  text-align: center;
+  flex-direction: column;
   width: 100%;
   height: auto;
 }

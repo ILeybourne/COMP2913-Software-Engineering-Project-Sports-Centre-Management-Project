@@ -1,42 +1,63 @@
 <template>
-  <div class="usage-container">
-    <div class="inner-container">
-      <v-container class="date-picker-container">
-        <h2>Console</h2>
-        <p>
-          <b>From {{ formatDate(startDate) }} to {{ formatDate(endDate) }}</b>
-        </p>
-        <v-date-picker
-          dark
-          no-title
-          class="date-picker"
-          @change="fillData"
-          v-model="startDate"
-        >
-        </v-date-picker>
-      </v-container>
-
-      <v-container class="data-table-container">
-        <v-data-table
-          :headers="headers"
-          :items="dataWithFacilities"
-          item-key="id"
-          group-by="facility.name"
-        >
-          <template v-slot:group.header="{ items, isOpen, toggle }">
-            <th colspan="3">
-              <v-icon @click="toggle"
-                >{{ isOpen ? "mdi-minus" : "mdi-plus" }}
-              </v-icon>
-              {{ items[0].facility.name }}
-            </th>
-          </template>
-        </v-data-table>
-      </v-container>
-    </div>
-  </div>
+  <v-app class="usage-container" align="center" justify="center">
+    <v-row class="inner-container" align="center" justify="center">
+      <v-col xs="12" align="center" justify="center">
+        <v-container class="date">
+          <v-dialog ref="dialog" v-model="modal" persistent width="290px" dark>
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="calculateDateRange"
+                label="Date Range"
+                prepend-icon="mdi-calendar-today"
+                readonly
+                v-on="on"
+                color="yellow"
+                hint="Select a Week Commencing Date"
+                persistent-hint
+                outlined
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              dark
+              v-model="startDate"
+              type="date"
+              no-title
+              scrollable
+              color="yellow"
+              event-color="black"
+              show-week
+              @select="fillData()"
+              @input="fillData()"
+            >
+              <v-spacer></v-spacer>
+              <v-btn text color="white" @click="modal = false">Close</v-btn>
+            </v-date-picker>
+          </v-dialog>
+        </v-container>
+        <v-col>
+          <v-container class="data-table-container">
+            <v-data-table
+              :headers="headers"
+              :items="dataWithFacilities"
+              item-key="id"
+              group-by="facility.name"
+              dark
+            >
+              <template v-slot:group.header="{ items, isOpen, toggle }">
+                <th colspan="3">
+                  <v-icon @click="toggle"
+                    >{{ isOpen ? "mdi-minus" : "mdi-plus" }}
+                  </v-icon>
+                  {{ items[0].facility.name }}
+                </th>
+              </template>
+            </v-data-table>
+          </v-container>
+        </v-col>
+      </v-col>
+    </v-row>
+  </v-app>
 </template>
-
 <style scoped>
 .usage-container {
   min-height: 50%;
@@ -47,58 +68,23 @@
 .inner-container {
   /*margin: auto;*/
   /*width: 50%;*/
-  padding: 10px;
+  padding: 20px;
   min-height: 50%;
-  display: flex;
-  justify-content: space-between;
-  height: auto;
+  height: min-content;
   margin: 20px;
-  width: 100%;
-}
-.date-picker-container {
-  text-align: center;
-  width: min-content;
-  min-width: min-content;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  min-height: 500px;
-  flex-basis: auto; /* default value */
-  flex-grow: 10;
-  padding: 10px;
-  border: 5px solid #353535;
-  border-radius: 10px;
-  background-color: #353535;
-  max-width: min-content;
-}
-.date-picker-container h2 {
-  text-align: center;
-  margin-bottom: 40px;
-  color: white;
-}
-.date-picker {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 40px;
-}
-.date-picker-container p {
-  color: white;
+  width: 75%;
 }
 .data-table-container {
   justify-content: center;
-  width: 100%;
-  height: 100%;
+  text-align: center;
   display: flex;
   flex-direction: column;
-  min-width: 500px;
-  min-height: 500px;
   flex-basis: auto; /* default value */
-  flex-grow: 10;
-  padding: 10px;
-  padding-left: 50px !important;
+  flex-grow: 5;
+  height: auto;
+  width: 100%;
+  flex-grow: 1;
+  min-height: 0;
 }
 </style>
 
@@ -123,6 +109,8 @@ export default {
       booking: [],
       startDate: null,
       endDate: null,
+      menu: false,
+      modal: false,
       headers: [
         {
           text: "Facility",
@@ -147,7 +135,12 @@ export default {
     ...mapGetters("facilities", ["facilities"]),
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("timetable", ["bookings"]),
-    ...mapGetters("timetable", ["resources"])
+    ...mapGetters("timetable", ["resources"]),
+    calculateDateRange() {
+      const dateString =
+        this.formatDate(this.startDate) + "-" + this.formatDate(this.endDate);
+      return dateString;
+    }
   },
   methods: {
     ...mapActions("facilities", {
