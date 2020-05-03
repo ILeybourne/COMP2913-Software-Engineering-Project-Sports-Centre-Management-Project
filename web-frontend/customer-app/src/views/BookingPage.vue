@@ -216,6 +216,7 @@ export default {
       hideCardError: true,
       authEmail: String,
       customer: null,
+      selectedSessionId:null,
       paymentResponse: {
         accountId: null,
         amountPaid: null,
@@ -447,9 +448,7 @@ export default {
           transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
           amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
         };
-        let session = this.getSessionSelected();
-        console.log(session);
-        await this.$http.post(`/bookings/` + session.id, body); //needs to post session id
+        await this.$http.post(`/bookings/` + this.selectedSessionId, body); //needs to post session id
       } catch (e) {
         console.log(e);
       }
@@ -475,6 +474,7 @@ export default {
       this.selectedActivity = value.selectedActivityName;
       this.selectedActivityId = value.selectedActivityId;
       this.selectedActivityName = value.selectedActivityName;
+      this.selectedSessionId = value.selectedSessionId;
       this.date = value.selectedDate;
       this.selectedTime = value.selectedTime;
       this.price = value.price;

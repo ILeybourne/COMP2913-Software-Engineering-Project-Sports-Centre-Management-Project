@@ -53,12 +53,12 @@
         <div class="form-row">
           <label for="time">Time:</label>
           <b-form-select
-            v-model="selectedTime"
+            v-model="selectedSessionId"
             :options="timeOptions"
             name="time"
             id="time"
             v-bind:state="timeValid"
-            @change="validateTime()"
+            @change="[validateTime(), getSelectedTime($event)]"
             required
           >
           </b-form-select>
@@ -145,6 +145,7 @@ export default {
       timeOptions: ["Please Select"],
       selectedActivityId: null,
       selectedFacilityId: null,
+      selectedSessionId: null,
       selectedTime: null,
       price: null,
       selectedDate: null,
@@ -157,25 +158,36 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("facilities", ["facilities", "activities"]),
+    ...mapGetters("facilities", ["facilities", "activityTypes"]),
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("auth", ["user"]),
     account: function() {
       return !this.isEmpty(this.user);
     }
+    // selectedActivityName: function () {
+    //   return this.activities.find(x => x.id == )
+    //
+    // }
   },
   methods: {
-    ...mapActions("facilities", ["getFacilities", "getActivities"]),
+    ...mapActions("facilities", ["getFacilities", "getActivityTypes"]),
     ...mapActions("timetable", ["getAllSessions"]),
     getPrice(e) {
       if (this.selectedActivityId != null) {
-        let selectedActivity = this.activities.find(x => x.id == e);
+        console.log(e)
+        console.log(this.activityTypes)
+        let selectedActivity = this.activityTypes.find(x => x.id === e);
         this.price = selectedActivity.cost;
       }
     },
 
+    getSelectedTime(e) {
+      if (e != null)
+        this.selectedTime = this.timeOptions.find(x => x.value === e).text
+    },
+
     async setActivityTypeOptions(e) {
-      this.selectedActivityId = null
+      this.selectedActivityId = null;
       if (!(e == null)) {
         const activityTypesRequest = await this.$http.get(
           "http://localhost:8000/activitytypes/resource/" + e
@@ -309,8 +321,12 @@ export default {
           this.selectedFacilityId != null &&
           this.selectedActivityId != null
         ) {
-          let timeArray = ["Please Select"];
-          console.log(this.sessions)
+          let timeArray =[{
+                  value: null,
+                  text: "Please Select"
+        }];
+          console.log(this.sessions);
+          console.log(this.activities);
           for (const activity of this.sessions) {
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
@@ -321,14 +337,25 @@ export default {
             let hours = this.addZero(selectedTime.getUTCHours());
             const mins = this.addZero(selectedTime.getMinutes());
             let formattedDate = year + "-" + month + "-" + date;
+
+            let activityName = this.activityOptions.find(
+              x => x.value == this.selectedActivityId
+            ).text
+
+            console.log(activityName +"=="+ activity.name)
+            console.log(formattedDate +"=="+ this.selectedDate)
+
+
             if (
-              activity.name == this.activities.find(act => act.id === this.selectedActivityId).name &&
+              activity.name == activityName &&
               formattedDate == this.selectedDate
             ) {
               let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
-              if(!timeArray.includes(formattedDate)){
-
-                timeArray.push(formattedTime);
+              if (!timeArray.includes(formattedDate)) {
+                timeArray.push({
+                  value: activity.id,
+                  text: formattedTime
+                })
               }
             }
           }
@@ -342,7 +369,7 @@ export default {
   },
   async mounted() {
     await this.getFacilities();
-    await this.getActivities();
+    await this.getActivityTypes();
     await this.getAllSessions();
     this.fillByQuery();
   }

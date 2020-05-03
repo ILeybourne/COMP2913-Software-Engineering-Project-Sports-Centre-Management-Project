@@ -16,7 +16,12 @@
         id="billing-details"
         v-if="billingSuccess"
         ><v-row
-          ><v-col><h3>Billing Info</h3><P>{{this.formData.email}}, {{this.formData.selectedOption}}</P></v-col></v-row
+          ><v-col
+            ><h3>Billing Info</h3>
+            <P
+              >{{ this.formData.email }}, {{ this.formData.selectedOption }}</P
+            ></v-col
+          ></v-row
         >
         <v-row
           ><v-col>Name: </v-col> <v-col>{{ name }}</v-col></v-row
@@ -48,7 +53,7 @@
                   type="button"
                   class="btn btn-outline-primary"
                   id="paymentButton"
-                  @click="submitPayment($event)"
+                  @click="submitMembershipPayment()"
                 >
                   Pay {{ formatCurrency(membershipSaleDetails.cost) }}
                 </button>
@@ -149,6 +154,7 @@
 import CheckoutItem from "@/components/CheckoutItem.vue";
 import BillingInformation from "@/components/BillingInformation.vue";
 import { formatCurrency } from "@/util/format.helpers";
+import { mapActions, mapGetters } from "vuex";
 //TODO plug in payment and post membership on success
 
 // @ is an alias to /src
@@ -186,10 +192,15 @@ export default {
         repeatingPayment: null,
         selectedOption: null
       },
-      postMembershipResponse: []
+      postMembershipResponse: [],
+      customer: null
     };
   },
+  computed: {
+    ...mapGetters("customers", ["customers"])
+  },
   methods: {
+    ...mapActions("customers", ["getAllCustomers"]),
     formatCurrency: formatCurrency,
     billingSuccessStatus(value) {
       this.billingSuccess = true;
@@ -212,6 +223,7 @@ export default {
       console.log(this);
     },
     setMembershipDetails() {
+      this.membershipSaleDetails.id = this.$route.params.selectedOption;
       this.membershipSaleDetails.name = this.$route.params.membershipDetails.name;
       this.membershipSaleDetails.startDate = this.$route.params.membershipDetails.startDate;
       this.membershipSaleDetails.endDate = this.$route.params.membershipDetails.endDate;
@@ -224,61 +236,72 @@ export default {
       this.formData.repeatingPayment = this.$route.params.formBody.repeatingPayment;
       this.formData.selectedOption = this.$route.params.selectedOption;
     },
-    submitPayment() {
-      this.checkCustomerStripeId();
-    },
-    async checkCustomerStripeId() {
-      const hasStripeId = await this.$http.post(
-        //TODO Remove static customer id
-        `/payments/customer/stripe_id/14`
+    // submitPayment() {
+    //   this.checkCustomerStripeId();
+    // },
+    // async checkCustomerStripeId() {
+    //   const hasStripeId = await this.$http.post(
+    //     //TODO Remove static customer id
+    //     `/payments/customer/stripe_id/14`
+    //   );
+    //   return hasStripeId.data;
+    // },
+    async getCustomer() {
+      console.log(this.customers);
+      this.customer = this.customers.find(
+        x => x.emailAddress === this.$auth.user.email
       );
-      return hasStripeId.data;
-    }
-  },
-  async submitQuickPayment() {
-    this.paymentSubmit = true;
-    let paymentIntent = null;
-    // eslint-disable-next-line no-undef
-    paymentIntent = await this.$http.post(
-      `/payments/intent/saved/` + this.customer.id, //this.customerId,
-      {
-        payment_method: {
-          card: this.card,
-          billing_details: {
-            name: this.firstName
-          }
-        },
-        cost: this.price,
-        email: this.email,
-        regularSession: false
+    },
+    async submitMembershipPayment() {
+      console.log(this.$auth.user);
+      console.log(this.customers);
+      console.log(await this.getCustomer());
+      this.paymentSubmit = true;
+      let paymentIntent = null;
+      // eslint-disable-next-line no-undef
+      paymentIntent = await this.$http.post(
+        `/payments/intent/card/` + this.customer.id, //this.customerId,
+        {
+          payment_method: {
+            card: this.card,
+            billing_details: {
+              name: this.firstName
+            }
+          },
+          email: this.email,
+          regularSession: false,
+          cost: this.membershipSaleDetails.cost,
+          membershipTypeId: this.membershipSaleDetails.id
+        }
+      );
+      if (paymentIntent.status === 200) {
+        this.paymentResponse.accountId = paymentIntent.data.accountId;
+        this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
+        this.paymentResponse.transactionId = paymentIntent.data.transactionId;
+        await this.addMember();
+        //TODO reroute page
       }
-    );
-    if (paymentIntent.status === 200) {
-      this.paymentResponse.accountId = paymentIntent.data.accountId;
-      this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
-      this.paymentResponse.transactionId = paymentIntent.data.transactionId;
-      await this.addMember();
+    },
+    async addMember() {
+      const body = {
+        accountId: this.paymentResponse.accountId,
+        transactionId: this.paymentResponse.transactionId,
+        repeatingPayment: this.formData.repeatingPayment,
+        email: this.formData.email
+      };
+      await this.$http
+        .post("/membership/" + this.formData.selectedOption, body)
+        .then(response => {
+          //console.log(response);
+          this.postMembershipResponse = response.data;
+        })
+        .catch(function() {
+        });
     }
-  },
-  async addMember() {
-    const body = {
-      accountId: this.paymentResponse.accountId,
-      transactionId: this.paymentResponse.transactionId,
-      repeatingPayment: this.formData.repeatingPayment,
-      email: this.formData.email
-    };
-    await this.$http
-      .post("/membership/" + this.formData.selectedOption, body)
-      .then(response => {
-        //console.log(response);
-        this.postMembershipResponse = response.data;
-      })
-      .catch(function() {
-        //console.log(error);
-      });
   },
 
   async mounted() {
+    await this.getAllCustomers();
     if (this.$route.params.membershipDetails !== null) {
       this.setMembershipDetails();
     }

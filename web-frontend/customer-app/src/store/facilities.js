@@ -17,11 +17,13 @@ const state = {
     }
   },
   facilities: [],
-  activities: []
+  activities: [],
+  activityTypes: []
 };
 
 const getters = {
   facilities: state => state.facilities,
+  activityTypes: state => state.activityTypes,
   activities: state =>
     state.activities.map(activity => {
       return {
@@ -56,6 +58,7 @@ const mutations = {
     state.facilities.push(...page);
   },
   SET_ACTIVITIES: (state, payload) => (state.activities = payload),
+  SET_ACTIVITY_TYPES: (state, payload) => (state.activityTypes = payload),
   SET_FACILITY_PAGE_INFO: (state, payload) => {
     state.paging.facilities = {
       ...state.paging.facilities,
@@ -157,10 +160,10 @@ const actions = {
   async getActivityTypes({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/activitytypes");
-    const activities = data._embedded.activityTypeDToes;
-    commit("SET_ACTIVITIES", activities);
+    const activityTypes = data._embedded.activityTypeDToes;
+    commit("SET_ACTIVITY_TYPES", activityTypes);
     commit("loading/FINISH_LOADING", null, { root: true });
-    return activities;
+    return activityTypes;
   },
   async getActivities({ commit }) {
     commit("loading/START_LOADING", null, { root: true });

@@ -65,11 +65,26 @@ export default {
         endDate: null,
         cost: null,
         repeatingPayment: null
+      },
+      bookingDetails: {
+        facility: null,
+        activity: null,
+        date: null,
+        time: null,
+        price: null
       }
     };
   },
   computed: {},
   methods: {
+    setBookingDetails() {
+      this.bookingDetails.facility = this.$route.params.bookingDetails.facility;
+      this.bookingDetails.activity = this.$route.params.bookingDetails.activity;
+      this.bookingDetails.date = this.$route.params.bookingDetails.date;
+      this.bookingDetails.time = this.$route.params.bookingDetails.time;
+      this.bookingDetails.price = this.$route.params.bookingDetails.price;
+    },
+
     setMembershipDetails() {
       this.membershipSaleDetails.name = this.$route.params.membershipDetails.name;
       this.membershipSaleDetails.startDate = this.$route.params.membershipDetails.startDate;
@@ -83,6 +98,10 @@ export default {
     }
   },
   async mounted() {
+    if (this.$route.params.bookingDetails !== null) {
+      this.setMembershipDetails();
+    }
+
     if (this.$route.params.membershipDetails !== null) {
       this.setMembershipDetails();
     }
