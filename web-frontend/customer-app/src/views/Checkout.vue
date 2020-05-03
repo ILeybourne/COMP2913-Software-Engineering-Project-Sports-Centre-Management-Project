@@ -295,6 +295,7 @@ export default {
       console.log(this.$auth.user);
       console.log(this.customers);
       console.log(await this.getCustomer());
+      console.log(this.price);
       this.paymentSubmit = true;
       let paymentIntent = null;
       // eslint-disable-next-line no-undef

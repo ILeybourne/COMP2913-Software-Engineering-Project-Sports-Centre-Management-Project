@@ -30,6 +30,7 @@ public class ActivityDTOAssembler extends RepresentationModelAssemblerSupport<Ac
         activityDTO.setRegularSessionId(activity.getRegularSession());
         activityDTO.setSocial(activity.getSocial());
         activityDTO.setResource(activity.getResource());
+        activityDTO.setActivity_type_id(activity.getActivityType().getId());
         return activityDTO;
     }
 }
