@@ -1,6 +1,6 @@
 <template>
   <header class="header-section">
-    <b-navbar toggleable="lg">
+    <b-navbar type="light" toggleable="lg">
       <b-navbar-brand to="/"
         ><img
           src="../assets/logo.png"
@@ -15,13 +15,18 @@
           <b-nav-item to="/">Home</b-nav-item>
           <b-nav-item to="/timetable">Timetable</b-nav-item>
           <b-nav-item to="/facilities">Facilities</b-nav-item>
-          <b-nav-item to="/activitiestable">Activities</b-nav-item>
+          <b-nav-item to="/activitiestable" v-if="isEmployeeOrManager"
+          >Activities</b-nav-item>
           <b-nav-item to="/membership">Membership</b-nav-item>
-          <b-nav-item-dropdown text="Bookings">
+          <b-nav-item-dropdown toggle-class="text-dark" text="Bookings">
             <b-dropdown-item to="/bookings">Create</b-dropdown-item>
             <b-dropdown-item to="/bookingtable">Manage</b-dropdown-item>
           </b-nav-item-dropdown>
-          <b-nav-item-dropdown text="Usage" v-if="isEmployeeOrManager">
+          <b-nav-item-dropdown
+            toggle-class="text-dark"
+            text="Usage"
+            v-if="isEmployeeOrManager"
+          >
             <b-dropdown-item to="/weeklyusage">Table</b-dropdown-item>
             <b-dropdown-item to="/weeklyusagegraph">Graph</b-dropdown-item>
           </b-nav-item-dropdown>
@@ -29,7 +34,11 @@
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
           <div class="hr-box">
-            <b-nav-item-dropdown v-if="isAuthenticated" right>
+            <b-nav-item-dropdown
+              toggle-class="text-dark"
+              v-if="isAuthenticated"
+              right
+            >
               <!-- Using 'button-content' slot -->
               <template v-slot:button-content>
                 <em>{{ user.name }}</em>
@@ -50,7 +59,12 @@
     </b-navbar>
   </header>
 </template>
-
+<style scoped>
+.navbar-light .navbar-nav .nav-link {
+  color: #1e1e1e !important;
+  font-family: "PT Sans", sans-serif !important;
+}
+</style>
 <script>
 import { mapActions, mapGetters } from "vuex";
 
