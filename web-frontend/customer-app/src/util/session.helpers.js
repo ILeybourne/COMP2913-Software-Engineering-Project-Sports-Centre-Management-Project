@@ -9,3 +9,7 @@ export const sessionToEvent = activity => {
     currentCapacity: activity.currentCapacity
   };
 };
+
+export const isEmpty = obj => {
+  return Object.keys(obj).length === 0;
+};

@@ -204,7 +204,8 @@ export default {
       firstNameValid: null,
       surnameValid: null,
       emailValid: null,
-      phoneValid: null
+      phoneValid: null,
+      paymentSuccess: false
     };
   },
   validations: {

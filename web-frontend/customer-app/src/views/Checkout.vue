@@ -1,97 +1,102 @@
 <template>
   <div class="payment-container">
-    <div class="heading-div">
-      <h1><span>Checkout</span></h1>
-    </div>
-    <v-row class="info-container">
-
-      <CheckoutItem class="checkout-container" id="details"></CheckoutItem>
-      <BillingInformation
-        class="checkout-container"
-        id="billing"
-        v-if="!billingSuccess"
-        @submitBillingDetails="billingSuccessStatus"
-      ></BillingInformation>
+    <div v-if="!this.paymentSuccess">
+      <div class="heading-div">
+        <h1><span>Checkout</span></h1>
+      </div>
+      <v-row class="info-container">
+        <CheckoutItem class="checkout-container" id="details"></CheckoutItem>
+        <BillingInformation
+          class="checkout-container"
+          id="billing"
+          v-if="!billingSuccess"
+          @submitBillingDetails="billingSuccessStatus"
+        ></BillingInformation>
         <v-container
-                class="checkout-container"
-                id="billing-details"
-                v-if="billingSuccess"
-        ><v-row
-        ><v-col
-        ><h3>Billing Info</h3>
-          <P
-          >{{ this.formData.email }}, {{ this.formData.selectedOption }}</P
-          ></v-col
-        ></v-row
-        >
-          <v-row
-          ><v-col>Name: </v-col> <v-col>{{ name }}</v-col></v-row
+          class="checkout-container"
+          id="billing-details"
+          v-if="billingSuccess"
+          ><v-row
+            ><v-col
+              ><h3>Billing Info</h3>
+              <P
+                >{{ this.formData.email }},
+                {{ this.formData.selectedOption }}</P
+              ></v-col
+            ></v-row
           >
           <v-row
-          ><v-col>Email </v-col> <v-col>{{ email }} </v-col></v-row
+            ><v-col>Name: </v-col> <v-col>{{ name }}</v-col></v-row
+          >
+          <v-row
+            ><v-col>Email </v-col> <v-col>{{ email }} </v-col></v-row
           >
 
           <v-row
-          ><v-col>House Number: </v-col> <v-col>{{ houseNumber }}</v-col></v-row
+            ><v-col>House Number: </v-col>
+            <v-col>{{ houseNumber }}</v-col></v-row
           >
           <v-row
-          ><v-col>Street Name: </v-col> <v-col>{{ streetName }}</v-col></v-row
+            ><v-col>Street Name: </v-col> <v-col>{{ streetName }}</v-col></v-row
           >
           <v-row
-          ><v-col>City </v-col> <v-col>{{ city }}</v-col></v-row
+            ><v-col>City </v-col> <v-col>{{ city }}</v-col></v-row
           >
           <v-row
-          ><v-col>Post code </v-col> <v-col>{{ postCode }}</v-col></v-row
+            ><v-col>Post code </v-col> <v-col>{{ postCode }}</v-col></v-row
           >
         </v-container>
-    </v-row>
+      </v-row>
 
-    <v-row>
-
-    <v-container         class="checkout-container" id="card-bg"
-                           v-bind:class="{ 'd-none': !billingSuccess }"
-      >
-        <div>
-          <form id="payment-form">
-            <div id="cardDiv">
-              <div id="card-element"></div>
-              <div id="buttonDiv">
-                <button
-                  type="button"
-                  class="btn btn-outline-primary"
-                  id="paymentButton"
-                  @click="submitMembershipPayment()"
-                >
-                  Pay {{ formatCurrency(membershipSaleDetails.cost || bookingDetails.price)}}
-                </button>
+      <v-row>
+        <v-container
+          class="checkout-container"
+          id="card-bg"
+          v-bind:class="{ 'd-none': !billingSuccess }"
+        >
+          <div>
+            <form id="payment-form">
+              <div id="cardDiv">
+                <div id="card-element"></div>
+                <div id="buttonDiv">
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    id="paymentButton"
+                    @click="submitMembershipPayment()"
+                  >
+                    Pay
+                    {{
+                      formatCurrency(
+                        membershipSaleDetails.cost || bookingDetails.price
+                      )
+                    }}
+                  </button>
+                </div>
               </div>
-            </div>
-          </form>
-        </div>
-      </v-container>
-    </v-row>
+            </form>
+          </div>
+        </v-container>
+      </v-row>
+    </div>
   </div>
 </template>
 
 <style scoped>
-
-
-  #card-bg{
-    max-height: 80%;
-    padding-left: 5%;
-    padding-right: 5%;
-    margin-left: 3%;
-    max-width: 90%;
-    -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
-    -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
-    box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
-
-  }
+#card-bg {
+  max-height: 80%;
+  padding-left: 5%;
+  padding-right: 5%;
+  margin-left: 3%;
+  max-width: 90%;
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
+}
 #cardDiv {
   padding: 5%;
   border: 3px solid #3183e5;
   border-radius: 10px;
-
 }
 .checkout-container {
   display: flex;
@@ -114,9 +119,9 @@
 #details {
   /*max-width: 20%;*/
   min-width: 45%;
-  -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
-  -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
-  box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
 }
 
 #billing-details {
@@ -133,17 +138,16 @@
   max-width: 45%;
   flex-basis: auto; /* default value */
   flex-grow: 1;
-  -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
-  -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
-  box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
 }
 #billing {
   min-width: 30%;
   max-width: 45%;
-  -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
-  -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
-  box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.2);
-
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.2);
 }
 .info-container {
   display: flex;
@@ -210,7 +214,9 @@ export default {
         activity: null,
         date: null,
         time: null,
-        price: null
+        price: null,
+        activityTypeId: null,
+        sessionId: null
       },
       membershipSaleDetails: {
         id: null,
@@ -233,7 +239,10 @@ export default {
       },
       postMembershipResponse: [],
       price: null,
-      customer: null
+      customer: null,
+      isBooking: false,
+      isMembership: false,
+      paymentSuccess: false
     };
   },
   computed: {
@@ -268,7 +277,9 @@ export default {
       this.bookingDetails.date = this.$route.params.bookingDetails.date;
       this.bookingDetails.time = this.$route.params.bookingDetails.time;
       this.bookingDetails.price = this.$route.params.bookingDetails.price;
-      this.price =  this.$route.params.bookingDetails.price;
+      this.bookingDetails.activityTypeId = this.$route.params.bookingDetails.activityTypeId;
+      this.bookingDetails.sessionId = this.$route.params.bookingDetails.sessionId;
+      this.price = this.$route.params.bookingDetails.price;
     },
     setMembershipDetails() {
       this.membershipSaleDetails.id = this.$route.params.selectedOption;
@@ -298,30 +309,87 @@ export default {
       console.log(this.price);
       this.paymentSubmit = true;
       let paymentIntent = null;
+
+      let body = {
+        payment_method: {
+          card: this.card,
+          billing_details: {
+            name: this.firstName
+          }
+        },
+        email: this.email,
+        regularSession: false,
+        cost: this.price
+      };
+
+      if (this.isMembership) {
+        body.membershipTypeId = this.membershipSaleDetails.id;
+      }
+      if (this.isBooking) {
+        body.activityTypeId = this.bookingDetails.activityTypeId;
+      }
+
       // eslint-disable-next-line no-undef
       paymentIntent = await this.$http.post(
         `/payments/intent/card/` + this.customer.id, //this.customerId,
-        {
-          payment_method: {
-            card: this.card,
-            billing_details: {
-              name: this.firstName
-            }
-          },
-          email: this.email,
-          regularSession: false,
-          cost: this.price,
-          membershipTypeId: this.membershipSaleDetails.id
-        }
+        body
       );
       if (paymentIntent.status === 200) {
+        console.log(paymentIntent);
         this.paymentResponse.accountId = paymentIntent.data.accountId;
         this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
         this.paymentResponse.transactionId = paymentIntent.data.transactionId;
-        await this.addMember();
+        this.sendClientSecretToServer(paymentIntent.data.clientSecret);
         //TODO reroute page
       }
     },
+
+    async sendClientSecretToServer(client_secret) {
+      //uses client secret from  payment intent to make payment
+      // eslint-disable-next-line no-undef
+      const result = await this.stripe.confirmCardPayment(client_secret, {
+        payment_method: {
+          card: this.card,
+          billing_details: {
+            name: this.firstName
+          }
+        },
+        setup_future_usage: "off_session"
+      });
+      if (result.error) {
+        // Show error to your customer (e.g., insufficient funds)
+      } else {
+        // The payment has been processed!
+        if (result.paymentIntent.status === "succeeded") {
+          this.paymentSuccess = true;
+
+          if (this.isMembership) {
+            await this.addMember();
+          }
+          if (this.isBooking) {
+            await this.createBooking();
+          }
+
+          let paymentSuccessData = {
+            bookingDetails: this.bookingDetails,
+            membershipSaleDetails: this.membershipSaleDetails,
+            formData: this.formData ,
+            paymentResponse: this.paymentResponse,
+            postMembershipResponse: this.postMembershipResponse
+          }
+
+          await this.$router.push({
+            name: "PaymentSuccess",
+            params: {
+              paymentSuccessData: paymentSuccessData,
+            }
+          })
+
+        }
+          // this.hideCardError = false;
+      }
+    },
+
     async addMember() {
       const body = {
         accountId: this.paymentResponse.accountId,
@@ -334,8 +402,26 @@ export default {
         .then(response => {
           this.postMembershipResponse = response.data;
         })
-        .catch(function() {
-        });
+        .catch(function() {});
+    },
+
+    async createBooking() {
+      try {
+        const body = {
+          accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
+          //TODO ADD participant field
+          participants: 1,
+          regularBooking: false, //need to be dynamic (cash payment defaulted to false, same for guest)
+          transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
+          amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
+        };
+        await this.$http.post(
+          `/bookings/` + this.bookingDetails.sessionId,
+          body
+        ); //needs to post session id
+      } catch (e) {
+        console.log(e);
+      }
     }
   },
 
@@ -343,9 +429,11 @@ export default {
     await this.getAllCustomers();
     if (this.$route.params.membershipDetails != null) {
       this.setMembershipDetails();
+      this.isMembership = true;
     }
     if (this.$route.params.bookingDetails != null) {
       this.setBookingDetails();
+      this.isBooking = true;
     }
     if (this.$route.params.formBody != null) {
       this.setFormData();

@@ -1,5 +1,5 @@
 <template>
-  <div class="container-flex">
+<div class="container-flex">
     <h2>Unauthorised</h2>
     <div class="row">
       <div class="col">

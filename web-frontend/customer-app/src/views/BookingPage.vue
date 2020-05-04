@@ -464,7 +464,9 @@ export default {
         formatDate[2] + "-" + formatDate[1] + "-" + formatDate[0];
       let bookingDetails = {
         facility: this.selectedFacilityName,
+        activityTypeId: this.selectedActivityId,
         activity: this.selectedActivity,
+        sessionId: this.selectedSessionId,
         date: newFormatDate,
         time: this.selectedTime,
         price: this.price
@@ -472,9 +474,7 @@ export default {
       await this.$router.push({
         name: "Checkout",
         params: {
-          formBody: this.formBody,
           bookingDetails: bookingDetails,
-          selectedOption: this.selectedOption
         }
       });
     },
