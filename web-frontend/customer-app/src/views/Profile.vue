@@ -10,6 +10,7 @@
                 :src="user.picture"
                 id="profile-picture"
                 class="rounded rounded-circle border-bottom border-dark"
+                alt="Profile Picture"
               />
             </div>
             <div class="col-xl-7">

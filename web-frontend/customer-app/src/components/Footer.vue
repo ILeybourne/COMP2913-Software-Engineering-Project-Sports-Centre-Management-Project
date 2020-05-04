@@ -57,6 +57,7 @@
                 <img
                   src="../assets/logo.png"
                   style="height: 63.6px; width: 198.6px"
+                  alt="Logo"
                 />
               </div>
             </router-link>
