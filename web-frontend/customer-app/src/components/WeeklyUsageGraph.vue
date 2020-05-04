@@ -11,7 +11,9 @@
         <v-container class="date">
           <v-dialog ref="dialog" v-model="modal" persistent width="290px" dark>
             <template v-slot:activator="{ on }">
-              <v-subheader id="header" class="yellow--text title"
+              <v-subheader
+                id="header"
+                class="yellow--text title font-weight-bold"
                 >WEEK</v-subheader
               >
               <v-text-field
@@ -84,7 +86,6 @@
   flex-grow: 5;
   height: auto;
   width: 100%;
-  flex-grow: 1;
   min-height: 0;
 }
 .usage-contents {
@@ -199,11 +200,24 @@ export default {
           borderWidth: 3,
           pointBorderColor: "white",
           borderColor: "yellow",
-          fill: false,
-          defaultFontSize: 20
+          fill: false
         }
       ];
       this.datacollection = data;
+      // eslint-disable-next-line no-undef
+      Chart.defaults.global.defaultFontColor = "white";
+      // eslint-disable-next-line no-undef
+      Chart.defaults.global.defaultFontSize = 12;
+      // eslint-disable-next-line no-undef
+      Chart.defaults.global.defaultFontFamily = "'PT Sans', 'sans-serif'";
+      // eslint-disable-next-line no-undef
+      Chart.defaults.global.defaultFontStyle = "bold";
+      // eslint-disable-next-line no-undef
+      Chart.defaults.scale.ticks.stepSize = 5;
+      // eslint-disable-next-line no-undef
+      Chart.defaults.scale.ticks.min = 0;
+      // eslint-disable-next-line no-undef
+      Chart.defaults.scale.ticks.max = 30;
     }
   },
   async mounted() {

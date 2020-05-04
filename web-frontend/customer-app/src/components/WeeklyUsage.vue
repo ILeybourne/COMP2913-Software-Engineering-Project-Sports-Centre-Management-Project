@@ -5,7 +5,7 @@
         <v-container class="date">
           <v-dialog ref="dialog" v-model="modal" persistent width="290px" dark>
             <template v-slot:activator="{ on }">
-              <v-subheader id="header" class="yellow--text title"
+              <v-subheader class="yellow--text title font-weight-bold"
                 >WEEK</v-subheader
               >
               <v-text-field
@@ -146,17 +146,17 @@ export default {
         {
           text: "FACILITY",
           value: "name",
-          class: "yellow--text title"
+          class: "yellow--text title font-weight-bold"
         },
         {
           text: "COST",
           value: "formattedCost",
-          class: "yellow--text title"
+          class: "yellow--text title font-weight-bold"
         },
         {
           text: "INCOME",
           value: "formattedIncome",
-          class: "yellow--text title"
+          class: "yellow--text title font-weight-bold"
         }
       ],
       dataWithFacilities: [],
