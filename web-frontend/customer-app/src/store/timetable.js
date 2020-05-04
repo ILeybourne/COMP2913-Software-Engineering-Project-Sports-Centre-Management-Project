@@ -92,6 +92,17 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return bookings;
   },
+  async getBooking({ commit, BookingId }) {
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.get(`/bookings/${BookingId}`);
+    let bookings = [];
+    if (data._embedded) {
+      bookings = data._embedded.bookingDToes;
+    }
+    commit("SET_BOOKINGS", bookings);
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return bookings;
+  },
   async getResources({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/resources");

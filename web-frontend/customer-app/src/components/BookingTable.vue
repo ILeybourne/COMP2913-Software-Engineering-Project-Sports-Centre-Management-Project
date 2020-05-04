@@ -124,17 +124,22 @@ export default {
   },
   computed: {
     ...mapGetters("timetable", ["bookings"]),
+    ...mapGetters("timetable", ["resources"]),
     ...mapGetters("facilities", ["activities"]),
+    ...mapGetters("facilities", ["activity"]),
     ...mapGetters("facilities", ["facilities"])
   },
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("timetable", {
       getBooking: "getBookings",
+      getBook: "getBooking",
+      getResources: "getResources",
       deleteBooking: "deleteActivities"
     }),
     ...mapActions("facilities", {
-      getActivity: "getActivities",
+      getActivity: "getActivityTypes",
+      getActivities: "getActivities",
       getFacilities: "getFacilities"
   }),
     editItem(item) {
@@ -178,6 +183,14 @@ export default {
         );
         ActivityArr.push(booking);
       }
+      for (const booking of ActivityArr){
+        const ResourceId = booking.activity._links.resource.href.split("/").slice(-1)[0];
+        const resources = this.resources;
+        booking.activity.resource = resources.find(
+          resource => Number(resource.id) === Number(ResourceId)
+        );
+        //console.log(booking);
+      }
       return ActivityArr;
     },
     updateTable() {
@@ -192,12 +205,14 @@ export default {
 
   async mounted() {
     await this.getActivity();
+    await this.getResources();
     //console.log(this.activities);
     await this.getBooking();
+    console.log(this.bookings);
     await this.getFacilities();
     //console.log(this.bookings);
     this.dataWithActivities = await this.getRelatedActivity();
-    //console.log(this.dataWithActivities);
+    console.log(this.dataWithActivities);
   }
 };
 </script>

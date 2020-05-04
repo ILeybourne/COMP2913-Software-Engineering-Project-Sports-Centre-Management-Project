@@ -17,7 +17,8 @@ const state = {
     }
   },
   facilities: [],
-  activities: []
+  activities: [],
+  activity: []
 };
 
 const getters = {
@@ -40,6 +41,7 @@ const getters = {
       activity => Number(activity.resource.id) === Number(fid)
     );
   },
+  activity: state => state.activity,
   facilitiesLoading: state => state.paging.facilities.isDataToLoad
 };
 
@@ -56,6 +58,7 @@ const mutations = {
     state.facilities.push(...page);
   },
   SET_ACTIVITIES: (state, payload) => (state.activities = payload),
+  SET_ACTIVITY: (state, payload) => (state.activity = payload),
   SET_FACILITY_PAGE_INFO: (state, payload) => {
     state.paging.facilities = {
       ...state.paging.facilities,
@@ -166,7 +169,7 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/activities");
     const activities = data._embedded.activityDToes;
-    commit("SET_ACTIVITIES", activities);
+    commit("SET_ACTIVITY", activities);
     commit("loading/FINISH_LOADING", null, { root: true });
     return activities;
   },

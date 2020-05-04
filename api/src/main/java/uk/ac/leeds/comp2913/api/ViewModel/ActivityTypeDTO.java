@@ -14,6 +14,7 @@ public class ActivityTypeDTO extends RepresentationModel<ActivityTypeDTO> {
     private Date updated_at;
     private String name;
     private BigDecimal cost;
+    private Long facility_id;
 
     public ActivityTypeDTO(){}
 
@@ -66,4 +67,12 @@ public class ActivityTypeDTO extends RepresentationModel<ActivityTypeDTO> {
     }
 
     private Integer totalCapacity;
+
+    public Long getFacility_id() {
+        return facility_id;
+    }
+
+    public void setFacility_id(Long facility_id) {
+        this.facility_id = facility_id;
+    }
 }

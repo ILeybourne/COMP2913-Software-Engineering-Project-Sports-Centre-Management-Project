@@ -93,6 +93,7 @@ export default {
         }
       ];
       this.datacollection = data;
+      console.log(thisWeek);
     }
   }
 };

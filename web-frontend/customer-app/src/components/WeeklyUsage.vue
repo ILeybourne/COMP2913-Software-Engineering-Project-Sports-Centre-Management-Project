@@ -21,15 +21,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import { formatCurrency } from "../util/format.helpers";
-/*
-const groupBy = (xs, key) => {
-  return xs.reduce(function(rv, x) {
-    (rv[x[key]] = rv[x[key]] || []).push(x);
-    return rv;
-  }, {});
-};
 
- */
 
 export default {
   name: "BookingTable",
@@ -55,27 +47,60 @@ export default {
       ],
       dataWithFacilities: [],
       bookingWithActivity: [],
-      bookingData: []
+      bookingData: [],
+      weekData: []
     };
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("facilities", ["facilities"]),
+    ...mapGetters("facilities", ["activity"]),
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("timetable", ["bookings"]),
     ...mapGetters("timetable", ["resources"])
   },
   methods: {
     ...mapActions("facilities", {
-      getActivity: "getActivityTypes",
-      getFacilities: "getFacilities"
+      getActivityTypes: "getActivityTypes",
+      getFacilities: "getFacilities",
+      getActivities: "getActivities"
     }),
     ...mapActions("timetable", {
       getSessions: "getAllSessions",
       getBookings: "getBookings",
       getResources: "getResources"
     }),
-    async fillData() {},
+    async fillData() {
+      const endDate = this.$moment(this.startDate);
+      const startDate = endDate.clone().subtract("days", 6);
+      const response = await this.getActivities();
+      const thisWeek = response
+        .map(activity => {
+          const startTimestamp = this.$moment(activity.startTime);
+
+          return {
+            ...activity,
+            startTimestamp,
+            dayOfYear: startTimestamp.dayOfYear()
+          };
+        })
+        .filter(activity => {
+          return (
+            activity.startTimestamp.isAfter(startDate) &&
+            activity.startTimestamp.isBefore(endDate)
+          );
+        });
+      console.log(thisWeek);
+      this.weekData = thisWeek;
+    },
+
+
+
+
+
+
+
+
     async getRelatedFacility() {
       let facilityArr = [];
       for (const activity of this.activities) {
@@ -98,7 +123,7 @@ export default {
       }
       return facilityArr;
     },
-    async getRelatedBookingActivity() {
+    async getRelatedbookingsActivity() {
       let ActivityArr = [];
       for (const booking of this.bookings) {
         const ActivityId = booking._links.Activity.href.split("/").slice(-1)[0];
@@ -123,23 +148,24 @@ export default {
         }
         Arr.push(booking);
       }
-      for (const activity of this.activities){
+      for (const activity of this.activities) {
         activity.formattedIncome = formatCurrency(activity.income);
       }
       console.log(Arr);
     }
   },
   created: async function() {
-    await this.getActivity();
+    await this.getActivityTypes();
+    console.log(this.activity);
     await this.getFacilities();
     await this.getBookings();
     await this.getResources();
 
-    this.bookingWithActivity = await this.getRelatedBookingActivity();
+    this.bookingWithActivity = await this.getRelatedbookingsActivity();
     this.dataWithFacilities = await this.getRelatedFacility();
     this.bookingData = await this.getNumberOfBookings();
     this.dataWithFacilities = await this.getRelatedFacility();
-    console.log(this.dataWithFacilities);
+    console.log(this.dataWithActivities);
   }
 };
 </script>

@@ -14,7 +14,7 @@
         @ok="addActivity()"
       >
         <b-form>
-          <b-form-group id="activity" label="Activity" label-for="Activity"
+          <b-form-group id="activity" label="Activity Name" label-for="Activity"
             ><b-form-input
               id="Activity"
               v-model="newActivity.name"
@@ -34,10 +34,7 @@
             ></b-form-input>
           </b-form-group>
           <b-form-group id="cost" label="Cost" label-for="Cost">
-            <b-form-input
-              id="Cost"
-              v-model="newActivity.cost"
-            ></b-form-input>
+            <b-form-input id="Cost" v-model="newActivity.cost"></b-form-input>
           </b-form-group>
         </b-form>
       </b-modal>
@@ -47,17 +44,17 @@
         @ok="updateActivity()"
       >
         <b-form>
-          <b-form-group id="activity" label="Activity" label-for="Activity"
-            ><b-form-select
+          <b-form-group id="activity" label="Activity Name" label-for="Activity"
+            ><b-form-input
               id="Activity"
               :options="setActivityOptions()"
               v-model="selectedActivity.name"
-            ></b-form-select>
+            ></b-form-input>
           </b-form-group>
           <b-form-group id="facility" label="Facility" label-for="Facility">
             <b-form-select
               id="Facility"
-              :options="setFacilityOptions()"
+              :options="[selectedActivity.facility]"
               v-model="selectedActivity.facility"
             ></b-form-select>
           </b-form-group>
@@ -185,21 +182,49 @@ export default {
       }
       return activityArray;
     },
-    updateActivity() {
+    async updateActivity() {
       const id = this.selectedActivity.id;
       this.dataWithFacilities.find(activity => activity.id === id);
-      console.log("updateActivity");
+      const body = {
+        name: this.selectedActivity.name, //need to be dynamic
+        cost: this.selectedActivity.cost,
+        totalCapacity: this.selectedActivity.capacity
+      };
+      await this.$http
+        .put("/activitytypes/" + id, body)
+        .then(response => {
+          console.log(response);
+        })
+        .catch(function() {
+          //console.log(error);
+        });
     },
-    addActivity(){
-      console.log("addActivity");
+    async addActivity() {
+      let facilityId = null;
+      for (const facility of this.facilities) {
+        if (facility.name === this.newActivity.facility) {
+          facilityId = facility.id;
+        }
+      }
+      const body = {
+        name: this.newActivity.name, //need to be dynamic
+        cost: this.newActivity.cost,
+        totalCapacity: this.newActivity.capacity
+      };
+      await this.$http
+        .post("/activitytypes/resource/" + facilityId, body)
+        .then(response => {
+          console.log(response);
+        })
+        .catch(function() {
+          //console.log(error);
+        });
     },
     async getRelatedFacility() {
       let facilityArr = [];
       for (const activity of this.activities) {
         console.log(activity);
-        const facilityId = activity._links.resource.href
-          .split("/")
-          .slice(-1)[0];
+        const facilityId = activity.facility_id;
         const facilities = this.facilities;
         console.log(
           facilities.find(
