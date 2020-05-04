@@ -5,11 +5,13 @@
         <v-container class="date">
           <v-dialog ref="dialog" v-model="modal" persistent width="290px" dark>
             <template v-slot:activator="{ on }">
+              <v-subheader id="header" class="yellow--text title"
+                >WEEK</v-subheader
+              >
               <v-text-field
                 dark
                 class="yellow--text title"
                 title="week"
-                label="Week"
                 v-model="calculateDateRange"
                 readonly
                 v-on="on"
@@ -29,7 +31,7 @@
               @input="fillData()"
             >
               <v-spacer></v-spacer>
-              <v-btn text color="white" @click="modal = false">Close</v-btn>
+              <v-btn class="yellow--text" @click="modal = false">Close</v-btn>
             </v-date-picker>
           </v-dialog>
         </v-container>
@@ -46,7 +48,7 @@
               class="white"
               v-slot:group.header="{ items, isOpen, toggle }"
             >
-              <th colspan="3" bgcolor="#1E1E1E" class="white--text">
+              <th colspan="4" bgcolor="#404040" class="white--text">
                 <v-icon class="yellow--text" @click="toggle"
                   >{{ isOpen ? "mdi-minus" : "mdi-plus" }}
                 </v-icon>
@@ -60,6 +62,14 @@
   </v-app>
 </template>
 <style scoped>
+.v-subheader {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.v-input {
+  padding: 0;
+  margin: 0;
+}
 .usage-container {
   min-height: 50%;
   height: auto;
@@ -87,11 +97,18 @@
   height: auto;
   width: 100%;
 }
+.data-table-container th {
+  text-transform: uppercase;
+}
+.v-text-field .v-label {
+  font-size: 20em;
+}
 .usage-contents {
   padding: 15px 0 15px 0;
   margin: 0;
   width: 90%;
   background-color: #1e1e1e;
+  min-width: 50%;
 }
 .usage-contents span {
   background: #fcff18;

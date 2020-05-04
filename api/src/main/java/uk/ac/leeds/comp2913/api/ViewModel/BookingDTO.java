@@ -43,7 +43,6 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
     this.participants = participants;
   }
 
-  @JsonIgnore
   public boolean isRegularBooking() {
     return regularBooking;
   }
@@ -52,7 +51,6 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
     this.regularBooking = regularBooking;
   }
 
-  @JsonIgnore
   public Long getAccountId() {
     return accountId;
   }

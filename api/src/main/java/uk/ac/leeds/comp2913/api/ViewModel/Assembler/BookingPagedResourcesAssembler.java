@@ -29,7 +29,12 @@ public class BookingPagedResourcesAssembler extends RepresentationModelAssembler
         //bookingDto.add(linkTo(ReceiptController.class).slash(booking.getReceipt().getId()).slash("receipt").withRel("Receipt"));
         if (booking.getRegularSession()!=null){
              bookingDto.add(linkTo(BookingController.class).slash("cancel").slash(booking.getActivity().getId()).slash(booking.getAccount().getId()).withRel("Unsubscribe from regular session"));
+             bookingDto.setRegularBooking(true);
          }
+         else{
+             bookingDto.setRegularBooking(false);
+         }
+         bookingDto.setAccountId(booking.getAccount().getId());
         bookingDto.setId(booking.getId());
         bookingDto.setParticipants(booking.getParticipants());
         return bookingDto;

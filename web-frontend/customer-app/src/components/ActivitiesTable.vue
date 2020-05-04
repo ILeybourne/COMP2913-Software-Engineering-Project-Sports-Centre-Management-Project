@@ -34,10 +34,7 @@
             ></b-form-input>
           </b-form-group>
           <b-form-group id="cost" label="Cost" label-for="Cost">
-            <b-form-input
-              id="Cost"
-              v-model="newActivity.cost"
-            ></b-form-input>
+            <b-form-input id="Cost" v-model="newActivity.cost"></b-form-input>
           </b-form-group>
         </b-form>
       </b-modal>
@@ -185,12 +182,25 @@ export default {
       }
       return activityArray;
     },
-    updateActivity() {
+    async updateActivity() {
       const id = this.selectedActivity.id;
       this.dataWithFacilities.find(activity => activity.id === id);
       console.log("updateActivity");
+      const body = {
+        name: "Test from front 5", //need to be dynamic
+        cost: 20,
+        totalCapacity: 50
+      };
+      await this.$http
+        .put("/activitytypes/" + id, body)
+        .then(response => {
+          console.log(response);
+        })
+        .catch(function() {
+          //console.log(error);
+        });
     },
-    addActivity(){
+    addActivity() {
       console.log("addActivity");
     },
     async getRelatedFacility() {

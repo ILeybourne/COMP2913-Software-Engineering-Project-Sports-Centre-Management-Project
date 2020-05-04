@@ -1,14 +1,22 @@
 <template>
   <v-app class="usage-container" align="center" justify="center">
     <v-row class="inner-container" align="center" justify="center">
-      <v-card xs="12" align="center" justify="center" class="usage-contents" dark>
+      <v-card
+        xs="12"
+        align="center"
+        justify="center"
+        class="usage-contents"
+        dark
+      >
         <v-container class="date">
           <v-dialog ref="dialog" v-model="modal" persistent width="290px" dark>
             <template v-slot:activator="{ on }">
+              <v-subheader id="header" class="yellow--text title"
+                >WEEK</v-subheader
+              >
               <v-text-field
                 class="yellow--text title"
                 title="week"
-                label="Week"
                 v-model="calculateDateRange"
                 readonly
                 v-on="on"
@@ -28,7 +36,7 @@
               @input="fillData()"
             >
               <v-spacer></v-spacer>
-              <v-btn text color="white" @click="modal = false">Close</v-btn>
+              <v-btn class="yellow--text" @click="modal = false">Close</v-btn>
             </v-date-picker>
           </v-dialog>
         </v-container>
@@ -42,6 +50,14 @@
 </template>
 
 <style scoped>
+.v-subheader {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.v-input {
+  padding: 0;
+  margin: 0;
+}
 .usage-container {
   min-height: 50%;
   height: auto;
@@ -75,9 +91,9 @@
   padding: 15px 0 15px 0;
   margin: 0;
   width: 90%;
-  background-color: #1E1E1E;
+  background-color: #1e1e1e;
 }
-.usage-contents span{
+.usage-contents span {
   background: #fcff18;
 }
 </style>
@@ -184,7 +200,7 @@ export default {
           pointBorderColor: "white",
           borderColor: "yellow",
           fill: false,
-          defaultFontSize: 20,
+          defaultFontSize: 20
         }
       ];
       this.datacollection = data;
