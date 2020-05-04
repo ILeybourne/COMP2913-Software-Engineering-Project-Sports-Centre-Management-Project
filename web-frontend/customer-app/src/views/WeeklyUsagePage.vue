@@ -3,7 +3,7 @@
     <div class="heading-div">
       <h1>Weekly <span>Usage</span></h1>
     </div>
-    <v-row align="center" justify="center" class="info-container">
+    <v-row align="center" justify="flex-start" class="info-container">
       <WeeklyUsage></WeeklyUsage>
     </v-row>
   </div>

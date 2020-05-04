@@ -1,11 +1,13 @@
 <template>
   <v-app class="usage-container" align="center" justify="center">
-    <v-row class="inner-container" align="center" justify="center">
+    <v-row class="inner-container" align="center" justify="flex-start">
       <v-card xs="12" align="center" justify="center" class="usage-contents">
         <v-container class="date">
           <v-dialog ref="dialog" v-model="modal" persistent width="290px" dark>
             <template v-slot:activator="{ on }">
               <v-text-field
+                dark
+                class="yellow--text title"
                 title="week"
                 label="Week"
                 v-model="calculateDateRange"
@@ -31,26 +33,28 @@
             </v-date-picker>
           </v-dialog>
         </v-container>
-        <v-col>
-          <v-container class="data-table-container">
-            <h3><span>Results</span></h3>
-            <v-data-table
-              :headers="headers"
-              :items="dataWithFacilities"
-              item-key="id"
-              group-by="facility.name"
+        <v-container class="data-table-container">
+          <v-data-table
+            class="white--text"
+            dark
+            :headers="headers"
+            :items="dataWithFacilities"
+            item-key="id"
+            group-by="facility.name"
+          >
+            <template
+              class="white"
+              v-slot:group.header="{ items, isOpen, toggle }"
             >
-              <template v-slot:group.header="{ items, isOpen, toggle }">
-                <th colspan="3">
-                  <v-icon @click="toggle"
-                    >{{ isOpen ? "mdi-minus" : "mdi-plus" }}
-                  </v-icon>
-                  {{ items[0].facility.name }}
-                </th>
-              </template>
-            </v-data-table>
-          </v-container>
-        </v-col>
+              <th colspan="3" bgcolor="#1E1E1E" class="white--text">
+                <v-icon class="yellow--text" @click="toggle"
+                  >{{ isOpen ? "mdi-minus" : "mdi-plus" }}
+                </v-icon>
+                {{ items[0].facility.name }}
+              </th>
+            </template>
+          </v-data-table>
+        </v-container>
       </v-card>
     </v-row>
   </v-app>
@@ -69,27 +73,31 @@
   height: min-content;
   margin: 20px;
   width: 75%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
 }
 .data-table-container {
   justify-content: center;
   text-align: center;
-  display: flex;
+  display: table;
   flex-direction: column;
   flex-basis: auto; /* default value */
   flex-grow: 5;
   height: auto;
   width: 100%;
-  flex-grow: 1;
-  min-height: 0;
 }
 .usage-contents {
-  padding: 30px 0 30px 0;
+  padding: 15px 0 15px 0;
   margin: 0;
   width: 90%;
-  /*background-color: #353535;*/
+  background-color: #1e1e1e;
 }
-.usage-contents span{
+.usage-contents span {
   background: #fcff18;
+}
+.usage-contents h3 {
+  padding-bottom: 15px;
 }
 </style>
 
@@ -119,16 +127,19 @@ export default {
       modal: false,
       headers: [
         {
-          text: "Facility",
-          value: "name"
+          text: "FACILITY",
+          value: "name",
+          class: "yellow--text title"
         },
         {
-          text: "Cost",
-          value: "formattedCost"
+          text: "COST",
+          value: "formattedCost",
+          class: "yellow--text title"
         },
         {
-          text: "Income",
-          value: "formattedIncome"
+          text: "INCOME",
+          value: "formattedIncome",
+          class: "yellow--text title"
         }
       ],
       dataWithFacilities: [],

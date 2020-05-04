@@ -1,11 +1,12 @@
 <template>
   <v-app class="usage-container" align="center" justify="center">
     <v-row class="inner-container" align="center" justify="center">
-      <v-card xs="12" align="center" justify="center" class="usage-contents">
+      <v-card xs="12" align="center" justify="center" class="usage-contents" dark>
         <v-container class="date">
           <v-dialog ref="dialog" v-model="modal" persistent width="290px" dark>
             <template v-slot:activator="{ on }">
               <v-text-field
+                class="yellow--text title"
                 title="week"
                 label="Week"
                 v-model="calculateDateRange"
@@ -33,7 +34,6 @@
         </v-container>
         <v-col>
           <v-container class="chart-container">
-            <h3><span>Results</span></h3>
             <line-chart :chart-data="datacollection"></line-chart> </v-container
         ></v-col>
       </v-card>
@@ -51,11 +51,13 @@
 .inner-container {
   /*margin: auto;*/
   /*width: 50%;*/
-  padding: 20px;
   min-height: 50%;
   height: min-content;
   margin: 20px;
   width: 75%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
 }
 .chart-container {
   justify-content: center;
@@ -70,9 +72,10 @@
   min-height: 0;
 }
 .usage-contents {
-  padding: 30px 0 30px 0;
+  padding: 15px 0 15px 0;
   margin: 0;
   width: 90%;
+  background-color: #1E1E1E;
 }
 .usage-contents span{
   background: #fcff18;
@@ -177,11 +180,11 @@ export default {
           data: weeklyUsage,
           backgroundColor: "yellow",
           pointBackgroundColor: "yellow",
-          borderWidth: 2,
-          pointBorderColor: "#353535",
-          borderColor: "#353535",
-          fill: true,
-          defaultFontSize: 20
+          borderWidth: 3,
+          pointBorderColor: "white",
+          borderColor: "yellow",
+          fill: false,
+          defaultFontSize: 20,
         }
       ];
       this.datacollection = data;
