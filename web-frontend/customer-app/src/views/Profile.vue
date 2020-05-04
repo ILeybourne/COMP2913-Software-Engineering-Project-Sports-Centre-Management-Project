@@ -27,8 +27,7 @@
       </div>
       <div id="right-column" class="col-sm-5 align-self-center">
         <div id="membership-card" class="card">
-          <h2>Membership</h2>
-          {{ activeMemberships }}
+          <h2>Membership</h2><p>{{ userMemberships() }}</p>
         </div>
         <div class="text-center">
           <button
@@ -36,7 +35,7 @@
             type="button"
             class="btn btn-outline-primary  "
           >
-            Cancel Membership
+            <router-link to="/membership">Cancel Membership</router-link>
           </button>
         </div>
       </div>
@@ -50,22 +49,19 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Profile",
   data() {
-    return {
-      activeAccounts: [],
-      activeMemberships: []
-    };
+    return {};
   },
   computed: {
     ...mapGetters("auth", ["user"]),
     ...mapGetters("accounts", ["accounts"]),
     ...mapGetters("customers", ["customers"]),
-    ...mapGetters("memberships", ["memberships", "accountMemberships"])
+    ...mapGetters("membership", ["memberships", "accountMemberships"])
   },
   methods: {
     ...mapActions("accounts", ["getAccounts"]),
     ...mapActions("customers", ["getAllCustomers"]),
-    ...mapActions("memberships", ["getMemberships", "getAccountMemberships"]),
-    activeCustomerIds() {
+    ...mapActions("membership", ["getMemberships", "getAccountMemberships"]),
+    userCustomerId() {
       let customers = this.customers;
       if (customers == null) {
         return null;
@@ -73,33 +69,51 @@ export default {
         const emailFilter = customer =>
           customer.emailAddress === this.$auth.user.email;
         customers = this.customers.filter(emailFilter);
-        return Number(customers[0].id);
+        return customers[0].id;
       }
     },
-    activeAccountIds(customerId) {
+    userAccountIds(customerId) {
       let accounts = this.accounts;
-      if (accounts == null) {
+      if (accounts == null || customerId == null) {
         return null;
       } else {
-        const accountFilter = account =>
-          Number(
-            account._links["Customer Details"].href.split("/").slice(-1)[0]
-          ) === customerId;
-        accounts = this.accounts.filter(accountFilter);
-        accounts = accounts.map(account =>
-          Number(account._links.self.href.split("/").slice(-1)[0])
-        );
+        const accountFilter = account => account.customerId === customerId;
+        accounts = accounts.filter(accountFilter);
+        accounts = accounts.map(account => account.id);
         return accounts;
       }
+    },
+    userActiveMemberships(accountIds) {
+      let memberships = this.memberships;
+      if (memberships == null) {
+        return null;
+      } else {
+        const dateFilter = membership => {
+          if (membership !== null) {
+            let d = new Date();
+            let endDate = new Date(membership.endDate);
+            return endDate.getTime() > d.getTime();
+          }
+        };
+        const membershipFilter = membership => {
+          if (membership !== null) {
+            return accountIds.includes(membership.accountId);
+          } else return false;
+        };
+        memberships = memberships.filter(dateFilter);
+        return memberships.filter(membershipFilter);
+      }
+    },
+    userMemberships() {
+      return this.userActiveMemberships(
+        this.userAccountIds(this.userCustomerId())
+      );
     }
   },
   mounted() {
     this.getAccounts();
     this.getAllCustomers();
-    this.activeAccounts = this.activeAccountIds(this.activeCustomerIds());
-    this.activeMemberships = this.activeAccounts.map(account =>
-      this.getAccountMemberships(account) //TODO: fix getting memberships
-    );
+    this.getMemberships();
   }
 };
 </script>
