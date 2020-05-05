@@ -8,7 +8,7 @@
       <b-row class="row">
         <b-col col lg="maxColSize " v-bind:class="{ 'd-none': hideBooking }">
           <BookingInformation
-            class="booking-info"
+            class="checkout-container"
             @getUserType="showGuestInfo"
           ></BookingInformation>
         </b-col>
@@ -17,7 +17,6 @@
         <b-col v-bind:class="{ 'd-none': hideGuest }">
           <GuestInformation
             :activityType="this.selectedActivityId"
-            class="guest-info"
             @submitCustomerDetails="showBillingInfo"
           ></GuestInformation>
         </b-col>

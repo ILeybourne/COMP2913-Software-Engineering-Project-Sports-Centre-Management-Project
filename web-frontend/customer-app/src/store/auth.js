@@ -52,7 +52,9 @@ const namespace = "https://customer-app.com/userRoles";
 const actions = {
   login({ commit }, data) {
     commit("LOGIN", data);
-    commit("SET_PERMISSIONS", data[namespace]);
+    if (data != null) {
+      commit("SET_PERMISSIONS", data[namespace]);
+    }
   },
   logout({ commit }) {
     commit("LOGOUT");

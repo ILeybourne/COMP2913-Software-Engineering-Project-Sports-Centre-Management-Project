@@ -1,9 +1,10 @@
 <template>
-  <div class="booking-info" @load="fillByQuery">
+  <div class="checkout-container" @load="fillByQuery">
     <div
       class="booking-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
     >
+      <h4 class="centered-text">Create Booking</h4>
       <form @submit="submitForm($event)">
         <div class="form-row">
           <label for="facility">Facility:</label>
@@ -132,15 +133,33 @@
 </template>
 
 <style scoped>
+.centered-text {
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+.checkout-container {
+  display: flex;
+  flex-direction: column;
+  padding: 30px 0px 30px 0px;
+  min-height: 50%;
+  height: auto;
+  width: auto;
+  margin: 20px;
+  background: #f6f9fa;
+  color: #242424;
+  justify-content: center;
+  flex-basis: auto; /* default value */
+  flex-grow: 1;
+}
+
 .form-row {
   padding: 5px;
 }
 
 .booking-container {
   margin: auto;
-  border: 3px solid #3183e5;
   padding: 10px;
-  border-radius: 10px;
 }
 
 .button-container {
@@ -148,7 +167,7 @@
   justify-content: space-between;
   padding-left: 20%;
   padding-right: 20%;
-  padding-top: 10px;
+  padding-top: 30px;
 }
 
 button {
@@ -211,7 +230,6 @@ export default {
     ...mapActions("facilities", ["getFacilities", "getActivityTypes"]),
     ...mapActions("timetable", ["getAllSessions"]),
     setMaxParticipants(activityId) {
-      console.log(activityId);
       this.maxParticipants = this.activityTypes.find(
         x => x.id === activityId
       ).totalCapacity;

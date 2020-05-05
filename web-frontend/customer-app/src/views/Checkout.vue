@@ -75,9 +75,9 @@
                     }}
                   </button>
                 </div>
-                <hr />
-                <h4 class="centered-text">Or</h4>
-                <hr />
+                <hr v-if="showQuickPay" />
+                <h4 class="centered-text" v-if="showQuickPay">Or</h4>
+                <hr v-if="showQuickPay" />
                 <div class="buttonDiv">
                   <button
                     @click="submitQuickPayment()"
@@ -86,7 +86,7 @@
                     id="quickPayButton"
                     v-if="showQuickPay"
                     :disabled="paymentSubmit"
-                    title="'Quick Pay' will charge<br/> the card previously used"
+                    title="'Quick Pay' will charge the card previously used"
                   >
                     Pay
                     {{
@@ -292,7 +292,6 @@ export default {
     formatCurrency: formatCurrency,
     billingSuccessStatus(value) {
       this.billingSuccess = true;
-      console.log(value);
       this.name = value.name;
       this.email = value.email;
       this.houseNumber = value.houseNumber;
@@ -307,8 +306,6 @@ export default {
       this.elements = this.stripe.elements();
       this.card = this.elements.create("card");
       this.card.mount("#card-element");
-      console.log("this");
-      console.log(this);
     },
     setBookingDetails() {
       this.bookingDetails.facility = this.$route.params.bookingDetails.facility;
@@ -337,16 +334,11 @@ export default {
       this.formData.selectedOption = this.$route.params.selectedOption;
     },
     async getCustomer() {
-      console.log(this.customers);
-      console.log(this.$auth);
       this.customer = this.customers.find(
         x => x.emailAddress === this.$auth.user.email
       );
     },
     async submitMembershipPayment() {
-      console.log(this.$auth.user);
-      console.log(this.customers);
-      console.log(this.price);
       this.paymentSubmit = true;
       let paymentIntent = null;
 
@@ -368,7 +360,6 @@ export default {
       if (this.isBooking) {
         body.activityTypeId = this.bookingDetails.activityTypeId;
       }
-
       if (!isEmpty(this.user)) {
         let id = null;
         if (this.customer) {
@@ -376,7 +367,6 @@ export default {
         } else {
           id = -1;
         }
-
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
           `/payments/intent/card/` + id, //this.customerId,
@@ -389,7 +379,6 @@ export default {
         );
       }
       if (paymentIntent.status === 200) {
-        console.log(paymentIntent);
         this.paymentResponse.accountId = paymentIntent.data.accountId;
         this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
         this.paymentResponse.transactionId = paymentIntent.data.transactionId;

@@ -202,10 +202,6 @@ export default {
     }
   },
   async mounted() {
-    console.log(this.$route.params.bookingDetails);
-    console.log(this.$route.params.bookingDetails == null);
-    console.log(this.$route.params.membershipDetails);
-    console.log(this.$route.params.membershipDetails == null);
     if (this.$route.params.bookingDetails != null) {
       this.setBookingDetails();
     }

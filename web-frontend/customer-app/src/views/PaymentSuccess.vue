@@ -205,18 +205,11 @@ export default {
   mounted() {
     this.setData();
     this.isUser = !isEmpty(this.user);
-    console.log(this.user);
-    console.log(this.user == null);
     if (this.paymentResponse != null) {
-      console.log(1);
       if (this.bookingDetails.activityTypeId != null) {
-        console.log(2);
-        console.log(this.bookingDetails);
         this.hideBookingDiv = false;
       }
       if (this.membershipSaleDetails.id != null) {
-        console.log(3);
-        console.log(this.membershipSaleDetails);
         this.hideMembershipDiv = false;
       }
     } else {
