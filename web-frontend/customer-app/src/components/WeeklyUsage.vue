@@ -48,7 +48,8 @@ export default {
       dataWithFacilities: [],
       bookingWithActivity: [],
       bookingData: [],
-      weekData: []
+      weekData: [],
+      tableData: []
     };
   },
   computed: {
@@ -89,9 +90,9 @@ export default {
             activity.startTimestamp.isBefore(endDate)
           );
         });
-      console.log(thisWeek);
+      //console.log(thisWeek);
       this.weekData = thisWeek;
-      this.bookingData = await this.getNumberOfBookings();
+      this.bookingData = this.getNumberOfBookings();
     },
 
 

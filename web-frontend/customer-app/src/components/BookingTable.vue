@@ -1,5 +1,5 @@
 <template>
-  <v-data-table :headers="headers" :items="bookings">
+  <v-data-table :headers="headers" :items="dataWithActivities">
     <template v-slot:top>
       <v-toolbar flat color="white">
         <v-spacer></v-spacer>
@@ -200,6 +200,7 @@ export default {
     }
   },
   async mounted() {
+
     await this.getActivities();
     await this.getSessions();
     console.log(this.sessions);
