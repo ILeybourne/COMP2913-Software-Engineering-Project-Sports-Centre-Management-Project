@@ -43,11 +43,12 @@
       >
       <hr v-if="isBooking || isMembership" />
 
-      <v-row v-if="isMembership"
-        ><v-col>Automatic Renewal? </v-col>
-        <v-col>{{ membershipSaleDetails.repeatingPayment }}</v-col></v-row
+      <v-row
+        ><v-col v-if="isMembership">Automatic Renewal? </v-col>
+        <v-col v-if="isBooking">participants: </v-col>
+        <v-col>{{ membershipSaleDetails.repeatingPayment || bookingDetails.participants}}</v-col></v-row
       >
-      <hr v-if="isMembership" />
+      <hr v-if="isMembership || isBooking" />
     </div>
     <div v-if="isBooking == false && isMembership == false">
       <v-row
@@ -154,7 +155,8 @@ export default {
         activity: null,
         date: null,
         time: null,
-        price: null
+        price: null,
+        participants:null,
       },
       isBooking: false,
       isMembership: false
@@ -178,6 +180,7 @@ export default {
       this.bookingDetails.date = this.$route.params.bookingDetails.date;
       this.bookingDetails.time = this.$route.params.bookingDetails.time;
       this.bookingDetails.price = this.$route.params.bookingDetails.price;
+      this.bookingDetails.participants = this.$route.params.bookingDetails.participants;
       this.isBooking = true;
       this.isMembership = false;
     },

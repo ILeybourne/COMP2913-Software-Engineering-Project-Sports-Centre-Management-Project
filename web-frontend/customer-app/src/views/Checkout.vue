@@ -60,7 +60,7 @@
             <form id="payment-form">
               <div id="cardDiv">
                 <div id="card-element"></div>
-                <div id="buttonDiv">
+                <div class="buttonDiv">
                   <button
                     type="button"
                     class="btn btn-outline-primary"
@@ -75,6 +75,9 @@
                     }}
                   </button>
                 </div>
+                <hr/>
+                <h4 class="centered-text">Or</h4>
+                <hr/>
                 <div class="buttonDiv">
                   <button
                     @click="submitQuickPayment()"
@@ -83,8 +86,14 @@
                     id="quickPayButton"
                     v-if="showQuickPay"
                     :disabled="paymentSubmit"
+                    title="'Quick Pay' will charge<br/> the card previously used"
                   >
-                    Quick Pay
+                    Pay
+                    {{
+                    formatCurrency(
+                    membershipSaleDetails.cost || bookingDetails.price
+                    )
+                    }} Using Quick Pay
                   </button>
                 </div>
               </div>
@@ -194,12 +203,16 @@
   background: #fcff18;
 }
 
-#buttonDiv {
+.buttonDiv {
   padding-top: 5%;
   display: flex;
   align-items: center;
   justify-content: center;
   alignment: center;
+}
+
+.centered-text{
+  text-align: center;
 }
 </style>
 
@@ -304,6 +317,7 @@ export default {
       this.bookingDetails.price = this.$route.params.bookingDetails.price;
       this.bookingDetails.activityTypeId = this.$route.params.bookingDetails.activityTypeId;
       this.bookingDetails.sessionId = this.$route.params.bookingDetails.sessionId;
+      this.bookingDetails.participants = this.$route.params.bookingDetails.participants;
       this.price = this.$route.params.bookingDetails.price;
     },
     setMembershipDetails() {
@@ -379,7 +393,6 @@ export default {
         this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
         this.paymentResponse.transactionId = paymentIntent.data.transactionId;
         this.sendClientSecretToServer(paymentIntent.data.clientSecret);
-        //TODO reroute page
       }
     },
 

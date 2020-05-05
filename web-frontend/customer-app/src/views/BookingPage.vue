@@ -218,12 +218,12 @@ export default {
       customer: null,
       selectedSessionId: null,
       selectedFacilityName: null,
+      participants: null,
       paymentResponse: {
         accountId: null,
         amountPaid: null,
         transactionId: null
       },
-      participants: null
     };
   },
   computed: {
@@ -471,8 +471,10 @@ export default {
         sessionId: this.selectedSessionId,
         date: newFormatDate,
         time: this.selectedTime,
-        price: this.price
-      };
+        price: this.price,
+        participants: this.participants
+
+    };
       await this.$router.push({
         name: "Checkout",
         params: {
