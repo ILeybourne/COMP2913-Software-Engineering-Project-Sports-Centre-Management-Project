@@ -1,9 +1,9 @@
 <template>
   <div id="profile-container">
-    <h1>My Account</h1>
     <div class="row">
       <div id="left-column" class="col-sm-7">
-        <div id="profile-card" class="card">
+        <h1>My <span style="background: #fcff18">Account</span></h1>
+        <div id="profile-info-container" class="container">
           <div class="row">
             <div class="col-xl-5 text-center align-self-center">
               <img
@@ -27,26 +27,43 @@
       </div>
       <div id="right-column" class="col-sm-5 text-center">
         <div id="membership-container">
-          <h2>Membership</h2>
-          <ul
-            id="membership-info"
-            class="list-unstyled"
-            v-for="membership in userMemberships()"
-            :key="membership.id"
-          >
-            <li>Began: {{ membership.formattedStartDate }}</li>
-            <li>Ends: {{ membership.formattedEndDate }}</li>
-            <li>Auto-renewal: {{ membership.autoRenewal }}</li>
-          </ul>
-        </div>
-        <div class="text-center">
-          <button
-            id="cancel-membership-btn"
-            type="button"
-            class="btn btn-outline-primary"
-          >
-            <router-link to="/membership">Cancel Membership</router-link>
-          </button>
+          <div class="align-self-center">
+            <h2 style="background: #fcff18">Membership</h2>
+          </div>
+          <div id="membership-info-container" class="container">
+            <div v-if="userMemberships().length > 0">
+              <ul
+                id="membership-info"
+                class="list-unstyled"
+                v-for="membership in userMemberships()"
+                :key="membership.id"
+              >
+                <li class="text-capitalize">
+                  <h4>{{ membership.name }}</h4>
+                </li>
+                <li>Began: {{ membership.formattedStartDate }}</li>
+                <li>Ends: {{ membership.formattedEndDate }}</li>
+                <li>Auto-renewal: {{ membership.autoRenewal }}</li>
+              </ul>
+              <div class="text-center membership-btn-box">
+                <router-link
+                  class="membership-btn font-weight-bolder"
+                  to="/membership"
+                  >Cancel Membership</router-link
+                >
+              </div>
+            </div>
+            <div v-else>
+              <p style="margin: 0">You do not have a membership!</p>
+              <div class="text-center membership-btn-box">
+                <router-link
+                  class="membership-btn font-weight-bolder"
+                  to="/membership"
+                  >Become a Member</router-link
+                >
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -158,13 +175,14 @@ export default {
 
 <style scoped>
 #profile-container {
-  margin: 5% 8%;
+  padding: 5% 8%;
+  background: #f6f9fa;
 }
 #left-column {
   min-width: 300px;
 }
-#profile-card {
-  padding: 24px;
+#profile-info-container {
+  padding: 40px 20px;
 }
 #profile-picture {
   width: 200px;
@@ -173,12 +191,12 @@ export default {
   padding: 20px 0;
 }
 #right-column {
+  align-self: center;
 }
 #membership-container {
   margin: 0 20px;
   text-align: center;
-  background: #f6f9fa;
-  color: #353535;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -187,10 +205,16 @@ export default {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 30px 0;
 }
-#membership-info {
-  margin-top: 20px;
+#membership-info-container {
+  padding: 20px;
 }
-#cancel-membership-btn {
-  margin-top: 24px;
+.membership-btn-box {
+  padding-top: 20px;
+}
+.membership-btn {
+  display: inline-block;
+  color: #353535;
+  background: #fcff18;
+  padding: 15px 30px;
 }
 </style>
