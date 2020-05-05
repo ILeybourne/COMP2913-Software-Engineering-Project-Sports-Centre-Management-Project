@@ -1,5 +1,5 @@
 <template>
-  <v-data-table :headers="headers" :items="dataWithFacilities" :loding="true">
+  <v-data-table :headers="headers" :items="sorted" :loding="true">
     <template v-slot:top>
       <v-toolbar flat color="white">
         <v-spacer></v-spacer>
@@ -130,12 +130,28 @@ export default {
         facility: null,
         cost: null
       },
-      dataWithFacilities: []
     };
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("facilities", ["facilities"])
+    ...mapGetters("facilities", ["facilities"]),
+    dataWithFacilities() {
+      let facilityArr = [];
+      for (const activity of this.activities) {
+        const facilityId = activity.facility_id;
+        const facilities = this.facilities;
+        activity.facility = facilities.find(
+          facility => Number(facility.id) === Number(facilityId)
+        );
+        facilityArr.push(activity);
+      }
+      return facilityArr;
+    },
+    sorted(){
+      return this.dataWithFacilities.slice().sort(function(a,b){
+        return a.id - b.id;
+      });
+    }
   },
 
   methods: {
@@ -175,14 +191,14 @@ export default {
       return activityArray;
     },
     async updateActivity() {
-      const id = Number(this.selectedActivity.id);
-      this.dataWithFacilities.find(activity => activity.id === id);
+      const activityId = Number(this.selectedActivity.id);
+      this.dataWithFacilities.find(activity => activity.id === activityId);
       const body = {
         name: this.selectedActivity.name, //need to be dynamic
         cost: this.selectedActivity.cost,
         totalCapacity: this.selectedActivity.capacity
       };
-      this.updateActivityTypes(id, body);
+      await this.updateActivityTypes({ activityId, body });
     },
     async addActivity() {
       let facilityId = null;
@@ -196,32 +212,13 @@ export default {
         cost: this.newActivity.cost,
         totalCapacity: this.newActivity.capacity
       };
-      await this.createActivityType(facilityId, body);
-    },
-    async getRelatedFacility() {
-      let facilityArr = [];
-      for (const activity of this.activities) {
-        console.log(activity);
-        const facilityId = activity.facility_id;
-        const facilities = this.facilities;
-        console.log(
-          facilities.find(
-            facility => Number(facility.id) === Number(facilityId)
-          )
-        );
-        activity.facility = facilities.find(
-          facility => Number(facility.id) === Number(facilityId)
-        );
-        facilityArr.push(activity);
-      }
-      return facilityArr;
+      await this.createActivityType({ facilityId, body });
     }
   },
 
   created: async function() {
     await this.getActivity();
     await this.getFacilities();
-    this.dataWithFacilities = await this.getRelatedFacility();
   }
 };
 </script>

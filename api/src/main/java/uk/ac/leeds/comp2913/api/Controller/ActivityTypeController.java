@@ -99,9 +99,10 @@ public class ActivityTypeController {
     @PutMapping("/{activity_type_id}")
     @Operation(summary = "Update activity type",
             description = "edit the details of an activity type #2")
-    public ActivityType updateActivityType(@Parameter(description = "The ID of the activity type", required = true)@PathVariable Long activity_type_id,
+    public ActivityTypeDTO updateActivityType(@Parameter(description = "The ID of the activity type", required = true)@PathVariable Long activity_type_id,
                                            @Parameter(description = "An activity type object", required = true)@Valid @RequestBody ActivityType activityTypeRequest) {
-        return activityTypeService.updateActivityType(activity_type_id, activityTypeRequest);
+        ActivityType activityType = activityTypeService.updateActivityType(activity_type_id, activityTypeRequest);
+        return activityTypePagedResourcesAssembler.toModel(activityType);
     }
 
     //delete activity

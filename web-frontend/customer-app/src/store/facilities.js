@@ -166,12 +166,12 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.put(`/activitytypes/${activityId}`, body);
     commit("SET_ACTIVITIES", [
-      ...state.activities,
-      data._embedded.activityTypeDToes
+      ...state.activities.filter(activity => activity.id !== activityId),
+      data
     ]);
     commit("loading/START_LOADING", null, { root: true });
   },
-  async createActivityType({commit}, facilityId, body){
+  async createActivityType({ commit }, { facilityId, body }) {
     const { data } = await axios.post(`/activitytypes/resource/${facilityId}`, body);
     commit("SET_ACTIVITIES", [...state.activities, data]);
     commit("loading/START_LOADING", null, { root: true });
