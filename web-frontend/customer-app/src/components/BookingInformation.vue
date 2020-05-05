@@ -151,6 +151,9 @@
   justify-content: center;
   flex-basis: auto; /* default value */
   flex-grow: 1;
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
+  box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
 }
 
 .form-row {
