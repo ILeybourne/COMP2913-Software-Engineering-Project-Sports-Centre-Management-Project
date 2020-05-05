@@ -68,4 +68,5 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
   public void setId(Long id) {
     this.id = id;
   }
+
 }

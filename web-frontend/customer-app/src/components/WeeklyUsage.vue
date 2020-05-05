@@ -8,9 +8,9 @@
       class="elevation-1"
     >
     </v-data-table>
-    <button @click="fillData()">Randomize</button>
+    <button @click="fillData()"></button>
     <div class="input-group">
-      <label>Start Date</label>
+      <label></label>
       <v-date-picker @change="fillData" v-model="startDate"></v-date-picker>
     </div>
   </div>
@@ -54,7 +54,6 @@ export default {
   computed: {
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("facilities", ["facilities"]),
-    ...mapGetters("facilities", ["activity"]),
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("timetable", ["bookings"]),
     ...mapGetters("timetable", ["resources"])
@@ -92,6 +91,7 @@ export default {
         });
       console.log(thisWeek);
       this.weekData = thisWeek;
+      this.bookingData = await this.getNumberOfBookings();
     },
 
 
@@ -105,17 +105,8 @@ export default {
       let facilityArr = [];
       for (const activity of this.activities) {
         // console.log(activity);
-        const facilityId = activity._links.resource.href
-          .split("/")
-          .slice(-1)[0];
+        const facilityId = activity.facility_id;
         const facilities = this.facilities;
-        /*
-        console.log(
-          facilities.find(
-            facility => Number(facility.id) === Number(facilityId)
-          )
-        );
-        */
         activity.facility = facilities.find(
           facility => Number(facility.id) === Number(facilityId)
         );
@@ -138,17 +129,20 @@ export default {
     },
     async getNumberOfBookings() {
       let Arr = [];
-      let income = 0;
-      for (const booking of this.bookingWithActivity) {
-        for (const activity of this.activities) {
-          if (booking.activity.name === activity.name) {
-            income = activity.income + activity.cost;
-          }
-          activity.income = income;
-        }
-        Arr.push(booking);
+      const activityTypes = await this.getActivityTypes();
+      for(const activity of activityTypes){
+        activity.income = 0;
       }
-      for (const activity of this.activities) {
+      for (const activity of activityTypes) {
+        for (const booking of this.weekData) {
+          //console.log(activity);
+          if (booking.activityTypeId === activity.id) {
+            activity.income = activity.income + activity.cost;
+          }
+        }
+        Arr.push(activity);
+      }
+      for (const activity of Arr) {
         activity.formattedIncome = formatCurrency(activity.income);
       }
       console.log(Arr);
@@ -156,16 +150,16 @@ export default {
   },
   created: async function() {
     await this.getActivityTypes();
-    console.log(this.activity);
     await this.getFacilities();
     await this.getBookings();
+    console.log(this.bookings);
     await this.getResources();
 
     this.bookingWithActivity = await this.getRelatedbookingsActivity();
     this.dataWithFacilities = await this.getRelatedFacility();
     this.bookingData = await this.getNumberOfBookings();
     this.dataWithFacilities = await this.getRelatedFacility();
-    console.log(this.dataWithActivities);
+    console.log(this.dataWithFacilities);
   }
 };
 </script>

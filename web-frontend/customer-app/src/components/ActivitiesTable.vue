@@ -77,9 +77,6 @@
       <v-icon small class="mr-2" @click="editItem(item)">
         mdi-pencil
       </v-icon>
-      <v-icon small @click="deleteItem(item)">
-        mdi-delete
-      </v-icon>
     </template>
   </v-data-table>
 </template>
@@ -145,7 +142,6 @@ export default {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("facilities", {
       getActivity: "getActivityTypes",
-      deleteActivity: "deleteActivity",
       getFacilities: "getFacilities"
     }),
     showNewActivity() {
@@ -159,12 +155,6 @@ export default {
       this.selectedActivity.capacity = item.totalCapacity;
       this.selectedActivity.cost = item.cost;
       this.$bvModal.show("edit-modal");
-    },
-    deleteItem(item) {
-      const index = this.activities.indexOf(item);
-      console.log(index);
-      confirm("Are you sure you want to delete this item?") &&
-        this.deleteActivity(index);
     },
     setFacilityOptions() {
       let facilities = this.facilities;

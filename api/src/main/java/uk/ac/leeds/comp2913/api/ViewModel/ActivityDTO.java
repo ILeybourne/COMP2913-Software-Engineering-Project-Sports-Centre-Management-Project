@@ -46,6 +46,7 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
   private Integer currentCapacity;
   private BigDecimal cost;
   private RegularSession regularSessionId;
+  private Long ActivityTypeId;
 
   public ActivityDTO (){
   }
@@ -182,5 +183,13 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
 
   public void setRegularSession(boolean regularSession) {
     this.regularSession = regularSession;
+  }
+
+  public Long getActivityTypeId() {
+    return ActivityTypeId;
+  }
+
+  public void setActivityTypeId(Long activityTypeId) {
+    ActivityTypeId = activityTypeId;
   }
 }

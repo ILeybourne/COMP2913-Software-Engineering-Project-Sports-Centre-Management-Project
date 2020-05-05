@@ -18,17 +18,16 @@ const state = {
   },
   facilities: [],
   activities: [],
-  activity: []
 };
 
 const getters = {
   facilities: state => state.facilities,
   activities: state =>
-    state.activities.map(activity => {
+    state.activities.map(activities => {
       return {
-        ...activity,
-        formattedCost: formatCurrency(activity.cost),
-        formattedStartAt: formatDate(activity.startTime)
+        ...activities,
+        formattedCost: formatCurrency(activities.cost),
+        formattedStartAt: formatDate(activities.startTime)
       };
     }),
   getFacilityById: state => id => {
@@ -41,7 +40,6 @@ const getters = {
       activity => Number(activity.resource.id) === Number(fid)
     );
   },
-  activity: state => state.activity,
   facilitiesLoading: state => state.paging.facilities.isDataToLoad
 };
 
@@ -58,7 +56,6 @@ const mutations = {
     state.facilities.push(...page);
   },
   SET_ACTIVITIES: (state, payload) => (state.activities = payload),
-  SET_ACTIVITY: (state, payload) => (state.activity = payload),
   SET_FACILITY_PAGE_INFO: (state, payload) => {
     state.paging.facilities = {
       ...state.paging.facilities,
@@ -169,7 +166,7 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/activities");
     const activities = data._embedded.activityDToes;
-    commit("SET_ACTIVITY", activities);
+    commit("SET_ACTIVITIES", activities);
     commit("loading/FINISH_LOADING", null, { root: true });
     return activities;
   },
