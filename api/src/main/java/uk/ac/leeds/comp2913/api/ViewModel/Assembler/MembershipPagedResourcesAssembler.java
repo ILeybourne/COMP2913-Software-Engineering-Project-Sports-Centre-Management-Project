@@ -36,6 +36,7 @@ public class MembershipPagedResourcesAssembler extends RepresentationModelAssemb
             membershipDTO.add(linkTo(MembershipController.class).slash("members").slash(membership.getId()).slash("stop").withRel("stop auto renewal"));
         }
         membershipDTO.setAccountId(membership.getAccount().getId());
+        membershipDTO.setMembershipTypeId(membership.getMembershipType().getId());
         return membershipDTO;
     }
 }

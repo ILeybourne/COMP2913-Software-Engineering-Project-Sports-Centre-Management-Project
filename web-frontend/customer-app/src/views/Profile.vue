@@ -14,7 +14,7 @@
             </div>
             <div class="col-xl-7">
               <h2>{{ user.nickname }}</h2>
-              <ul class="list-unstyled">
+              <ul id="user-info" class="container list-unstyled">
                 <li>{{ $auth.user.name }}</li>
                 <li>{{ $auth.user.email }}</li>
                 <li>
@@ -25,15 +25,25 @@
           </div>
         </div>
       </div>
-      <div id="right-column" class="col-sm-5 align-self-center">
-        <div id="membership-card" class="card">
-          <h2>Membership</h2><p>{{ userMemberships() }}</p>
+      <div id="right-column" class="col-sm-5 text-center">
+        <div id="membership-container">
+          <h2>Membership</h2>
+          <ul
+            id="membership-info"
+            class="list-unstyled"
+            v-for="membership in userMemberships()"
+            :key="membership.id"
+          >
+            <li>Began: {{ membership.formattedStartDate }}</li>
+            <li>Ends: {{ membership.formattedEndDate }}</li>
+            <li>Auto-renewal: {{ membership.autoRenewal }}</li>
+          </ul>
         </div>
         <div class="text-center">
           <button
             id="cancel-membership-btn"
             type="button"
-            class="btn btn-outline-primary  "
+            class="btn btn-outline-primary"
           >
             <router-link to="/membership">Cancel Membership</router-link>
           </button>
@@ -61,6 +71,33 @@ export default {
     ...mapActions("accounts", ["getAccounts"]),
     ...mapActions("customers", ["getAllCustomers"]),
     ...mapActions("membership", ["getMemberships", "getAccountMemberships"]),
+    userMemberships() {
+      let memberships = this.userActiveMemberships(
+        this.userAccountIds(this.userCustomerId())
+      );
+      memberships = memberships.map(membership => {
+        return {
+          ...membership,
+          formattedStartDate: this.formatDate(membership.startDate),
+          formattedEndDate: this.formatDate(membership.endDate),
+          autoRenewal: this.formatRenewal(membership.repeatingPayment)
+        };
+      });
+      return memberships;
+    },
+    formatDate(rawDate) {
+      let date = new Date(rawDate);
+      return (
+        date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate()
+      );
+    },
+    formatRenewal(repeating) {
+      if (repeating) {
+        return "enabled";
+      } else {
+        return "disabled";
+      }
+    },
     userCustomerId() {
       let customers = this.customers;
       if (customers == null) {
@@ -104,8 +141,8 @@ export default {
         return memberships.filter(membershipFilter);
       }
     },
-    userMemberships() {
-      return this.userActiveMemberships(
+    setUserMembershipDetails() {
+      this.userMembershipDetails = this.userActiveMemberships(
         this.userAccountIds(this.userCustomerId())
       );
     }
@@ -114,13 +151,14 @@ export default {
     this.getAccounts();
     this.getAllCustomers();
     this.getMemberships();
+    this.setUserMembershipDetails;
   }
 };
 </script>
 
 <style scoped>
 #profile-container {
-  margin: 5% 10%;
+  margin: 5% 8%;
 }
 #left-column {
   min-width: 300px;
@@ -131,11 +169,26 @@ export default {
 #profile-picture {
   width: 200px;
 }
-#right-column {
-  padding-top: 24px;
+#user-info {
+  padding: 20px 0;
 }
-#membership-card {
-  padding: 24px;
+#right-column {
+}
+#membership-container {
+  margin: 0 20px;
+  text-align: center;
+  background: #f6f9fa;
+  color: #353535;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-basis: auto; /* default value */
+  flex-grow: 1;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  padding: 30px 0;
+}
+#membership-info {
+  margin-top: 20px;
 }
 #cancel-membership-btn {
   margin-top: 24px;
