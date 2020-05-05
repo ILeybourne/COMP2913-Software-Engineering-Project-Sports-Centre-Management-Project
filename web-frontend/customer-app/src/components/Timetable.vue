@@ -167,6 +167,7 @@ export default {
         :eventRender="drawEvent"
         :resourceRender="drawResource"
         :resize="false"
+        :eventOverlap="false"
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
         defaultView="resourceTimelineDay"
         aspectRatio="1"
