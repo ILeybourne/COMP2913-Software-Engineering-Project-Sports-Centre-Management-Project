@@ -1,52 +1,93 @@
 <template>
   <v-container class="item-details"
-    ><v-row
-      ><v-col align="center"><h3>Sale details</h3></v-col></v-row
-    >
-    <hr v-if="isBooking" />
-    <v-row v-if="isBooking"
-      ><v-col>Facility: </v-col>
-      <v-col>{{ bookingDetails.facility }} </v-col></v-row
-    >
-    <hr v-if="isBooking || isMembership" />
-    <v-row
-      ><v-col v-if="isMembership">Item: </v-col>
-      <v-col v-if="isBooking">Activity: </v-col>
-      <v-col
-        >{{ membershipSaleDetails.name || bookingDetails.activity }}
-        <p v-if="isMembership">Membership</p></v-col
-      ></v-row
-    >
-    <hr v-if="isBooking || isMembership" />
+    ><div v-if="isMembership || isBooking">
+      <v-row
+        ><v-col align="center"><h3>Sale details</h3></v-col></v-row
+      >
+      <hr v-if="isBooking" />
+      <v-row v-if="isBooking"
+        ><v-col>Facility: </v-col>
+        <v-col>{{ bookingDetails.facility }} </v-col></v-row
+      >
+      <hr v-if="isBooking || isMembership" />
+      <v-row
+        ><v-col v-if="isMembership">Item: </v-col>
+        <v-col v-if="isBooking">Activity: </v-col>
+        <v-col
+          >{{ membershipSaleDetails.name || bookingDetails.activity }}
+          <p v-if="isMembership">Membership</p></v-col
+        ></v-row
+      >
+      <hr v-if="isBooking || isMembership" />
 
-    <v-row
-      ><v-col>Starts: </v-col>
-      <v-col>{{
-        membershipSaleDetails.startDate ||
-          bookingDetails.time + " " + bookingDetails.date
-      }}</v-col></v-row
-    >
-    <hr v-if="isBooking || isMembership" />
+      <v-row
+        ><v-col>Starts: </v-col>
+        <v-col>{{
+          membershipSaleDetails.startDate ||
+            bookingDetails.time + " " + bookingDetails.date
+        }}</v-col></v-row
+      >
+      <hr v-if="isBooking || isMembership" />
 
-    <v-row v-if="isMembership"
-      ><v-col>Expires: </v-col>
-      <v-col>{{ membershipSaleDetails.endDate }}</v-col></v-row
-    >
-    <hr v-if="isMembership" />
+      <v-row v-if="isMembership"
+        ><v-col>Expires: </v-col>
+        <v-col>{{ membershipSaleDetails.endDate }}</v-col></v-row
+      >
+      <hr v-if="isMembership" />
 
-    <v-row
-      ><v-col>Cost: </v-col>
-      <v-col
-        >£{{ membershipSaleDetails.cost || bookingDetails.price }}</v-col
-      ></v-row
-    >
-    <hr v-if="isBooking || isMembership" />
+      <v-row
+        ><v-col>Cost: </v-col>
+        <v-col
+          >£{{ membershipSaleDetails.cost || bookingDetails.price }}</v-col
+        ></v-row
+      >
+      <hr v-if="isBooking || isMembership" />
 
-    <v-row v-if="isMembership"
-      ><v-col>Automatic Renewal? </v-col>
-      <v-col>{{ membershipSaleDetails.repeatingPayment }}</v-col></v-row
-    >
-    <hr v-if="isMembership" />
+      <v-row v-if="isMembership"
+        ><v-col>Automatic Renewal? </v-col>
+        <v-col>{{ membershipSaleDetails.repeatingPayment }}</v-col></v-row
+      >
+      <hr v-if="isMembership" />
+    </div>
+    <div v-if="isBooking == false && isMembership == false">
+      <v-row
+        ><v-col align="center" class="heading"
+          ><h3>Sale details</h3></v-col
+        ></v-row
+      >
+      <div>
+        <v-row>
+          <v-col class="emptyCart">
+           <h4> Your cart is empty.</h4>
+          </v-col>
+        </v-row>
+      </div>
+      <div class="btnDiv">
+        <b-row>
+          <b-col class="emptyCartButtons">
+            <div>
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                @click="routerPushBookingCreate"
+              >
+                Create New Booking
+              </button>
+            </div> </b-col
+          ><b-col class="emptyCartButtons">
+            <div>
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                @click="routerPushMembershipPage"
+              >
+                Purchase Membership
+              </button>
+            </div>
+          </b-col>
+        </b-row>
+      </div>
+    </div>
   </v-container>
 </template>
 
@@ -75,6 +116,24 @@
 .item-details:hover h3 {
   background: #fcff18;
 }
+
+.heading {
+  margin-bottom: 150px;
+}
+
+.emptyCart {
+  margin-bottom: 160px;
+}
+.emptyCartButtons {
+  padding: 0px;
+}
+button {
+  width: 70%;
+}
+
+  .btnDiv{
+    /*margin-top: 200px;*/
+  }
 </style>
 
 <script>
@@ -103,6 +162,16 @@ export default {
   },
   computed: {},
   methods: {
+    routerPushBookingCreate() {
+      this.$router.push({
+        name: "BookingPage"
+      });
+    },
+    routerPushMembershipPage() {
+      this.$router.push({
+        name: "MembershipPage"
+      });
+    },
     setBookingDetails() {
       this.bookingDetails.facility = this.$route.params.bookingDetails.facility;
       this.bookingDetails.activity = this.$route.params.bookingDetails.activity;

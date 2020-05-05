@@ -222,7 +222,8 @@ export default {
         accountId: null,
         amountPaid: null,
         transactionId: null
-      }
+      },
+      participants: null
     };
   },
   computed: {
@@ -433,15 +434,16 @@ export default {
     },
 
     async showGuestInfo(value) {
-      this.selectedFacility = value.selectedFacilityId;
-      this.selectedActivity = value.selectedActivityName;
-      this.selectedActivityId = value.selectedActivityId;
-      this.selectedActivityName = value.selectedActivityName;
-      this.selectedSessionId = value.selectedSessionId;
-      this.date = value.selectedDate;
-      this.selectedTime = value.selectedTime;
+      this.selectedFacility = value.bookingInformation.selectedFacilityId;
+      this.selectedActivity = value.bookingInformation.selectedActivityName;
+      this.selectedActivityId = value.bookingInformation.selectedActivityId;
+      this.selectedActivityName = value.bookingInformation.selectedActivityName;
+      this.selectedSessionId = value.bookingInformation.selectedSessionId;
+      this.date = value.bookingInformation.selectedDate;
+      this.selectedTime = value.bookingInformation.selectedTime;
       this.price = value.price;
-      this.selectedFacilityName = value.selectedFacilityName;
+      this.selectedFacilityName = value.bookingInformation.selectedFacilityName;
+      this.participants = value.bookingInformation.participants;
       //Shows guest component
       this.hideGuest = false;
       if (value.userType == "guest") {

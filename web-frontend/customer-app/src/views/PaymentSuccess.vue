@@ -37,24 +37,27 @@
             <v-col>£{{ bookingDetails.price || null }}</v-col></v-row
           >
           <hr />
+        </v-container>
+          <v-container class="checkout-container" id="buttonContainer">
+
           <b-row>
             <b-col>
               <div>
-                <button type="button" class="btn btn-outline-primary"                   @click="routerPushBookingCreate"
+                <button type="button" class="btn btn-outline-primary" @click="routerPushBookingCreate"
                 >
                   Create New Booking
                 </button>
               </div> </b-col
-            ><b-col>
-              <div>
-                <button type="button" class="btn btn-outline-primary"                   @click="routerPushBookingManage"
+            ><b-col  v-bind:class="{ 'd-none': !isUser }">
+              <div >
+                <button type="button" class="btn btn-outline-primary" @click="routerPushBookingManage"
                 >
                   View My Bookings
                 </button>
               </div>
             </b-col>
           </b-row>
-        </v-container>
+          </v-container>
       </div>
       <div
         v-bind:class="{ 'd-none': hideMembershipDiv, col: !hideMembershipDiv }"
@@ -90,17 +93,17 @@
               <div>
                 <button
                   type="button"
-                  class="btn btn-outline-primary"
+                  class="btn btn-outline-secondary"
                   @click="routerPushBookingCreate"
                 >
                   Create New Booking
                 </button>
               </div> </b-col
-            ><b-col>
-              <div>
+            ><b-col v-bind:class="{ 'd-none': !isUser }" >
+              <div >
                 <button
                   type="button"
-                  class="btn btn-outline-primary"
+                  class="btn btn-outline-secondary"
                   @click="routerPushBookingManage"
                 >
                   View My Bookings
@@ -117,7 +120,6 @@
 .checkout-container {
   display: flex;
   flex-direction: column;
-  min-height: 60%;
   height: auto;
   width: auto;
   background: #f6f9fa;
@@ -141,6 +143,9 @@
 .col {
   text-align: center;
 }
+button{
+  width: 80%;
+}
 
 h1 {
   text-align: center;
@@ -157,7 +162,8 @@ import { isEmpty } from "../util/session.helpers";
 export default {
   name: "PaymentSuccess",
   computed: {
-    ...mapGetters("auth", ["user"])
+    ...mapGetters("auth", ["user"]),
+
   },
   data() {
     return {
@@ -167,7 +173,8 @@ export default {
       formData: null,
       postMembershipResponse: null,
       hideBookingDiv: true,
-      hideMembershipDiv: true
+      hideMembershipDiv: true,
+      isUser: null
     };
   },
   methods: {
@@ -193,6 +200,9 @@ export default {
   },
   mounted() {
     this.setData();
+    this.isUser = !isEmpty(this.user)
+    console.log(this.user)
+    console.log(this.user == null)
     if (this.paymentResponse != null) {
       console.log(1);
       if (this.bookingDetails.activityTypeId != null) {

@@ -31,10 +31,6 @@
   }
 }
 
-#cardDiv {
-  width: 50%;
-  margin: auto;
-}
 .heading-div p{
   width: 100%;
   padding: 10px;

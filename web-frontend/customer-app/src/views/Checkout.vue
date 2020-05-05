@@ -9,7 +9,9 @@
         <BillingInformation
           class="checkout-container"
           id="billing"
-          v-if="!billingSuccess"
+          v-if="
+            !billingSuccess && !(isBooking == false && isMembership == false)
+          "
           @submitBillingDetails="billingSuccessStatus"
         ></BillingInformation>
         <v-container
@@ -71,6 +73,18 @@
                         membershipSaleDetails.cost || bookingDetails.price
                       )
                     }}
+                  </button>
+                </div>
+                <div class="buttonDiv">
+                  <button
+                    @click="submitQuickPayment()"
+                    type="button"
+                    class="btn btn-outline-primary"
+                    id="quickPayButton"
+                    v-if="showQuickPay"
+                    :disabled="paymentSubmit"
+                  >
+                    Quick Pay
                   </button>
                 </div>
               </div>
@@ -185,6 +199,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  alignment: center;
 }
 </style>
 
@@ -242,11 +257,19 @@ export default {
       customer: null,
       isBooking: false,
       isMembership: false,
-      paymentSuccess: false
+      paymentSuccess: false,
+      paymentSubmit: false
     };
   },
   computed: {
-    ...mapGetters("customers", ["customers"])
+    ...mapGetters("customers", ["customers"]),
+    showQuickPay: function() {
+      if (this.customer) {
+        return this.customer.stripeId !== null;
+      } else {
+        return false;
+      }
+    }
   },
   methods: {
     ...mapActions("customers", ["getAllCustomers"]),
@@ -298,6 +321,7 @@ export default {
     },
     async getCustomer() {
       console.log(this.customers);
+      console.log(this.$auth);
       this.customer = this.customers.find(
         x => x.emailAddress === this.$auth.user.email
       );
@@ -305,7 +329,6 @@ export default {
     async submitMembershipPayment() {
       console.log(this.$auth.user);
       console.log(this.customers);
-      console.log(await this.getCustomer());
       console.log(this.price);
       this.paymentSubmit = true;
       let paymentIntent = null;
@@ -329,11 +352,18 @@ export default {
         body.activityTypeId = this.bookingDetails.activityTypeId;
       }
 
-      // eslint-disable-next-line no-undef
-      paymentIntent = await this.$http.post(
-        `/payments/intent/card/` + this.customer.id, //this.customerId,
-        body
-      );
+      if (this.customer) {
+        // eslint-disable-next-line no-undef
+        paymentIntent = await this.$http.post(
+          `/payments/intent/card/` + this.customer.id, //this.customerId,
+          body
+        );
+      } else {
+        paymentIntent = await this.$http.post(
+          `/payments/guest-intent/`, //this.customerId,
+          body
+        );
+      }
       if (paymentIntent.status === 200) {
         console.log(paymentIntent);
         this.paymentResponse.accountId = paymentIntent.data.accountId;
@@ -373,23 +403,25 @@ export default {
           let paymentSuccessData = {
             bookingDetails: this.bookingDetails,
             membershipSaleDetails: this.membershipSaleDetails,
-            formData: this.formData ,
+            formData: this.formData,
             paymentResponse: this.paymentResponse,
             postMembershipResponse: this.postMembershipResponse
-          }
+          };
 
-          await this.$router.push({
-            name: "PaymentSuccess",
-            params: {
-              paymentSuccessData: paymentSuccessData,
-            }
-          })
-
+          this.routerPushPaymentSuccess(paymentSuccessData);
         }
-          // this.hideCardError = false;
+        // this.hideCardError = false;
       }
     },
 
+    async routerPushPaymentSuccess(paymentSuccessData) {
+      await this.$router.push({
+        name: "PaymentSuccess",
+        params: {
+          paymentSuccessData: paymentSuccessData
+        }
+      });
+    },
     async addMember() {
       const body = {
         accountId: this.paymentResponse.accountId,
@@ -422,6 +454,41 @@ export default {
       } catch (e) {
         console.log(e);
       }
+    },
+    async submitQuickPayment() {
+      this.paymentSubmit = true;
+      let paymentIntent = null;
+      // eslint-disable-next-line no-undef
+      paymentIntent = await this.$http.post(
+        `/payments/intent/saved/` + this.customer.id, //this.customerId,
+        {
+          payment_method: {
+            card: this.card,
+            billing_details: {
+              name: this.firstName
+            }
+          },
+          activityTypeId: this.bookingDetails.activityTypeId,
+          email: this.email,
+          regularSession: false //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
+        }
+      );
+      if (paymentIntent.status === 200) {
+        this.paymentResponse.accountId = paymentIntent.data.accountId;
+        this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
+        this.paymentResponse.transactionId = paymentIntent.data.transactionId;
+
+        await this.createBooking();
+        let paymentSuccessData = {
+          bookingDetails: this.bookingDetails,
+          membershipSaleDetails: this.membershipSaleDetails,
+          formData: this.formData,
+          paymentResponse: this.paymentResponse,
+          postMembershipResponse: this.postMembershipResponse
+        };
+
+        await this.routerPushPaymentSuccess(paymentSuccessData);
+      }
     }
   },
 
@@ -439,6 +506,7 @@ export default {
       this.setFormData();
     }
     this.configureStripe();
+    this.getCustomer();
   }
 };
 </script>

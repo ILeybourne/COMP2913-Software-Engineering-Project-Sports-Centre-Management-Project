@@ -8,11 +8,17 @@
         <div class="form-row">
           <label for="facility">Facility:</label>
           <b-form-select
-            v-model="selectedFacilityId"
+            v-model="bookingInformation.selectedFacilityId"
             :options="facilityOptions"
             name="facility"
             id="facility"
-            @change="[setActivityTypeOptions($event), validateFacility(), setFacilityName($event)]"
+            @change="
+              [
+                setActivityTypeOptions($event),
+                validateFacility(),
+                setFacilityName($event)
+              ]
+            "
             @load="setFormDefaults($event)"
             v-bind:state="facilityValid"
             required
@@ -22,7 +28,7 @@
         <div class="form-row">
           <label for="activity">Activity:</label>
           <b-form-select
-            v-model="selectedActivityId"
+            v-model="bookingInformation.selectedActivityId"
             :options="activityOptions"
             name="activity"
             id="activity"
@@ -30,9 +36,10 @@
               [
                 // selectActivityName(),
                 validateActivity(),
-                getPrice($event),
+                getPrice(),
                 getTimes(),
-                getSelectedActivityName($event)
+                setActivityName($event),
+                setMaxParticipants($event)
               ]
             "
             v-bind:state="activitiesValid"
@@ -46,7 +53,7 @@
             type="date"
             id="date"
             name="date"
-            v-model="selectedDate"
+            v-model="bookingInformation.selectedDate"
             @change="getTimes($event)"
             required
           />
@@ -54,7 +61,7 @@
         <div class="form-row">
           <label for="time">Time:</label>
           <b-form-select
-            v-model="selectedSessionId"
+            v-model="bookingInformation.selectedSessionId"
             :options="timeOptions"
             name="time"
             id="time"
@@ -65,16 +72,33 @@
           </b-form-select>
         </div>
         <div class="form-row">
+          <label for="participants">Participants:</label>
+          <b-form-input
+            v-model="bookingInformation.participants"
+            name="bookingInformation.participants"
+            id="bookingInformation.participants"
+            v-bind:state="participantsValid"
+            @change="[getPrice()]"
+            required
+            step="1"
+            type="number"
+            min="1"
+            :disabled="!activitiesValid"
+            v-bind:max="bookingInformation.maxParticipants"
+          >
+          </b-form-input>
+        </div>
+        <div class="form-row">
           <label for="price" style="padding-top: 10px">Price:</label>
           <b-input-group size="lg" prepend="£" style="width: 90%">
             <b-form-input
-                    type="text"
-                    step="0.01"
-                    id="price"
-                    name="price"
-                    v-model="price"
-                    class="form-control"
-                    readonly
+              type="text"
+              step="0.01"
+              id="price"
+              name="price"
+              v-model="price"
+              class="form-control"
+              readonly
             ></b-form-input>
           </b-input-group>
         </div>
@@ -117,7 +141,6 @@
   border: 3px solid #3183e5;
   padding: 10px;
   border-radius: 10px;
-
 }
 
 .button-container {
@@ -152,23 +175,28 @@ export default {
   name: "BookingInformation",
   data() {
     return {
+      bookingInformation: {
+        selectedFacilityId: null,
+        selectedFacilityName: null,
+        selectedActivityId: null,
+        selectedActivityName: null,
+        selectedDate: null,
+        selectedTime: null,
+        participants: null,
+        selectedSessionId: null
+      },
+
       facilityOptions: [],
       activityOptions: [],
       timeOptions: ["Please Select"],
-      selectedActivityId: null,
-      selectedActivityName: null,
-      selectedFacilityId: null,
-      selectedFacilityName: null,
-      selectedSessionId: null,
-      selectedTime: null,
       price: null,
-      selectedDate: null,
       userType: null,
       componentWidth: 90,
       facilityValid: null,
       activitiesValid: null,
       dateValid: null,
       timeValid: null,
+      participantsValid: null
       // bookingDetails: {
       //
       // }
@@ -180,40 +208,60 @@ export default {
     ...mapGetters("auth", ["user"]),
     account: function() {
       return !this.isEmpty(this.user);
-    },
-    // selectedActivityName: function () {
-    //   return this.activityTypes.find(x => x.id === this.selectedActivityId )
+    }
+    // bookingInformation.selectedActivityName: function () {
+    //   return this.activityTypes.find(x => x.id === this.bookingInformation.selectedActivityId )
     //
     // }
   },
   methods: {
     ...mapActions("facilities", ["getFacilities", "getActivityTypes"]),
     ...mapActions("timetable", ["getAllSessions"]),
-    getSelectedActivityName(e) {
-      if (e != null){
-        this.selectedActivityName = this.activityTypes.find(x => x.id  === e ).name
+    setMaxParticipants(activityId) {
+      console.log(activityId);
+      this.maxParticipants = this.activityTypes.find(
+        x => x.id === activityId
+      ).totalCapacity;
+    },
+
+    setActivityName(e) {
+      if (e != null) {
+        this.bookingInformation.selectedActivityName = this.activityTypes.find(
+          x => x.id === e
+        ).name;
       }
     },
 
     setFacilityName(e) {
       if (e != null)
-        this.selectedFacilityName = this.facilityOptions.find(x => x .value === e).text
+        this.bookingInformation.selectedFacilityName = this.facilityOptions.find(
+          x => x.value === e
+        ).text;
     },
 
-    getPrice(e) {
-      if (this.selectedActivityId != null) {
-        let selectedActivity = this.activityTypes.find(x => x.id === e);
-        this.price = selectedActivity.cost;
+    getPrice() {
+      if (!this.bookingInformation.participants) {
+        this.bookingInformation.participants = 1;
+        this.participantsValid = true
+      }
+
+      if (this.bookingInformation.selectedActivityId != null) {
+        let selectedActivity = this.activityTypes.find(
+          x => x.id === this.bookingInformation.selectedActivityId
+        );
+        this.price = selectedActivity.cost * Number(this.bookingInformation.participants);
+      }else{
+        this.price = 0
       }
     },
 
     getSelectedTime(e) {
       if (e != null)
-        this.selectedTime = this.timeOptions.find(x => x.value === e).text
+        this.bookingInformation.selectedTime = this.timeOptions.find(x => x.value === e).text;
     },
 
     async setActivityTypeOptions(e) {
-      this.selectedActivityId = null;
+      this.bookingInformation.selectedActivityId = null;
       if (!(e == null)) {
         const activityTypesRequest = await this.$http.get(
           "http://localhost:8000/activitytypes/resource/" + e
@@ -234,7 +282,7 @@ export default {
             { value: null, text: "No Activities found for this facility" }
           ];
         }
-        this.selectedTime = "Please Select";
+        this.bookingInformation.selectedTime = "Please Select";
       }
     },
 
@@ -254,17 +302,17 @@ export default {
     },
 
     validateFacility() {
-      this.facilityValid = !(this.$data.selectedFacilityId == null);
+      this.facilityValid = !(this.$data.bookingInformation.selectedFacilityId == null);
     },
     validateActivity() {
-      this.activitiesValid = !(this.$data.selectedActivityId == null);
+      this.activitiesValid = !(this.$data.bookingInformation.selectedActivityId == null);
     },
     validateDate() {
       this.dateValid = this.$data.date != null;
     },
     validateTime() {
       this.timeValid = !(
-        this.selectedTime == null || this.selectedTime === this.timeOptions[0]
+        this.bookingInformation.selectedTime == null || this.bookingInformation.selectedTime === this.timeOptions[0]
       );
     },
 
@@ -278,10 +326,10 @@ export default {
     // eslint-disable-next-line no-unused-vars
     submitForm(e) {
       if (
-        !(this.$data.selectedFacilityId == null) &&
-        !(this.$data.selectedActivityId == null) &&
-        this.$data.selectedDate != null &&
-        this.$data.selectedTime != null
+        !(this.$data.bookingInformation.selectedFacilityId == null) &&
+        !(this.$data.bookingInformation.selectedActivityId == null) &&
+        this.$data.bookingInformation.selectedDate != null &&
+        this.$data.bookingInformation.selectedTime != null
       ) {
         this.facilityValid = true;
         this.activitiesValid = true;
@@ -319,12 +367,12 @@ export default {
       const activityTypeId = this.$route.query.activityId;
       const activityId = this.$route.query.sessionId;
       if (!this.isEmpty(this.$route.query)) {
-        //If query isn't empty fill ids, selectedDate and timeOptions
-        this.selectedFacilityId = facilityId;
+        //If query isn't empty fill ids, bookingInformation.selectedDate and timeOptions
+        this.bookingInformation.selectedFacilityId = facilityId;
         this.setActivityTypeOptions(facilityId);
-        this.selectedActivityId = activityTypeId;
-        this.selectedActivityName = this.activities.find(
-          x => Number(x.id) === Number(this.selectedActivityId)
+        this.bookingInformation.selectedActivityId = activityTypeId;
+        this.bookingInformation.selectedActivityName = this.activities.find(
+          x => Number(x.id) === Number(this.bookingInformation.selectedActivityId)
         ).name;
         this.selectActivityName();
         let selectedDateUnix = this.sessions.find(x => x.id == activityId)
@@ -339,24 +387,26 @@ export default {
           year + "-" + month.substr(-2) + "-" + date.substr(-2);
         const forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
 
-        this.selectedDate = formattedDate;
+        this.bookingInformation.selectedDate = formattedDate;
 
         this.timeOptions.push(forrmattedTime);
-        this.selectedTime = forrmattedTime;
+        this.bookingInformation.selectedTime = forrmattedTime;
         this.getPrice(activityTypeId);
         this.callValidation();
       }
     },
     getTimes() {
-      if (this.selectedDate != null) {
+      if (this.bookingInformation.selectedDate != null) {
         if (
-          this.selectedFacilityId != null &&
-          this.selectedActivityId != null
+          this.bookingInformation.selectedFacilityId != null &&
+          this.bookingInformation.selectedActivityId != null
         ) {
-          let timeArray =[{
-                  value: null,
-                  text: "Please Select"
-        }];
+          let timeArray = [
+            {
+              value: null,
+              text: "Please Select"
+            }
+          ];
           for (const activity of this.sessions) {
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
@@ -369,19 +419,19 @@ export default {
             let formattedDate = year + "-" + month + "-" + date;
 
             let activityName = this.activityOptions.find(
-              x => x.value == this.selectedActivityId
-            ).text
+              x => x.value == this.bookingInformation.selectedActivityId
+            ).text;
 
             if (
               activity.name == activityName &&
-              formattedDate == this.selectedDate
+              formattedDate == this.bookingInformation.selectedDate
             ) {
               let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
               if (!timeArray.includes(formattedDate)) {
                 timeArray.push({
                   value: activity.id,
                   text: formattedTime
-                })
+                });
               }
             }
           }

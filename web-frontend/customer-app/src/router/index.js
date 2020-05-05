@@ -85,6 +85,7 @@ const routes = [
   {
     path: "/membership",
     name: "MembershipPage",
+    beforeEnter: authGuard,
     component: MembershipPage,
     meta: {
       title: "Zenergy | Membership"
