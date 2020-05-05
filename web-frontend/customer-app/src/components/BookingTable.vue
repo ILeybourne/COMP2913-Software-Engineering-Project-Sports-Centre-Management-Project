@@ -8,42 +8,6 @@
       <v-btn color="primary" dark class="mb-2" @click="showNewBooking()"
         >New Booking</v-btn
       >
-      <b-modal id="new-booking-modal" title="Edit Booking" @ok="addBooking()">
-        <b-form>
-          <b-form-group
-            id="resource.name"
-            label="Facility"
-            label-for="FacilityName"
-            ><b-form-select
-              id="FacilityName"
-              :options="setFacilityOptions()"
-              v-model="selectedBooking.facility"
-              required
-            ></b-form-select>
-          </b-form-group>
-          <b-form-group id="name" label="Booking" label-for="BookingName">
-            <b-form-input
-              id="BookingName"
-              v-model="selectedBooking.name"
-              required
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group id="startTime" label="Start Time" label-for="StartTime">
-            <b-form-input
-              id="StartTime"
-              v-model="selectedBooking.startTime"
-              required
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group id="endTime" label="End Time" label-for="EndTime">
-            <b-form-input
-              id="EndTime"
-              v-model="selectedBooking.endTime"
-              required
-            ></b-form-input>
-          </b-form-group>
-        </b-form>
-      </b-modal>
       <b-modal id="edit-modal" title="Edit Booking" @ok="updateTable()">
         <b-form>
           <b-form-group
@@ -174,7 +138,7 @@ export default {
       getFacilities: "getFacilities"
     }),
     showNewBooking() {
-      this.$bvModal.show("new-booking-modal");
+      this.$router.push("/bookings");
     },
     editItem(item) {
       console.log(item);
