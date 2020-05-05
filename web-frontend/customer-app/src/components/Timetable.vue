@@ -61,6 +61,7 @@ export default {
     ...mapActions("facilities", ["getFacilities"]),
     ...mapActions("timetable", ["getAllSessions"]),
     drawEvent(eventInfo) {
+      // TODO: change colour if you can't book
       const { event } = eventInfo;
       const { extendedProps: options } = event;
       const totalCapacity = options.totalCapacity || 0;
@@ -93,7 +94,6 @@ export default {
       // Add a link to the timetable for that facility
       e.el.addEventListener("click", () => {
         const facility = e.resource._resource;
-        console.log(facility);
         this.$router.push({
           name: "FacilityTimetable",
           params: {
@@ -136,7 +136,6 @@ export default {
       if (!this.isEmployeeOrManager) {
         return;
       }
-      console.log(event);
       if (redirectToBooking) {
         this.$router.push({
           name: "BookingPage",
