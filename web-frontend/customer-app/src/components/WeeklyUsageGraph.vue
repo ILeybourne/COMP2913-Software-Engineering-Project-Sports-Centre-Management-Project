@@ -218,6 +218,7 @@ export default {
       Chart.defaults.scale.ticks.min = 0;
       // eslint-disable-next-line no-undef
       Chart.defaults.scale.ticks.max = 30;
+      console.log(thisWeek);
     }
   },
   async mounted() {

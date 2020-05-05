@@ -17,17 +17,17 @@ const state = {
     }
   },
   facilities: [],
-  activities: []
+  activities: [],
 };
 
 const getters = {
   facilities: state => state.facilities,
   activities: state =>
-    state.activities.map(activity => {
+    state.activities.map(activities => {
       return {
-        ...activity,
-        formattedCost: formatCurrency(activity.cost),
-        formattedStartAt: formatDate(activity.startTime)
+        ...activities,
+        formattedCost: formatCurrency(activities.cost),
+        formattedStartAt: formatDate(activities.startTime)
       };
     }),
   getFacilityById: state => id => {
@@ -161,6 +161,21 @@ const actions = {
     commit("SET_ACTIVITIES", activities);
     commit("loading/FINISH_LOADING", null, { root: true });
     return activities;
+  },
+  async updateActivityTypes({ commit }, { activityId, body}){
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.put(`/activitytypes/${activityId}`, body);
+    commit("SET_ACTIVITIES", [
+      ...state.activities,
+      data._embedded.activityTypeDToes
+    ]);
+    commit("loading/START_LOADING", null, { root: true });
+  },
+  async createActivityType({commit}, facilityId, body){
+    const { data } = await axios.post(`/activitytypes/resource/${facilityId}`, body);
+    commit("SET_ACTIVITIES", [...state.activities, data]);
+    commit("loading/START_LOADING", null, { root: true });
+    return data;
   },
   async getActivities({ commit }) {
     commit("loading/START_LOADING", null, { root: true });

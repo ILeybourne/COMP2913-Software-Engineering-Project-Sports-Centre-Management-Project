@@ -14,7 +14,7 @@
         @ok="addActivity()"
       >
         <b-form>
-          <b-form-group id="activity" label="Activity" label-for="Activity"
+          <b-form-group id="activity" label="Activity Name" label-for="Activity"
             ><b-form-input
               id="Activity"
               v-model="newActivity.name"
@@ -44,17 +44,17 @@
         @ok="updateActivity()"
       >
         <b-form>
-          <b-form-group id="activity" label="Activity" label-for="Activity"
-            ><b-form-select
+          <b-form-group id="activity" label="Activity Name" label-for="Activity"
+            ><b-form-input
               id="Activity"
               :options="setActivityOptions()"
               v-model="selectedActivity.name"
-            ></b-form-select>
+            ></b-form-input>
           </b-form-group>
           <b-form-group id="facility" label="Facility" label-for="Facility">
             <b-form-select
               id="Facility"
-              :options="setFacilityOptions()"
+              :options="[selectedActivity.facility]"
               v-model="selectedActivity.facility"
             ></b-form-select>
           </b-form-group>
@@ -76,9 +76,6 @@
     <template v-slot:item.actions="{ item }">
       <v-icon small class="mr-2" @click="editItem(item)">
         mdi-pencil
-      </v-icon>
-      <v-icon small @click="deleteItem(item)">
-        mdi-delete
       </v-icon>
     </template>
   </v-data-table>
@@ -145,8 +142,9 @@ export default {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("facilities", {
       getActivity: "getActivityTypes",
-      deleteActivity: "deleteActivity",
-      getFacilities: "getFacilities"
+      getFacilities: "getFacilities",
+      updateActivityTypes: "updateActivityTypes",
+      createActivityType: "createActivityType"
     }),
     showNewActivity() {
       this.$bvModal.show("new-activity-modal");
@@ -159,12 +157,6 @@ export default {
       this.selectedActivity.capacity = item.totalCapacity;
       this.selectedActivity.cost = item.cost;
       this.$bvModal.show("edit-modal");
-    },
-    deleteItem(item) {
-      const index = this.activities.indexOf(item);
-      console.log(index);
-      confirm("Are you sure you want to delete this item?") &&
-        this.deleteActivity(index);
     },
     setFacilityOptions() {
       let facilities = this.facilities;
@@ -183,33 +175,34 @@ export default {
       return activityArray;
     },
     async updateActivity() {
-      const id = this.selectedActivity.id;
+      const id = Number(this.selectedActivity.id);
       this.dataWithFacilities.find(activity => activity.id === id);
-      console.log("updateActivity");
       const body = {
-        name: "Test from front 5", //need to be dynamic
-        cost: 20,
-        totalCapacity: 50
+        name: this.selectedActivity.name, //need to be dynamic
+        cost: this.selectedActivity.cost,
+        totalCapacity: this.selectedActivity.capacity
       };
-      await this.$http
-        .put("/activitytypes/" + id, body)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(function() {
-          //console.log(error);
-        });
+      this.updateActivityTypes(id, body);
     },
-    addActivity() {
-      console.log("addActivity");
+    async addActivity() {
+      let facilityId = null;
+      for (const facility of this.facilities) {
+        if (facility.name === this.newActivity.facility) {
+          facilityId = facility.id;
+        }
+      }
+      const body = {
+        name: this.newActivity.name, //need to be dynamic
+        cost: this.newActivity.cost,
+        totalCapacity: this.newActivity.capacity
+      };
+      await this.createActivityType(facilityId, body);
     },
     async getRelatedFacility() {
       let facilityArr = [];
       for (const activity of this.activities) {
         console.log(activity);
-        const facilityId = activity._links.resource.href
-          .split("/")
-          .slice(-1)[0];
+        const facilityId = activity.facility_id;
         const facilities = this.facilities;
         console.log(
           facilities.find(

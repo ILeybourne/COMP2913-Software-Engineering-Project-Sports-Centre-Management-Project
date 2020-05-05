@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.util.Date;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.NotBlank;
@@ -19,6 +20,7 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
   @NotNull(message = "Account Id is required")
   private Long accountId;
   private Long id;
+
 
   public BookingDTO() {
   }
@@ -66,4 +68,6 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
   public void setId(Long id) {
     this.id = id;
   }
+
+ 
 }
