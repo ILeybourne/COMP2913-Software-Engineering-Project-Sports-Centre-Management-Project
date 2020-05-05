@@ -1,4 +1,5 @@
 import { getInstance } from "@/plugins/auth.plugin";
+import store from "@/store";
 
 export const authGuard = (to, from, next) => {
   const authService = getInstance();
@@ -28,4 +29,20 @@ export const authGuard = (to, from, next) => {
       return fn();
     }
   });
+};
+
+export const manager = (to, from, next) => {
+  if (store.getters["auth/isManager"]) {
+    return next();
+  } else {
+    return next("/unauthorised");
+  }
+};
+
+export const employee = (to, from, next) => {
+  if (store.getters["auth/isEmployee"]) {
+    return next();
+  } else {
+    return next("/unauthorised");
+  }
 };
