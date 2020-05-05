@@ -20,6 +20,7 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
   @NotNull(message = "Account Id is required")
   private Long accountId;
   private Long id;
+  private Long activity_id;
 
 
   public BookingDTO() {
@@ -71,5 +72,14 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
     this.id = id;
   }
 
- 
+
+  public Long getActivity_id() {
+    return activity_id;
+  }
+
+  public void setActivity_id(Long activity_id) {
+    this.activity_id = activity_id;
+  }
+
+
 }
