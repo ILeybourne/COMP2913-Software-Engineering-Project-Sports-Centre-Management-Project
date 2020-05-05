@@ -209,8 +209,10 @@ export default {
       if (this.bookingDetails.activityTypeId != null) {
         this.hideBookingDiv = false;
       }
-      if (this.membershipSaleDetails.id != null) {
-        this.hideMembershipDiv = false;
+      if (this.membershipSaleDetails != null) {
+        if (this.membershipSaleDetails.id != null) {
+          this.hideMembershipDiv = false;
+        }
       }
     } else {
       this.$router.push({

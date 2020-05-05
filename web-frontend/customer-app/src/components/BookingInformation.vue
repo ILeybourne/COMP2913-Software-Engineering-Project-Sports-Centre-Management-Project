@@ -112,7 +112,7 @@
             name="guest"
             @click="getUserType($event)"
             :disabled="!timeValid"
-            v-if="!account"
+            v-if="!account || isEmployeeOrManager"
           >
             Checkout As Guest
           </button>
@@ -222,6 +222,7 @@ export default {
     ...mapGetters("facilities", ["facilities", "activityTypes"]),
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("auth", ["user"]),
+    ...mapGetters("auth", ["isEmployeeOrManager"]),
     account: function() {
       return !this.isEmpty(this.user);
     }

@@ -334,9 +334,11 @@ export default {
       this.formData.selectedOption = this.$route.params.selectedOption;
     },
     async getCustomer() {
-      this.customer = this.customers.find(
-        x => x.emailAddress === this.$auth.user.email
-      );
+      if (this.user) {
+        this.customer = this.customers.find(
+          x => x.emailAddress === this.$auth.user.email
+        );
+      }
     },
     async submitMembershipPayment() {
       this.paymentSubmit = true;

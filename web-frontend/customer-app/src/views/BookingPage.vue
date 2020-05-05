@@ -388,12 +388,34 @@ export default {
     },
 
     async handleCashPayment(value) {
-      if (value.change >= 0) {
+      if (value.changeVal >= 0) {
         await this.createBooking();
-        this.showTempPage();
+        let paymentSuccessData = {
+          bookingDetails: {
+            facility: this.selectedFacilityName,
+            activity: this.selectedFacilityName,
+            date: this.date,
+            time: this.selectedTime,
+            price: this.price,
+            activityTypeId: this.selectedActivityId,
+            sessionId: this.selectedSessionId
+          },
+          paymentResponse: "cash"
+        };
+
+        this.routerPushPaymentSuccess(paymentSuccessData);
       } else {
         //invalid amount of cash given
       }
+    },
+
+    async routerPushPaymentSuccess(paymentSuccessData) {
+      await this.$router.push({
+        name: "PaymentSuccess",
+        params: {
+          paymentSuccessData: paymentSuccessData
+        }
+      });
     },
 
     async createBooking() {
