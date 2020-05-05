@@ -6,7 +6,7 @@
         <v-dialog max-width="500px"> </v-dialog>
       </v-toolbar>
       <v-btn color="primary" dark class="mb-2" @click="showBookings()"
-      >New Booking</v-btn
+        >New Booking</v-btn
       >
       <b-modal id="edit-modal" title="Edit Booking" @ok="updateTable()">
         <b-form>
@@ -126,7 +126,6 @@ export default {
     ...mapGetters("timetable", ["bookings"]),
     ...mapGetters("timetable", ["resources"]),
     ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("facilities", ["activity"]),
     ...mapGetters("facilities", ["facilities"])
   },
   methods: {
@@ -135,13 +134,12 @@ export default {
       getBooking: "getBookings",
       getBook: "getBooking",
       getResources: "getResources",
-      deleteBooking: "deleteActivities"
+      deleteBooking: "deleteBooking"
     }),
     ...mapActions("facilities", {
-      getActivity: "getActivityTypes",
-      getActivities: "getActivities",
+      getActivities: "getActivityTypes",
       getFacilities: "getFacilities"
-  }),
+    }),
     editItem(item) {
       console.log(item);
       this.selectedBooking.id = item.id;
@@ -154,10 +152,11 @@ export default {
     },
     showDelete(item) {
       console.log(item);
-      const index = item.id;
+      const id = item.id;
+      const index = this.dataWithActivities.indexOf(item);
       confirm("Are you sure you want to delete this item?") &&
-        this.bookings.splice(index, 1) &&
-        this.deleteBooking(index);
+        this.dataWithActivities.splice(index, 1) &&
+        this.deleteBooking(id); // &&this.deleteBooking(index);
     },
     showBookings() {
       this.$router.push("/bookings");
@@ -175,16 +174,15 @@ export default {
       for (const booking of this.bookings) {
         const ActivityId = booking._links.Activity.href.split("/").slice(-1)[0];
         const activities = this.activities;
-        //console.log(Number(booking.id) === Number(ActivityId));
-        //console.log(Number(booking.id) + " " + Number(ActivityId));
-        //console.log(activities);
         booking.activity = activities.find(
           activity => Number(activity.id) === Number(ActivityId)
         );
         ActivityArr.push(booking);
       }
-      for (const booking of ActivityArr){
-        const ResourceId = booking.activity._links.resource.href.split("/").slice(-1)[0];
+      for (const booking of ActivityArr) {
+        const ResourceId = booking.activity._links.resource.href
+          .split("/")
+          .slice(-1)[0];
         const resources = this.resources;
         booking.activity.resource = resources.find(
           resource => Number(resource.id) === Number(ResourceId)
@@ -197,14 +195,11 @@ export default {
       const id = this.selectedBooking.id;
       this.dataWithActivities.find(booking => booking.id === id);
       console.log("updateBooking");
-    },
-    addBooking() {
-      console.log("addBooking");
     }
   },
-
   async mounted() {
-    await this.getActivity();
+    await this.getActivities();
+    //console.log(this.activity);
     await this.getResources();
     //console.log(this.activities);
     await this.getBooking();

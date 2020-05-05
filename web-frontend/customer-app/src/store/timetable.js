@@ -103,6 +103,12 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return bookings;
   },
+  async deleteBooking({ commit }, bookingId) {
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.delete(`/bookings/${bookingId}`);
+    commit("SET_BOOKINGS", data);
+    commit("loading/FINISH_LOADING", null, { root: true });
+  },
   async getResources({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/resources");
