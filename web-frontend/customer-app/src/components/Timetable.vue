@@ -43,6 +43,7 @@ export default {
   computed: {
     ...mapGetters("facilities", ["facilities"]),
     ...mapGetters("timetable", ["sessions"]),
+    ...mapGetters("auth", ["isEmployeeOrManager"]),
     resources() {
       return this.facilities.map(r => {
         return {
@@ -116,6 +117,9 @@ export default {
       }
     },
     onSelect(event) {
+      if (!this.isEmployeeOrManager) {
+        return;
+      }
       const s = event.start.toISOString();
       const e = event.end.toISOString();
 
@@ -129,6 +133,9 @@ export default {
       this.$bvModal.hide("preview-activity-modal");
     },
     onSessionCreate({ createBooking: redirectToBooking, ...event }) {
+      if (!this.isEmployeeOrManager) {
+        return;
+      }
       console.log(event);
       if (redirectToBooking) {
         this.$router.push({
@@ -163,6 +170,7 @@ export default {
         :plugins="calendarPlugins"
         :header="header"
         :selectable="true"
+        :selectOverlap="false"
         :selectMirror="true"
         :eventRender="drawEvent"
         :resourceRender="drawResource"
@@ -182,6 +190,7 @@ export default {
         hide-footer
       >
         <SessionCreate
+          v-if="isEmployeeOrManager"
           @post="onSessionCreate($event)"
           :startTime="selectedSession.startTime"
           :endTime="selectedSession.endTime"
