@@ -251,10 +251,22 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         try {
+            internalCustomer = customerRepository.findByEmailAddress(email);
+            if (internalCustomer == null) {
+                //If customer does not already exist create new API Customer and Stripe Customer
+                internalCustomer = new uk.ac.leeds.comp2913.api.Domain.Model.Customer();
+                internalCustomer.setEmailAddress(email);
+                internalCustomer.setDateOfBirth(new Date());
+                customerRepository.save(internalCustomer);
+                customer_id = internalCustomer.getId();
+                logger.info("asdsasas");
+                logger.info(customer_id.toString());
+            }
+
             if (customerRepository.findById(customer_id).isPresent()) {
                 //get api customer
                 internalCustomer = customerRepository.findById(customer_id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id " + customer_id));
+                        .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id "));
 
                 //get stripe customer
                 logger.info("get stripe Customer");

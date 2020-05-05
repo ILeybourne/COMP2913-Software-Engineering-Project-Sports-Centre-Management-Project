@@ -208,6 +208,7 @@ import CheckoutItem from "@/components/CheckoutItem.vue";
 import BillingInformation from "@/components/BillingInformation.vue";
 import { formatCurrency } from "@/util/format.helpers";
 import { mapActions, mapGetters } from "vuex";
+import {isEmpty} from "../util/session.helpers";
 // @ is an alias to /src
 export default {
   name: "Checkout",
@@ -263,6 +264,7 @@ export default {
   },
   computed: {
     ...mapGetters("customers", ["customers"]),
+    ...mapGetters("auth", ["user"]),
     showQuickPay: function() {
       if (this.customer) {
         return this.customer.stripeId !== null;
@@ -352,10 +354,17 @@ export default {
         body.activityTypeId = this.bookingDetails.activityTypeId;
       }
 
-      if (this.customer) {
+      if (!isEmpty(this.user)) {
+        let id =null
+        if (this.customer){
+          id = this.customer.id
+        } else {
+          id = -1
+        }
+
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
-          `/payments/intent/card/` + this.customer.id, //this.customerId,
+          `/payments/intent/card/` + id, //this.customerId,
           body
         );
       } else {

@@ -197,9 +197,6 @@ export default {
       dateValid: null,
       timeValid: null,
       participantsValid: null
-      // bookingDetails: {
-      //
-      // }
     };
   },
   computed: {
@@ -209,10 +206,6 @@ export default {
     account: function() {
       return !this.isEmpty(this.user);
     }
-    // bookingInformation.selectedActivityName: function () {
-    //   return this.activityTypes.find(x => x.id === this.bookingInformation.selectedActivityId )
-    //
-    // }
   },
   methods: {
     ...mapActions("facilities", ["getFacilities", "getActivityTypes"]),
@@ -242,22 +235,25 @@ export default {
     getPrice() {
       if (!this.bookingInformation.participants) {
         this.bookingInformation.participants = 1;
-        this.participantsValid = true
+        this.participantsValid = true;
       }
 
       if (this.bookingInformation.selectedActivityId != null) {
         let selectedActivity = this.activityTypes.find(
           x => x.id === this.bookingInformation.selectedActivityId
         );
-        this.price = selectedActivity.cost * Number(this.bookingInformation.participants);
-      }else{
-        this.price = 0
+        this.price =
+          selectedActivity.cost * Number(this.bookingInformation.participants);
+      } else {
+        this.price = 0;
       }
     },
 
     getSelectedTime(e) {
       if (e != null)
-        this.bookingInformation.selectedTime = this.timeOptions.find(x => x.value === e).text;
+        this.bookingInformation.selectedTime = this.timeOptions.find(
+          x => x.value === e
+        ).text;
     },
 
     async setActivityTypeOptions(e) {
@@ -302,17 +298,22 @@ export default {
     },
 
     validateFacility() {
-      this.facilityValid = !(this.$data.bookingInformation.selectedFacilityId == null);
+      this.facilityValid = !(
+        this.$data.bookingInformation.selectedFacilityId == null
+      );
     },
     validateActivity() {
-      this.activitiesValid = !(this.$data.bookingInformation.selectedActivityId == null);
+      this.activitiesValid = !(
+        this.$data.bookingInformation.selectedActivityId == null
+      );
     },
     validateDate() {
       this.dateValid = this.$data.date != null;
     },
     validateTime() {
       this.timeValid = !(
-        this.bookingInformation.selectedTime == null || this.bookingInformation.selectedTime === this.timeOptions[0]
+        this.bookingInformation.selectedTime == null ||
+        this.bookingInformation.selectedTime === this.timeOptions[0]
       );
     },
 
@@ -359,6 +360,7 @@ export default {
         }
       }
     },
+
     // TODO, shouldn't access routes like this, use props and either inject with router or from booking page
     fillByQuery() {
       this.setFacilityOptions();
@@ -372,7 +374,8 @@ export default {
         this.setActivityTypeOptions(facilityId);
         this.bookingInformation.selectedActivityId = activityTypeId;
         this.bookingInformation.selectedActivityName = this.activities.find(
-          x => Number(x.id) === Number(this.bookingInformation.selectedActivityId)
+          x =>
+            Number(x.id) === Number(this.bookingInformation.selectedActivityId)
         ).name;
         this.selectActivityName();
         let selectedDateUnix = this.sessions.find(x => x.id == activityId)
@@ -395,6 +398,7 @@ export default {
         this.callValidation();
       }
     },
+
     getTimes() {
       if (this.bookingInformation.selectedDate != null) {
         if (
@@ -439,10 +443,12 @@ export default {
         }
       }
     },
+
     addZero(value) {
       return ("0" + value.toString()).slice(-2);
     }
   },
+
   async mounted() {
     await this.getFacilities();
     await this.getActivityTypes();

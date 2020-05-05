@@ -37,27 +37,30 @@
             <v-col>£{{ bookingDetails.price || null }}</v-col></v-row
           >
           <hr />
-        </v-container>
-          <v-container class="checkout-container" id="buttonContainer">
-
           <b-row>
             <b-col>
               <div>
-                <button type="button" class="btn btn-outline-primary" @click="routerPushBookingCreate"
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  @click="routerPushBookingCreate"
                 >
                   Create New Booking
                 </button>
               </div> </b-col
-            ><b-col  v-bind:class="{ 'd-none': !isUser }">
-              <div >
-                <button type="button" class="btn btn-outline-primary" @click="routerPushBookingManage"
+            ><b-col v-bind:class="{ 'd-none': !isUser }">
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  @click="routerPushBookingManage"
                 >
                   View My Bookings
                 </button>
               </div>
             </b-col>
           </b-row>
-          </v-container>
+        </v-container>
       </div>
       <div
         v-bind:class="{ 'd-none': hideMembershipDiv, col: !hideMembershipDiv }"
@@ -65,7 +68,9 @@
       >
         <v-container class="checkout-container" id="billing-details"
           ><v-row
-            ><v-col><h3>You are now a member of <span>Zenergy</span></h3> </v-col></v-row
+            ><v-col
+              ><h3>You are now a member of <span>Zenergy</span></h3>
+            </v-col></v-row
           >
           <hr />
           <v-row
@@ -99,8 +104,8 @@
                   Create New Booking
                 </button>
               </div> </b-col
-            ><b-col v-bind:class="{ 'd-none': !isUser }" >
-              <div >
+            ><b-col v-bind:class="{ 'd-none': !isUser }">
+              <div>
                 <button
                   type="button"
                   class="btn btn-outline-secondary"
@@ -143,7 +148,7 @@
 .col {
   text-align: center;
 }
-button{
+button {
   width: 80%;
 }
 
@@ -162,8 +167,7 @@ import { isEmpty } from "../util/session.helpers";
 export default {
   name: "PaymentSuccess",
   computed: {
-    ...mapGetters("auth", ["user"]),
-
+    ...mapGetters("auth", ["user"])
   },
   data() {
     return {
@@ -200,9 +204,9 @@ export default {
   },
   mounted() {
     this.setData();
-    this.isUser = !isEmpty(this.user)
-    console.log(this.user)
-    console.log(this.user == null)
+    this.isUser = !isEmpty(this.user);
+    console.log(this.user);
+    console.log(this.user == null);
     if (this.paymentResponse != null) {
       console.log(1);
       if (this.bookingDetails.activityTypeId != null) {

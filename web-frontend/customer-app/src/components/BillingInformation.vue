@@ -39,6 +39,7 @@
             class="form-control"
             @keyup="validateEmail"
             @change="validateEmail"
+            :disabled="disableEmail"
           />
         </div>
         <div class="form-row">
@@ -188,6 +189,8 @@ button {
 </style>
 
 <script>
+  import {mapGetters} from "vuex"
+  import { isEmpty } from "../util/session.helpers";
 export default {
   name: "BillingInformation",
   data() {
@@ -207,8 +210,31 @@ export default {
       postCodeValid: null
     };
   },
-  computed: {},
+  computed: {
+    ...mapGetters("customers", ["customers"]),
+    ...mapGetters("auth", ["user"]),
+
+    customer: function () {
+      return this.customers.find( customer => customer.emailAddress === this.user.email)
+    },
+
+    disableEmail: function(){
+      return !isEmpty(this.user)
+    },
+
+    userEmail: function(){
+      return this.user.email
+    }
+  },
   methods: {
+    setEmail(){
+      if (this.userEmail){
+
+        this.email = this.userEmail
+        this.emailValid = true
+      }
+    },
+
     validateBillingName() {
       this.billingNameValid = this.$data.firstName !== "";
     },
@@ -259,6 +285,9 @@ export default {
         this.callValidation();
       }
     }
+  },
+  mounted() {
+    this.setEmail()
   }
 };
 </script>

@@ -491,12 +491,22 @@ export default {
           return false;
         }
       }
+    },
+
+    async createCustomer() {
+      if(!this.isEmpty(this.user)){
+        if (this.customer == null){
+
+          console.log(1)
+        }
+      }
     }
   },
   async created() {
     if (!this.isEmpty(this.user)) {
       await this.getAllCustomers();
       this.getCustomer();
+      this.createCustomer()
     }
   },
   async mounted() {
