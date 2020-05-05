@@ -20,7 +20,7 @@
 .padding-div {
   padding: 15px;
 }
-.heading-div{
+.heading-div {
   padding: 10px;
   margin: auto;
 }
@@ -31,11 +31,11 @@
   }
 }
 
-.heading-div p{
+.heading-div p {
   width: 100%;
   padding: 10px;
 }
-.heading-div span{
+.heading-div span {
   background: #fcff18;
 }
 </style>

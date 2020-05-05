@@ -75,9 +75,9 @@
                     }}
                   </button>
                 </div>
-                <hr/>
+                <hr />
                 <h4 class="centered-text">Or</h4>
-                <hr/>
+                <hr />
                 <div class="buttonDiv">
                   <button
                     @click="submitQuickPayment()"
@@ -90,10 +90,11 @@
                   >
                     Pay
                     {{
-                    formatCurrency(
-                    membershipSaleDetails.cost || bookingDetails.price
-                    )
-                    }} Using Quick Pay
+                      formatCurrency(
+                        membershipSaleDetails.cost || bookingDetails.price
+                      )
+                    }}
+                    Using Quick Pay
                   </button>
                 </div>
               </div>
@@ -211,7 +212,7 @@
   alignment: center;
 }
 
-.centered-text{
+.centered-text {
   text-align: center;
 }
 </style>
@@ -221,7 +222,7 @@ import CheckoutItem from "@/components/CheckoutItem.vue";
 import BillingInformation from "@/components/BillingInformation.vue";
 import { formatCurrency } from "@/util/format.helpers";
 import { mapActions, mapGetters } from "vuex";
-import {isEmpty} from "../util/session.helpers";
+import { isEmpty } from "../util/session.helpers";
 // @ is an alias to /src
 export default {
   name: "Checkout",
@@ -369,11 +370,11 @@ export default {
       }
 
       if (!isEmpty(this.user)) {
-        let id =null
-        if (this.customer){
-          id = this.customer.id
+        let id = null;
+        if (this.customer) {
+          id = this.customer.id;
         } else {
-          id = -1
+          id = -1;
         }
 
         // eslint-disable-next-line no-undef

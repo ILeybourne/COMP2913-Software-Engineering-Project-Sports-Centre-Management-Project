@@ -46,7 +46,9 @@
       <v-row
         ><v-col v-if="isMembership">Automatic Renewal? </v-col>
         <v-col v-if="isBooking">participants: </v-col>
-        <v-col>{{ membershipSaleDetails.repeatingPayment || bookingDetails.participants}}</v-col></v-row
+        <v-col>{{
+          membershipSaleDetails.repeatingPayment || bookingDetails.participants
+        }}</v-col></v-row
       >
       <hr v-if="isMembership || isBooking" />
     </div>
@@ -59,7 +61,7 @@
       <div>
         <v-row>
           <v-col class="emptyCart">
-           <h4> Your cart is empty.</h4>
+            <h4>Your cart is empty.</h4>
           </v-col>
         </v-row>
       </div>
@@ -132,9 +134,9 @@ button {
   width: 70%;
 }
 
-  .btnDiv{
-    /*margin-top: 200px;*/
-  }
+.btnDiv {
+  /*margin-top: 200px;*/
+}
 </style>
 
 <script>
@@ -156,7 +158,7 @@ export default {
         date: null,
         time: null,
         price: null,
-        participants:null,
+        participants: null
       },
       isBooking: false,
       isMembership: false

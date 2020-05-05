@@ -149,6 +149,7 @@ import GuestInformation from "@/components/GuestInformation.vue";
 import CashInformation from "@/components/CashInformation.vue";
 import { mapGetters, mapActions } from "vuex";
 import { formatCurrency } from "@/util/format.helpers";
+import { isEmpty } from "../util/session.helpers";
 //TODO If regular booking (auto booking) they MUST pay by card only (need it to charge in auto payments)
 //TODO Get session ID for posting bookings
 //TODO fix guest checkout (error to do with email)
@@ -223,7 +224,7 @@ export default {
         accountId: null,
         amountPaid: null,
         transactionId: null
-      },
+      }
     };
   },
   computed: {
@@ -306,20 +307,17 @@ export default {
       let paymentIntent = null;
       if (this.userType === "guest" || !this.customer) {
         // eslint-disable-next-line no-undef
-        paymentIntent = await this.$http.post(
-          `/payments/guest-intent/`, // + this.selectedActivityId,
-          {
-            payment_method: {
-              card: this.card,
-              billing_details: {
-                name: this.firstName
-              }
-            },
-            activityTypeId: this.selectedActivityId,
-            email: this.email,
-            regularSession: false //guests cannot book onto reg sessions
-          }
-        );
+        paymentIntent = await this.$http.post(`/payments/guest-intent/`, {
+          payment_method: {
+            card: this.card,
+            billing_details: {
+              name: this.firstName
+            }
+          },
+          activityTypeId: this.selectedActivityId,
+          email: this.email,
+          regularSession: false //guests cannot book onto reg sessions
+        });
         if (paymentIntent != null) {
           this.sendTokenToServer(paymentIntent.data.clientSecret);
           this.paymentResponse.accountId = paymentIntent.data.accountId;
@@ -376,7 +374,6 @@ export default {
           await this.createBooking();
           //TODO Set payment amount
           this.showTempPage();
-          //TODO Redirect
           successBol = true;
         } else {
           this.hideCardError = false;
@@ -423,7 +420,6 @@ export default {
       this.phone = value.phone;
       this.health = value.health;
       if (value.cardCashSelection == "card") {
-        //TODO Push to checkout
         this.onSuccess();
         this.hideCard = false;
         this.hideCash = true;
@@ -452,6 +448,7 @@ export default {
       if (value.userType == "account") {
         this.userType = "account";
         this.hideQuickPay = !this.isEmployeeOrManager;
+        this.onSuccess();
         //TODO autofill with customer information (Props to guest info)
         // this.firstName =
         // this.surname =
@@ -473,42 +470,19 @@ export default {
         time: this.selectedTime,
         price: this.price,
         participants: this.participants
-
-    };
+      };
       await this.$router.push({
         name: "Checkout",
         params: {
-          bookingDetails: bookingDetails,
+          bookingDetails: bookingDetails
         }
       });
-    },
-
-    isEmpty(obj) {
-      if (Object.keys(obj).length === 0) {
-        return true;
-      } else {
-        if (Object.keys(obj)[0] == "success") {
-          return false;
-        } else {
-          return false;
-        }
-      }
-    },
-
-    async createCustomer() {
-      if(!this.isEmpty(this.user)){
-        if (this.customer == null){
-
-          console.log(1)
-        }
-      }
     }
   },
   async created() {
-    if (!this.isEmpty(this.user)) {
+    if (!isEmpty(this.user)) {
       await this.getAllCustomers();
       this.getCustomer();
-      this.createCustomer()
     }
   },
   async mounted() {

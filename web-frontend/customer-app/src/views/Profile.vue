@@ -97,8 +97,8 @@ export default {
     this.getAccounts();
     this.getAllCustomers();
     this.activeAccounts = this.activeAccountIds(this.activeCustomerIds());
-    this.activeMemberships = this.activeAccounts.map(account =>
-      this.getAccountMemberships(account) //TODO: fix getting memberships
+    this.activeMemberships = this.activeAccounts.map(
+      account => this.getAccountMemberships(account) //TODO: fix getting memberships
     );
   }
 };
