@@ -5,9 +5,45 @@
         <v-spacer></v-spacer>
         <v-dialog max-width="500px"> </v-dialog>
       </v-toolbar>
-      <v-btn color="primary" dark class="mb-2" @click="showBookings()"
+      <v-btn color="primary" dark class="mb-2" @click="showNewBooking()"
         >New Booking</v-btn
       >
+      <b-modal id="new-booking-modal" title="Edit Booking" @ok="addBooking()">
+        <b-form>
+          <b-form-group
+            id="resource.name"
+            label="Facility"
+            label-for="FacilityName"
+            ><b-form-select
+              id="FacilityName"
+              :options="setFacilityOptions()"
+              v-model="selectedBooking.facility"
+              required
+            ></b-form-select>
+          </b-form-group>
+          <b-form-group id="name" label="Booking" label-for="BookingName">
+            <b-form-input
+              id="BookingName"
+              v-model="selectedBooking.name"
+              required
+            ></b-form-input>
+          </b-form-group>
+          <b-form-group id="startTime" label="Start Time" label-for="StartTime">
+            <b-form-input
+              id="StartTime"
+              v-model="selectedBooking.startTime"
+              required
+            ></b-form-input>
+          </b-form-group>
+          <b-form-group id="endTime" label="End Time" label-for="EndTime">
+            <b-form-input
+              id="EndTime"
+              v-model="selectedBooking.endTime"
+              required
+            ></b-form-input>
+          </b-form-group>
+        </b-form>
+      </b-modal>
       <b-modal id="edit-modal" title="Edit Booking" @ok="updateTable()">
         <b-form>
           <b-form-group
@@ -124,8 +160,6 @@ export default {
   },
   computed: {
     ...mapGetters("timetable", ["bookings"]),
-    ...mapGetters("timetable", ["resources"]),
-    ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("facilities", ["facilities"])
   },
@@ -133,15 +167,15 @@ export default {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("timetable", {
       getBooking: "getBookings",
-      getBook: "getBooking",
-      getResources: "getResources",
-      getSessions: "getAllSessions",
       deleteBooking: "deleteBooking"
     }),
     ...mapActions("facilities", {
-      getActivities: "getActivityTypes",
+      getActivity: "getActivities",
       getFacilities: "getFacilities"
     }),
+    showNewBooking() {
+      this.$bvModal.show("new-booking-modal");
+    },
     editItem(item) {
       console.log(item);
       this.selectedBooking.id = item.id;
@@ -155,13 +189,10 @@ export default {
     showDelete(item) {
       console.log(item);
       const id = item.id;
-      const index = this.dataWithActivities.indexOf(item);
+      const index = this.dataWithActivities.indexOf(item)
       confirm("Are you sure you want to delete this item?") &&
-        this.dataWithActivities.splice(index, 1) &&
-        this.deleteBooking(id); // &&this.deleteBooking(index);
-    },
-    showBookings() {
-      this.$router.push("/bookings");
+        this.bookings.splice(index, 1) &&
+        this.deleteBooking(id);
     },
     setFacilityOptions() {
       let facilities = this.facilities;
@@ -176,20 +207,13 @@ export default {
       for (const booking of this.bookings) {
         const ActivityId = booking._links.Activity.href.split("/").slice(-1)[0];
         const activities = this.activities;
+        //console.log(Number(booking.id) === Number(ActivityId));
+        //console.log(Number(booking.id) + " " + Number(ActivityId));
+        //console.log(activities);
         booking.activity = activities.find(
           activity => Number(activity.id) === Number(ActivityId)
         );
         ActivityArr.push(booking);
-      }
-      for (const booking of ActivityArr) {
-        const ResourceId = booking.activity._links.resource.href
-          .split("/")
-          .slice(-1)[0];
-        const resources = this.resources;
-        booking.activity.resource = resources.find(
-          resource => Number(resource.id) === Number(ResourceId)
-        );
-        //console.log(booking);
       }
       return ActivityArr;
     },
@@ -197,22 +221,20 @@ export default {
       const id = this.selectedBooking.id;
       this.dataWithActivities.find(booking => booking.id === id);
       console.log("updateBooking");
+    },
+    addBooking() {
+      console.log("addBooking");
     }
   },
-  async mounted() {
 
-    await this.getActivities();
-    await this.getSessions();
-    console.log(this.sessions);
-    //console.log(this.activity);
-    await this.getResources();
+  async mounted() {
+    await this.getActivity();
     //console.log(this.activities);
     await this.getBooking();
-    console.log(this.bookings);
     await this.getFacilities();
     //console.log(this.bookings);
     this.dataWithActivities = await this.getRelatedActivity();
-    console.log(this.dataWithActivities);
+    //console.log(this.dataWithActivities);
   }
 };
 </script>
