@@ -142,7 +142,9 @@ export default {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("facilities", {
       getActivity: "getActivityTypes",
-      getFacilities: "getFacilities"
+      getFacilities: "getFacilities",
+      updateActivityTypes: "updateActivityTypes",
+      createActivityType: "createActivityType"
     }),
     showNewActivity() {
       this.$bvModal.show("new-activity-modal");
@@ -173,21 +175,14 @@ export default {
       return activityArray;
     },
     async updateActivity() {
-      const id = this.selectedActivity.id;
+      const id = Number(this.selectedActivity.id);
       this.dataWithFacilities.find(activity => activity.id === id);
       const body = {
         name: this.selectedActivity.name, //need to be dynamic
         cost: this.selectedActivity.cost,
         totalCapacity: this.selectedActivity.capacity
       };
-      await this.$http
-        .put("/activitytypes/" + id, body)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(function() {
-          //console.log(error);
-        });
+      this.updateActivityTypes(id, body);
     },
     async addActivity() {
       let facilityId = null;
@@ -201,14 +196,7 @@ export default {
         cost: this.newActivity.cost,
         totalCapacity: this.newActivity.capacity
       };
-      await this.$http
-        .post("/activitytypes/resource/" + facilityId, body)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(function() {
-          //console.log(error);
-        });
+      await this.createActivityType(facilityId, body);
     },
     async getRelatedFacility() {
       let facilityArr = [];

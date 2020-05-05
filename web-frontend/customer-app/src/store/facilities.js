@@ -162,6 +162,21 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return activities;
   },
+  async updateActivityTypes({ commit }, { activityId, body}){
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.put(`/activitytypes/${activityId}`, body);
+    commit("SET_ACTIVITIES", [
+      ...state.activities,
+      data._embedded.activityTypeDToes
+    ]);
+    commit("loading/START_LOADING", null, { root: true });
+  },
+  async createActivityType({commit}, facilityId, body){
+    const { data } = await axios.post(`/activitytypes/resource/${facilityId}`, body);
+    commit("SET_ACTIVITIES", [...state.activities, data]);
+    commit("loading/START_LOADING", null, { root: true });
+    return data;
+  },
   async getActivities({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/activities");

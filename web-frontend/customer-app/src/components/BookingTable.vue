@@ -1,5 +1,5 @@
 <template>
-  <v-data-table :headers="headers" :items="dataWithActivities">
+  <v-data-table :headers="headers" :items="bookings">
     <template v-slot:top>
       <v-toolbar flat color="white">
         <v-spacer></v-spacer>
@@ -125,6 +125,7 @@ export default {
   computed: {
     ...mapGetters("timetable", ["bookings"]),
     ...mapGetters("timetable", ["resources"]),
+    ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("facilities", ["facilities"])
   },
@@ -134,6 +135,7 @@ export default {
       getBooking: "getBookings",
       getBook: "getBooking",
       getResources: "getResources",
+      getSessions: "getAllSessions",
       deleteBooking: "deleteBooking"
     }),
     ...mapActions("facilities", {
@@ -199,6 +201,8 @@ export default {
   },
   async mounted() {
     await this.getActivities();
+    await this.getSessions();
+    console.log(this.sessions);
     //console.log(this.activity);
     await this.getResources();
     //console.log(this.activities);
