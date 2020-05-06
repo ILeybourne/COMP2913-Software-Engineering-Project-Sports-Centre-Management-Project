@@ -8,7 +8,6 @@ import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -28,6 +27,7 @@ public class MembershipDTO extends RepresentationModel<MembershipDTO> {
     private String name;
     private Long id;
     private String transactionId;
+    private Long membershipTypeId;
 
     public MembershipDTO(){}
 
@@ -127,5 +127,13 @@ public class MembershipDTO extends RepresentationModel<MembershipDTO> {
 
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
+    }
+
+    public Long getMembershipTypeId() {
+        return membershipTypeId;
+    }
+
+    public void setMembershipTypeId(Long membershipTypeId) {
+        this.membershipTypeId = membershipTypeId;
     }
 }

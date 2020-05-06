@@ -2,9 +2,6 @@ package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.RepresentationModel;
-
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +12,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

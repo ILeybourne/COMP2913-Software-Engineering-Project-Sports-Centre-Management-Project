@@ -11,6 +11,7 @@ public class AccountDTO extends PagedModel<AccountDTO> {
     private long id;
     private Date created_at;
     private Date updated_at;
+    private Long customerId;
 
     public long getId() {
         return id;
@@ -36,4 +37,11 @@ public class AccountDTO extends PagedModel<AccountDTO> {
         this.updated_at = updated_at;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
 }

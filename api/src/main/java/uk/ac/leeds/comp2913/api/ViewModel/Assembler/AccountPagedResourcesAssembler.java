@@ -29,6 +29,7 @@ public class AccountPagedResourcesAssembler extends RepresentationModelAssembler
         accountDTO.setId(account.getId());
         accountDTO.setCreated_at(account.getCreatedAt());
         accountDTO.setUpdated_at(account.getUpdatedAt());
+        accountDTO.setCustomerId(account.getCustomer().getId());
         return accountDTO;
     }
 }
