@@ -189,7 +189,7 @@ export default {
       await this.getActivityTypes();
       console.log("performed fill data");
       const startDate = this.$moment(this.startDate);
-      const endDate = startDate.clone().add("days", 50);
+      const endDate = startDate.clone().add("days", 6);
       this.endDate = endDate.toJSON();
       const response = await this.getActivities();
       const thisWeek = response
@@ -220,7 +220,7 @@ export default {
     },
     async defaultStartDate() {
       const endDate = this.$moment(new Date());
-      const startDate = endDate.clone().subtract("days", 50);
+      const startDate = endDate.clone().subtract("days", 6);
       this.startDate = startDate.toJSON();
     },
     async getRelatedFacility() {
