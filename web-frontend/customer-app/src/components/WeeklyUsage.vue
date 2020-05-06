@@ -255,12 +255,8 @@ export default {
         income = this.calculateActivityTypeIncome(activity.id);
         activity.formattedIncome = formatCurrency(income);
         activity.formattedCost = formatCurrency(activity.cost);
-        console.log("facility income for activity " + activity.id + " " + activity.facility.id);
-        console.log(activity.facility.income);
-
       }
       this.dataWithFacilities = facilityArr;
-      console.log(this.dataWithFacilities);
       return facilityArr;
     },
 
@@ -284,8 +280,6 @@ export default {
           activityTypeIncome = activityTypeIncome + sessionIncome;
         }
       }
-      console.log("Activity Type Income");
-      console.log(activityTypeIncome);
       return activityTypeIncome;
     },
 
@@ -297,8 +291,6 @@ export default {
       for (const booking of this.bookings) {
         if (booking.session_id === session_id) {
           bookingIncome = booking.amount * booking.participants;
-          console.log("Booking Income");
-          console.log(bookingIncome);
           sessionIncome = sessionIncome + bookingIncome;
         }
       }
