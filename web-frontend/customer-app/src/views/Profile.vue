@@ -116,23 +116,13 @@ export default {
     ...mapGetters("customers", ["customers"]),
     ...mapGetters("membership", ["memberships", "accountMemberships"]),
     userMemberships() {
-      let customers = this.customers;
-      let accounts = this.accounts;
-      let memberships = this.memberships;
-      if (customers && accounts && memberships) {
-        let activeMemberships = this.userActiveMemberships(
-          memberships,
-          this.userAccountIds(accounts, this.userCustomerId)
-        );
-        activeMemberships = activeMemberships.map(membership => {
-          return {
-            ...membership,
-            formattedStartDate: formatDate(membership.startDate),
-            formattedEndDate: formatDate(membership.endDate)
-          };
-        });
-        return activeMemberships;
-      } else return null;
+      return this.userActiveMemberships.map(membership => {
+        return {
+          ...membership,
+          formattedStartDate: formatDate(membership.startDate),
+          formattedEndDate: formatDate(membership.endDate)
+        };
+      });
     },
     userCustomerId() {
       const emailFilter = customer =>
@@ -143,25 +133,13 @@ export default {
       } else {
         return null;
       }
-    }
-  },
-
-  methods: {
-    ...mapActions("accounts", ["getAccounts"]),
-    ...mapActions("customers", ["getAllCustomers"]),
-    ...mapActions("membership", ["getMemberships", "getAccountMemberships"]),
-    async cancelMembership(membership_id) {
-      await this.$http
-        .put(`/membership/members/${membership_id}/stop`)
-        .then(response => console.log(response));
     },
-    userAccountIds(accounts, customerId) {
-      const accountFilter = account => account.customerId === customerId;
-      accounts = accounts.filter(accountFilter);
-      accounts = accounts.map(account => account.id);
-      return accounts;
+    userAccountIds() {
+      const accountFilter = account =>
+        account.customerId === this.userCustomerId;
+      return this.accounts.filter(accountFilter).map(account => account.id);
     },
-    userActiveMemberships(memberships, accountIds) {
+    userActiveMemberships() {
       const dateFilter = membership => {
         if (membership !== null) {
           let d = new Date();
@@ -171,11 +149,30 @@ export default {
       };
       const membershipFilter = membership => {
         if (membership !== null) {
-          return accountIds.includes(membership.accountId);
+          return this.userAccountIds.includes(membership.accountId);
         } else return false;
       };
-      memberships = memberships.filter(membershipFilter);
+      const memberships = this.memberships.filter(membershipFilter);
       return memberships.filter(dateFilter);
+    }
+  },
+  methods: {
+    ...mapActions("accounts", ["getAccounts"]),
+    ...mapActions("customers", ["getAllCustomers"]),
+    ...mapActions("membership", ["getMemberships", "getAccountMemberships"]),
+    async cancelMembership(membership_id) {
+      await this.$http
+        .put(`/membership/members/${membership_id}/stop`)
+        .then(response => console.log(response));
+      this.cancelModal = false;
+    }
+  },
+  watch: {
+    "memberships.repeatingPayment": {
+      handler() {
+        this.getMemberships();
+      },
+      deep: true
     }
   },
   async mounted() {
