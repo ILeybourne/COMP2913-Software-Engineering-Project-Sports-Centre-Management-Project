@@ -19,6 +19,7 @@ import ServerError from "@/views/ServerError";
 import FacilityTimetable from "@/components/FacilityTimetable";
 import FacilityCreate from "@/components/FacilityCreate";
 import Checkout from "@/views/Checkout";
+import PaymentSuccess from "@/views/PaymentSuccess";
 
 Vue.use(VueRouter);
 
@@ -84,6 +85,7 @@ const routes = [
   {
     path: "/membership",
     name: "MembershipPage",
+    beforeEnter: authGuard,
     component: MembershipPage,
     meta: {
       title: "Zenergy | Membership"
@@ -151,6 +153,11 @@ const routes = [
     path: "/error",
     name: "ServerError",
     component: ServerError
+  },
+  {
+    path: "/payment/success",
+    name: "PaymentSuccess",
+    component: PaymentSuccess
   }
 ];
 

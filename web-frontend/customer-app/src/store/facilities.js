@@ -56,6 +56,7 @@ const mutations = {
     state.facilities.push(...page);
   },
   SET_ACTIVITIES: (state, payload) => (state.activities = payload),
+  SET_ACTIVITY_TYPES: (state, payload) => (state.activityTypes = payload),
   SET_FACILITY_PAGE_INFO: (state, payload) => {
     state.paging.facilities = {
       ...state.paging.facilities,

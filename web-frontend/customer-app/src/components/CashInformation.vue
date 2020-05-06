@@ -1,10 +1,10 @@
 <template>
-  <div class="cash-info">
+  <div class="checkout-container">
     <div
       class="cash-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
     >
-      <h2>Cash Payment</h2>
+      <h4>Cash Payment</h4>
       <form>
         <div class="form-row">
           <label for="PriceDiv">Price:</label>
@@ -88,9 +88,7 @@
 
 .cash-container {
   margin: auto;
-  border: 3px solid #3183e5;
   padding: 10px;
-  border-radius: 10px;
 }
 
 .button-container {
@@ -119,6 +117,24 @@ button {
 }
 h2 {
   text-align: center;
+}
+
+.checkout-container {
+  display: flex;
+  flex-direction: column;
+  padding: 59px 0px 59px 0px;
+  min-height: 50%;
+  height: auto;
+  width: auto;
+  margin: 20px;
+  background: #f6f9fa;
+  color: #242424;
+  justify-content: center;
+  flex-basis: auto; /* default value */
+  flex-grow: 1;
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
+  box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
 }
 </style>
 

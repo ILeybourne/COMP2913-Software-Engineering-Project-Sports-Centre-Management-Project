@@ -103,23 +103,23 @@ class BookingTest {
         assertEquals(expectedOutput.amount, actualOutput.amount);
     }
 
-    @ParameterizedTest
-    @MethodSource("calculateRegularSessionAmountVal")
-    void calculateRegularSessionAmount(BigDecimal inputValue, BigDecimal expectedValue) {
-        // Calculate session amount
-        BigDecimal actualValue = booking.calculateRegularSessionAmount(inputValue);
+  // @ParameterizedTest
+  // @MethodSource("calculateRegularSessionAmountVal")
+  // void calculateRegularSessionAmount(BigDecimal inputValue, BigDecimal expectedValue) {
+  //     // Calculate session amount
+  //     BigDecimal actualValue = booking.calculateRegularSessionAmount(inputValue);
 
-        // Compare value
-        assertThat(expectedValue, Matchers.comparesEqualTo(actualValue));
-    }
+  //     // Compare value
+  //     assertThat(expectedValue, Matchers.comparesEqualTo(actualValue));
+  // }
 
-    static Stream<Arguments> calculateRegularSessionAmountVal() {
-        return Stream.of(
-                Arguments.of(BigDecimal.valueOf(1), BigDecimal.valueOf(0.7)),
-                Arguments.of(BigDecimal.valueOf(5), BigDecimal.valueOf(3.5)),
-                Arguments.of(BigDecimal.valueOf(1000000), BigDecimal.valueOf(700000)),
-                Arguments.of(BigDecimal.valueOf(-10), BigDecimal.valueOf(-7)),
-                Arguments.of(BigDecimal.valueOf(0.001), BigDecimal.valueOf(0.0007))
-        );
-    }
+  // static Stream<Arguments> calculateRegularSessionAmountVal() {
+  //     return Stream.of(
+  //             Arguments.of(BigDecimal.valueOf(1), BigDecimal.valueOf(0.7)),
+  //             Arguments.of(BigDecimal.valueOf(5), BigDecimal.valueOf(3.5)),
+  //             Arguments.of(BigDecimal.valueOf(1000000), BigDecimal.valueOf(700000)),
+  //             Arguments.of(BigDecimal.valueOf(-10), BigDecimal.valueOf(-7)),
+  //             Arguments.of(BigDecimal.valueOf(0.001), BigDecimal.valueOf(0.0007))
+  //     );
+  // }
 }

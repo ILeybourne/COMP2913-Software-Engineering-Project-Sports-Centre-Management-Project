@@ -8,8 +8,8 @@
       <b-row class="row">
         <b-col col lg="maxColSize " v-bind:class="{ 'd-none': hideBooking }">
           <BookingInformation
-            class="booking-info"
-            @getUserType="[showGuestInfo($event), getActivitySelected()]"
+            class="checkout-container"
+            @getUserType="showGuestInfo"
           ></BookingInformation>
         </b-col>
       </b-row>
@@ -17,7 +17,6 @@
         <b-col v-bind:class="{ 'd-none': hideGuest }">
           <GuestInformation
             :activityType="this.selectedActivityId"
-            class="guest-info"
             @submitCustomerDetails="showBillingInfo"
           ></GuestInformation>
         </b-col>
@@ -49,11 +48,11 @@
                 <div class="buttonDiv">
                   <button
                     @click="submitQuickPayment()"
-                    :disabled="paymentSubmit"
                     type="button"
                     class="btn btn-outline-primary"
                     id="quickPayButton"
                     v-if="showQuickPay"
+                    :disabled="paymentSubmit"
                   >
                     Quick Pay
                   </button>
@@ -168,6 +167,13 @@ import GuestInformation from "@/components/GuestInformation.vue";
 import CashInformation from "@/components/CashInformation.vue";
 import { mapGetters, mapActions } from "vuex";
 import { formatCurrency } from "@/util/format.helpers";
+import { isEmpty } from "../util/session.helpers";
+//TODO If regular booking (auto booking) they MUST pay by card only (need it to charge in auto payments)
+//TODO Get session ID for posting bookings
+//TODO fix guest checkout (error to do with email)
+//TODO quick pay checkout is taking payment but not posting bookings
+//TODO add validation on guest checkout to ensure the email doesn't exist in our customer DB
+//TODO body of booking post will vary on cash or card payment (if card most details can be taken from intent/response)
 
 // @ is an alias to /src
 export default {
@@ -228,7 +234,15 @@ export default {
       paymentSubmit: false,
       hideCardError: true,
       authEmail: String,
-      customer: null
+      customer: null,
+      selectedSessionId: null,
+      selectedFacilityName: null,
+      participants: null,
+      paymentResponse: {
+        accountId: null,
+        amountPaid: null,
+        transactionId: null
+      }
     };
   },
   computed: {
@@ -236,9 +250,8 @@ export default {
     ...mapGetters("auth", ["user", "isEmployeeOrManager", "permissions"]),
     ...mapGetters("customers", ["customers"]),
     ...mapGetters("timetable", ["sessions"]),
-
     showQuickPay: function() {
-      if (this.customer !== null) {
+      if (this.customer) {
         return this.customer.stripeId !== null;
       } else {
         return false;
@@ -251,23 +264,6 @@ export default {
     ...mapActions("timetable", ["getAllSessions"]),
     formatCurrency: formatCurrency,
 
-    getActivitySelected() {
-      let activity = null;
-      for (const session of this.sessions) {
-        if (this.selectedFacility == session.resource.id) {
-          if (this.selectedActivityName === session.name) {
-            let date = session.startTime.substring(0, 10);
-            let time = session.startTime.split("T")[1].substring(0, 5);
-            if (this.date.toString() === date.toString()) {
-              if (this.selectedTime === time) {
-                activity = session;
-              }
-            }
-          }
-        }
-      }
-      console.log(activity);
-    },
     async getCustomer() {
       this.customer = this.customers.find(
         x => x.emailAddress === this.user.email
@@ -281,27 +277,17 @@ export default {
       this.hideSuccess = false;
     },
 
-    async checkCustomerStripeId() {
-      const hasStripeId = await this.$http.post(
-        //TODO Remove static customer id
-        `/payments/customer/stripe_id/14`
-      );
-      return hasStripeId.data;
-    },
-
     bookByCash() {
       this.hideBooking = true;
       this.hideGuest = true;
       this.hideCard = true;
       this.hideSuccess = false;
     },
-
     configureStripe() {
       //TODO get from env
       // eslint-disable-next-line no-undef
       this.stripe = Stripe("pk_test_crv9Zb7tvQtSJ82FhQwrnb8k00v3eIOvj8");
       this.elements = this.stripe.elements();
-
       this.card = this.elements.create("card");
       this.card.mount("#card-element");
     },
@@ -320,11 +306,14 @@ export default {
             }
           },
           activityTypeId: this.selectedActivityId,
-          regularSession: 1,
-          email: this.email
+          email: this.email,
+          regularSession: this.regularBooking //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
         }
       );
       if (paymentIntent.status === 200) {
+        this.paymentResponse.accountId = paymentIntent.data.accountId;
+        this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
+        this.paymentResponse.transactionId = paymentIntent.data.transactionId;
         this.showTempPage();
       }
     },
@@ -334,30 +323,30 @@ export default {
       // Talk to our server to get encrpyted prices
       this.paymentSubmit = true;
       let paymentIntent = null;
-      if (this.userType === "guest") {
+      if (this.userType === "guest" || !this.customer) {
         // eslint-disable-next-line no-undef
-        paymentIntent = await this.$http.post(
-          `/payments/guest-intent/`, // + this.selectedActivityId,
-          {
-            payment_method: {
-              card: this.card,
-              billing_details: {
-                name: this.firstName
-              }
-            },
-            activityTypeId: this.selectedActivityId,
-            regularSession: 1,
-            email: this.email
-          }
-        );
+        paymentIntent = await this.$http.post(`/payments/guest-intent/`, {
+          payment_method: {
+            card: this.card,
+            billing_details: {
+              name: this.firstName
+            }
+          },
+          activityTypeId: this.selectedActivityId,
+          email: this.email,
+          regularSession: false //guests cannot book onto reg sessions
+        });
         if (paymentIntent != null) {
           this.sendTokenToServer(paymentIntent.data.clientSecret);
+          this.paymentResponse.accountId = paymentIntent.data.accountId;
+          this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
+          this.paymentResponse.transactionId = paymentIntent.data.transactionId;
         }
       }
-      if (this.userType === "account") {
+      if (this.userType === "account" && this.customer) {
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
-          `/payments/intent/card/` + this.customer.id, //this.customerId,
+          `/payments/intent/card/` + this.customer.id,
           {
             payment_method: {
               card: this.card,
@@ -366,15 +355,16 @@ export default {
               }
             },
             activityTypeId: this.selectedActivityId,
-            regularSession: 1,
             email: this.email,
-            customerId: this.customer.id,
-            stripeId: this.customer.stripeId
+            regularSession: this.regularBooking //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
           }
         );
         if (paymentIntent.status === 200) {
           this.sendTokenToServer(paymentIntent.data.clientSecret);
           this.showTempPage();
+          this.paymentResponse.accountId = paymentIntent.data.accountId;
+          this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
+          this.paymentResponse.transactionId = paymentIntent.data.transactionId;
         } else {
           this.hideCardError = false;
         }
@@ -399,10 +389,9 @@ export default {
       } else {
         // The payment has been processed!
         if (result.paymentIntent.status === "succeeded") {
-          await this.postAllFormData();
+          await this.createBooking();
           //TODO Set payment amount
           this.showTempPage();
-          //TODO Redirect
           successBol = true;
         } else {
           this.hideCardError = false;
@@ -419,33 +408,46 @@ export default {
 
     async handleCashPayment(value) {
       if (value.changeVal >= 0) {
-        await this.postAllFormData();
-        this.showTempPage();
+        await this.createBooking();
+        let paymentSuccessData = {
+          bookingDetails: {
+            facility: this.selectedFacilityName,
+            activity: this.selectedFacilityName,
+            date: this.date,
+            time: this.selectedTime,
+            price: this.price,
+            activityTypeId: this.selectedActivityId,
+            sessionId: this.selectedSessionId
+          },
+          paymentResponse: "cash"
+        };
+
+        this.routerPushPaymentSuccess(paymentSuccessData);
       } else {
         //invalid amount of cash given
       }
     },
 
-    async postAllFormData() {
+    async routerPushPaymentSuccess(paymentSuccessData) {
+      await this.$router.push({
+        name: "PaymentSuccess",
+        params: {
+          paymentSuccessData: paymentSuccessData
+        }
+      });
+    },
+
+    async createBooking() {
       try {
-        /* TODO: Validate and check server response */
-        let bookedActivity = this.activities.find(
-          activity => activity.id == this.selectedActivityId
-        );
         const body = {
-          //TODO PASS USER
-          account: null,
-          activity: bookedActivity,
-          createdAt: Date.now(),
-          receipt: null,
-          updatedAt: null,
-          type: "booking",
-          amount: this.price,
-          regularBooking: false,
+          accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
+          //TODO ADD participant field
           participants: 1,
-          accountId: 1
+          regularBooking: false, //need to be dynamic (cash payment defaulted to false, same for guest)
+          transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
+          amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
         };
-        await this.$http.post(`/bookings/` + this.selectedActivityId, body);
+        await this.$http.post(`/bookings/` + this.selectedSessionId, body); //needs to post session id
       } catch (e) {
         console.log(e);
       }
@@ -458,6 +460,7 @@ export default {
       this.phone = value.phone;
       this.health = value.health;
       if (value.cardCashSelection == "card") {
+        this.onSuccess();
         this.hideCard = false;
         this.hideCash = true;
       } else {
@@ -467,24 +470,26 @@ export default {
     },
 
     async showGuestInfo(value) {
-      this.selectedFacility = value.selectedFacilityId;
-      this.selectedActivity = value.selectedActivityName;
-      this.selectedActivityId = value.selectedActivityId;
-      this.selectedActivityName = value.selectedActivityName;
-      this.date = value.selectedDate;
-      this.selectedTime = value.selectedTime;
+      this.selectedFacility = value.bookingInformation.selectedFacilityId;
+      this.selectedActivity = value.bookingInformation.selectedActivityName;
+      this.selectedActivityId = value.bookingInformation.selectedActivityId;
+      this.selectedActivityName = value.bookingInformation.selectedActivityName;
+      this.selectedSessionId = value.bookingInformation.selectedSessionId;
+      this.date = value.bookingInformation.selectedDate;
+      this.selectedTime = value.bookingInformation.selectedTime;
       this.price = value.price;
+      this.selectedFacilityName = value.bookingInformation.selectedFacilityName;
+      this.participants = value.bookingInformation.participants;
+      //Shows guest component
+      this.hideGuest = false;
       if (value.userType == "guest") {
-        // this.setCashPrice()
-        //Shows guest component
-        this.hideGuest = false;
         this.userType = "guest";
       }
       if (value.userType == "account") {
-        this.hideGuest = false;
         this.userType = "account";
-        this.hideQuickPay = !(await this.checkCustomerStripeId());
-        //TODO autofill with customer information
+        this.hideQuickPay = !this.isEmployeeOrManager;
+        this.onSuccess();
+        //TODO autofill with customer information (Props to guest info)
         // this.firstName =
         // this.surname =
         // this.email = this.user.email
@@ -492,20 +497,30 @@ export default {
       }
     },
 
-    isEmpty(obj) {
-      if (Object.keys(obj).length === 0) {
-        return true;
-      } else {
-        if (Object.keys(obj)[0] == "success") {
-          return false;
-        } else {
-          return false;
+    async onSuccess() {
+      let formatDate = this.date.toString().split("-");
+      let newFormatDate =
+        formatDate[2] + "-" + formatDate[1] + "-" + formatDate[0];
+      let bookingDetails = {
+        facility: this.selectedFacilityName,
+        activityTypeId: this.selectedActivityId,
+        activity: this.selectedActivity,
+        sessionId: this.selectedSessionId,
+        date: newFormatDate,
+        time: this.selectedTime,
+        price: this.price,
+        participants: this.participants
+      };
+      await this.$router.push({
+        name: "Checkout",
+        params: {
+          bookingDetails: bookingDetails
         }
-      }
+      });
     }
   },
   async created() {
-    if (!this.isEmpty(this.user)) {
+    if (!isEmpty(this.user)) {
       await this.getAllCustomers();
       this.getCustomer();
     }
@@ -513,7 +528,6 @@ export default {
   async mounted() {
     await this.getActivities();
     await this.getAllSessions;
-    await this.getActivitySelected();
     this.configureStripe();
   }
 };

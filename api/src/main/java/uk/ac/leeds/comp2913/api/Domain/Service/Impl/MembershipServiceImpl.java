@@ -1,49 +1,50 @@
 package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.stripe.exception.CardException;
+import com.stripe.exception.StripeException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.lang.reflect.Member;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.transaction.Transactional;
 
-import uk.ac.leeds.comp2913.api.Controller.PaymentController;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.MembershipTypeRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
-import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
+import uk.ac.leeds.comp2913.api.Domain.Service.PaymentService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.ViewModel.PayResponseBodyDTO;
+import uk.ac.leeds.comp2913.api.ViewModel.PaymentDTO;
 
 @Service
 public class MembershipServiceImpl implements MembershipService {
     private final MembershipRepository membershipRepository;
     private final MembershipTypeRepository membershipTypeRepository;
     private final AccountRepository accountRepository;
+    private final PaymentService paymentService;
     private final CustomerRepository customerRepository;
     Logger logger = LoggerFactory.getLogger(MembershipServiceImpl.class);
 
 
     @Autowired
-    public MembershipServiceImpl(MembershipRepository membershipRepository, MembershipTypeRepository membershipTypeRepository, AccountRepository accountRepository, CustomerRepository customerRepository) {
+    public MembershipServiceImpl(MembershipRepository membershipRepository, MembershipTypeRepository membershipTypeRepository, AccountRepository accountRepository, PaymentService paymentService, CustomerRepository customerRepository) {
         this.membershipRepository = membershipRepository;
         this.membershipTypeRepository = membershipTypeRepository;
+        this.paymentService = paymentService;
         this.accountRepository = accountRepository;
         this.customerRepository = customerRepository;
     }
@@ -67,7 +68,7 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public Page<Membership> findMembershipByAccountId(Pageable pageable, Long account_id){
+    public Page<Membership> findMembershipByAccountId(Pageable pageable, Long account_id) {
         return membershipRepository.findByAccountId(pageable, account_id);
     }
 
@@ -97,7 +98,16 @@ public class MembershipServiceImpl implements MembershipService {
         logger.info(activeMember.toString());
         return activeMember;
     }
-
+    @Override
+    public Account getMemberAccount(Long customer_id){
+        Account account = null;
+        List<Account> customerAccounts = accountRepository.findAllByCustomerId(customer_id);
+        if (customerAccounts.size() > 0) {
+            account = customerAccounts.get(customerAccounts.size() - 1);
+            logger.info(account.toString());
+        }
+        return account;
+    }
 
     @Override
     public Membership addMember(Long account_id, Long membership_type_id, Membership membership) {
@@ -111,7 +121,6 @@ public class MembershipServiceImpl implements MembershipService {
         membership.setStartDate(new Date());
         return membershipRepository.save(membership);
     }
-
 
     @Override
     public Membership updateMembership(Long membership_id, Membership membershipRequest) {
@@ -143,15 +152,29 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public void automatedMembershipRenewals() {
+    public void automatedMembershipRenewals() throws StripeException {
         List<Membership> lastPayments = membershipRepository.findLastWithRepeatPayments();
+        Integer subtractDays = -7;
+        Integer addDays = 2;
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        Date now = new Date();
+        c1.setTime(now);
+        c1.add(Calendar.DATE, subtractDays);
+        Date paymentDueDate = c1.getTime(); //Takes payment 7 days before membership expires
+        c2.setTime(now);
+        c2.add(Calendar.DATE, addDays);
+        Date paymentDueEndDate = c2.getTime();
         for (Membership lastMembership : lastPayments) {
-            Date now = new Date();
-            Date paymentDueDate = new Date(now.getTime()-((24*60*60*1000) * 7)); //Takes payment 7 days before membership expires
-
-            if(lastMembership.getEndDate().after(paymentDueDate) && lastMembership.getEndDate().before(now)){ //only takes payments that enter this window
+            if (lastMembership.getEndDate().after(paymentDueDate) && lastMembership.getEndDate().before(paymentDueEndDate)) { //only takes payments that enter this window
                 Membership renewedMembership = Membership.renewMembership(lastMembership);
-                this.membershipRepository.save(renewedMembership);
+                Customer customer = renewedMembership.getAccount().getCustomer();
+                try {
+                    PayResponseBodyDTO payResponse = paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), renewedMembership.getAmount(), false);
+                    renewedMembership.setTransactionId(payResponse.getTransactionId());
+                    membershipRepository.save(renewedMembership);
+                } catch (CardException err) {
+                }
             }
         }
     }

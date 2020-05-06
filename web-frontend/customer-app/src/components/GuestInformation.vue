@@ -1,5 +1,5 @@
 <template>
-  <div class="guest-info">
+  <div class="checkout-container">
     <div
       class="guest-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
@@ -98,8 +98,8 @@
           />
         </div>
         <div class="form-row" v-if="isEmployeeOrManager">
-          <label for="cardRadio">Card or Cash:</label>
-          <b-form-group>
+          <label for="cardRadio">Card or<br />Cash:</label>
+          <b-form-group style="width: 90%;">
             <b-form-radio-group
               id="btn-radios-2"
               v-model="cardCashSelection"
@@ -108,6 +108,7 @@
               button-variant="outline-primary"
               size="lg"
               name="radio-btn-outline"
+              style="width: 100%"
             ></b-form-radio-group>
           </b-form-group>
         </div>
@@ -127,6 +128,24 @@
 </template>
 
 <style scoped>
+.checkout-container {
+  display: flex;
+  flex-direction: column;
+  padding: 59px 0px 59px 0px;
+  min-height: 50%;
+  height: auto;
+  width: auto;
+  margin: 20px;
+  background: #f6f9fa;
+  color: #242424;
+  justify-content: center;
+  flex-basis: auto; /* default value */
+  flex-grow: 1;
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
+  box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
+}
+
 .error {
   font-size: x-small;
   color: red;
@@ -139,9 +158,7 @@
 .guest-container {
   margin: auto;
   /*width: 50%;*/
-  border: 3px solid #3183e5;
   padding: 10px;
-  border-radius: 10px;
 }
 
 .button-container {
@@ -203,7 +220,8 @@ export default {
       firstNameValid: null,
       surnameValid: null,
       emailValid: null,
-      phoneValid: null
+      phoneValid: null,
+      paymentSuccess: false
     };
   },
   validations: {
@@ -227,9 +245,6 @@ export default {
     }
   },
   computed: {
-    store: function() {
-      return this.$store;
-    },
     ...mapGetters("auth", ["user", "isEmployeeOrManager"])
   },
   methods: {
@@ -265,7 +280,6 @@ export default {
         this.$data.phone !== ""
       ) {
         this.$emit("submitCustomerDetails", this.$data);
-
         this.firstNameValid = true;
         this.surnameValid = true;
         this.emailValid = true;

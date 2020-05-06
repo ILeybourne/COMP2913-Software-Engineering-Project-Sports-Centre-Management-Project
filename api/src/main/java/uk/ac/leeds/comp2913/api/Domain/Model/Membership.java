@@ -15,9 +15,9 @@ import javax.persistence.*;
 /**
  * Membership data, including account number & membership type chosen
  * Start date and end date (based on duration of chosen membership)
-*/
+ */
 @Entity
- public class Membership extends Sale {
+public class Membership extends Sale {
 
     @CreationTimestamp
     private Date created_at;
@@ -90,16 +90,16 @@ import javax.persistence.*;
     }
 
     public Date getStartDate() {
-      return startDate;
+        return startDate;
     }
 
     public void setStartDate(Date startDate) {
-      this.startDate = startDate;
-      setEndDate(startDate);
+        this.startDate = startDate;
+        setEndDate(startDate);
     }
 
     public Date getEndDate() {
-      return endDate;
+        return endDate;
     }
 
     public void setEndDate(Date startDate) {

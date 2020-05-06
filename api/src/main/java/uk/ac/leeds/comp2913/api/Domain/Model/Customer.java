@@ -23,7 +23,7 @@ public class Customer {
     private Long id;
 
     @NotEmpty(message = "email is required")
-    @Size(min = 3, max = 40)
+    @Size(min = 3, max = 50)
     @Column(name = "email_address", nullable = false)
     private String emailAddress;
 

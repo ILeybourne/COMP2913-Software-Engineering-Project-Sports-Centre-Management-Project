@@ -36,7 +36,7 @@ import store from "@/store";
 import Facilities from "@/views/Facilities";
 import FacilityHeader from "@/components/FacilityHeader";
 import FacilityCreate from "@/components/FacilityCreate";
-import {mapActions, mapGetters} from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "FacilityPage",

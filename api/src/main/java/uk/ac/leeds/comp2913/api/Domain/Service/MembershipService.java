@@ -1,5 +1,7 @@
 package uk.ac.leeds.comp2913.api.Domain.Service;
 
+import com.stripe.exception.StripeException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.CollectionModel;
@@ -14,7 +16,6 @@ import java.util.List;
 import javax.validation.Valid;
 
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
-import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
 import uk.ac.leeds.comp2913.api.Domain.Model.MembershipType;
 
@@ -33,9 +34,11 @@ public interface MembershipService {
 
     void stopRepeatPayment(Long membership_id);
 
-    void automatedMembershipRenewals();
+    void automatedMembershipRenewals() throws StripeException;
 
     Page<Membership> findMembershipByAccountId(Pageable pageable, Long account_id);
 
     Boolean activeMemberCheck(String email);
+
+    Account getMemberAccount(Long customer_id);
 }

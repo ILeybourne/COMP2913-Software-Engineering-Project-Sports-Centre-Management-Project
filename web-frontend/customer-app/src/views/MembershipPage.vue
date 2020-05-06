@@ -9,7 +9,9 @@
       </p>
     </div>
     <div>
-      <MembershipOptions></MembershipOptions>
+      <MembershipOptions
+        @submitCustomerDetails="receiveSubscriptionInfo"
+      ></MembershipOptions>
     </div>
   </div>
 </template>
@@ -18,24 +20,22 @@
 .padding-div {
   padding: 15px;
 }
-.heading-div{
+.heading-div {
   padding: 10px;
   margin: auto;
 }
+
 @media screen and (max-width: 600px) {
   .heading-div h1 {
     font-size: 10vw;
   }
 }
-.heading-div h1{
-  width: 60%;
-  margin: auto;
-}
-.heading-div p{
+
+.heading-div p {
   width: 100%;
   padding: 10px;
 }
-.heading-div span{
+.heading-div span {
   background: #fcff18;
 }
 </style>
@@ -48,6 +48,21 @@ export default {
   name: "MembershipPage",
   components: {
     MembershipOptions
+  },
+  data: function() {
+    return {
+      subscriptionType: null
+    };
+  },
+
+  methods: {
+    receiveSubscriptionInfo(value) {
+      this.subscriptionType = value.pickedSubscription;
+      this.firstName = value.firstName;
+      this.surname = value.surname;
+      this.email = value.email;
+      this.phone = value.phone;
+    }
   }
 };
 </script>

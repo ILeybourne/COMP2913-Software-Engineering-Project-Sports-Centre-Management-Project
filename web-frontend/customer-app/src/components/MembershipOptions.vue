@@ -360,11 +360,9 @@ export default {
       "getSelectedMembershipType"
     ]),
     selectMembershipType(id) {
-      //console.log(id);
       this.selectedOption = id;
     },
     assignEmail(email) {
-      //console.log(email);
       this.formBody.email = email;
     },
     async getMembershipType() {
@@ -384,7 +382,6 @@ export default {
 
     async checkForActiveMembership() {
       if (this.formBody.email !== null && this.formBody.dateOfBirth !== null) {
-        console.log(this.formBody);
         const body = {
           accountId: 0,
           repeatingPayment: this.formBody.repeatingPayment,
@@ -393,16 +390,13 @@ export default {
         await this.$http
           .post("/membership/membercheck", body)
           .then(response => {
-            console.log(response);
             this.postResponse = response.data;
             if (this.postResponse === false) {
               this.setMembershipDetails();
               this.onSuccess();
             }
           })
-          .catch(function() {
-            //console.log(error);
-          });
+          .catch(function() {});
       } else {
         this.postResponse = this.formError;
       }
