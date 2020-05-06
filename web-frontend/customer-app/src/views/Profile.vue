@@ -31,11 +31,11 @@
             <h2 style="background: #fcff18">Membership</h2>
           </div>
           <div id="membership-info-container" class="container">
-            <div v-if="userMemberships().length > 0">
+            <div v-if="userMemberships !== null">
               <ul
                 id="membership-info"
                 class="list-unstyled"
-                v-for="membership in userMemberships()"
+                v-for="membership in userMemberships"
                 :key="membership.id"
               >
                 <li class="text-capitalize">
@@ -43,18 +43,47 @@
                 </li>
                 <li>Began: {{ membership.formattedStartDate }}</li>
                 <li>Ends: {{ membership.formattedEndDate }}</li>
-                <li>Auto-renewal: {{ membership.autoRenewal }}</li>
-              </ul>
-              <div class="text-center membership-btn-box">
-                <router-link
-                  class="membership-btn font-weight-bolder"
-                  to="/membership"
-                  >Cancel Membership</router-link
+                <li v-if="membership.repeatingPayment">
+                  Membership renews automatically.
+                </li>
+                <li v-else>
+                  Set up a repeating plan on your next membership
+                  <router-link to="/membership">here</router-link>!
+                </li>
+                <div
+                  v-if="membership.repeatingPayment"
+                  class="text-center membership-btn-box"
                 >
-              </div>
+                  <button
+                    v-if="membership.repeatingPayment && !cancelModal"
+                    v-on:click="cancelModal = true"
+                    class="membership-btn"
+                  >
+                    Cancel Membership
+                  </button>
+                </div>
+                <div
+                  v-if="cancelModal"
+                  class="container cancel-modal align-self-center"
+                >
+                  <div class="row no-gutters align-center">
+                    <div class="col">Cancel automatic membership renewal?</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-6">
+                      <button v-on:click="cancelMembership(membership.id)">
+                        Yes
+                      </button>
+                    </div>
+                    <div class="col-6">
+                      <button v-on:click="cancelModal = false">No</button>
+                    </div>
+                  </div>
+                </div>
+              </ul>
             </div>
             <div v-else>
-              <p style="margin: 0">You do not have a membership!</p>
+              <p style="margin: 0">You don't have a membership!</p>
               <div class="text-center membership-btn-box">
                 <router-link
                   class="membership-btn font-weight-bolder"
@@ -76,31 +105,43 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Profile",
   data() {
-    return {};
+    return {
+      cancelModal: false
+    };
   },
   computed: {
     ...mapGetters("auth", ["user"]),
     ...mapGetters("accounts", ["accounts"]),
     ...mapGetters("customers", ["customers"]),
-    ...mapGetters("membership", ["memberships", "accountMemberships"])
+    ...mapGetters("membership", ["memberships", "accountMemberships"]),
+    userMemberships() {
+      let customers = this.customers;
+      let accounts = this.accounts;
+      let memberships = this.memberships;
+      if (customers && accounts && memberships) {
+        let activeMemberships = this.userActiveMemberships(
+          memberships,
+          this.userAccountIds(accounts, this.userCustomerId(customers))
+        );
+        activeMemberships = activeMemberships.map(membership => {
+          return {
+            ...membership,
+            formattedStartDate: this.formatDate(membership.startDate),
+            formattedEndDate: this.formatDate(membership.endDate)
+          };
+        });
+        return activeMemberships;
+      } else return null;
+    }
   },
   methods: {
     ...mapActions("accounts", ["getAccounts"]),
     ...mapActions("customers", ["getAllCustomers"]),
     ...mapActions("membership", ["getMemberships", "getAccountMemberships"]),
-    userMemberships() {
-      let memberships = this.userActiveMemberships(
-        this.userAccountIds(this.userCustomerId())
-      );
-      memberships = memberships.map(membership => {
-        return {
-          ...membership,
-          formattedStartDate: this.formatDate(membership.startDate),
-          formattedEndDate: this.formatDate(membership.endDate),
-          autoRenewal: this.formatRenewal(membership.repeatingPayment)
-        };
-      });
-      return memberships;
+    async cancelMembership(membership_id) {
+      await this.$http
+        .put(`/membership/members/${membership_id}/stop`)
+        .then(response => console.log(response));
     },
     formatDate(rawDate) {
       let date = new Date(rawDate);
@@ -108,67 +149,43 @@ export default {
         date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate()
       );
     },
-    formatRenewal(repeating) {
-      if (repeating) {
-        return "enabled";
-      } else {
-        return "disabled";
-      }
-    },
-    userCustomerId() {
-      let customers = this.customers;
-      if (customers == null) {
+    userCustomerId(customers) {
+      const emailFilter = customer =>
+        customer.emailAddress === this.$auth.user.email;
+      customers = this.customers.filter(emailFilter);
+      if (customers[0].id < 0) {
         return null;
       } else {
-        const emailFilter = customer =>
-          customer.emailAddress === this.$auth.user.email;
-        customers = this.customers.filter(emailFilter);
         return customers[0].id;
       }
     },
-    userAccountIds(customerId) {
-      let accounts = this.accounts;
-      if (accounts == null || customerId == null) {
-        return null;
-      } else {
-        const accountFilter = account => account.customerId === customerId;
-        accounts = accounts.filter(accountFilter);
-        accounts = accounts.map(account => account.id);
-        return accounts;
-      }
+    userAccountIds(accounts, customerId) {
+      const accountFilter = account => account.customerId === customerId;
+      accounts = accounts.filter(accountFilter);
+      accounts = accounts.map(account => account.id);
+      return accounts;
     },
-    userActiveMemberships(accountIds) {
-      let memberships = this.memberships;
-      if (memberships == null) {
-        return null;
-      } else {
-        const dateFilter = membership => {
-          if (membership !== null) {
-            let d = new Date();
-            let endDate = new Date(membership.endDate);
-            return endDate.getTime() > d.getTime();
-          }
-        };
-        const membershipFilter = membership => {
-          if (membership !== null) {
-            return accountIds.includes(membership.accountId);
-          } else return false;
-        };
-        memberships = memberships.filter(dateFilter);
-        return memberships.filter(membershipFilter);
-      }
-    },
-    setUserMembershipDetails() {
-      this.userMembershipDetails = this.userActiveMemberships(
-        this.userAccountIds(this.userCustomerId())
-      );
+    userActiveMemberships(memberships, accountIds) {
+      const dateFilter = membership => {
+        if (membership !== null) {
+          let d = new Date();
+          let endDate = new Date(membership.endDate);
+          return endDate.getTime() > d.getTime();
+        }
+      };
+      const membershipFilter = membership => {
+        if (membership !== null) {
+          return accountIds.includes(membership.accountId);
+        } else return false;
+      };
+      memberships = memberships.filter(membershipFilter);
+      return memberships.filter(dateFilter);
     }
   },
   mounted() {
     this.getAccounts();
     this.getAllCustomers();
     this.getMemberships();
-    this.setUserMembershipDetails;
   }
 };
 </script>
@@ -216,5 +233,13 @@ export default {
   color: #353535;
   background: #fcff18;
   padding: 15px 30px;
+  font-weight: bolder;
+}
+.cancel-modal {
+  max-width: 80%;
+  text-align: center;
+  font-weight: bolder;
+  background: #fcff18;
+  color: #353535;
 }
 </style>
