@@ -101,6 +101,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import { formatDate } from "@/util/format.helpers";
 
 export default {
   name: "Profile",
@@ -121,19 +122,30 @@ export default {
       if (customers && accounts && memberships) {
         let activeMemberships = this.userActiveMemberships(
           memberships,
-          this.userAccountIds(accounts, this.userCustomerId(customers))
+          this.userAccountIds(accounts, this.userCustomerId)
         );
         activeMemberships = activeMemberships.map(membership => {
           return {
             ...membership,
-            formattedStartDate: this.formatDate(membership.startDate),
-            formattedEndDate: this.formatDate(membership.endDate)
+            formattedStartDate: formatDate(membership.startDate),
+            formattedEndDate: formatDate(membership.endDate)
           };
         });
         return activeMemberships;
       } else return null;
+    },
+    userCustomerId() {
+      const emailFilter = customer =>
+        customer.emailAddress === this.$auth.user.email;
+      const customers = this.customers.filter(emailFilter);
+      if (customers[0] && customers[0].id) {
+        return customers[0].id;
+      } else {
+        return null;
+      }
     }
   },
+
   methods: {
     ...mapActions("accounts", ["getAccounts"]),
     ...mapActions("customers", ["getAllCustomers"]),
@@ -142,22 +154,6 @@ export default {
       await this.$http
         .put(`/membership/members/${membership_id}/stop`)
         .then(response => console.log(response));
-    },
-    formatDate(rawDate) {
-      let date = new Date(rawDate);
-      return (
-        date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate()
-      );
-    },
-    userCustomerId(customers) {
-      const emailFilter = customer =>
-        customer.emailAddress === this.$auth.user.email;
-      customers = this.customers.filter(emailFilter);
-      if (customers[0].id < 0) {
-        return null;
-      } else {
-        return customers[0].id;
-      }
     },
     userAccountIds(accounts, customerId) {
       const accountFilter = account => account.customerId === customerId;
@@ -182,10 +178,10 @@ export default {
       return memberships.filter(dateFilter);
     }
   },
-  mounted() {
-    this.getAccounts();
-    this.getAllCustomers();
-    this.getMemberships();
+  async mounted() {
+    await this.getAccounts();
+    await this.getAllCustomers();
+    await this.getMemberships();
   }
 };
 </script>
