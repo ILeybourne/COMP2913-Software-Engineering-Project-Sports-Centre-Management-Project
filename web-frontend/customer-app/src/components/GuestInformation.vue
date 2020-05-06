@@ -245,9 +245,6 @@ export default {
     }
   },
   computed: {
-    store: function() {
-      return this.$store;
-    },
     ...mapGetters("auth", ["user", "isEmployeeOrManager"])
   },
   methods: {

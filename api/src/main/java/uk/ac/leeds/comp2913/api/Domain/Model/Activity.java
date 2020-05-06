@@ -124,7 +124,6 @@ public class Activity {
         this.name = activityType.getName();
         this.resource = activityType.getResource();
         this.cost = activityType.getCost();
-        this.id = activityType.getId();
     }
 
     @JsonIgnore
