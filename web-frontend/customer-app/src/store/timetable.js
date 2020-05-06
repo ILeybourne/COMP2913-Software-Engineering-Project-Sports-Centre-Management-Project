@@ -6,13 +6,13 @@ const state = {
   bookings: []
 };
 
-function sessionIsFull(session) {
+const sessionIsFull = session => {
   if (!session.totalCapacity) {
     // If there is no capacity, then it cannot be full
     return false;
   }
-  return session.currentCapacity >= this.session.totalCapacity;
-}
+  return session.currentCapacity >= session.totalCapacity;
+};
 
 const getters = {
   sessions: state =>
