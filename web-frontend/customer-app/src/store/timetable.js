@@ -62,6 +62,7 @@ const actions = {
       const index = state.sessions.findIndex(s => s.id === sessionId);
       if (index) {
         state.sessions.splice(index, 1);
+        commit("SET_SESSIONS", state.sessions);
         result = true;
       }
     }
