@@ -151,9 +151,9 @@
   justify-content: center;
   flex-basis: auto; /* default value */
   flex-grow: 1;
-  -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
-  -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
-  box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.1);
 }
 
 .form-row {
@@ -222,26 +222,25 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("facilities", ["facilities", "activityTypes"]),
+    ...mapGetters("facilities", ["facilities", "activities"]),
     ...mapGetters("timetable", ["sessions"]),
-    ...mapGetters("auth", ["user"]),
-    ...mapGetters("auth", ["isEmployeeOrManager"]),
+    ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
     account: function() {
       return !this.isEmpty(this.user);
     }
   },
   methods: {
-    ...mapActions("facilities", ["getFacilities", "getActivityTypes"]),
+    ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
     setMaxParticipants(activityId) {
-      this.maxParticipants = this.activityTypes.find(
+      this.maxParticipants = this.activities.find(
         x => x.id === activityId
       ).totalCapacity;
     },
 
     setActivityName(e) {
       if (e != null) {
-        this.bookingInformation.selectedActivityName = this.activityTypes.find(
+        this.bookingInformation.selectedActivityName = this.activities.find(
           x => x.id === e
         ).name;
       }
@@ -261,7 +260,7 @@ export default {
       }
 
       if (this.bookingInformation.selectedActivityId != null) {
-        let selectedActivity = this.activityTypes.find(
+        let selectedActivity = this.activities.find(
           x => x.id === this.bookingInformation.selectedActivityId
         );
         this.price =
@@ -473,7 +472,7 @@ export default {
 
   async mounted() {
     await this.getFacilities();
-    await this.getActivityTypes();
+    await this.getActivities();
     await this.getAllSessions();
     this.fillByQuery();
   }

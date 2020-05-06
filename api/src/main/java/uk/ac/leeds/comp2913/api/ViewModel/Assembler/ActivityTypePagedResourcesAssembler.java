@@ -24,7 +24,6 @@ public class ActivityTypePagedResourcesAssembler extends RepresentationModelAsse
         activityTypeDTO.setId(activityType.getId());
         activityTypeDTO.setName(activityType.getName());
         activityTypeDTO.setCost(activityType.getCost());
-        activityTypeDTO.setFacilityId(activityType.getResource().getId());
         activityTypeDTO.setTotalCapacity(activityType.getTotalCapacity());
         activityTypeDTO.setCreated_at(activityTypeDTO.getCreated_at());
         activityTypeDTO.setUpdated_at(activityType.getUpdatedAt());

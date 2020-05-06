@@ -5,7 +5,6 @@
     </div>
     <div class="row">
       <div id="left-column" class="col-sm-7">
-        <h1>My <span style="background: #fcff18">Account</span></h1>
         <div id="profile-info-container" class="container">
           <div class="row">
             <div class="col-xl-5 text-center align-self-center">

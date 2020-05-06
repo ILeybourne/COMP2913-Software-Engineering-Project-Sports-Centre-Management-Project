@@ -60,7 +60,7 @@ export default {
   data() {
     return {
       fallback: false,
-      error: "test"
+      error: null
     };
   }
 };

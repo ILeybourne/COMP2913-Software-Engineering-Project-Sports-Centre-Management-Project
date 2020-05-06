@@ -174,20 +174,17 @@ export default {
   },
   methods: {
     ...mapActions("facilities", {
-      getActivityTypes: "getActivityTypes",
-      getFacilities: "getFacilities",
-      getActivities: "getActivities"
+      getActivities: "getActivities",
+      getFacilities: "getFacilities"
     }),
     ...mapActions("timetable", {
       getSessions: "getAllSessions",
-      getBookings: "getBookings",
-      getResources: "getResources"
+      getBookings: "getBookings"
     }),
     //Gets Data for selected Week and calls the method to calculate each activitys income
     async fillData() {
       await this.getFacilities();
-      await this.getResources();
-      await this.getActivityTypes();
+      await this.getActivities();
       console.log("performed fill data");
       const startDate = this.$moment(this.startDate);
       const endDate = startDate.clone().add("days", 6);
@@ -229,7 +226,7 @@ export default {
       //this.dataWithFacilities = [];
       await this.getFacilities();
       await this.getResources();
-      await this.getActivityTypes();
+      await this.getActivities();
       await this.getBookings();
 
       let facilityArr = [];
@@ -300,7 +297,7 @@ export default {
   async mounted() {
     await this.defaultStartDate();
     await this.fillData();
-    await this.getActivityTypes();
+    await this.getActivities();
     await this.getFacilities();
     await this.getBookings();
     await this.getResources();

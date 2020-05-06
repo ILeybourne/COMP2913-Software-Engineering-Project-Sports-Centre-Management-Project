@@ -157,7 +157,7 @@ export default {
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("facilities", {
-      getActivity: "getActivityTypes",
+      getActivity: "getActivities",
       getFacilities: "getFacilities",
       updateActivityTypes: "updateActivityTypes",
       createActivityType: "createActivityType"
