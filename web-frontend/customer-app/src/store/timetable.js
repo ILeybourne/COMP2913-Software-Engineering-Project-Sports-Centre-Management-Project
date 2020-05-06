@@ -3,8 +3,7 @@ import { formatDate } from "@/util/format.helpers";
 
 const state = {
   sessions: [],
-  bookings: [],
-  resources: []
+  bookings: []
 };
 
 function sessionIsFull(session) {
@@ -25,7 +24,6 @@ const getters = {
       };
     }),
   bookings: state => state.bookings,
-  resources: state => state.resources,
   getSessionsForFacility: state => facilityId => {
     return state.sessions.filter(
       session => Number(session.resource.id) === Number(facilityId)
@@ -91,17 +89,6 @@ const actions = {
     commit("SET_BOOKINGS", bookings);
     commit("loading/FINISH_LOADING", null, { root: true });
     return bookings;
-  },
-  async getResources({ commit }) {
-    commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.get("/resources");
-    let resources = [];
-    if (data._embedded) {
-      resources = data._embedded.resourceDToes;
-    }
-    commit("SET_RESOURCES", resources);
-    commit("loading/FINISH_LOADING", null, { root: true });
-    return resources;
   },
   async createSession({ commit }, { activityId, ...session }) {
     commit("loading/START_LOADING", null, { root: true });
