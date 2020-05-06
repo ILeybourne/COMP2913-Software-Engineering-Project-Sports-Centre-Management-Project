@@ -1,6 +1,6 @@
 import axios from "@/plugins/axios.plugin";
 import { formatDate } from "@/util/format.helpers";
-import { formatCurrency } from "../util/format.helpers";
+import { formatCurrency } from "@/util/format.helpers";
 
 const state = {
   paging: {
@@ -16,8 +16,8 @@ const state = {
       isDataToLoad: true
     }
   },
-  facilities: [],
-  activities: []
+  facilities: [], // the facilities in the sports center
+  activities: [] // Kinds of activities that we can do in the facilities
 };
 
 const getters = {
@@ -37,7 +37,7 @@ const getters = {
   },
   getActivitiesForFacilityId: state => fid => {
     return state.activities.filter(
-      activity => Number(activity.resource.id) === Number(fid)
+      activity => Number(activity.facility_id) === Number(fid)
     );
   },
   facilitiesLoading: state => state.paging.facilities.isDataToLoad
@@ -63,11 +63,6 @@ const mutations = {
     };
   }
 };
-//
-// function isNextPage(paging) {
-//   // If the next page is not null and the last page (current page) is not the same as the last page
-//   return paging.nextPageHref && paging.currentPageHref !== paging.lastPageHref;
-// }
 
 const actions = {
   /**
@@ -142,7 +137,10 @@ const actions = {
   async updateFacility({ commit }, facilityId, request) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.post("/resources", request);
-    commit("SET_FACILITIES", [...state.facilities, data._embedded]);
+    commit("SET_FACILITIES", [
+      ...state.facilities.filter(facility => facility.id !== facilityId),
+      data._embedded
+    ]);
     commit("loading/START_LOADING", null, { root: true });
   },
   async updateFacilityImage({ commit }, { facilityId, file }) {
@@ -154,18 +152,10 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
     return data;
   },
-  async getActivityTypes({ commit }) {
+  async getActivities({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/activitytypes");
     const activities = data._embedded.activityTypeDToes;
-    commit("SET_ACTIVITIES", activities);
-    commit("loading/FINISH_LOADING", null, { root: true });
-    return activities;
-  },
-  async getActivities({ commit }) {
-    commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.get("/activities");
-    const activities = data._embedded.activityDToes;
     commit("SET_ACTIVITIES", activities);
     commit("loading/FINISH_LOADING", null, { root: true });
     return activities;
