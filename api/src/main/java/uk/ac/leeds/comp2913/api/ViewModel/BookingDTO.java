@@ -20,6 +20,8 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
   @NotNull(message = "Account Id is required")
   private Long accountId;
   private Long id;
+  private BigDecimal amount;
+  private Long session_id;
 
 
   public BookingDTO() {
@@ -69,5 +71,20 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
     this.id = id;
   }
 
- 
+
+  public BigDecimal getAmount() {
+    return amount;
+  }
+
+  public void setAmount(BigDecimal amount) {
+    this.amount = amount;
+  }
+
+  public Long getSession_id() {
+    return session_id;
+  }
+
+  public void setSession_id(Long session_id) {
+    this.session_id = session_id;
+  }
 }

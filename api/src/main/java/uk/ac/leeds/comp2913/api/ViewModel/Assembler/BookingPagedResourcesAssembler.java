@@ -37,6 +37,8 @@ public class BookingPagedResourcesAssembler extends RepresentationModelAssembler
          bookingDto.setAccountId(booking.getAccount().getId());
         bookingDto.setId(booking.getId());
         bookingDto.setParticipants(booking.getParticipants());
+        bookingDto.setAmount(booking.getAmount());
+        bookingDto.setSession_id(booking.getActivity().getId());
         return bookingDto;
     }
 }
