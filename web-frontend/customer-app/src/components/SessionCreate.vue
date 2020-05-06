@@ -66,9 +66,9 @@
         ></b-form-input>
       </b-form-group>
 
-      <b-form-group label="Private Session:">
+      <b-form-group label="Public Session:">
         <b-form-select
-          :options="privateSessionOptions"
+          :options="publicSessionOptions"
           v-model="form.social"
         ></b-form-select>
       </b-form-group>
@@ -128,7 +128,7 @@ export default {
         interval: 1
       },
       activity: null,
-      privateSessionOptions: [
+      publicSessionOptions: [
         { text: "Yes", value: true },
         { text: "No", value: false }
       ]
