@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.Proxy;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.PagedModel;
@@ -25,6 +26,7 @@ import javax.validation.constraints.Size;
  * <p>
  * Represents a resource available inside the sports center. eg Astro Turf, Squash Court, Swimming Pool etc.
  */
+@Proxy(lazy = false)
 @Entity
 public class Resource {
 

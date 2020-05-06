@@ -183,6 +183,7 @@ export default {
       getBookings: "getBookings",
       getResources: "getResources"
     }),
+    //Gets Data for selected Week and calls the method to calculate each activitys income
     async fillData() {
       await this.getFacilities();
       await this.getResources();
@@ -254,6 +255,9 @@ export default {
         income = this.calculateActivityTypeIncome(activity.id);
         activity.formattedIncome = formatCurrency(income);
         activity.formattedCost = formatCurrency(activity.cost);
+        console.log("facility income for activity " + activity.id + " " + activity.facility.id);
+        console.log(activity.facility.income);
+
       }
       this.dataWithFacilities = facilityArr;
       console.log(this.dataWithFacilities);
