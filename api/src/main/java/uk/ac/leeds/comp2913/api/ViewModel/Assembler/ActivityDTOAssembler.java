@@ -27,6 +27,7 @@ public class ActivityDTOAssembler extends RepresentationModelAssemblerSupport<Ac
         activityDTO.setEndTime(activity.getEndTime());
         activityDTO.setCost(activity.getCost());
         activityDTO.setCurrentCapacity(activity.getCurrentCapacity());
+        activityDTO.setTotalCapacity(activity.getActivityType().getTotalCapacity());
         activityDTO.setRegularSessionId(activity.getRegularSession());
         activityDTO.setSocial(activity.getSocial());
         activityDTO.setResource(activity.getResource());

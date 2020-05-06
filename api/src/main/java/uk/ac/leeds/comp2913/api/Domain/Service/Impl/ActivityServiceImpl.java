@@ -17,6 +17,7 @@ import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
 import org.springframework.data.domain.PageImpl;
 
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import java.util.Collection;
@@ -41,7 +42,7 @@ public class ActivityServiceImpl implements ActivityService {
 
   @Override
   public Page<Activity> getActivities(Pageable pageable){
-    return activityRepository.findAll(pageable);
+    return activityRepository.findAllWithPagination(pageable);
   }
 
   @Override
@@ -76,7 +77,9 @@ public class ActivityServiceImpl implements ActivityService {
       this.regularSessionRepository.save(regularSession);
       activity.setRegularSession(regularSession);
     }
-    return activityRepository.save(activity);
+    activityRepository.save(activity);
+    return activityRepository.findById(activity.getId())
+            .orElseThrow(EntityNotFoundException::new);
   }
 
   @Override
