@@ -168,7 +168,7 @@ export default {
     }
   },
   watch: {
-    "memberships.repeatingPayment": {
+    memberships: {
       handler() {
         this.getMemberships();
       },
