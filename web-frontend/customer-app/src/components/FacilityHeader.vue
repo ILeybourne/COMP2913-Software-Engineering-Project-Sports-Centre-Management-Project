@@ -1,10 +1,15 @@
 <template>
   <div class="facility-header">
+    <div v-if="error" class="alert alert-warning">{{ error }}</div>
     <b-card :title="'Details for ' + facility.name" :img-src="imageUrl">
       <b-card-text>{{
         facility.description || "No description available..."
       }}</b-card-text>
-      <b-button v-if="isEmployeeOrManager" class="float-right" variant="danger"
+      <b-button
+        @click.prevent="onDeleteFacility()"
+        v-if="isEmployeeOrManager"
+        class="float-right"
+        variant="danger"
         >Delete</b-button
       >
     </b-card>
@@ -26,9 +31,17 @@ export default {
     }
   },
   methods: {
-    ...mapActions("facilities", ["getFacilities"]),
+    ...mapActions("facilities", ["getFacilities", "deleteFacility"]),
     handleImageError() {
       this.fallback = true;
+    },
+    async onDeleteFacility() {
+      const result = await this.deleteFacility(this.facility.id);
+      if (result) {
+        this.$router.push({ name: "FacilityPage" });
+      } else {
+        this.error = "Facility could not be deleted";
+      }
     }
   },
   computed: {
@@ -46,7 +59,8 @@ export default {
   },
   data() {
     return {
-      fallback: false
+      fallback: false,
+      error: "test"
     };
   }
 };

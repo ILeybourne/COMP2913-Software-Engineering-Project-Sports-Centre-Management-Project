@@ -152,6 +152,22 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
     return data;
   },
+  async deleteFacility({ state, commit }, facilityId){
+    let result = false;
+    commit("loading/START_LOADING", null, { root: true });
+    const response = await axios.delete(`/resources/${facilityId}`);
+    if (response.status === 204) {
+      // Delete was successful, remove the copy of the session from the store
+      const index = state.facilities.findIndex(s => s.id === facilityId);
+      if (index) {
+        state.facilities.splice(index, 1);
+        commit("SET_FACILITIES", state.facilities);
+        result = true;
+      }
+    }
+    commit("loading/FINISH_LOADING", null, { root: true });
+    return result;
+  },
   async getActivities({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/activitytypes");
@@ -160,11 +176,21 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return activities;
   },
-  async deleteActivity({ commit }, activityId) {
+  async deleteActivity({ state, commit }, activityId) {
+    let result = false;
     commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.delete(`/activitytypes/${activityId}`);
-    commit("SET_ACTIVITIES", data);
+    const response = await axios.delete(`/activitytypes/${activityId}`);
+    if (response.status === 204) {
+      // Delete was successful, remove the copy of the session from the store
+      const index = state.activities.findIndex(s => s.id === activityId);
+      if (index) {
+        state.activities.splice(index, 1);
+        commit("SET_ACTIVITIES", state.activities);
+        result = true;
+      }
+    }
     commit("loading/FINISH_LOADING", null, { root: true });
+    return result;
   }
 };
 
