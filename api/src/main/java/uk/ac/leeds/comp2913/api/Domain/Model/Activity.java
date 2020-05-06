@@ -164,8 +164,8 @@ public class Activity {
     }
 
     @JsonProperty
-    public Integer getCurrentCapacity() {
-        return currentCapacity;
+    public int getCurrentCapacity() {
+            return (currentCapacity == null) ? 0: currentCapacity;
     }
 
     public void setCurrentCapacity(Integer current_capacity) {
