@@ -174,12 +174,13 @@ export default {
   },
   methods: {
     ...mapActions("facilities", {
-      getActivities: "getActivities",
-      getFacilities: "getFacilities"
+      getFacilities: "getFacilities",
+      getActivities: "getActivities"
     }),
     ...mapActions("timetable", {
       getSessions: "getAllSessions",
-      getBookings: "getBookings"
+      getBookings: "getBookings",
+      getResources: "getResources"
     }),
     //Gets Data for selected Week and calls the method to calculate each activitys income
     async fillData() {
@@ -189,7 +190,7 @@ export default {
       const startDate = this.$moment(this.startDate);
       const endDate = startDate.clone().add("days", 6);
       this.endDate = endDate.toJSON();
-      const response = await this.getActivities();
+      const response = await this.getSessions();
       const thisWeek = response
         .map(activity => {
           const startTimestamp = this.$moment(activity.startTime);
@@ -222,16 +223,10 @@ export default {
       this.startDate = startDate.toJSON();
     },
     async getRelatedFacility() {
-      console.log("performed get related facility");
-      //this.dataWithFacilities = [];
       await this.getFacilities();
-      await this.getResources();
-      await this.getActivities();
       await this.getBookings();
-
       let facilityArr = [];
       for (const activity of this.activities) {
-        // console.log(activity);
         const facilityId = activity.facility_id;
         const facilities = this.facilities;
         activity.facility = facilities.find(
@@ -245,8 +240,6 @@ export default {
           this.calculateFacilityIncome(activity.facility_id)
         );
         activity.facility.income = facilityIncome;
-        console.log("facilityIncome " + activity.facility.id);
-        console.log(facilityIncome);
         activity.formattedIncome = 0;
         let income = 0;
         income = this.calculateActivityTypeIncome(activity.id);
@@ -281,8 +274,6 @@ export default {
     },
 
     calculateSessionIncome(session_id) {
-      console.log("session_id");
-      console.log(session_id);
       let sessionIncome = 0;
       let bookingIncome = 0;
       for (const booking of this.bookings) {
@@ -300,7 +291,6 @@ export default {
     await this.getActivities();
     await this.getFacilities();
     await this.getBookings();
-    await this.getResources();
   }
 };
 </script>
