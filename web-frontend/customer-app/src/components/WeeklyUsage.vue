@@ -8,9 +8,9 @@
       class="elevation-1"
     >
     </v-data-table>
-    <button @click="fillData()">Randomize</button>
+    <button @click="fillData()"></button>
     <div class="input-group">
-      <label>Start Date</label>
+      <label></label>
       <v-date-picker @change="fillData" v-model="startDate"></v-date-picker>
     </div>
   </div>
@@ -20,15 +20,8 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-/*
-const groupBy = (xs, key) => {
-  return xs.reduce(function(rv, x) {
-    (rv[x[key]] = rv[x[key]] || []).push(x);
-    return rv;
-  }, {});
-};
+import { formatCurrency } from "../util/format.helpers";
 
- */
 
 export default {
   name: "BookingTable",
@@ -49,12 +42,14 @@ export default {
         },
         {
           text: "Income",
-          value:" "
+          value: "formattedIncome"
         }
       ],
       dataWithFacilities: [],
       bookingWithActivity: [],
-      bookingData:[]
+      bookingData: [],
+      weekData: [],
+      tableData: []
     };
   },
   computed: {
@@ -66,28 +61,53 @@ export default {
   },
   methods: {
     ...mapActions("facilities", {
-      getActivity: "getActivityTypes",
-      getFacilities: "getFacilities"
+      getActivityTypes: "getActivityTypes",
+      getFacilities: "getFacilities",
+      getActivities: "getActivities"
     }),
     ...mapActions("timetable", {
       getSessions: "getAllSessions",
       getBookings: "getBookings",
       getResources: "getResources"
     }),
-    async fillData() {},
+    async fillData() {
+      const endDate = this.$moment(this.startDate);
+      const startDate = endDate.clone().subtract("days", 6);
+      const response = await this.getActivities();
+      const thisWeek = response
+        .map(activity => {
+          const startTimestamp = this.$moment(activity.startTime);
+
+          return {
+            ...activity,
+            startTimestamp,
+            dayOfYear: startTimestamp.dayOfYear()
+          };
+        })
+        .filter(activity => {
+          return (
+            activity.startTimestamp.isAfter(startDate) &&
+            activity.startTimestamp.isBefore(endDate)
+          );
+        });
+      //console.log(thisWeek);
+      this.weekData = thisWeek;
+      this.bookingData = this.getNumberOfBookings();
+    },
+
+
+
+
+
+
+
+
     async getRelatedFacility() {
       let facilityArr = [];
       for (const activity of this.activities) {
         // console.log(activity);
-        const facilityId = activity._links.resource.href
-          .split("/")
-          .slice(-1)[0];
+        const facilityId = activity.facility_id;
         const facilities = this.facilities;
-        console.log(
-          facilities.find(
-            facility => Number(facility.id) === Number(facilityId)
-          )
-        );
         activity.facility = facilities.find(
           facility => Number(facility.id) === Number(facilityId)
         );
@@ -95,44 +115,51 @@ export default {
       }
       return facilityArr;
     },
-    async getRelatedBookingActivity() {
+    async getRelatedbookingsActivity() {
       let ActivityArr = [];
       for (const booking of this.bookings) {
         const ActivityId = booking._links.Activity.href.split("/").slice(-1)[0];
         const activities = this.activities;
-        //console.log(Number(booking.id) === Number(ActivityId));
-        //console.log(Number(booking.id) + " " + Number(ActivityId));
-        //console.log(activities);
-        for (const activity of activities){
-          console.log(activity.id + " " + Number(ActivityId));
-        }
         booking.activity = activities.find(
-                activity => Number(activity.id) === Number(ActivityId)
+          activity => Number(activity.id) === Number(ActivityId)
         );
         ActivityArr.push(booking);
       }
+      //console.log(ActivityArr);
       return ActivityArr;
     },
-    async getNumberOfBookings(){
-      //let Arr = [];
-      for (const booking of this.bookingWithActivity){
-        const resourceID = booking.id;
-        console.log(resourceID);
+    async getNumberOfBookings() {
+      let Arr = [];
+      const activityTypes = await this.getActivityTypes();
+      for(const activity of activityTypes){
+        activity.income = 0;
       }
-
+      for (const activity of activityTypes) {
+        for (const booking of this.weekData) {
+          //console.log(activity);
+          if (booking.activityTypeId === activity.id) {
+            activity.income = activity.income + activity.cost;
+          }
+        }
+        Arr.push(activity);
+      }
+      for (const activity of Arr) {
+        activity.formattedIncome = formatCurrency(activity.income);
+      }
+      console.log(Arr);
     }
   },
   created: async function() {
-    await this.getActivity();
+    await this.getActivityTypes();
     await this.getFacilities();
     await this.getBookings();
+    console.log(this.bookings);
     await this.getResources();
-    //console.log(this.resources);
-    //console.log(this.bookings);
-    this.bookingWithActivity = await this.getRelatedBookingActivity();
-    console.log(this.bookingWithActivity);
+
+    this.bookingWithActivity = await this.getRelatedbookingsActivity();
     this.dataWithFacilities = await this.getRelatedFacility();
-    this.bookingData = await this.getNumberOfBookings()
+    this.bookingData = await this.getNumberOfBookings();
+    this.dataWithFacilities = await this.getRelatedFacility();
     console.log(this.dataWithFacilities);
   }
 };

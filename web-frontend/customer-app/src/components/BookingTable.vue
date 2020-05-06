@@ -6,44 +6,8 @@
         <v-dialog max-width="500px"> </v-dialog>
       </v-toolbar>
       <v-btn color="primary" dark class="mb-2" @click="showNewBooking()"
-      >New Booking</v-btn
+        >New Booking</v-btn
       >
-      <b-modal id="new-booking-modal" title="Edit Booking" @ok="addBooking()">
-        <b-form>
-          <b-form-group
-                  id="resource.name"
-                  label="Facility"
-                  label-for="FacilityName"
-          ><b-form-select
-                  id="FacilityName"
-                  :options="setFacilityOptions()"
-                  v-model="selectedBooking.facility"
-                  required
-          ></b-form-select>
-          </b-form-group>
-          <b-form-group id="name" label="Booking" label-for="BookingName">
-            <b-form-input
-                    id="BookingName"
-                    v-model="selectedBooking.name"
-                    required
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group id="startTime" label="Start Time" label-for="StartTime">
-            <b-form-input
-                    id="StartTime"
-                    v-model="selectedBooking.startTime"
-                    required
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group id="endTime" label="End Time" label-for="EndTime">
-            <b-form-input
-                    id="EndTime"
-                    v-model="selectedBooking.endTime"
-                    required
-            ></b-form-input>
-          </b-form-group>
-        </b-form>
-      </b-modal>
       <b-modal id="edit-modal" title="Edit Booking" @ok="updateTable()">
         <b-form>
           <b-form-group
@@ -82,9 +46,6 @@
       </b-modal>
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon small class="mr-2" @click="editItem(item)">
-        mdi-pencil
-      </v-icon>
       <v-icon small @click="showDelete(item)">
         mdi-delete
       </v-icon>
@@ -167,14 +128,14 @@ export default {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("timetable", {
       getBooking: "getBookings",
-      deleteBooking: "deleteActivities"
+      deleteBooking: "deleteBooking"
     }),
     ...mapActions("facilities", {
       getActivity: "getActivities",
       getFacilities: "getFacilities"
-  }),
+    }),
     showNewBooking() {
-      this.$bvModal.show("new-booking-modal");
+      this.$router.push("/bookings");
     },
     editItem(item) {
       console.log(item);
@@ -188,10 +149,11 @@ export default {
     },
     showDelete(item) {
       console.log(item);
-      const index = item.id;
+      const id = item.id;
+      const index = this.dataWithActivities.indexOf(item)
       confirm("Are you sure you want to delete this item?") &&
         this.bookings.splice(index, 1) &&
-        this.deleteBooking(index);
+        this.deleteBooking(id);
     },
     setFacilityOptions() {
       let facilities = this.facilities;

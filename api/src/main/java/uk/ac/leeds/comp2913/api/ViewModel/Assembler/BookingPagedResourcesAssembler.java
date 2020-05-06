@@ -32,6 +32,7 @@ public class BookingPagedResourcesAssembler extends RepresentationModelAssembler
          }
         bookingDto.setId(booking.getId());
         bookingDto.setParticipants(booking.getParticipants());
+        bookingDto.setActivity_id(booking.getActivity().getId());
         return bookingDto;
     }
 }

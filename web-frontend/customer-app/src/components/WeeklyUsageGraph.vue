@@ -1,9 +1,8 @@
 <template
   ><div class="small">
     <line-chart v-if="startDate" :chart-data="datacollection"></line-chart>
-    <button @click="fillData()">Randomize</button>
+    <button @click="fillData()"></button>
     <div class="input-group">
-      <label>Start Date</label>
       <v-date-picker @change="fillData" v-model="startDate"></v-date-picker>
     </div>
   </div>
@@ -94,6 +93,7 @@ export default {
         }
       ];
       this.datacollection = data;
+      console.log(thisWeek);
     }
   }
 };

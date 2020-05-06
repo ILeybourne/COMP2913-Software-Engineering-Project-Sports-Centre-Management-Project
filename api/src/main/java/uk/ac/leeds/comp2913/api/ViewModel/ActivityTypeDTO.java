@@ -65,11 +65,11 @@ public class ActivityTypeDTO extends RepresentationModel<ActivityTypeDTO> {
 
     private Integer totalCapacity;
 
-    public void setFacilityId(Long id) {
-        this.facility_id = id;
-    }
-
     public Long getFacility_id() {
         return facility_id;
+    }
+
+    public void setFacility_id(Long facility_id) {
+        this.facility_id = facility_id;
     }
 }

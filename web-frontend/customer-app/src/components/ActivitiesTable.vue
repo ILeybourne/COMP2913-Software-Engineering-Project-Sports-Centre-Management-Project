@@ -1,5 +1,5 @@
 <template>
-  <v-data-table :headers="headers" :items="dataWithFacilities" :loding="true">
+  <v-data-table :headers="headers" :items="sorted" :loding="true">
     <template v-slot:top>
       <v-toolbar flat color="white">
         <v-spacer></v-spacer>
@@ -14,7 +14,7 @@
         @ok="addActivity()"
       >
         <b-form>
-          <b-form-group id="activity" label="Activity" label-for="Activity"
+          <b-form-group id="activity" label="Activity Name" label-for="Activity"
             ><b-form-input
               id="Activity"
               v-model="newActivity.name"
@@ -34,10 +34,7 @@
             ></b-form-input>
           </b-form-group>
           <b-form-group id="cost" label="Cost" label-for="Cost">
-            <b-form-input
-              id="Cost"
-              v-model="newActivity.cost"
-            ></b-form-input>
+            <b-form-input id="Cost" v-model="newActivity.cost"></b-form-input>
           </b-form-group>
         </b-form>
       </b-modal>
@@ -47,17 +44,17 @@
         @ok="updateActivity()"
       >
         <b-form>
-          <b-form-group id="activity" label="Activity" label-for="Activity"
-            ><b-form-select
+          <b-form-group id="activity" label="Activity Name" label-for="Activity"
+            ><b-form-input
               id="Activity"
               :options="setActivityOptions()"
               v-model="selectedActivity.name"
-            ></b-form-select>
+            ></b-form-input>
           </b-form-group>
           <b-form-group id="facility" label="Facility" label-for="Facility">
             <b-form-select
               id="Facility"
-              :options="setFacilityOptions()"
+              :options="[selectedActivity.facility]"
               v-model="selectedActivity.facility"
             ></b-form-select>
           </b-form-group>
@@ -79,9 +76,6 @@
     <template v-slot:item.actions="{ item }">
       <v-icon small class="mr-2" @click="editItem(item)">
         mdi-pencil
-      </v-icon>
-      <v-icon small @click="deleteItem(item)">
-        mdi-delete
       </v-icon>
     </template>
   </v-data-table>
@@ -136,20 +130,37 @@ export default {
         facility: null,
         cost: null
       },
-      dataWithFacilities: []
     };
   },
   computed: {
     ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("facilities", ["facilities"])
+    ...mapGetters("facilities", ["facilities"]),
+    dataWithFacilities() {
+      let facilityArr = [];
+      for (const activity of this.activities) {
+        const facilityId = activity.facility_id;
+        const facilities = this.facilities;
+        activity.facility = facilities.find(
+          facility => Number(facility.id) === Number(facilityId)
+        );
+        facilityArr.push(activity);
+      }
+      return facilityArr;
+    },
+    sorted(){
+      return this.dataWithFacilities.slice().sort(function(a,b){
+        return a.id - b.id;
+      });
+    }
   },
 
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("facilities", {
       getActivity: "getActivityTypes",
-      deleteActivity: "deleteActivity",
-      getFacilities: "getFacilities"
+      getFacilities: "getFacilities",
+      updateActivityTypes: "updateActivityTypes",
+      createActivityType: "createActivityType"
     }),
     showNewActivity() {
       this.$bvModal.show("new-activity-modal");
@@ -162,12 +173,6 @@ export default {
       this.selectedActivity.capacity = item.totalCapacity;
       this.selectedActivity.cost = item.cost;
       this.$bvModal.show("edit-modal");
-    },
-    deleteItem(item) {
-      const index = this.activities.indexOf(item);
-      console.log(index);
-      confirm("Are you sure you want to delete this item?") &&
-        this.deleteActivity(index);
     },
     setFacilityOptions() {
       let facilities = this.facilities;
@@ -185,40 +190,35 @@ export default {
       }
       return activityArray;
     },
-    updateActivity() {
-      const id = this.selectedActivity.id;
-      this.dataWithFacilities.find(activity => activity.id === id);
-      console.log("updateActivity");
+    async updateActivity() {
+      const activityId = Number(this.selectedActivity.id);
+      this.dataWithFacilities.find(activity => activity.id === activityId);
+      const body = {
+        name: this.selectedActivity.name, //need to be dynamic
+        cost: this.selectedActivity.cost,
+        totalCapacity: this.selectedActivity.capacity
+      };
+      await this.updateActivityTypes({ activityId, body });
     },
-    addActivity(){
-      console.log("addActivity");
-    },
-    async getRelatedFacility() {
-      let facilityArr = [];
-      for (const activity of this.activities) {
-        console.log(activity);
-        const facilityId = activity._links.resource.href
-          .split("/")
-          .slice(-1)[0];
-        const facilities = this.facilities;
-        console.log(
-          facilities.find(
-            facility => Number(facility.id) === Number(facilityId)
-          )
-        );
-        activity.facility = facilities.find(
-          facility => Number(facility.id) === Number(facilityId)
-        );
-        facilityArr.push(activity);
+    async addActivity() {
+      let facilityId = null;
+      for (const facility of this.facilities) {
+        if (facility.name === this.newActivity.facility) {
+          facilityId = facility.id;
+        }
       }
-      return facilityArr;
+      const body = {
+        name: this.newActivity.name, //need to be dynamic
+        cost: this.newActivity.cost,
+        totalCapacity: this.newActivity.capacity
+      };
+      await this.createActivityType({ facilityId, body });
     }
   },
 
   created: async function() {
     await this.getActivity();
     await this.getFacilities();
-    this.dataWithFacilities = await this.getRelatedFacility();
   }
 };
 </script>
