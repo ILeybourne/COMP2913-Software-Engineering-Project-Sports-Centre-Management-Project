@@ -83,6 +83,12 @@ public class BookingServiceImpl implements BookingService {
 
   @Transactional
   @Override
+  public Page<Booking>findByEmail(Pageable pageable, String email){
+    return bookingRepository.findAllByAccount_Customer_EmailAddress(pageable, email);
+  }
+
+  @Transactional
+  @Override
   public Booking updateBooking(Long booking_id, Booking bookingRequest) {
     Booking booking =bookingRepository.findById(booking_id)
             .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + booking_id));

@@ -24,6 +24,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, CustomB
 
   Page<Booking> findByActivityId(Pageable pageable, Long account_id);
 
+  Page<Booking> findAllByAccount_Customer_EmailAddress(Pageable pageable, String email);
+
   @Override
   void delete(Booking booking);
 

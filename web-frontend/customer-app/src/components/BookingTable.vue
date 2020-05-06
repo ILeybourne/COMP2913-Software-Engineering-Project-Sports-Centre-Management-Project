@@ -82,18 +82,28 @@ export default {
           sortable: true
         },
         {
+          value: "accountId",
+          text: "Account",
+          sortable: false
+        },
+        {
           value: "activity.formattedStartAt",
           text: "Booking Time",
           sortable: true
         },
         {
           value: "activity.name",
-          text: "Booking",
+          text: "Session",
           sortable: true
         },
         {
           value: "activity.resource.name",
           text: "Facility",
+          sortable: true
+        },
+        {
+          value: "regularBooking",
+          text: "Subscribed",
           sortable: true
         },
         {
@@ -121,6 +131,7 @@ export default {
   },
   computed: {
     ...mapGetters("timetable", ["bookings"]),
+    ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("facilities", ["facilities"])
   },
@@ -128,7 +139,8 @@ export default {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("timetable", {
       getBooking: "getBookings",
-      deleteBooking: "deleteBooking"
+      deleteBooking: "deleteBooking",
+      getSessions: "getAllSessions"
     }),
     ...mapActions("facilities", {
       getActivity: "getActivities",
@@ -166,16 +178,14 @@ export default {
     async getRelatedActivity() {
       let ActivityArr = [];
       for (const booking of this.bookings) {
-        const ActivityId = booking._links.Activity.href.split("/").slice(-1)[0];
-        const activities = this.activities;
-        //console.log(Number(booking.id) === Number(ActivityId));
-        //console.log(Number(booking.id) + " " + Number(ActivityId));
-        //console.log(activities);
-        booking.activity = activities.find(
-          activity => Number(activity.id) === Number(ActivityId)
+        console.log("sessions");
+        booking.activity = this.sessions.find(
+          activity => Number(activity.id) === Number(booking.session_id)
         );
         ActivityArr.push(booking);
       }
+      console.log("Activity Arr");
+      console.log(ActivityArr);
       return ActivityArr;
     },
     updateTable() {
@@ -190,6 +200,7 @@ export default {
 
   async mounted() {
     await this.getActivity();
+    await this.getSessions();
     //console.log(this.activities);
     await this.getBooking();
     await this.getFacilities();

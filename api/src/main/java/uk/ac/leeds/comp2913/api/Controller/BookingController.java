@@ -67,6 +67,14 @@ public class BookingController {
         return booking;
     }
 
+
+    @GetMapping("/email/{email}/")
+    @Operation(summary = "Get the logged in users bookings",
+            description = "returns a list of bookings placed by the logged in user")
+    public PagedModel<BookingDTO> getBookingsByEmail(Pageable pageable, @Parameter(description = "The logged in users email", required = true)@PathVariable String email) {
+        return pagedResourcesAssembler.toModel((bookingService.findByEmail(pageable, email)), bookingPagedResourcesAssembler);
+    }
+
     @GetMapping("/account/{account_id}")
     @Operation(summary = "Get a list of bookings made by a specific account",
             description = "returns a list of bookings placed by a specific account")
