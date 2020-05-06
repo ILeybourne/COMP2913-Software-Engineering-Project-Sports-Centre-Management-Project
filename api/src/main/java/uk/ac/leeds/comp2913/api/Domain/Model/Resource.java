@@ -26,7 +26,6 @@ import javax.validation.constraints.Size;
  * <p>
  * Represents a resource available inside the sports center. eg Astro Turf, Squash Court, Swimming Pool etc.
  */
-@Proxy(lazy = false)
 @Entity
 public class Resource {
 
