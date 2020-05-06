@@ -39,8 +39,8 @@ export const manager = (to, from, next) => {
   }
 };
 
-export const employee = (to, from, next) => {
-  if (store.getters["auth/isEmployee"]) {
+export const employeeOrManager = (to, from, next) => {
+  if (store.getters["auth/isEmployeeOrManager"]) {
     return next();
   } else {
     return next("/unauthorised");

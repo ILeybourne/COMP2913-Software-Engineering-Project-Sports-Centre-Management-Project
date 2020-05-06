@@ -5,9 +5,7 @@
       <FullCalendar
         :events="events"
         :plugins="calendarPlugins"
-        :selectable="true"
-        :selectOverlap="false"
-        :eventOverlap="false"
+        :selectable="false"
         :selectMirror="true"
         :resize="false"
         defaultView="timeGridWeek"
@@ -17,25 +15,12 @@
         @eventClick="activityClick($event)"
       />
     </div>
-    <!--    <b-modal-->
-    <!--      id="create-activity-modal"-->
-    <!--      title="Create a new Session"-->
-    <!--      hide-footer-->
-    <!--    >-->
-    <!--      <SessionCreate-->
-    <!--        @post="onSessionCreate($event)"-->
-    <!--        :startTime="selectedSession.startTime"-->
-    <!--        :endTime="selectedSession.endTime"-->
-    <!--        :facilityId="selectedSession.resourceId"-->
-    <!--      ></SessionCreate>-->
-    <!--      <b-button-->
-    <!--        type="reset"-->
-    <!--        variant="danger"-->
-    <!--        @click="$bvModal.hide('create-activity-modal')"-->
-    <!--      >Cancel-->
-    <!--      </b-button>-->
-    <!--    </b-modal>-->
-    <b-modal id="preview-activity-modal" title="Session Details">
+    <b-modal
+      id="preview-session-modal"
+      title="Session Details"
+      :ok-only="true"
+      ok-title="Close"
+    >
       <SessionInfo
         v-if="this.previewSession"
         :session="this.previewSession"
@@ -90,9 +75,33 @@ export default {
       );
 
       if (this.previewSession) {
-        this.$bvModal.show("preview-activity-modal");
+        this.$bvModal.show("preview-session-modal");
       } else {
         this.error = "The session you selected could not be previewed";
+      }
+    },
+    onSessionDelete() {
+      this.$bvModal.hide("preview-session-modal");
+    },
+    onSessionCreate({ createBooking: redirectToBooking, ...event }) {
+      if (!this.isEmployeeOrManager) {
+        return;
+      }
+      if (redirectToBooking) {
+        this.$router.push({
+          name: "BookingPage",
+          params: {
+            facility: String,
+            activity: String
+          },
+          query: {
+            facilityId: event.facilityId,
+            activityId: event.activityId,
+            sessionId: event.sessionId
+          }
+        });
+      } else {
+        this.$bvModal.hide("create-activity-modal");
       }
     }
   },
