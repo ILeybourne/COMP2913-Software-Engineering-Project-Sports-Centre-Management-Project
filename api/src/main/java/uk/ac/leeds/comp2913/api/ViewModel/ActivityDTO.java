@@ -55,7 +55,6 @@ public class ActivityDTO extends RepresentationModel<ActivityDTO> {
   @JsonCreator
   public ActivityDTO(@JsonProperty("startTime") Date startTime,
                      @JsonProperty("endTime") Date endTime,
-                     @JsonProperty("resourceId") Long resourceId,
                      @JsonProperty(value = "regularSession") Boolean regularSession,
                      @JsonProperty(value = "social") Boolean social,
                      @JsonProperty("interval") Integer interval) {

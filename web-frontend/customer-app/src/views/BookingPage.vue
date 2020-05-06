@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="padding-div"></div>
     <div class="heading-div">
-      <h1>Bookings</h1>
+      <h1>Activity<span> Booking</span></h1>
     </div>
     <b-container class="form-container">
       <b-row class="row">
@@ -140,6 +140,25 @@ h1 {
   padding: 5%;
   border: 3px solid #3183e5;
   border-radius: 10px;
+}
+@media screen and (max-width: 600px) {
+  .heading-div h1 {
+    font-size: 10vw;
+  }
+}
+.heading-div {
+  margin-bottom: 20px;
+}
+.heading-div h1 {
+  width: 60%;
+  margin: auto;
+}
+.heading-div p {
+  width: 100%;
+  padding: 10px;
+}
+.heading-div span {
+  background: #fcff18;
 }
 </style>
 

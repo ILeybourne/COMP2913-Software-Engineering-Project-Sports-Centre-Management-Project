@@ -20,7 +20,8 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
   @NotNull(message = "Account Id is required")
   private Long accountId;
   private Long id;
-  private Long activity_id;
+  private BigDecimal amount;
+  private Long session_id;
 
 
   public BookingDTO() {
@@ -46,7 +47,6 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
     this.participants = participants;
   }
 
-  @JsonIgnore
   public boolean isRegularBooking() {
     return regularBooking;
   }
@@ -55,7 +55,6 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
     this.regularBooking = regularBooking;
   }
 
-  @JsonIgnore
   public Long getAccountId() {
     return accountId;
   }
@@ -73,13 +72,19 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
   }
 
 
-  public Long getActivity_id() {
-    return activity_id;
+  public BigDecimal getAmount() {
+    return amount;
   }
 
-  public void setActivity_id(Long activity_id) {
-    this.activity_id = activity_id;
+  public void setAmount(BigDecimal amount) {
+    this.amount = amount;
   }
 
+  public Long getSession_id() {
+    return session_id;
+  }
 
+  public void setSession_id(Long session_id) {
+    this.session_id = session_id;
+  }
 }
