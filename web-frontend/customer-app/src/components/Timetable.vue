@@ -43,6 +43,7 @@ export default {
   computed: {
     ...mapGetters("facilities", ["facilities"]),
     ...mapGetters("timetable", ["sessions"]),
+    ...mapGetters("auth", ["isEmployeeOrManager"]),
     resources() {
       return this.facilities.map(r => {
         return {
@@ -60,6 +61,7 @@ export default {
     ...mapActions("facilities", ["getFacilities"]),
     ...mapActions("timetable", ["getAllSessions"]),
     drawEvent(eventInfo) {
+      // TODO: change colour if you can't book
       const { event } = eventInfo;
       const { extendedProps: options } = event;
       const totalCapacity = options.totalCapacity || 0;
@@ -84,15 +86,14 @@ export default {
 
       let capacity = "";
       if (options.totalCapacity !== null) {
-        capacity = ` - ${currentCapacity}/${totalCapacity}`;
+        capacity = `- ${currentCapacity}/${totalCapacity}`;
       }
-      eventInfo.el.innerText = `${event.title}${capacity}`;
+      eventInfo.el.innerText = `${event.title} ${capacity}`;
     },
     drawResource(e) {
       // Add a link to the timetable for that facility
       e.el.addEventListener("click", () => {
         const facility = e.resource._resource;
-        console.log(facility);
         this.$router.push({
           name: "FacilityTimetable",
           params: {
@@ -116,6 +117,9 @@ export default {
       }
     },
     onSelect(event) {
+      if (!this.isEmployeeOrManager) {
+        return;
+      }
       const s = event.start.toISOString();
       const e = event.end.toISOString();
 
@@ -129,7 +133,9 @@ export default {
       this.$bvModal.hide("preview-activity-modal");
     },
     onSessionCreate({ createBooking: redirectToBooking, ...event }) {
-      console.log(event);
+      if (!this.isEmployeeOrManager) {
+        return;
+      }
       if (redirectToBooking) {
         this.$router.push({
           name: "BookingPage",
@@ -143,6 +149,8 @@ export default {
             sessionId: event.sessionId
           }
         });
+      } else {
+        this.$bvModal.hide("create-activity-modal");
       }
     }
   },
@@ -163,10 +171,12 @@ export default {
         :plugins="calendarPlugins"
         :header="header"
         :selectable="true"
+        :selectOverlap="false"
         :selectMirror="true"
         :eventRender="drawEvent"
         :resourceRender="drawResource"
         :resize="false"
+        :eventOverlap="false"
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
         defaultView="resourceTimelineDay"
         aspectRatio="1"
@@ -181,6 +191,7 @@ export default {
         hide-footer
       >
         <SessionCreate
+          v-if="isEmployeeOrManager"
           @post="onSessionCreate($event)"
           :startTime="selectedSession.startTime"
           :endTime="selectedSession.endTime"

@@ -6,7 +6,7 @@ import TimetablePage from "@/views/TimetablePage";
 import BookingInformation from "@/views/BookingPage";
 import MembershipPage from "@/views/MembershipPage";
 import Profile from "@/views/Profile";
-import { authGuard } from "@/auth/helpers/auth.guard";
+import { authGuard, manager, employeeOrManager } from "@/auth/helpers/auth.guard";
 import BookingsTablePage from "@/views/BookingsTablePage";
 import ActivitiesTablePage from "@/views/ActivitiesTablePage";
 import WeeklyUsageGraphPage from "@/views/WeeklyUsageGraphPage";
@@ -102,7 +102,7 @@ const routes = [
     path: "/activitiestable",
     name: "ActivitiesTable",
     component: ActivitiesTablePage,
-    beforeEnter: authGuard,
+    beforeEnter: employeeOrManager,
     meta: {
       title: "Zenergy | Activity"
     }
@@ -128,7 +128,7 @@ const routes = [
     path: "/weeklyusage",
     name: "WeeklyUsage",
     component: WeeklyUsagePage,
-    beforeEnter: authGuard,
+    beforeEnter: manager,
     meta: {
       title: "View Weekly Usage"
     }

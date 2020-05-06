@@ -1,8 +1,5 @@
 package uk.ac.leeds.comp2913.api.ViewModel;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
@@ -14,6 +11,7 @@ public class ActivityTypeDTO extends RepresentationModel<ActivityTypeDTO> {
     private Date updated_at;
     private String name;
     private BigDecimal cost;
+    private Long facility_id;
 
     public ActivityTypeDTO(){}
 
@@ -66,4 +64,12 @@ public class ActivityTypeDTO extends RepresentationModel<ActivityTypeDTO> {
     }
 
     private Integer totalCapacity;
+
+    public void setFacilityId(Long id) {
+        this.facility_id = id;
+    }
+
+    public Long getFacility_id() {
+        return facility_id;
+    }
 }

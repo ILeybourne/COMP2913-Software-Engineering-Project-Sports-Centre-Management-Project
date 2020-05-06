@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.RegularSession;
+import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
 import uk.ac.leeds.comp2913.api.ViewModel.ActivityDTO;
 import uk.ac.leeds.comp2913.api.ViewModel.Assembler.ActivityDTOAssembler;
@@ -110,6 +111,8 @@ public class ActivityController {
             regularSession = null;
         }
         final Activity activity1 = activityService.createNewActivity(activity, activity_type_id, regularSession);
+        final Resource resource = activity1.getResource();
+        final RegularSession regularSession1 = activity1.getRegularSession();
         return activityDTOAssembler.toModel(activity1);
     }
 

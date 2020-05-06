@@ -15,7 +15,9 @@
           <b-nav-item to="/">Home</b-nav-item>
           <b-nav-item to="/timetable">Timetable</b-nav-item>
           <b-nav-item to="/facilities">Facilities</b-nav-item>
-          <b-nav-item to="/activitiestable">Activities</b-nav-item>
+          <b-nav-item to="/activitiestable" v-if="isEmployeeOrManager"
+            >Activities</b-nav-item
+          >
           <b-nav-item to="/membership">Membership</b-nav-item>
           <b-nav-item-dropdown text="Bookings">
             <b-dropdown-item to="/bookings">Create</b-dropdown-item>

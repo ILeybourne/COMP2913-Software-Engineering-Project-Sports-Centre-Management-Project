@@ -31,6 +31,7 @@
 <script>
 import Facility from "@/components/Facility.vue";
 import { mapGetters } from "vuex";
+// import orderBy from "lodash.orderby";
 
 export default {
   name: "Facilities",
@@ -38,8 +39,16 @@ export default {
     Facility
   },
   computed: {
-    ...mapGetters("facilities", ["facilities", "facilitiesLoading"]),
-    ...mapGetters("auth", ["isEmployeeOrManager"])
+    ...mapGetters("facilities", {
+      unsorted: "facilities",
+      facilitiesLoading: "facilitiesLoading"
+    }),
+    ...mapGetters("auth", ["isEmployeeOrManager"]),
+    facilities() {
+      return this.unsorted.slice().sort((a, b) => {
+        return ("" + a.name).localeCompare(b.name);
+      });
+    }
   }
 };
 </script>

@@ -56,7 +56,7 @@ public class ActivityType {
      * TODO: shouldn't eager load
      * Which resource the activity needs to take place
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
 

@@ -1,6 +1,7 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
@@ -47,7 +48,8 @@ public class TimetableController {
   @Operation(summary = "Get Timetable",
           description = "Get list of all activities for all facilities #1")
   public PagedModel<ActivityDTO> getTimetable(Pageable pageable) {
-      PagedModel<ActivityDTO> timetableForAllFacilities = pagedResourcesAssembler.toModel((activityService.findAllWithResources(pageable)), activityDTOAssembler);
+      final Page<Activity> activities = activityService.findAllWithResources(pageable);
+      PagedModel<ActivityDTO> timetableForAllFacilities = pagedResourcesAssembler.toModel(activities, activityDTOAssembler);
       //Create unique links for each activity
       for (ActivityDTO activity : timetableForAllFacilities) {
           activity.add(linkTo(ResourceController.class).slash(activity.getResource().getId()).withRel("Resource"));

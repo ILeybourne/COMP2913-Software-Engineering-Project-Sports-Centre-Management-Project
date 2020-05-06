@@ -99,10 +99,10 @@ public class ResourceController {
     @DeleteMapping("/{resource_id}")
     @Operation(summary = "delete a facility",
             description = "Delete a facility")
-    @PreAuthorize("hasAuthority('SCOPE_delete:resource')")
+    @PreAuthorize("hasAuthority('SCOPE_delete:resources')")
     public ResponseEntity<?> deleteResource(@Parameter(description = "The ID of the facility/resource", required = true) @PathVariable Long resource_id) {
         resourceService.deleteById(resource_id);
-        return ResponseEntity.ok()
+        return ResponseEntity.noContent()
                 .build();
     }
 
@@ -112,6 +112,7 @@ public class ResourceController {
             description = "Upload an image of the facility to the server to be displayed on the facilities page"
     )
     @PostMapping("upload/{resource_id}")
+    @PreAuthorize("hasAuthority('SCOPE_update:resources')")
     public ResourceDTO uploadImage(@Parameter(description = "The ID of the facility", required = true) @PathVariable Long resource_id, @RequestParam("image") MultipartFile image) {
         // Save image to S3
         // Check image size
