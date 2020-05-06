@@ -86,9 +86,9 @@ export default {
 
       let capacity = "";
       if (options.totalCapacity !== null) {
-        capacity = ` - ${currentCapacity}/${totalCapacity}`;
+        capacity = `- ${currentCapacity}/${totalCapacity}`;
       }
-      eventInfo.el.innerText = `${event.title}${capacity}`;
+      eventInfo.el.innerText = `${event.title} ${capacity}`;
     },
     drawResource(e) {
       // Add a link to the timetable for that facility
@@ -149,6 +149,8 @@ export default {
             sessionId: event.sessionId
           }
         });
+      } else {
+        this.$bvModal.hide("create-activity-modal");
       }
     }
   },
