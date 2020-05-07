@@ -129,6 +129,7 @@
               size="lg"
               name="radio-btn-outline"
               style="width: 100%"
+              @change="setRegularSession()"
             ></b-form-radio-group>
           </b-form-group>
         </div>
@@ -237,7 +238,7 @@ export default {
         selectedTime: null,
         participants: null,
         selectedSessionId: null,
-        regularSession: null
+        regularSession: false
       },
       facilityOptions: [],
       activityOptions: [],
@@ -277,6 +278,14 @@ export default {
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
 
+    setRegularSession() {
+      if (this.regularBookingOption === "No"){
+        this.bookingInformation.regularSession = false
+      } else {
+        this.bookingInformation.regularSession = true
+      }
+    },
+
     validateParticipants(){
       if (Number(this.bookingInformation.participants) === 0 ){
         this.participantsValid = false
@@ -287,7 +296,7 @@ export default {
     },
 
     checkRegularSession() {
-      if (this.selectedSessionId != null) {
+      if (this.bookingInformation.selectedSessionId != null) {
         console.log(this.sessions.find(
                 s => s.id === this.bookingInformation.selectedSessionId
         ))
@@ -295,8 +304,10 @@ export default {
           this.sessions.find(
             s => s.id === this.bookingInformation.selectedSessionId
           ).regularSessionId != null;
+      }else{
+
+        this.isRegularSession = false;
       }
-      this.isRegularSession = false;
     },
 
     async setMaxParticipants() {
@@ -336,6 +347,8 @@ export default {
     },
 
     setActivityName(e) {
+      this.bookingInformation.selectedSessionId = null;
+      this.bookingInformation.selectedTime = null;
       if (e != null) {
         this.activitiesValid = true
         this.bookingInformation.selectedActivityName = this.activities.find(
@@ -377,6 +390,8 @@ export default {
 
     async setActivityTypeOptions(e) {
       this.bookingInformation.selectedActivityId = null;
+      this.bookingInformation.selectedSessionId = null;
+      this.bookingInformation.selectedTime = null;
       if (!(e == null)) {
         const activityTypesRequest = await this.$http.get(
           "http://localhost:8000/activitytypes/resource/" + e
@@ -509,7 +524,8 @@ export default {
         this.bookingInformation.selectedSessionId = sessionId;
         this.getSelectedTime(sessionId);
         this.timeValid = true;
-
+        this.setMaxParticipants();
+        this.checkRegularSession();
         this.getPrice();
       }
     },
