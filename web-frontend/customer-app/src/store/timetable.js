@@ -80,11 +80,9 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return session;
   },
-  async getBookings({ commit }, body) {
+  async getBookings({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.get(
-      `/bookings/email/${body.email}/${body.isAuthorised}`
-    );
+    const { data } = await axios.get(`/bookings/email/`);
     let bookings = [];
     if (data._embedded) {
       bookings = data._embedded.bookingDToes;
@@ -104,6 +102,19 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return bookings;
   },
+//async getBookingByEmail({ commit, email }) {
+//  commit("loading/START_LOADING", null, { root: true });
+//  const { data } = await axios.get(`/bookings/email/${email}/`);
+//  console.log("User Email From Store");
+//  console.log(email);
+//  let bookings = [];
+//  if (data._embedded) {
+//    bookings = data._embedded.bookingDToes;
+//  }
+//  commit("SET_BOOKINGS", bookings);
+//  commit("loading/FINISH_LOADING", null, { root: true });
+//  return bookings;
+//},
   async deleteBooking({ commit }, bookingId) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.delete(`/bookings/${bookingId}`);

@@ -1,56 +1,21 @@
 <template>
-  <v-data-table :headers="headers" :items="dataWithActivities">
-    <template v-slot:top>
-      <v-toolbar flat color="white">
-        <v-spacer></v-spacer>
-        <v-dialog max-width="500px"> </v-dialog>
-      </v-toolbar>
-      <v-btn color="primary" dark class="mb-2" @click="showNewBooking()"
-        >New Booking</v-btn
-      >
-      <b-modal id="edit-modal" title="Edit Booking" @ok="updateTable()">
-        <b-form>
-          <b-form-group
-            id="resource.name"
-            label="Facility"
-            label-for="FacilityName"
-            ><b-form-select
-              id="FacilityName"
-              :options="setFacilityOptions()"
-              v-model="selectedBooking.facility"
-              required
-            ></b-form-select>
-          </b-form-group>
-          <b-form-group id="name" label="Booking" label-for="BookingName">
-            <b-form-input
-              id="BookingName"
-              v-model="selectedBooking.name"
-              required
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group id="startTime" label="Start Time" label-for="StartTime">
-            <b-form-input
-              id="StartTime"
-              v-model="selectedBooking.startTime"
-              required
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group id="endTime" label="End Time" label-for="EndTime">
-            <b-form-input
-              id="EndTime"
-              v-model="selectedBooking.endTime"
-              required
-            ></b-form-input>
-          </b-form-group>
-        </b-form>
-      </b-modal>
-    </template>
-    <template v-slot:item.actions="{ item }">
-      <v-icon small @click="showDelete(item)">
-        mdi-delete
-      </v-icon>
-    </template>
-  </v-data-table>
+  <div>
+    <v-text-field
+      v-model="query"
+      append-icon="mdi-magnify"
+      label="Search"
+      single-line
+      hide-details
+    ></v-text-field>              <v-btn @click="search">search</v-btn>
+
+    <v-data-table :headers="headers" :items="dataWithActivities">
+      <template v-slot:item.actions="{ item }">
+        <v-icon small @click="showDelete(item)">
+          mdi-delete
+        </v-icon>
+      </template>
+    </v-data-table>
+  </div>
 </template>
 
 <style scoped></style>
@@ -127,7 +92,8 @@ export default {
         endTime: null
       },
       dataWithActivities: [],
-      email: null
+      email: null,
+      query: null
     };
   },
   computed: {
@@ -198,19 +164,38 @@ export default {
     },
     addBooking() {
       console.log("addBooking");
+    },
+    search() {
+      console.log("query");
+      let query = this.query;
+      let filteredBookings = [];
+      for (const booking of this.dataWithActivities) {
+        console.log("data");
+        console.log(booking);
+        if (booking.accountId === query){
+          console.log("found booking");
+          console.log(booking)
+          filteredBookings.push(booking)
+        }
+      }
+      console.log("filtered")
+      console.log(filteredBookings)
+      this.dataWithActivities = filteredBookings;
     }
-  },
+ },
 
   async mounted() {
     await this.getActivity();
     await this.getSessions();
-    let body = {
-      email: this.$auth.user.email,
-      isAuthorised: this.isEmployeeOrManager
-    };
-    await this.getBooking(body);
+  //  let body = {
+  //    email: this.$auth.user.email,
+  //    isAuthorised: this.isEmployeeOrManager
+  //  };
+    await this.getBooking();
     await this.getFacilities();
+    //console.log(this.bookings);
     this.dataWithActivities = await this.getRelatedActivity();
+    //console.log(this.dataWithActivities);
   }
 };
 </script>

@@ -1,10 +1,26 @@
 package uk.ac.leeds.comp2913.api.Controller;
 
+import com.amazonaws.Request;
+import com.amazonaws.services.codecommit.model.UserInfo;
+import com.amazonaws.services.ec2.model.UserData;
+
+import org.apache.catalina.mapper.Mapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +29,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
+
 import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +57,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequestMapping("/bookings")
 
 public class BookingController {
+    Logger logger = LoggerFactory.getLogger(BookingController.class);
     private final BookingService bookingService;
     private final PagedResourcesAssembler<Booking> pagedResourcesAssembler;
     private final BookingPagedResourcesAssembler bookingPagedResourcesAssembler;
@@ -50,12 +70,12 @@ public class BookingController {
         this.bookingPagedResourcesAssembler = bookingPagedResourcesAssembler;
     }
 
-    @GetMapping("")
-    @Operation(summary = "Get a list of all bookings",
-            description = "Get list of all bookings with basic information, self link provides more details")
-    public PagedModel<BookingDTO> getBookings(Pageable pageable) {
-        return pagedResourcesAssembler.toModel((bookingService.findAll(pageable)), bookingPagedResourcesAssembler);
-    }
+ //  @GetMapping("")
+ //  @Operation(summary = "Get a list of all bookings",
+ //          description = "Get list of all bookings with basic information, self link provides more details")
+ //  public PagedModel<BookingDTO> getBookings(Pageable pageable) {
+ //      return pagedResourcesAssembler.toModel((bookingService.findAll(pageable)), bookingPagedResourcesAssembler);
+ //  }
 
     @GetMapping("/{booking_id}")
     @Operation(summary = "Get a specific booking",
@@ -68,10 +88,26 @@ public class BookingController {
     }
 
 
-    @GetMapping("/email/{email}/{isManager}")
+    @GetMapping("/email/")
     @Operation(summary = "Get the logged in users bookings or all if staff/manager",
             description = "returns a list of bookings placed by the logged in user or all bookings if staff")
-    public PagedModel<BookingDTO> getBookingsByEmail(Pageable pageable, @Parameter(description = "The logged in users email and a boolean whether the user if staff", required = true)@PathVariable String email, @PathVariable Boolean isManager) {
+    public PagedModel<BookingDTO> getBookingsByEmail(Pageable pageable, @AuthenticationPrincipal String user) {
+        logger.info(user);
+      //  String tokenValue = user.getTokenValue();
+      //  //String data = user.getUsername();
+      //  //user.get
+      //  String authUsername = user.getSubject();
+      // // String mapper = user.getHeaders().toString();
+      //  //Request<UserInfo> request = auth.userInfo(tokenValue);
+//
+      //  logger.info(tokenValue);
+      //  logger.info(user.getSubject());
+      //  logger.info(authUsername);
+        // logger.info(tokenValue);
+      //  logger.info(authUsername);
+      //  logger.info(mapper);
+        String email = null;
+        Boolean isManager = false;
         return pagedResourcesAssembler.toModel((bookingService.findByEmail(pageable, email, isManager)), bookingPagedResourcesAssembler);
     }
 
