@@ -371,12 +371,12 @@ export default {
         }
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
-          `/payments/intent/card/` + id, //this.customerId,
+          `/payments/intent/card/` + id,
           body
         );
       } else {
         paymentIntent = await this.$http.post(
-          `/payments/guest-intent/`, //this.customerId,
+          `/payments/guest-intent/`,
           body
         );
       }
@@ -507,11 +507,12 @@ export default {
   },
 
   async mounted() {
-    await this.getAllCustomers();
     if (this.$route.params.membershipDetails != null) {
       this.setMembershipDetails();
       this.isMembership = true;
     }
+    debugger
+    debugger
     if (this.$route.params.bookingDetails != null) {
       this.setBookingDetails();
       this.isBooking = true;
@@ -520,6 +521,7 @@ export default {
       this.setFormData();
     }
     this.configureStripe();
+    await this.getAllCustomers();
     this.getCustomer();
   }
 };
