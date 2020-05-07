@@ -67,6 +67,14 @@ public class BookingController {
         return booking;
     }
 
+
+    @GetMapping("/email/{email}/{isManager}")
+    @Operation(summary = "Get the logged in users bookings or all if staff/manager",
+            description = "returns a list of bookings placed by the logged in user or all bookings if staff")
+    public PagedModel<BookingDTO> getBookingsByEmail(Pageable pageable, @Parameter(description = "The logged in users email and a boolean whether the user if staff", required = true)@PathVariable String email, @PathVariable Boolean isManager) {
+        return pagedResourcesAssembler.toModel((bookingService.findByEmail(pageable, email, isManager)), bookingPagedResourcesAssembler);
+    }
+
     @GetMapping("/account/{account_id}")
     @Operation(summary = "Get a list of bookings made by a specific account",
             description = "returns a list of bookings placed by a specific account")

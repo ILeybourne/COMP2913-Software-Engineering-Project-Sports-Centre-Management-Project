@@ -27,11 +27,13 @@ public interface BookingService {
 
   Booking save(Booking booking);
 
-  Account findAccountFromBooking(Long booking_id);
-
   Page<Booking> findByAccountId(Pageable pageable, Long account_id);
 
   Page<Booking> findByActivityId(Pageable pageable, Long activity_id);
+
+  Page<Booking> findByEmail(Pageable pageable, String email, Boolean isManager);
+
+  Account findAccountFromBooking(Long booking_id);
 
   Booking updateBooking(Long booking_id, Booking bookingRequest);
 
