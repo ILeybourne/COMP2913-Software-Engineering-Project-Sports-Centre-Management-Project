@@ -39,8 +39,7 @@
                 validateActivity(),
                 getPrice(),
                 getTimes(),
-                setActivityName($event),
-                setMaxParticipants($event)
+                setActivityName($event)
               ]
             "
             v-bind:state="activitiesValid"
@@ -67,7 +66,14 @@
             name="time"
             id="time"
             v-bind:state="timeValid"
-            @change="[validateTime(), getSelectedTime($event)]"
+            @change="
+              [
+                validateTime(),
+                getSelectedTime($event),
+                checkRegularSession(),
+                setMaxParticipants()
+              ]
+            "
             required
           >
           </b-form-select>
@@ -84,10 +90,22 @@
             step="1"
             type="number"
             min="1"
-            :disabled="!activitiesValid"
-            v-bind:max="bookingInformation.maxParticipants"
+            :disabled="
+              !activitiesValid &&
+                maxParticipants < 1 &&
+                maxParticipants !== null
+            "
+            v-bind:max="maxParticipants"
           >
           </b-form-input>
+        </div>
+        <div
+          class="form-row"
+          v-if="maxParticipants < 1 && maxParticipants !== null"
+        >
+          <div class="error">
+            Selected Activity is Full.
+          </div>
         </div>
         <div class="form-row">
           <label for="price" style="padding-top: 10px">Price:</label>
@@ -103,6 +121,21 @@
             ></b-form-input>
           </b-input-group>
         </div>
+        <div class="form-row" v-if="isMember && isRegularSession">
+          <label for="cardRadio">Regular<br />Booking:</label>
+          <b-form-group style="width: 90%;">
+            <b-form-radio-group
+              id="btn-radios-2"
+              v-model="regularBookingOption"
+              :options="['Yes', 'No']"
+              buttons
+              button-variant="outline-primary"
+              size="lg"
+              name="radio-btn-outline"
+              style="width: 100%"
+            ></b-form-radio-group>
+          </b-form-group>
+        </div>
 
         <div class="button-container">
           <!--          TODO function call on enter press-->
@@ -116,7 +149,7 @@
           >
             Checkout As Guest
           </button>
-          <b-col md="3"/>
+          <b-col md="3" />
           <button
             type="button"
             class="btn btn-outline-primary"
@@ -207,9 +240,9 @@ export default {
         selectedDate: null,
         selectedTime: null,
         participants: null,
-        selectedSessionId: null
+        selectedSessionId: null,
+        regularSession: null
       },
-
       facilityOptions: [],
       activityOptions: [],
       timeOptions: ["Please Select"],
@@ -220,7 +253,10 @@ export default {
       activitiesValid: null,
       dateValid: null,
       timeValid: null,
-      participantsValid: null
+      participantsValid: null,
+      regularBookingOption: "No",
+      isRegularSession: false,
+      maxParticipants: null
     };
   },
   props: {
@@ -230,17 +266,64 @@ export default {
     ...mapGetters("facilities", ["facilities", "activities"]),
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
+    ...mapGetters("membership", ["memberships"]),
+
     account: function() {
       return !this.isEmpty(this.user);
+    },
+
+    isMember: function() {
+      return this.memberships.length > 0;
     }
   },
   methods: {
+    ...mapActions("membership", ["getMemberships"]),
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
-    setMaxParticipants(activityId) {
-      this.maxParticipants = this.activities.find(
-        x => x.id === activityId
-      ).totalCapacity;
+
+    checkRegularSession() {
+      if (this.selectedSessionId != null) {
+        this.isRegularSession =
+          this.sessions.find(
+            s => s.id === this.bookingInformation.selectedSessionId
+          ).regularSessionId != null;
+      }
+      this.isRegularSession = false;
+    },
+
+    async setMaxParticipants() {
+      if (this.bookingInformation.selectedActivityId !== null) {
+        let data = await this.$http.get("/bookings");
+        console.log(data.data._embedded.bookingDToes);
+
+        let bookings = data.data._embedded.bookingDToes;
+        let customerCount = 0;
+
+        for (const booking of bookings) {
+          console.log( booking.session_id + " " +  this.bookingInformation.selectedSessionId)
+          if (
+            booking.session_id === this.bookingInformation.selectedSessionId
+          ) {
+            customerCount = customerCount + booking.participants;
+          }
+        }
+        console.log("customerCount")
+        console.log(customerCount)
+
+        console.log("max")
+        console.log( this.activities.find(
+                x => x.id === this.bookingInformation.selectedActivityId
+        ).totalCapacity)
+
+        this.maxParticipants =
+          this.activities.find(
+            x => x.id === this.bookingInformation.selectedActivityId
+          ).totalCapacity - customerCount;
+
+        if (this.maxParticipants < 1) {
+          this.bookingInformation.participants = "Activity is Full";
+        }
+      }
     },
 
     setActivityName(e) {
@@ -337,10 +420,7 @@ export default {
       this.dateValid = this.$data.date != null;
     },
     validateTime() {
-      this.timeValid = !(
-        this.bookingInformation.selectedTime == null ||
-        this.bookingInformation.selectedTime === this.timeOptions[0]
-      );
+      this.timeValid = this.bookingInformation.selectedSessionId !== null;
     },
 
     callValidation() {
@@ -362,13 +442,6 @@ export default {
         this.activitiesValid = true;
         this.dateValid = true;
         this.timeValid = true;
-        // this.bookingData = {
-        //   facility: this.fac;
-        //   activity: this.$route.params.bookingDetails.activity;
-        //   date: this.$route.params.bookingDetails.date;
-        //   time: this.$route.params.bookingDetails.time;
-        //   price: this.$route.params.bookingDetails.price;
-        // }
         this.$emit("getUserType", this.$data);
       } else {
         //Dont pass data and call validators
@@ -387,44 +460,6 @@ export default {
       }
     },
 
-    // // TODO, shouldn't access routes like this, use props and either inject with router or from booking page
-    // fillByQuery() {
-    //   this.setFacilityOptions();
-    //   this.activityOptions = [];
-    //   const facilityId = this.$route.query.facilityId;
-    //   const activityTypeId = this.$route.query.activityId;
-    //   const activityId = this.$route.query.sessionId;
-    //   if (!this.isEmpty(this.$route.query)) {
-    //     //If query isn't empty fill ids, bookingInformation.selectedDate and timeOptions
-    //     this.bookingInformation.selectedFacilityId = facilityId;
-    //     this.setActivityTypeOptions(facilityId);
-    //     this.bookingInformation.selectedActivityId = activityTypeId;
-    //     this.bookingInformation.selectedActivityName = this.activities.find(
-    //       x =>
-    //         Number(x.id) === Number(this.bookingInformation.selectedActivityId)
-    //     ).name;
-    //     this.selectActivityName();
-    //     let selectedDateUnix = this.sessions.find(x => x.id == activityId)
-    //       .startTime;
-    //     let selectedDate = new Date(selectedDateUnix);
-    //     const year = selectedDate.getFullYear();
-    //     const month = "0" + parseInt(selectedDate.getMonth() + 1).toString();
-    //     const date = "0" + selectedDate.getDate();
-    //     const hours = "0" + selectedDate.getHours();
-    //     const mins = "0" + selectedDate.getMinutes();
-    //     const formattedDate =
-    //       year + "-" + month.substr(-2) + "-" + date.substr(-2);
-    //     const forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
-    //
-    //     this.bookingInformation.selectedDate = formattedDate;
-    //
-    //     this.timeOptions.push(forrmattedTime);
-    //     this.bookingInformation.selectedTime = forrmattedTime;
-    //     this.getPrice(activityTypeId);
-    //     this.callValidation();
-    //   }
-    // },
-
     async fillByParams() {
       this.setFacilityOptions();
       this.activityOptions = [];
@@ -437,7 +472,7 @@ export default {
 
         this.bookingInformation.selectedFacilityId = facilityId;
         this.setFacilityName(facilityId);
-        this.facilityValid = true
+        this.facilityValid = true;
         await this.setActivityTypeOptions(facilityId);
 
         this.bookingInformation.selectedActivityId = activityTypeId;
@@ -458,12 +493,12 @@ export default {
         const formattedDate =
           year + "-" + month.substr(-2) + "-" + date.substr(-2);
         this.bookingInformation.selectedDate = formattedDate;
-        this.dateValid = true
+        this.dateValid = true;
 
         this.getTimes();
         this.bookingInformation.selectedSessionId = sessionId;
-        this.getSelectedTime(sessionId)
-        this.timeValid = true
+        this.getSelectedTime(sessionId);
+        this.timeValid = true;
 
         this.getPrice();
       }
@@ -523,6 +558,7 @@ export default {
     await this.getFacilities();
     await this.getActivities();
     await this.getAllSessions();
+    await this.getMemberships();
     await this.fillByParams();
   }
 };
