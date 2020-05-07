@@ -1,9 +1,9 @@
 <template>
-  <div id="profile-container">
+  <div>
     <div class="heading-div">
       <h1>My <span>Account</span></h1>
     </div>
-    <div class="row">
+    <div id="profile-container" class="row">
       <div id="left-column" class="col-sm-7">
         <div id="profile-info-container" class="container">
           <div class="row">
@@ -20,10 +20,10 @@
               <ul id="user-info" class="container list-unstyled">
                 <li>{{ $auth.user.name }}</li>
                 <li>{{ $auth.user.email }}</li>
-                <li>
-                  <a href="/bookingtable" title="BookingsTable">My Bookings</a>
-                </li>
               </ul>
+              <router-link id="bookings-button" to="/bookingtable"
+                >My Bookings</router-link
+              >
             </div>
           </div>
         </div>
@@ -188,20 +188,28 @@ export default {
 
 <style scoped>
 #profile-container {
-  padding: 5% 8%;
+  margin-top: 80px;
+  padding: 5%;
   background: #f6f9fa;
 }
 #left-column {
   min-width: 300px;
 }
 #profile-info-container {
-  padding: 40px 20px;
+  padding: 40px 0;
 }
 #profile-picture {
   width: 200px;
 }
 #user-info {
   padding: 20px 0;
+  font-size: larger;
+}
+#bookings-button {
+  font-weight: bolder;
+  color: #353535;
+  background: #fcff18;
+  padding: 5px 10px;
 }
 #right-column {
   align-self: center;
