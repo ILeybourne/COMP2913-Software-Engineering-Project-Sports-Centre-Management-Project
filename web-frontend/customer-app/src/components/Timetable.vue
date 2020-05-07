@@ -184,6 +184,7 @@ export default {
         maxTime="23:00:00"
         @eventClick="activityClick($event)"
         @select="onSelect($event)"
+        :timeZone="'UTC'"
       />
       <b-modal
         id="create-activity-modal"

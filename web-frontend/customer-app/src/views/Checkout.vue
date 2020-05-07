@@ -511,8 +511,6 @@ export default {
       this.setMembershipDetails();
       this.isMembership = true;
     }
-    debugger
-    debugger
     if (this.$route.params.bookingDetails != null) {
       this.setBookingDetails();
       this.isBooking = true;
