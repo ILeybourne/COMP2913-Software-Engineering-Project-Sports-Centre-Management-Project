@@ -104,7 +104,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { formatDate } from "@/util/format.helpers";
+import { formatDateYMD } from "@/util/format.helpers";
 
 export default {
   name: "Profile",
@@ -122,8 +122,8 @@ export default {
       return this.userActiveMemberships.map(membership => {
         return {
           ...membership,
-          formattedStartDate: formatDate(membership.startDate),
-          formattedEndDate: formatDate(membership.endDate)
+          formattedStartDate: formatDateYMD(membership.startDate),
+          formattedEndDate: formatDateYMD(membership.endDate)
         };
       });
     },
