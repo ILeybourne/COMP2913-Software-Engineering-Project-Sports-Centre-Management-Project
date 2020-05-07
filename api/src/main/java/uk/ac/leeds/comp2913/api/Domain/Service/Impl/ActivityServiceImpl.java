@@ -4,6 +4,7 @@ import com.stripe.exception.CardException;
 import com.stripe.exception.StripeException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,7 @@ public class ActivityServiceImpl implements ActivityService {
   private final PaymentService paymentService;
 
   @Autowired
-  public ActivityServiceImpl(ActivityRepository activityRepository, RegularSessionRepository regularSessionRepository, BookingRepository bookingRepository, ActivityTypeRepository activityTypeRepository, PaymentService paymentService) {
+  public ActivityServiceImpl(ActivityRepository activityRepository, RegularSessionRepository regularSessionRepository, BookingRepository bookingRepository, ActivityTypeRepository activityTypeRepository, @Lazy PaymentService paymentService) {
     this.activityRepository = activityRepository;
     this.regularSessionRepository = regularSessionRepository;
     this.bookingRepository = bookingRepository;

@@ -27,6 +27,7 @@ import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.ActivityType;
+import uk.ac.leeds.comp2913.api.Domain.Service.ActivityService;
 import uk.ac.leeds.comp2913.api.Domain.Service.ActivityTypeService;
 import uk.ac.leeds.comp2913.api.Domain.Service.CustomerService;
 import uk.ac.leeds.comp2913.api.Domain.Service.MembershipService;
@@ -42,17 +43,17 @@ public class PaymentServiceImpl implements PaymentService {
     private final CustomerRepository customerRepository;
     private final AccountRepository accountRepository;
     private final MembershipService membershipService;
-    private final ActivityTypeService activityTypeService;
+    private final ActivityService activityService;
     private final MembershipTypeService membershipTypeService;
     Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
     @Autowired
-    public PaymentServiceImpl(CustomerService customerService, CustomerRepository customerRepository, AccountRepository accountRepository, @Lazy MembershipService membershipService, ActivityTypeService activityTypeService, MembershipTypeService membershipTypeService) {
+    public PaymentServiceImpl(CustomerService customerService, CustomerRepository customerRepository, AccountRepository accountRepository, @Lazy MembershipService membershipService, ActivityService activityService, MembershipTypeService membershipTypeService) {
         this.customerService = customerService;
         this.customerRepository = customerRepository;
         this.accountRepository = accountRepository;
         this.membershipService = membershipService;
-        this.activityTypeService = activityTypeService;
+        this.activityService = activityService;
         this.membershipTypeService = membershipTypeService;
     }
 
@@ -78,18 +79,19 @@ public class PaymentServiceImpl implements PaymentService {
         return originalAmount.multiply(BigDecimal.valueOf(0.7));
     }
     public BigDecimal calculateBookingTotal(BigDecimal originalAmount, Boolean regularBooking, Integer participants, Boolean member){
+        logger.info("calculate booking");
         BigDecimal total = null;
         if(member){
             //If a member then apply the discount to 1xcost
             BigDecimal memberCost = memberBookingDiscount(originalAmount);
             //If the member is booking an activity with 1+ participants (incl themselves), charge the remaining participants the full cost
-            if(participants > 1){
+            if(participants >= 1 && !regularBooking){
                 BigDecimal participantsTotal = originalAmount.multiply(BigDecimal.valueOf((participants-1))); //if there is just 1 participant(member) then this will be 0
                 total = memberCost.add(participantsTotal); //calculate total
 
             }else if(regularBooking){
                 //regular session subscribers can only have 1 participant, so take the member cost and apply the further discount
-                total = memberCost.add(regularBookingPayment(memberCost));
+                total = regularBookingPayment(memberCost);
             }
         }
         else {
@@ -266,6 +268,7 @@ public class PaymentServiceImpl implements PaymentService {
         return responseBody;
     }
 
+
     //Account user checkout
     @Override
     public PayResponseBodyDTO createFromNewCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking, Integer participants) throws StripeException {
@@ -359,14 +362,46 @@ public class PaymentServiceImpl implements PaymentService {
         return responseBody;
     }
 
-    public BigDecimal getActivityTypeCost(Long activityTypeId) {
-        BigDecimal cost = activityTypeService.findById(activityTypeId).getCost();
+    public BigDecimal getBookingCharge(Long activity_id) {
+        BigDecimal cost = activityService.findActivityById(activity_id).getCost();
         return cost;
     }
 
     public BigDecimal getMembershipTypeCost(Long membershipTypeId) {
         BigDecimal cost = membershipTypeService.findMembershipTypeById(membershipTypeId).getCost();
         return cost;
+    }
+
+    public PayResponseBodyDTO cashPayment(String email, BigDecimal inputCost,Integer participants) {
+        BigDecimal salesCost = inputCost;
+        Account account = null;
+        Boolean member = false;
+        uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer = null;
+        if(customerRepository.findByEmailAddress(email) == null) {
+            internalCustomer = new uk.ac.leeds.comp2913.api.Domain.Model.Customer();
+            account = new Account();
+            internalCustomer.setEmailAddress(email);
+            account.setCustomer(internalCustomer);
+            customerRepository.save(internalCustomer);
+            accountRepository.save(account);
+        } else{
+            internalCustomer = customerRepository.findByEmailAddress(email);
+            if (membershipService.activeMemberCheck(email)) {
+                account = membershipService.getMemberAccount(internalCustomer.getId());
+                member = membershipService.activeMemberCheck(email);
+            } else {
+                account = new Account();
+                account.setCustomer(internalCustomer);
+                accountRepository.save(account);
+            }
+        }
+        salesCost = calculateBookingTotal(inputCost, false, participants, member);
+        PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
+        //Payment response, contains data required for posting booking record
+        responseBody.setTransactionId("Cash");
+        responseBody.setAccountId(account.getId()); //this gets the account record
+        responseBody.setAmountPaid(salesCost);
+        return responseBody;
     }
 }
 

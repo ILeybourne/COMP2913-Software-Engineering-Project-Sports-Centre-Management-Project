@@ -37,14 +37,14 @@ public class PaymentController {
         String emailAddress = requestBody.getEmail();
         Integer participants = 0;
         BigDecimal cost = null;
-        if(requestBody.getActivityTypeId() != null){
-            cost = paymentService.getActivityTypeCost(requestBody.getActivityTypeId());
+        if (requestBody.getSessionId() != null) {
+            cost = paymentService.getBookingCharge(requestBody.getSessionId());
             participants = requestBody.getParticipants();
         }
-        if(requestBody.getMembershipTypeId() != null){
+        if (requestBody.getMembershipTypeId() != null) {
             cost = paymentService.getMembershipTypeCost(requestBody.getMembershipTypeId());
         }
-        if (participants == null){
+        if (participants == null) {
             participants = 0;
         }
         return paymentService.create(emailAddress, cost, false, participants);
@@ -57,21 +57,21 @@ public class PaymentController {
         String emailAddress = requestBody.getEmail();
         Integer participants = 0;
         BigDecimal cost = null;
-        if(requestBody.getActivityTypeId() != null){
-            cost = paymentService.getActivityTypeCost(requestBody.getActivityTypeId());
+        if (requestBody.getSessionId() != null) {
+            cost = paymentService.getBookingCharge(requestBody.getSessionId());
             participants = requestBody.getParticipants();
         }
-        if(requestBody.getMembershipTypeId() != null){
+        if (requestBody.getMembershipTypeId() != null) {
             cost = paymentService.getMembershipTypeCost(requestBody.getMembershipTypeId());
         }
         Boolean regularSessionBooking = requestBody.getRegularSession();
-        if (regularSessionBooking == null){
+        if (regularSessionBooking == null) {
             regularSessionBooking = false;
         }
-        if (participants == null){
+        if (participants == null) {
             participants = 0;
         }
-        return  paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking, participants);
+        return paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking, participants);
     }
 
     //Customer Saved Card Payment
@@ -80,25 +80,38 @@ public class PaymentController {
         String emailAddress = requestBody.getEmail();
         Integer participants = 0;
         BigDecimal cost = null;
-        if(requestBody.getActivityTypeId() != null){
-            cost = paymentService.getActivityTypeCost(requestBody.getActivityTypeId());
+        if (requestBody.getSessionId() != null) {
+            cost = paymentService.getBookingCharge(requestBody.getSessionId());
             participants = requestBody.getParticipants();
         }
-        if(requestBody.getMembershipTypeId() != null){
+        if (requestBody.getMembershipTypeId() != null) {
             cost = paymentService.getMembershipTypeCost(requestBody.getMembershipTypeId());
         }
         Boolean regularSessionBooking = requestBody.getRegularSession();
-        if (regularSessionBooking == null){
+        if (regularSessionBooking == null) {
             regularSessionBooking = false;
         }
-        if (participants == null){
+        if (participants == null) {
             participants = 0;
         }
         return paymentService.createFromSavedCard(customer_id, emailAddress, cost, regularSessionBooking, participants);
     }
 
     @PostMapping(path = "/customer/stripe_id/{customer_id}")
-    public Boolean isStripeCustomer(@PathVariable Long customer_id){
+    public Boolean isStripeCustomer(@PathVariable Long customer_id) {
         return paymentService.isStripeCustomer(customer_id);
+    }
+
+    //Cash end point for walk in customers (employee feature)
+    @PostMapping(path = "/cash")
+    public PayResponseBodyDTO cashPayment(@RequestBody PaymentDTO requestBody) {
+        String emailAddress = requestBody.getEmail();
+        Integer participants = 0;
+        BigDecimal cost = null;
+        if (requestBody.getSessionId() != null) {
+            cost = paymentService.getBookingCharge(requestBody.getSessionId());
+            participants = requestBody.getParticipants();
+        }
+        return paymentService.cashPayment(emailAddress, cost, participants);
     }
 }
