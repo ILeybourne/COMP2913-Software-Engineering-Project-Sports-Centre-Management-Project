@@ -37,7 +37,6 @@
               [
                 // selectActivityName(),
                 validateActivity(),
-                getPrice(),
                 getTimes(),
                 setActivityName($event)
               ]
@@ -85,27 +84,24 @@
             name="bookingInformation.participants"
             id="bookingInformation.participants"
             v-bind:state="participantsValid"
-            @change="[getPrice()]"
+            @change="[getPrice(), validateParticipants()]"
             required
             step="1"
             type="number"
             min="1"
             :disabled="
-              !activitiesValid &&
-                maxParticipants < 1 &&
-                maxParticipants !== null
+              (!activitiesValid) ||
+                maxParticipants  < 1
             "
             v-bind:max="maxParticipants"
           >
           </b-form-input>
         </div>
         <div
-          class="form-row"
+          class="form-row" style="margin: auto"
           v-if="maxParticipants < 1 && maxParticipants !== null"
         >
-          <div class="error">
             Selected Activity is Full.
-          </div>
         </div>
         <div class="form-row">
           <label for="price" style="padding-top: 10px">Price:</label>
@@ -281,8 +277,20 @@ export default {
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
 
+    validateParticipants(){
+      if (Number(this.bookingInformation.participants) === 0 ){
+        this.participantsValid = false
+      }else{
+        this.participantsValid = true
+
+      }
+    },
+
     checkRegularSession() {
       if (this.selectedSessionId != null) {
+        console.log(this.sessions.find(
+                s => s.id === this.bookingInformation.selectedSessionId
+        ))
         this.isRegularSession =
           this.sessions.find(
             s => s.id === this.bookingInformation.selectedSessionId
@@ -321,13 +329,15 @@ export default {
           ).totalCapacity - customerCount;
 
         if (this.maxParticipants < 1) {
-          this.bookingInformation.participants = "Activity is Full";
+          this.bookingInformation.participants = 0;
+          this.participantsValid =false
         }
       }
     },
 
     setActivityName(e) {
       if (e != null) {
+        this.activitiesValid = true
         this.bookingInformation.selectedActivityName = this.activities.find(
           x => x.id === e
         ).name;
@@ -544,7 +554,11 @@ export default {
               }
             }
           }
-          this.timeOptions = timeArray;
+          if (this.bookingInformation.selectedDate != null){
+            this.timeOptions = timeArray;
+          }else{
+            this.timeOptions = null
+          }
         }
       }
     },
