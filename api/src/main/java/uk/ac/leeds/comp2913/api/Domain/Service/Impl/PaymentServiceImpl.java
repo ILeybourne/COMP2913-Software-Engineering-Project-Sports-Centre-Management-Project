@@ -74,10 +74,39 @@ public class PaymentServiceImpl implements PaymentService {
     public BigDecimal regularBookingPayment(BigDecimal originalAmount) {
         return originalAmount.multiply(BigDecimal.valueOf(0.7));
     }
+    public BigDecimal memberBookingDiscount(BigDecimal originalAmount) {
+        return originalAmount.multiply(BigDecimal.valueOf(0.7));
+    }
+    public BigDecimal calculateBookingTotal(BigDecimal originalAmount, Boolean regularBooking, Integer participants, Boolean member){
+        BigDecimal total = null;
+        if(member){
+            //If a member then apply the discount to 1xcost
+            BigDecimal memberCost = memberBookingDiscount(originalAmount);
+            //If the member is booking an activity with 1+ participants (incl themselves), charge the remaining participants the full cost
+            if(participants > 1){
+                BigDecimal participantsTotal = originalAmount.multiply(BigDecimal.valueOf((participants-1))); //if there is just 1 participant(member) then this will be 0
+                total = memberCost.add(participantsTotal); //calculate total
+
+            }else if(regularBooking){
+                //regular session subscribers can only have 1 participant, so take the member cost and apply the further discount
+                total = memberCost.add(regularBookingPayment(memberCost));
+            }
+        }
+        else {
+            //if not a member and not booking on to a regular session, then charge all participants full price
+            if(!regularBooking){
+                total = originalAmount.multiply(BigDecimal.valueOf(participants));
+            } else {
+                //otherwise if it is a regular session subscription, apply the discount
+                total = regularBookingPayment(originalAmount);
+            }
+        }
+        return total;
+    }
 
     //Guest Checkout
     @Override
-    public PayResponseBodyDTO create(String email, BigDecimal cost, Boolean regularSessionBooking) throws StripeException {
+    public PayResponseBodyDTO create(String email, BigDecimal cost, Boolean regularSessionBooking, Integer participants) throws StripeException {
         //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         PaymentIntent intent = null;
@@ -85,7 +114,13 @@ public class PaymentServiceImpl implements PaymentService {
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
         logger.info("request");
         logger.info("/guest-intent");
-        Long newCost = ((cost.multiply(new BigDecimal(100.0))).longValue());
+        BigDecimal salesCost = cost; //default sales cost from input
+        //If participants is greater than 0 then this is a booking payment, otherwise, if 0 then its a membership payment
+        if(participants != 0){
+            salesCost = calculateBookingTotal(cost, regularSessionBooking, participants, false); //guests are obviously not members so defaulted to false
+        }
+        Long newCost = ((salesCost.multiply(new BigDecimal(100.0))).longValue());
+        //create a new account for the guest checking out
         Account account = new Account();
         try {
             uk.ac.leeds.comp2913.api.Domain.Model.Customer internalCustomer = customerRepository.findByEmailAddress(email);
@@ -108,6 +143,7 @@ public class PaymentServiceImpl implements PaymentService {
                     customer = Customer.create(customerParams);
                 }
             }
+            //Assign account and email to new internal customer
             account.setCustomer(internalCustomer);
             internalCustomer.setEmailAddress(email);
             //TODO get DOB
@@ -126,6 +162,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             logger.info("💰 PaymentIntent created!");
 
+            //Generate the response, this data is used to post the booking from the front end
             responseBody.setClientSecret(intent.getClientSecret());
             responseBody.setAccountId(account.getId());
             responseBody.setAmountPaid(cost);
@@ -144,7 +181,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     //Quick Payement (from those who have cards saved on stripe)
     @Override
-    public PayResponseBodyDTO createFromSavedCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking) throws StripeException {
+    public PayResponseBodyDTO createFromSavedCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking, Integer participants) throws StripeException {
         //TODO Move to env
         Stripe.apiKey = "sk_test_m83VCMEjNPihns7LtK9BGD3z00Br6la5RX";
         PaymentIntent intent = null;
@@ -154,18 +191,22 @@ public class PaymentServiceImpl implements PaymentService {
         logger.info("/intent/saved/customer id");
         Account account = null;
         BigDecimal cost = null;
-        if (!regularSessionBooking) {
-            cost = inputCost;
-        } else if (regularSessionBooking) {
-            cost = regularBookingPayment(inputCost);
-        }
-        Long newCost = (cost.multiply(new BigDecimal(100.0))).longValue();
-        logger.info("new: " + cost.toString());
+        Boolean member = false;
+        //default sales cost to input cost
+        BigDecimal salesCost = inputCost;
+        //Check to see whether it is a member checking out, if so, use their account to record the sale
         if (membershipService.activeMemberCheck(email)) {
             account = membershipService.getMemberAccount(customer_id);
+            member = membershipService.activeMemberCheck(email);
         } else if (!membershipService.activeMemberCheck(email)) {
             account = new Account();
         }
+        //If participants is greater than 0 then this is a booking payment, otherwise, if 0 then its a membership payment
+        if(participants != 0){
+            salesCost = calculateBookingTotal(inputCost, regularSessionBooking, participants, member);
+        }
+        Long newCost = (salesCost.multiply(new BigDecimal(100.0))).longValue();
+        logger.info("new: " + newCost.toString());
         try {
             if (customerRepository.findById(customer_id).isPresent()) {
                 //Get API Customer
@@ -199,7 +240,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 //                  The payment is complete and the money has been moved
 //                  You can add any post-payment code here (e.g. shipping, fulfillment, etc)
-                if (!membershipService.activeMemberCheck(email)) { //creating a new account if user is not a member
+                if (!member) { //assigning the new account if user is not a member
                     account.setCustomer(internalCustomer);
                     accountRepository.save(account);
                 }
@@ -227,7 +268,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     //Account user checkout
     @Override
-    public PayResponseBodyDTO createFromNewCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking) throws StripeException {
+    public PayResponseBodyDTO createFromNewCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking, Integer participants) throws StripeException {
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
         BigDecimal cost = null;
         //TODO Move to env
@@ -237,19 +278,19 @@ public class PaymentServiceImpl implements PaymentService {
         Customer customer = null;
         logger.info("/intent/card/customer id");
         Account account = null;
-        if (!regularSessionBooking) {
-            cost = inputCost;
-        } else if (regularSessionBooking) {
-            cost = regularBookingPayment(inputCost);
-        }
-        Long newCost = (cost.multiply(new BigDecimal(100.0))).longValue();
-        logger.info("new: " + cost.toString());
+        Boolean member = false;
+        BigDecimal salesCost = inputCost;
         if (membershipService.activeMemberCheck(email)) {
             account = membershipService.getMemberAccount(customer_id);
+            member = membershipService.activeMemberCheck(email);
         } else if (!membershipService.activeMemberCheck(email)) {
             account = new Account();
         }
-
+        if(participants != 0){
+            salesCost = calculateBookingTotal(inputCost, regularSessionBooking, participants, member);
+        }
+        Long newCost = (salesCost.multiply(new BigDecimal(100.0))).longValue();
+        logger.info("new: " + newCost.toString());
         try {
             internalCustomer = customerRepository.findByEmailAddress(email);
             if (internalCustomer == null) {
@@ -299,9 +340,10 @@ public class PaymentServiceImpl implements PaymentService {
 
                 logger.info("💰 PaymentIntent created!");
 
+                //Payment response, contains data required for posting membership/booking record
                 responseBody.setClientSecret(intent.getClientSecret());
                 responseBody.setTransactionId(intent.getId());
-                responseBody.setAccountId(account.getId());
+                responseBody.setAccountId(account.getId()); //this gets the account record
                 responseBody.setAmountPaid(cost);
                 //get last account and assign it to response
             }

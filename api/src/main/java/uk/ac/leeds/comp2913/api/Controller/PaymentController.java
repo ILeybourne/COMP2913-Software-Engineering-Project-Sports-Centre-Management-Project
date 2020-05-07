@@ -35,14 +35,19 @@ public class PaymentController {
     @PostMapping(path = "/guest-intent/")
     public PayResponseBodyDTO create(@RequestBody PaymentDTO requestBody) throws StripeException {
         String emailAddress = requestBody.getEmail();
+        Integer participants = 0;
         BigDecimal cost = null;
         if(requestBody.getActivityTypeId() != null){
             cost = paymentService.getActivityTypeCost(requestBody.getActivityTypeId());
+            participants = requestBody.getParticipants();
         }
         if(requestBody.getMembershipTypeId() != null){
             cost = paymentService.getMembershipTypeCost(requestBody.getMembershipTypeId());
         }
-        return paymentService.create(emailAddress, cost, false);
+        if (participants == null){
+            participants = 0;
+        }
+        return paymentService.create(emailAddress, cost, false, participants);
     }
 
     //Customer New Card Payment
@@ -50,9 +55,11 @@ public class PaymentController {
     @PostMapping(path = "/intent/card/{customer_id}")
     public PayResponseBodyDTO createFromNewCard(@RequestBody PaymentDTO requestBody, @PathVariable Long customer_id) throws StripeException {
         String emailAddress = requestBody.getEmail();
+        Integer participants = 0;
         BigDecimal cost = null;
         if(requestBody.getActivityTypeId() != null){
             cost = paymentService.getActivityTypeCost(requestBody.getActivityTypeId());
+            participants = requestBody.getParticipants();
         }
         if(requestBody.getMembershipTypeId() != null){
             cost = paymentService.getMembershipTypeCost(requestBody.getMembershipTypeId());
@@ -61,17 +68,21 @@ public class PaymentController {
         if (regularSessionBooking == null){
             regularSessionBooking = false;
         }
-        return  paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking);
+        if (participants == null){
+            participants = 0;
+        }
+        return  paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking, participants);
     }
 
     //Customer Saved Card Payment
     @PostMapping(path = "/intent/saved/{customer_id}")
     public PayResponseBodyDTO createFromSavedCard(@RequestBody PaymentDTO requestBody, @PathVariable Long customer_id) throws StripeException {
         String emailAddress = requestBody.getEmail();
+        Integer participants = 0;
         BigDecimal cost = null;
         if(requestBody.getActivityTypeId() != null){
             cost = paymentService.getActivityTypeCost(requestBody.getActivityTypeId());
-
+            participants = requestBody.getParticipants();
         }
         if(requestBody.getMembershipTypeId() != null){
             cost = paymentService.getMembershipTypeCost(requestBody.getMembershipTypeId());
@@ -80,7 +91,10 @@ public class PaymentController {
         if (regularSessionBooking == null){
             regularSessionBooking = false;
         }
-        return paymentService.createFromSavedCard(customer_id, emailAddress, cost, regularSessionBooking);
+        if (participants == null){
+            participants = 0;
+        }
+        return paymentService.createFromSavedCard(customer_id, emailAddress, cost, regularSessionBooking, participants);
     }
 
     @PostMapping(path = "/customer/stripe_id/{customer_id}")

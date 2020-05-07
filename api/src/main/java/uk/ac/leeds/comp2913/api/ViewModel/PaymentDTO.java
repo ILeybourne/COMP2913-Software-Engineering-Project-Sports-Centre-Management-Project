@@ -10,6 +10,7 @@ public class PaymentDTO {
     private Boolean regularSession;
     private Long membershipTypeId;
     private Long activityTypeId;
+    private Integer participants;
 
     public Long getMembershipTypeId() {
         return membershipTypeId;
@@ -49,5 +50,13 @@ public class PaymentDTO {
 
     public void setRegularSession(Boolean regularSession) {
         this.regularSession = regularSession;
+    }
+
+    public Integer getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(Integer participants) {
+        this.participants = participants;
     }
 }
