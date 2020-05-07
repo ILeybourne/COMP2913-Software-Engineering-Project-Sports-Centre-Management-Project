@@ -6,12 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.BookingRepository;
@@ -19,13 +18,13 @@ import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.RegularSessionReposit
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
 import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
-import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
+import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
 import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
+import uk.ac.leeds.comp2913.api.Domain.Service.ReceiptService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
-import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
-import javax.validation.Valid;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -34,13 +33,15 @@ public class BookingServiceImpl implements BookingService {
   private final RegularSessionRepository regularSessionRepository;
   private final BookingRepository bookingRepository;
   private AccountRepository accountRepository;
+  private ReceiptService receiptService;
 
   @Autowired
-  public BookingServiceImpl(RegularSessionRepository regularSessionRepository, BookingRepository bookingRepository, ActivityRepository activityRepository, AccountRepository accountRepository) {
+  public BookingServiceImpl(RegularSessionRepository regularSessionRepository, BookingRepository bookingRepository, ActivityRepository activityRepository, AccountRepository accountRepository, ReceiptService receiptService) {
     this.regularSessionRepository = regularSessionRepository;
     this.bookingRepository = bookingRepository;
     this.activityRepository = activityRepository;
     this.accountRepository = accountRepository;
+    this.receiptService = receiptService;
   }
 
   @Override
@@ -112,7 +113,7 @@ public class BookingServiceImpl implements BookingService {
   //at a reduced rate
   @Override
   // TODO (@SebGarwood) Fix
-  public Booking createNewBookingForActivity(Booking booking, Long activity_id, Long account_id, Boolean regularBooking){
+  public Booking createNewBookingForActivity(Booking booking, Long activity_id, Long account_id, Boolean regularBooking) throws IOException, MessagingException {
     Activity a = activityRepository.findById(activity_id)
         .orElseThrow(() -> new ResourceNotFoundException("Activity not found for ID" + activity_id));
 
@@ -124,6 +125,9 @@ public class BookingServiceImpl implements BookingService {
       booking.setRegularSession(a.getRegularSession());
     }
     booking.setAmount(a.getCost());
+    List<Sale> list = new ArrayList<>();
+    list.add(booking);
+    receiptService.invoice(booking.getTransactionId(), list, account.getCustomer());
     bookingRepository.save(booking);
     return  booking;
   }
