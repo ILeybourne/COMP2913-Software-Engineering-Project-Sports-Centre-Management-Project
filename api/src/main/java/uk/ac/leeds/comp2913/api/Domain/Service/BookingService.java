@@ -31,7 +31,7 @@ public interface BookingService {
 
   Page<Booking> findByActivityId(Pageable pageable, Long activity_id);
 
-  Page<Booking> findByEmail(Pageable pageable, String email);
+  Page<Booking> findByEmail(Pageable pageable, String email, Boolean isManager);
 
   Account findAccountFromBooking(Long booking_id);
 

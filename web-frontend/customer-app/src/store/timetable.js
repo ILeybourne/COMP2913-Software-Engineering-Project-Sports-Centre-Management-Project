@@ -80,9 +80,11 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return session;
   },
-  async getBookings({ commit }) {
+  async getBookings({ commit }, body) {
     commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.get("/bookings");
+    const { data } = await axios.get(
+      `/bookings/email/${body.email}/${body.isAuthorised}`
+    );
     let bookings = [];
     if (data._embedded) {
       bookings = data._embedded.bookingDToes;

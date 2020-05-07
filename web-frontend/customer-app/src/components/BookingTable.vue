@@ -126,20 +126,23 @@ export default {
         startTime: null,
         endTime: null
       },
-      dataWithActivities: []
+      dataWithActivities: [],
+      email: null
     };
   },
   computed: {
     ...mapGetters("timetable", ["bookings"]),
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("facilities", ["facilities"])
+    ...mapGetters("facilities", ["facilities"]),
+    ...mapGetters("auth", ["isAuthenticated", "user", "isEmployeeOrManager"])
   },
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("timetable", {
       getBooking: "getBookings",
       deleteBooking: "deleteBooking",
+      getBookingByEmail: "getBookingByEmail",
       getSessions: "getAllSessions"
     }),
     ...mapActions("facilities", {
@@ -162,7 +165,7 @@ export default {
     showDelete(item) {
       console.log(item);
       const id = item.id;
-      const index = this.dataWithActivities.indexOf(item)
+      const index = this.dataWithActivities.indexOf(item);
       confirm("Are you sure you want to delete this item?") &&
         this.bookings.splice(index, 1) &&
         this.deleteBooking(id);
@@ -201,12 +204,13 @@ export default {
   async mounted() {
     await this.getActivity();
     await this.getSessions();
-    //console.log(this.activities);
-    await this.getBooking();
+    let body = {
+      email: this.$auth.user.email,
+      isAuthorised: this.isEmployeeOrManager
+    };
+    await this.getBooking(body);
     await this.getFacilities();
-    //console.log(this.bookings);
     this.dataWithActivities = await this.getRelatedActivity();
-    //console.log(this.dataWithActivities);
   }
 };
 </script>
