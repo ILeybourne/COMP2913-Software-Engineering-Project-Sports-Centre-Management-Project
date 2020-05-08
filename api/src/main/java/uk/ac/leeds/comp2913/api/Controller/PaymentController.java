@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,10 +55,14 @@ public class PaymentController {
     //Customer New Card Payment
     //TODO Move into response body
     @PostMapping(path = "/intent/card/{customer_id}")
-    public PayResponseBodyDTO createFromNewCard(@RequestBody PaymentDTO requestBody, @PathVariable Long customer_id) throws StripeException {
+    public PayResponseBodyDTO createFromNewCard(@RequestBody PaymentDTO requestBody, @PathVariable Long customer_id, @AuthenticationPrincipal Jwt user) throws StripeException {
         String emailAddress = requestBody.getEmail();
         Integer participants = 0;
         BigDecimal cost = null;
+        String username = null;
+        if(user.getSubject()!= null){
+            username = user.getSubject();
+        }
         if (requestBody.getSessionId() != null) {
             cost = paymentService.getBookingCharge(requestBody.getSessionId());
             participants = requestBody.getParticipants();
@@ -71,7 +77,7 @@ public class PaymentController {
         if (participants == null) {
             participants = 0;
         }
-        return paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking, participants);
+        return paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking, participants, username);
     }
 
     //Customer Saved Card Payment

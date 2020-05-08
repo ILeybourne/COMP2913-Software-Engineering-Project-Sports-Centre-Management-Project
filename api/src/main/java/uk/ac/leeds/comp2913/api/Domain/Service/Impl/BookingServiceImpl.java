@@ -84,8 +84,8 @@ public class BookingServiceImpl implements BookingService {
 
   @Transactional
   @Override
-  public Page<Booking>findByEmail(Pageable pageable, String email, Boolean isManager){
-    return bookingRepository.findAllbyEmail(pageable, email, isManager);
+  public Page<Booking>findByUsername(Pageable pageable, String authUsername, Boolean isManager){
+    return bookingRepository.findAllbyUsername(pageable, authUsername, isManager);
   }
 
   @Transactional

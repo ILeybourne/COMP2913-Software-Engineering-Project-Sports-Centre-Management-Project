@@ -1,10 +1,4 @@
 package uk.ac.leeds.comp2913.api.Controller;
-
-import com.amazonaws.Request;
-import com.amazonaws.services.codecommit.model.UserInfo;
-import com.amazonaws.services.ec2.model.UserData;
-
-import org.apache.catalina.mapper.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +7,10 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
@@ -95,12 +86,16 @@ public class BookingController {
     @GetMapping("/email/")
     @Operation(summary = "Get the logged in users bookings or all if staff/manager",
             description = "returns a list of bookings placed by the logged in user or all bookings if staff")
-    public PagedModel<BookingDTO> getBookingsByEmail(Pageable pageable, @AuthenticationPrincipal Jwt user) {
-        String authUsername = user.getSubject();
-        logger.info(authUsername);
-        String email = null;
+    public PagedModel<BookingDTO> getBookingsByEmail(Pageable pageable, @AuthenticationPrincipal Authentication user) {
         Boolean isManager = false;
-        return pagedResourcesAssembler.toModel((bookingService.findByEmail(pageable, email, isManager)), bookingPagedResourcesAssembler);
+        String authUsername = user.getName();
+        Collection<? extends GrantedAuthority> permissions = user.getAuthorities();
+        if(permissions.size() > 1){
+            isManager=true;
+        }
+        logger.info(authUsername);
+        logger.info(permissions.toString());
+        return pagedResourcesAssembler.toModel((bookingService.findByUsername(pageable, authUsername, isManager)), bookingPagedResourcesAssembler);
     }
 
     @GetMapping("/account/{account_id}")

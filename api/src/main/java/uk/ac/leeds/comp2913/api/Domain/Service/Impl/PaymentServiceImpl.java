@@ -271,7 +271,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     //Account user checkout
     @Override
-    public PayResponseBodyDTO createFromNewCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking, Integer participants) throws StripeException {
+    public PayResponseBodyDTO createFromNewCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking, Integer participants, String username) throws StripeException {
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
         BigDecimal cost = null;
         //TODO Move to env
@@ -301,6 +301,7 @@ public class PaymentServiceImpl implements PaymentService {
                 internalCustomer = new uk.ac.leeds.comp2913.api.Domain.Model.Customer();
                 internalCustomer.setEmailAddress(email);
                 internalCustomer.setDateOfBirth(new Date());
+                internalCustomer.setAuth0_username(username); //set auth0 username to currently logged in user. to be used when viewing records
                 customerRepository.save(internalCustomer);
                 customer_id = internalCustomer.getId();
                 logger.info("asdsasas");
@@ -321,7 +322,10 @@ public class PaymentServiceImpl implements PaymentService {
                                     .setEmail(email)
                                     .build();
                     customer = Customer.create(customerParams);
-                    internalCustomer.setStripeId(customer.getId());
+                    internalCustomer.setStripeId(customer.getId()); //Set the auth0 username to currently logged in user
+                    if(internalCustomer.getAuth0_username() == null && username != null){
+                        internalCustomer.setAuth0_username(username);
+                    }
                     customerRepository.save(internalCustomer);
                 }
 
