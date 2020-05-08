@@ -167,7 +167,7 @@ public class PaymentServiceImpl implements PaymentService {
             //Generate the response, this data is used to post the booking from the front end
             responseBody.setClientSecret(intent.getClientSecret());
             responseBody.setAccountId(account.getId());
-            responseBody.setAmountPaid(cost);
+            responseBody.setAmountPaid(new BigDecimal(newCost.toString()));
             responseBody.setTransactionId(intent.getId());
         } catch (CardException err) {
             // Handle "hard declines" e.g. insufficient funds, expired card, etc
@@ -192,7 +192,6 @@ public class PaymentServiceImpl implements PaymentService {
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
         logger.info("/intent/saved/customer id");
         Account account = null;
-        BigDecimal cost = null;
         Boolean member = false;
         //default sales cost to input cost
         BigDecimal salesCost = inputCost;
@@ -249,7 +248,7 @@ public class PaymentServiceImpl implements PaymentService {
                 responseBody.setClientSecret(intent.getClientSecret());
                 responseBody.setTransactionId(intent.getId());
                 responseBody.setAccountId(account.getId());
-                responseBody.setAmountPaid(cost);
+                responseBody.setAmountPaid(new BigDecimal(newCost.toString()));
                 Long account_id = account.getId();
                 logger.info("account: " + account_id.toString());
 
@@ -347,7 +346,8 @@ public class PaymentServiceImpl implements PaymentService {
                 responseBody.setClientSecret(intent.getClientSecret());
                 responseBody.setTransactionId(intent.getId());
                 responseBody.setAccountId(account.getId()); //this gets the account record
-                responseBody.setAmountPaid(cost);
+                responseBody.setAmountPaid(new BigDecimal(newCost.toString()));
+
                 //get last account and assign it to response
             }
         } catch (CardException err) {

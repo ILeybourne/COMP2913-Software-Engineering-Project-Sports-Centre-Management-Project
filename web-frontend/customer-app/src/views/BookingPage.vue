@@ -446,6 +446,8 @@ export default {
     },
 
     async createBooking() {
+      console.log("paymentResponse")
+      console.log(this.paymentResponse)
       try {
         const body = {
           accountId: this.paymentResponse.accountId, //if card payment then get from payment response body

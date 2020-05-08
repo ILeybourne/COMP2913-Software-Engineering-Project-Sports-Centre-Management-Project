@@ -355,8 +355,12 @@ export default {
             ) / 100
           ).toFixed(2);
         }
+
+        if (this.bookingInformation.participants === 0 || this.bookingInformation.participants == null){
+          this.price = 0.00.toFixed(2)
+        }
       } else {
-        this.price = 0;
+        this.price = 0.00.toFixed(2)
       }
     },
 
