@@ -69,7 +69,8 @@
                 validateTime(),
                 getSelectedTime($event),
                 checkRegularSession(),
-                setMaxParticipants()
+                setMaxParticipants(),
+                validateParticipants()
               ]
             "
             required
@@ -84,6 +85,7 @@
             id="bookingInformation.participants"
             v-bind:state="participantsValid"
             @change="[getPrice(), validateParticipants()]"
+            @keyup="validateParticipants"
             required
             step="1"
             type="number"
@@ -125,7 +127,7 @@
               size="lg"
               name="radio-btn-outline"
               style="width: 100%"
-              @change="[setRegularSession(),getPrice()]"
+              @change="[setRegularSession(), getPrice()]"
             ></b-form-radio-group>
           </b-form-group>
         </div>
@@ -323,32 +325,35 @@ export default {
     },
 
     getPrice() {
-      if (!this.bookingInformation.participants) {
-        this.bookingInformation.participants = 1;
-        this.participantsValid = true;
-      }
-
       if (this.bookingInformation.selectedActivityId != null) {
         let selectedActivity = this.activities.find(
           x => x.id === this.bookingInformation.selectedActivityId
         );
+        this.price = selectedActivity.cost;
+
+        if (this.isMember) {
+          this.price = selectedActivity.cost  * 0.7;
+        }
+
         if (this.bookingInformation.regularSession) {
-          this.price =
-                  ( Math.round(
-                    ((0.7 *
+          this.price = ( 0.7 * this.price +
+            Math.round(
+              (0.7 *
                 selectedActivity.cost *
-                Number(this.bookingInformation.participants)) +
+                (Number(this.bookingInformation.participants) - 1) +
                 Number.EPSILON) *
                 100
-            ) / 100) .toFixed(2);
+            ) / 100
+          ).toFixed(2);
         } else {
-          this.price =
-                  (Math.round(
+          this.price = ( this.price +
+            Math.round(
               (selectedActivity.cost *
-                Number(this.bookingInformation.participants) +
+                (Number(this.bookingInformation.participants) - 1) +
                 Number.EPSILON) *
                 100
-            ) / 100).toFixed(2);
+            ) / 100
+          ).toFixed(2);
         }
       } else {
         this.price = 0;
@@ -499,7 +504,22 @@ export default {
     },
 
     validateParticipants() {
-      if (Number(this.bookingInformation.participants) === 0) {
+      if (this.bookingInformation.participants == null) {
+        console.log("yes");
+        console.log(this.participantsValid);
+
+        this.participantsValid = true;
+        this.bookingInformation.participants = 1;
+      }
+      console.log(this.bookingInformation.participants);
+
+      if (this.bookingInformation.participants > this.maxParticipants) {
+        this.bookingInformation.participants = this.maxParticipants;
+      }
+      if (
+        Number(this.bookingInformation.participants) === 0 ||
+        this.bookingInformation.participants == null
+      ) {
         this.participantsValid = false;
       } else {
         this.participantsValid = true;
