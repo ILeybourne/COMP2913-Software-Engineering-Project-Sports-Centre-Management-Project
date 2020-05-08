@@ -8,7 +8,7 @@
       <b-row class="row">
         <b-col col lg="maxColSize " v-bind:class="{ 'd-none': hideBooking }">
           <BookingInformation
-                  :sessionInformatiom="sessionInformation"
+            :sessionInformatiom="sessionInformation"
             class="checkout-container"
             @getUserType="showGuestInfo"
           ></BookingInformation>
@@ -186,7 +186,7 @@ export default {
   },
   props: {
     activityPrice: Number,
-    activityType: Number,
+    activityType: Number
   },
   data() {
     return {
@@ -245,7 +245,6 @@ export default {
         transactionId: null
       },
       sessionInformation: Object
-
     };
   },
   computed: {
@@ -267,9 +266,9 @@ export default {
     ...mapActions("timetable", ["getAllSessions"]),
     formatCurrency: formatCurrency,
 
-    setSessionInformation(){
-      if(!isEmpty(this.$route.params))
-       this.sessionInformation = this.$route.params.sessionInformation;
+    setSessionInformation() {
+      if (!isEmpty(this.$route.params))
+        this.sessionInformation = this.$route.params.sessionInformation;
     },
 
     async getCustomer() {
@@ -425,7 +424,8 @@ export default {
             time: this.selectedTime,
             price: this.price,
             activityTypeId: this.selectedActivityId,
-            sessionId: this.selectedSessionId
+            sessionId: this.selectedSessionId,
+            regularBooking: this.regularBooking
           },
           paymentResponse: "cash"
         };
@@ -488,6 +488,7 @@ export default {
       this.price = value.price;
       this.selectedFacilityName = value.bookingInformation.selectedFacilityName;
       this.participants = value.bookingInformation.participants;
+      this.regularBooking = value.bookingInformation.regularSession;
       //Shows guest component
       this.hideGuest = false;
       if (value.userType == "guest") {
@@ -517,7 +518,8 @@ export default {
         date: newFormatDate,
         time: this.selectedTime,
         price: this.price,
-        participants: this.participants
+        participants: this.participants,
+        regularBooking: this.regularBooking
       };
       await this.$router.push({
         name: "Checkout",

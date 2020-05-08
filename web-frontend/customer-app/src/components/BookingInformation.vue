@@ -20,7 +20,6 @@
                 setFacilityName($event)
               ]
             "
-            @load="setFormDefaults($event)"
             v-bind:state="facilityValid"
             required
           >
@@ -89,26 +88,23 @@
             step="1"
             type="number"
             min="1"
-            :disabled="
-              (!activitiesValid) ||
-                maxParticipants  < 1
-            "
+            :disabled="!activitiesValid || maxParticipants < 1"
             v-bind:max="maxParticipants"
           >
           </b-form-input>
         </div>
         <div
-          class="form-row" style="margin: auto"
+          class="form-row"
+          style="margin: auto"
           v-if="maxParticipants < 1 && maxParticipants !== null"
         >
-            Selected Activity is Full.
+          Selected Activity is Full.
         </div>
         <div class="form-row">
           <label for="price" style="padding-top: 10px">Price:</label>
           <b-input-group size="lg" prepend="£" style="width: 90%">
             <b-form-input
               type="text"
-              step="0.01"
               id="price"
               name="price"
               v-model="price"
@@ -129,7 +125,7 @@
               size="lg"
               name="radio-btn-outline"
               style="width: 100%"
-              @change="setRegularSession()"
+              @change="[setRegularSession(),getPrice()]"
             ></b-form-radio-group>
           </b-form-group>
         </div>
@@ -225,6 +221,7 @@ label {
 <script>
 import { mapActions, mapGetters } from "vuex";
 import { isEmpty } from "../util/session.helpers";
+import { addZero } from "../util/format.helpers";
 export default {
   name: "BookingInformation",
   data() {
@@ -242,7 +239,7 @@ export default {
       },
       facilityOptions: [],
       activityOptions: [],
-      timeOptions: ["Please Select"],
+      timeOptions: [{ value: null, text: "" }],
       price: null,
       userType: null,
       componentWidth: 90,
@@ -266,11 +263,19 @@ export default {
     ...mapGetters("membership", ["memberships"]),
 
     account: function() {
-      return !this.isEmpty(this.user);
+      return !isEmpty(this.user);
     },
 
     isMember: function() {
       return this.memberships.length > 0;
+    },
+
+    computedRegularSessionStatus: function() {
+      if (this.regularBookingOption === "Yes") {
+        return true;
+      } else {
+        return false;
+      }
     }
   },
   methods: {
@@ -279,70 +284,23 @@ export default {
     ...mapActions("timetable", ["getAllSessions"]),
 
     setRegularSession() {
-      if (this.regularBookingOption === "No"){
-        this.bookingInformation.regularSession = false
-      } else {
-        this.bookingInformation.regularSession = true
-      }
-    },
-
-    validateParticipants(){
-      if (Number(this.bookingInformation.participants) === 0 ){
-        this.participantsValid = false
-      }else{
-        this.participantsValid = true
-
-      }
+      this.bookingInformation.regularSession = !this
+        .computedRegularSessionStatus;
     },
 
     checkRegularSession() {
       if (this.bookingInformation.selectedSessionId != null) {
-        console.log(this.sessions.find(
-                s => s.id === this.bookingInformation.selectedSessionId
-        ))
+        console.log(
+          this.sessions.find(
+            s => s.id === this.bookingInformation.selectedSessionId
+          )
+        );
         this.isRegularSession =
           this.sessions.find(
             s => s.id === this.bookingInformation.selectedSessionId
           ).regularSessionId != null;
-      }else{
-
+      } else {
         this.isRegularSession = false;
-      }
-    },
-
-    async setMaxParticipants() {
-      if (this.bookingInformation.selectedActivityId !== null) {
-        let data = await this.$http.get("/bookings");
-        console.log(data.data._embedded.bookingDToes);
-
-        let bookings = data.data._embedded.bookingDToes;
-        let customerCount = 0;
-
-        for (const booking of bookings) {
-          console.log( booking.session_id + " " +  this.bookingInformation.selectedSessionId)
-          if (
-            booking.session_id === this.bookingInformation.selectedSessionId
-          ) {
-            customerCount = customerCount + booking.participants;
-          }
-        }
-        console.log("customerCount")
-        console.log(customerCount)
-
-        console.log("max")
-        console.log( this.activities.find(
-                x => x.id === this.bookingInformation.selectedActivityId
-        ).totalCapacity)
-
-        this.maxParticipants =
-          this.activities.find(
-            x => x.id === this.bookingInformation.selectedActivityId
-          ).totalCapacity - customerCount;
-
-        if (this.maxParticipants < 1) {
-          this.bookingInformation.participants = 0;
-          this.participantsValid =false
-        }
       }
     },
 
@@ -350,7 +308,7 @@ export default {
       this.bookingInformation.selectedSessionId = null;
       this.bookingInformation.selectedTime = null;
       if (e != null) {
-        this.activitiesValid = true
+        this.activitiesValid = true;
         this.bookingInformation.selectedActivityName = this.activities.find(
           x => x.id === e
         ).name;
@@ -374,8 +332,24 @@ export default {
         let selectedActivity = this.activities.find(
           x => x.id === this.bookingInformation.selectedActivityId
         );
-        this.price =
-          selectedActivity.cost * Number(this.bookingInformation.participants);
+        if (this.bookingInformation.regularSession) {
+          this.price =
+                  ( Math.round(
+                    ((0.7 *
+                selectedActivity.cost *
+                Number(this.bookingInformation.participants)) +
+                Number.EPSILON) *
+                100
+            ) / 100) .toFixed(2);
+        } else {
+          this.price =
+                  (Math.round(
+              (selectedActivity.cost *
+                Number(this.bookingInformation.participants) +
+                Number.EPSILON) *
+                100
+            ) / 100).toFixed(2);
+        }
       } else {
         this.price = 0;
       }
@@ -392,6 +366,7 @@ export default {
       this.bookingInformation.selectedActivityId = null;
       this.bookingInformation.selectedSessionId = null;
       this.bookingInformation.selectedTime = null;
+      this.timeOptions = [{ value: null, text: "" }];
       if (!(e == null)) {
         const activityTypesRequest = await this.$http.get(
           "http://localhost:8000/activitytypes/resource/" + e
@@ -424,7 +399,82 @@ export default {
       }
       this.facilityOptions = facilityArray;
     },
-    setFormDefaults() {},
+
+    getTimes() {
+      if (this.bookingInformation.selectedDate != null) {
+        if (
+          this.bookingInformation.selectedFacilityId != null &&
+          this.bookingInformation.selectedActivityId != null
+        ) {
+          let timeArray = [
+            {
+              value: null,
+              text: "Please Select"
+            }
+          ];
+          for (const activity of this.sessions) {
+            let selectedTime = new Date(activity.startTime);
+            const year = selectedTime.getFullYear();
+            const month = addZero(
+              (parseInt(selectedTime.getMonth()) + 1).toString()
+            );
+            const date = addZero(selectedTime.getDate());
+            let hours = addZero(selectedTime.getUTCHours());
+            const mins = addZero(selectedTime.getMinutes());
+            let formattedDate = year + "-" + month + "-" + date;
+
+            let activityName = this.activityOptions.find(
+              x => x.value == this.bookingInformation.selectedActivityId
+            ).text;
+
+            if (
+              activity.name == activityName &&
+              formattedDate == this.bookingInformation.selectedDate
+            ) {
+              let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
+              if (!timeArray.includes(formattedDate)) {
+                timeArray.push({
+                  value: activity.id,
+                  text: formattedTime
+                });
+              }
+            }
+          }
+          if (this.bookingInformation.selectedDate != null) {
+            this.timeOptions = timeArray;
+          } else {
+            this.timeOptions = null;
+          }
+        }
+      }
+    },
+
+    async setMaxParticipants() {
+      if (this.bookingInformation.selectedActivityId !== null) {
+        let data = await this.$http.get("/bookings");
+
+        let bookings = data.data._embedded.bookingDToes;
+        let customerCount = 0;
+
+        for (const booking of bookings) {
+          if (
+            booking.session_id === this.bookingInformation.selectedSessionId
+          ) {
+            customerCount = customerCount + booking.participants;
+          }
+        }
+
+        this.maxParticipants =
+          this.activities.find(
+            x => x.id === this.bookingInformation.selectedActivityId
+          ).totalCapacity - customerCount;
+
+        if (this.maxParticipants < 1) {
+          this.bookingInformation.participants = 0;
+          this.participantsValid = false;
+        }
+      }
+    },
 
     getUserType(e) {
       this.userType = e.toElement.name;
@@ -448,11 +498,20 @@ export default {
       this.timeValid = this.bookingInformation.selectedSessionId !== null;
     },
 
+    validateParticipants() {
+      if (Number(this.bookingInformation.participants) === 0) {
+        this.participantsValid = false;
+      } else {
+        this.participantsValid = true;
+      }
+    },
+
     callValidation() {
       this.validateFacility();
       this.validateActivity();
       this.validateDate();
       this.validateTime();
+      this.validateParticipants();
     },
 
     // eslint-disable-next-line no-unused-vars
@@ -471,17 +530,6 @@ export default {
       } else {
         //Dont pass data and call validators
         this.callValidation();
-      }
-    },
-    isEmpty(obj) {
-      if (Object.keys(obj).length === 0) {
-        return true;
-      } else {
-        if (Object.keys(obj)[0] == "success") {
-          return false;
-        } else {
-          return false;
-        }
       }
     },
 
@@ -528,59 +576,6 @@ export default {
         this.checkRegularSession();
         this.getPrice();
       }
-    },
-
-    getTimes() {
-      if (this.bookingInformation.selectedDate != null) {
-        if (
-          this.bookingInformation.selectedFacilityId != null &&
-          this.bookingInformation.selectedActivityId != null
-        ) {
-          let timeArray = [
-            {
-              value: null,
-              text: "Please Select"
-            }
-          ];
-          for (const activity of this.sessions) {
-            let selectedTime = new Date(activity.startTime);
-            const year = selectedTime.getFullYear();
-            const month = this.addZero(
-              (parseInt(selectedTime.getMonth()) + 1).toString()
-            );
-            const date = this.addZero(selectedTime.getDate());
-            let hours = this.addZero(selectedTime.getUTCHours());
-            const mins = this.addZero(selectedTime.getMinutes());
-            let formattedDate = year + "-" + month + "-" + date;
-
-            let activityName = this.activityOptions.find(
-              x => x.value == this.bookingInformation.selectedActivityId
-            ).text;
-
-            if (
-              activity.name == activityName &&
-              formattedDate == this.bookingInformation.selectedDate
-            ) {
-              let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
-              if (!timeArray.includes(formattedDate)) {
-                timeArray.push({
-                  value: activity.id,
-                  text: formattedTime
-                });
-              }
-            }
-          }
-          if (this.bookingInformation.selectedDate != null){
-            this.timeOptions = timeArray;
-          }else{
-            this.timeOptions = null
-          }
-        }
-      }
-    },
-
-    addZero(value) {
-      return ("0" + value.toString()).slice(-2);
     }
   },
 

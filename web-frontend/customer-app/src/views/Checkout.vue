@@ -308,14 +308,15 @@ export default {
       this.card.mount("#card-element");
     },
     setBookingDetails() {
-      this.bookingDetails.facility = this.$route.params.bookingDetails.facility;
-      this.bookingDetails.activity = this.$route.params.bookingDetails.activity;
-      this.bookingDetails.date = this.$route.params.bookingDetails.date;
-      this.bookingDetails.time = this.$route.params.bookingDetails.time;
-      this.bookingDetails.price = this.$route.params.bookingDetails.price;
-      this.bookingDetails.activityTypeId = this.$route.params.bookingDetails.activityTypeId;
-      this.bookingDetails.sessionId = this.$route.params.bookingDetails.sessionId;
-      this.bookingDetails.participants = this.$route.params.bookingDetails.participants;
+      // this.bookingDetails.facility = this.$route.params.bookingDetails.facility;
+      // this.bookingDetails.activity = this.$route.params.bookingDetails.activity;
+      // this.bookingDetails.date = this.$route.params.bookingDetails.date;
+      // this.bookingDetails.time = this.$route.params.bookingDetails.time;
+      // this.bookingDetails.price = this.$route.params.bookingDetails.price;
+      // this.bookingDetails.activityTypeId = this.$route.params.bookingDetails.activityTypeId;
+      // this.bookingDetails.sessionId = this.$route.params.bookingDetails.sessionId;
+      // this.bookingDetails.participants = this.$route.params.bookingDetails.participants;
+      this.bookingDetails = this.$route.params.bookingDetails;
       this.price = this.$route.params.bookingDetails.price;
     },
     setMembershipDetails() {
@@ -352,7 +353,7 @@ export default {
           }
         },
         email: this.email,
-        regularSession: false,
+        regularSession: this.bookingDetails.regularBooking,
         cost: this.price
       };
 
@@ -457,7 +458,7 @@ export default {
           accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
           //TODO ADD participant field
           participants: this.bookingDetails.participants,
-          regularBooking: false, //need to be dynamic (cash payment defaulted to false, same for guest)
+          regularBooking: this.bookingDetails.regularBooking, //need to be dynamic (cash payment defaulted to false, same for guest)
           transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
           amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
         };
@@ -484,7 +485,7 @@ export default {
           },
           activityTypeId: this.bookingDetails.activityTypeId,
           email: this.email,
-          regularSession: false //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
+          regularSession: this.bookingDetails.regularBooking //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
         }
       );
       if (paymentIntent.status === 200) {
