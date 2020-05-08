@@ -91,21 +91,9 @@ public class BookingController {
     @GetMapping("/email/")
     @Operation(summary = "Get the logged in users bookings or all if staff/manager",
             description = "returns a list of bookings placed by the logged in user or all bookings if staff")
-    public PagedModel<BookingDTO> getBookingsByEmail(Pageable pageable, @AuthenticationPrincipal String user) {
-        logger.info(user);
-      //  String tokenValue = user.getTokenValue();
-      //  //String data = user.getUsername();
-      //  //user.get
-      //  String authUsername = user.getSubject();
-      // // String mapper = user.getHeaders().toString();
-      //  //Request<UserInfo> request = auth.userInfo(tokenValue);
-//
-      //  logger.info(tokenValue);
-      //  logger.info(user.getSubject());
-      //  logger.info(authUsername);
-        // logger.info(tokenValue);
-      //  logger.info(authUsername);
-      //  logger.info(mapper);
+    public PagedModel<BookingDTO> getBookingsByEmail(Pageable pageable, @AuthenticationPrincipal Jwt user) {
+        String authUsername = user.getSubject();
+        logger.info(authUsername);
         String email = null;
         Boolean isManager = false;
         return pagedResourcesAssembler.toModel((bookingService.findByEmail(pageable, email, isManager)), bookingPagedResourcesAssembler);
