@@ -20,6 +20,8 @@ const getters = {
       return {
         ...activity,
         formattedStartAt: formatDate(activity.startTime),
+        slot:
+          formatDate(activity.startTime) + " - " + formatDate(activity.endTime),
         isFull: sessionIsFull(activity)
       };
     }),
@@ -102,19 +104,6 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return bookings;
   },
-//async getBookingByEmail({ commit, email }) {
-//  commit("loading/START_LOADING", null, { root: true });
-//  const { data } = await axios.get(`/bookings/email/${email}/`);
-//  console.log("User Email From Store");
-//  console.log(email);
-//  let bookings = [];
-//  if (data._embedded) {
-//    bookings = data._embedded.bookingDToes;
-//  }
-//  commit("SET_BOOKINGS", bookings);
-//  commit("loading/FINISH_LOADING", null, { root: true });
-//  return bookings;
-//},
   async deleteBooking({ commit }, bookingId) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.delete(`/bookings/${bookingId}`);
@@ -141,7 +130,19 @@ const actions = {
     commit("ADD_SESSION", data);
     commit("loading/FINISH_LOADING", null, { root: true });
     return data;
-  }
+  },
+  async stopRegularSession({ commit }, body) {
+    let account_id = body.accountId;
+    let activity_id = body.activityId;
+    let bookingId = body.bookingId;
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.put(`/bookings/cancel/${activity_id}/${account_id}`);
+    commit("SET_BOOKINGS", [
+      ...state.bookings.filter(booking => booking.id !== bookingId),
+      data._embedded
+    ]);
+    commit("loading/START_LOADING", null, { root: true });
+  },
 };
 
 const namespaced = true;

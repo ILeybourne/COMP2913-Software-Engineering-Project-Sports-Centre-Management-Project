@@ -1,17 +1,41 @@
 <template>
   <div>
+    <v-container class="new-booking">
+      <button
+        type="submit"
+        value="submit"
+        class="site-btn"
+        v-on:click="directToBookingPage()"
+      >
+        Place Booking
+      </button>
+    </v-container>
     <v-text-field
       v-model="query"
       append-icon="mdi-magnify"
       label="Search"
       single-line
       hide-details
-    ></v-text-field>              <v-btn @click="search">search</v-btn>
+    ></v-text-field>
+    <v-btn @click="search">search</v-btn>
 
     <v-data-table :headers="headers" :items="dataWithActivities">
       <template v-slot:item.actions="{ item }">
-        <v-icon small @click="showDelete(item)">
+        <v-icon @click="showDelete(item)">
           mdi-delete
+        </v-icon>
+        <v-icon @click="showReceipt(item)">
+          mdi-printer
+        </v-icon>
+        <v-icon @click="emailReceipt(item)">
+          mdi-email
+        </v-icon>
+        <v-icon
+          v-if="item.regularBooking === true"
+          color="red"
+          @click="stopRegularSessionPayments(item)"
+        >
+          mdi-stop
         </v-icon>
       </template>
     </v-data-table>
@@ -22,6 +46,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { formatCurrency } from "@/util/format.helpers";
 
 export default {
   name: "BookingTable",
@@ -52,25 +77,27 @@ export default {
           sortable: false
         },
         {
-          value: "activity.formattedStartAt",
-          text: "Booking Time",
-          sortable: true
-        },
-        {
-          value: "activity.name",
-          text: "Session",
-          sortable: true
-        },
-        {
           value: "activity.resource.name",
           text: "Facility",
           sortable: true
         },
         {
-          value: "regularBooking",
-          text: "Subscribed",
+          value: "activity.name",
+          text: "Activity",
           sortable: true
         },
+        {
+          value: "activity.startTime",
+          text: "Date",
+          sortable: true
+        },
+        {
+          value: "activity.slot",
+          text: "Time Slot",
+          sortable: true
+        },
+        { value: "participants", text: "participants", sortable: true },
+        { value: "amount", text: "Total Cost", sortable: true },
         {
           value: "actions",
           text: "Actions",
@@ -109,7 +136,8 @@ export default {
       getBooking: "getBookings",
       deleteBooking: "deleteBooking",
       getBookingByEmail: "getBookingByEmail",
-      getSessions: "getAllSessions"
+      getSessions: "getAllSessions",
+      stopRegularSession: "stopRegularSession"
     }),
     ...mapActions("facilities", {
       getActivity: "getActivities",
@@ -151,12 +179,21 @@ export default {
         booking.activity = this.sessions.find(
           activity => Number(activity.id) === Number(booking.session_id)
         );
+        let date = new Date(booking.activity.startTime);
+        booking.activity.startTime =
+          date.getDate() +
+          "/" +
+          (date.getMonth() + 1) +
+          "/" +
+          date.getFullYear();
+        booking.amount = formatCurrency(booking.amount);
         ActivityArr.push(booking);
       }
       console.log("Activity Arr");
       console.log(ActivityArr);
       return ActivityArr;
     },
+
     updateTable() {
       const id = this.selectedBooking.id;
       this.dataWithActivities.find(booking => booking.id === id);
@@ -172,25 +209,40 @@ export default {
       for (const booking of this.dataWithActivities) {
         console.log("data");
         console.log(booking);
-        if (booking.accountId === query){
+        if (booking.accountId === query) {
           console.log("found booking");
-          console.log(booking)
-          filteredBookings.push(booking)
+          console.log(booking);
+          filteredBookings.push(booking);
         }
       }
-      console.log("filtered")
-      console.log(filteredBookings)
+      console.log("filtered");
+      console.log(filteredBookings);
       this.dataWithActivities = filteredBookings;
+    },
+    async directToBookingPage() {
+      await this.$router.push({
+        name: "BookingPage"
+      });
+    },
+    async stopRegularSessionPayments(booking) {
+      let body = {
+        bookingId: booking.id,
+        accountId: booking.accountId,
+        activityId: booking.activity.id
+      };
+      await this.stopRegularSession(body);
     }
- },
+    // emailReceipt(item){}
+    // showReceipt(item){}
+  },
 
   async mounted() {
     await this.getActivity();
     await this.getSessions();
-  //  let body = {
-  //    email: this.$auth.user.email,
-  //    isAuthorised: this.isEmployeeOrManager
-  //  };
+    //  let body = {
+    //    email: this.$auth.user.email,
+    //    isAuthorised: this.isEmployeeOrManager
+    //  };
     await this.getBooking();
     await this.getFacilities();
     //console.log(this.bookings);
