@@ -7,8 +7,12 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
+
+import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 public interface ReceiptService {
 
@@ -18,7 +22,7 @@ public interface ReceiptService {
    * @return receipt generated from sales
    */
   @Transactional
-  public Receipt invoice(String transactionId, Collection<Sale> sales, Customer customer);
+  public Receipt invoice(String transactionId, List<Sale> sales, Customer customer) throws IOException, MessagingException;
 
   public void delete(Long receiptId);
 

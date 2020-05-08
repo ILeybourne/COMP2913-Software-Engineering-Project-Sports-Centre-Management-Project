@@ -353,7 +353,9 @@ export default {
         },
         email: this.email,
         regularSession: false,
-        cost: this.price
+        cost: this.price,
+        
+        particpants: 5,
       };
 
       if (this.isMembership) {
@@ -371,12 +373,12 @@ export default {
         }
         // eslint-disable-next-line no-undef
         paymentIntent = await this.$http.post(
-          `/payments/intent/card/` + id, //this.customerId,
+          `/payments/intent/card/` + id,
           body
         );
       } else {
         paymentIntent = await this.$http.post(
-          `/payments/guest-intent/`, //this.customerId,
+          `/payments/guest-intent/`,
           body
         );
       }
@@ -456,7 +458,7 @@ export default {
         const body = {
           accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
           //TODO ADD participant field
-          participants: 1,
+          participants: 5,
           regularBooking: false, //need to be dynamic (cash payment defaulted to false, same for guest)
           transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
           amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
@@ -507,7 +509,6 @@ export default {
   },
 
   async mounted() {
-    await this.getAllCustomers();
     if (this.$route.params.membershipDetails != null) {
       this.setMembershipDetails();
       this.isMembership = true;
@@ -520,6 +521,7 @@ export default {
       this.setFormData();
     }
     this.configureStripe();
+    await this.getAllCustomers();
     this.getCustomer();
   }
 };

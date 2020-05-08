@@ -21,6 +21,7 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
 import uk.ac.leeds.comp2913.api.Domain.Service.QrCodeGenerator;
 import uk.ac.leeds.comp2913.api.Domain.Service.ReceiptService;
 import uk.ac.leeds.comp2913.api.Exception.ResourceNotFoundException;
+import uk.ac.leeds.comp2913.api.Util.S3Client;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class ReceiptServiceImpl implements ReceiptService {
@@ -39,44 +41,39 @@ public class ReceiptServiceImpl implements ReceiptService {
     private String iTextLicensePath;
     private TemplateEngine templateEngine;
     private ReceiptRepository receiptRepository;
+    private S3Client s3Client;
 
     @Autowired
-    public ReceiptServiceImpl(JavaMailSender javaMailSender, TemplateEngine templateEngine, ReceiptRepository receiptRepository) {
+    public ReceiptServiceImpl(JavaMailSender javaMailSender, TemplateEngine templateEngine, ReceiptRepository receiptRepository, S3Client s3Client) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
         this.receiptRepository = receiptRepository;
+        this.s3Client = s3Client;
     }
 
-    // TODO Remove constant variables
-    private static final String OUTPUT_PATH = "C:\\Users\\Tom\\Downloads\\receipt.pdf";
-
     /**
-     * TODO: upload PDF to S3
-     *
      * @param sales list of sales to create a new receipt
      * @return receipt generated from sales
      */
     @Override
     @Transactional
-    public Receipt invoice(String transactionId, Collection<Sale> sales, Customer customer) {
+    public Receipt invoice(String transactionId, List<Sale> sales, Customer customer) throws IOException, MessagingException {
         Receipt receipt = new Receipt(sales, transactionId);
 
         customer.addReceipt(receipt);
 
+        // Save the receipt and get the ID from the Database
         this.receiptRepository.save(receipt);
 
         String htmlContent = createInvoiceHtmlTemplate(receipt, transactionId);
 
-        String pdfFilePath = null;
+        String filePath = "receipt-" + receipt.getId() + ".pdf";
+        File pdf = new File(filePath);
+        createPdfFromHtml(htmlContent, customer, pdf);
+        s3Client.uploadFile(pdf);
 
-        try {
-            pdfFilePath = createPdfFromHtml(htmlContent, customer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String s3Path = uploadReceiptPdfToS3(pdfFilePath);
-
-        receipt.setPdfLocation(s3Path);
+        receipt.setPdfLocation(filePath);
+//        this.receiptRepository.save(receipt);
 
         sendReceiptToCustomer(receipt);
 
@@ -93,39 +90,29 @@ public class ReceiptServiceImpl implements ReceiptService {
         return receiptRepository.findById(receiptId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Receipt not found with id " + receiptId)
-        );
+                );
     }
 
     @Override
-    public Page<Receipt> findAll(Pageable pageable){
+    public Page<Receipt> findAll(Pageable pageable) {
         return receiptRepository.findAll(pageable);
     }
 
-    private String uploadReceiptPdfToS3(String localPdfFilePath) {
-        /*TODO: upload to S3*/
-        return OUTPUT_PATH;
-    }
-
-    private String createPdfFromHtml(String htmlContent, Customer customer) throws IOException {
+    private void createPdfFromHtml(String htmlContent, Customer customer, File file) throws IOException {
         // Load license file and convert html to pdf
         LicenseKey.loadLicenseFile(ResourceUtils.getFile(this.iTextLicensePath).getPath());
-        HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(OUTPUT_PATH));
-        return OUTPUT_PATH;
+        HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(file));
     }
 
-    private void sendReceiptToCustomer(Receipt receipt) {
+    private void sendReceiptToCustomer(Receipt receipt) throws MessagingException {
         // Create mime message
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper;
-        try {
-            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-            mimeMessageHelper.setTo(receipt.getCustomer().getEmailAddress());
-            mimeMessageHelper.setSubject("Receipt Reference " + receipt.getId());
-            mimeMessageHelper.setText("Your receipt is attached to this email.");
-            mimeMessageHelper.addAttachment(receipt.getId() + ".pdf", new File(receipt.getPdfLocation()));
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        mimeMessageHelper.setTo(receipt.getCustomer().getEmailAddress());
+        mimeMessageHelper.setSubject("Receipt Reference " + receipt.getId());
+        mimeMessageHelper.setText("Your receipt is attached to this email.");
+        mimeMessageHelper.addAttachment(receipt.getId() + ".pdf", new File(receipt.getPdfLocation()));
 
         // Send email
         javaMailSender.send(mimeMessage);
@@ -133,7 +120,6 @@ public class ReceiptServiceImpl implements ReceiptService {
 
 
     public String createInvoiceHtmlTemplate(Receipt receipt, String transactionId) {
-        /*TODO: make this return transactionId*/
         QrCodeGenerator qrCodeGenerator = new QrCodeGenerator(200, 200);
         String qrCodeFilename = "qrCode-" + receipt.getId() + ".jpeg";
         qrCodeGenerator.generateQRCodeImage(String.valueOf(receipt.getId()), qrCodeFilename);

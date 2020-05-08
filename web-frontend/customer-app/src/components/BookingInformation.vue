@@ -1,5 +1,5 @@
 <template>
-  <div class="checkout-container" @load="fillByQuery">
+  <div class="checkout-container" @load="fillByParams">
     <div
       class="booking-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
@@ -116,6 +116,7 @@
           >
             Checkout As Guest
           </button>
+          <b-col md="3"/>
           <button
             type="button"
             class="btn btn-outline-primary"
@@ -193,6 +194,7 @@ label {
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { isEmpty } from "../util/session.helpers";
 export default {
   name: "BookingInformation",
   data() {
@@ -220,6 +222,9 @@ export default {
       timeValid: null,
       participantsValid: null
     };
+  },
+  props: {
+    sessionInformation: Object
   },
   computed: {
     ...mapGetters("facilities", ["facilities", "activities"]),
@@ -382,41 +387,85 @@ export default {
       }
     },
 
-    // TODO, shouldn't access routes like this, use props and either inject with router or from booking page
-    fillByQuery() {
+    // // TODO, shouldn't access routes like this, use props and either inject with router or from booking page
+    // fillByQuery() {
+    //   this.setFacilityOptions();
+    //   this.activityOptions = [];
+    //   const facilityId = this.$route.query.facilityId;
+    //   const activityTypeId = this.$route.query.activityId;
+    //   const activityId = this.$route.query.sessionId;
+    //   if (!this.isEmpty(this.$route.query)) {
+    //     //If query isn't empty fill ids, bookingInformation.selectedDate and timeOptions
+    //     this.bookingInformation.selectedFacilityId = facilityId;
+    //     this.setActivityTypeOptions(facilityId);
+    //     this.bookingInformation.selectedActivityId = activityTypeId;
+    //     this.bookingInformation.selectedActivityName = this.activities.find(
+    //       x =>
+    //         Number(x.id) === Number(this.bookingInformation.selectedActivityId)
+    //     ).name;
+    //     this.selectActivityName();
+    //     let selectedDateUnix = this.sessions.find(x => x.id == activityId)
+    //       .startTime;
+    //     let selectedDate = new Date(selectedDateUnix);
+    //     const year = selectedDate.getFullYear();
+    //     const month = "0" + parseInt(selectedDate.getMonth() + 1).toString();
+    //     const date = "0" + selectedDate.getDate();
+    //     const hours = "0" + selectedDate.getHours();
+    //     const mins = "0" + selectedDate.getMinutes();
+    //     const formattedDate =
+    //       year + "-" + month.substr(-2) + "-" + date.substr(-2);
+    //     const forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
+    //
+    //     this.bookingInformation.selectedDate = formattedDate;
+    //
+    //     this.timeOptions.push(forrmattedTime);
+    //     this.bookingInformation.selectedTime = forrmattedTime;
+    //     this.getPrice(activityTypeId);
+    //     this.callValidation();
+    //   }
+    // },
+
+    async fillByParams() {
       this.setFacilityOptions();
       this.activityOptions = [];
-      const facilityId = this.$route.query.facilityId;
-      const activityTypeId = this.$route.query.activityId;
-      const activityId = this.$route.query.sessionId;
-      if (!this.isEmpty(this.$route.query)) {
-        //If query isn't empty fill ids, bookingInformation.selectedDate and timeOptions
+
+      if (!isEmpty(this.$route.params)) {
+        const facilityId = this.$route.params.sessionInformation.facilityId;
+        const activityTypeId = this.$route.params.sessionInformation
+          .activityTypeId;
+        const sessionId = this.$route.params.sessionInformation.sessionId;
+
         this.bookingInformation.selectedFacilityId = facilityId;
-        this.setActivityTypeOptions(facilityId);
+        this.setFacilityName(facilityId);
+        this.facilityValid = true
+        await this.setActivityTypeOptions(facilityId);
+
         this.bookingInformation.selectedActivityId = activityTypeId;
         this.bookingInformation.selectedActivityName = this.activities.find(
           x =>
             Number(x.id) === Number(this.bookingInformation.selectedActivityId)
         ).name;
-        this.selectActivityName();
-        let selectedDateUnix = this.sessions.find(x => x.id == activityId)
+        this.activitiesValid = true;
+        this.participantsValid = true;
+        this.bookingInformation.participants = 1;
+
+        let selectedDateUnix = this.sessions.find(x => x.id == sessionId)
           .startTime;
         let selectedDate = new Date(selectedDateUnix);
         const year = selectedDate.getFullYear();
         const month = "0" + parseInt(selectedDate.getMonth() + 1).toString();
         const date = "0" + selectedDate.getDate();
-        const hours = "0" + selectedDate.getHours();
-        const mins = "0" + selectedDate.getMinutes();
         const formattedDate =
           year + "-" + month.substr(-2) + "-" + date.substr(-2);
-        const forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
-
         this.bookingInformation.selectedDate = formattedDate;
+        this.dateValid = true
 
-        this.timeOptions.push(forrmattedTime);
-        this.bookingInformation.selectedTime = forrmattedTime;
-        this.getPrice(activityTypeId);
-        this.callValidation();
+        this.getTimes();
+        this.bookingInformation.selectedSessionId = sessionId;
+        this.getSelectedTime(sessionId)
+        this.timeValid = true
+
+        this.getPrice();
       }
     },
 
@@ -474,7 +523,7 @@ export default {
     await this.getFacilities();
     await this.getActivities();
     await this.getAllSessions();
-    this.fillByQuery();
+    await this.fillByParams();
   }
 };
 </script>

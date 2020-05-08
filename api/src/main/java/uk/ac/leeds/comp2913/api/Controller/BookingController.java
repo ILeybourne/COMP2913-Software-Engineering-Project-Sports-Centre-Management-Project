@@ -30,14 +30,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
+import java.io.IOException;
+import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Service.BookingService;
+import uk.ac.leeds.comp2913.api.Domain.Service.ReceiptService;
 import uk.ac.leeds.comp2913.api.ViewModel.Assembler.BookingPagedResourcesAssembler;
 import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -63,8 +66,9 @@ public class BookingController {
     private final BookingPagedResourcesAssembler bookingPagedResourcesAssembler;
 
 
+
     @Autowired
-    public BookingController( BookingService bookingService, PagedResourcesAssembler<Booking> pagedResourcesAssembler, BookingPagedResourcesAssembler bookingPagedResourcesAssembler) {
+    public BookingController(BookingService bookingService, PagedResourcesAssembler<Booking> pagedResourcesAssembler, BookingPagedResourcesAssembler bookingPagedResourcesAssembler) {
         this.bookingService = bookingService;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.bookingPagedResourcesAssembler = bookingPagedResourcesAssembler;
@@ -119,7 +123,7 @@ public class BookingController {
             description = "Place a booking for a particular activity with the option to make it into a repeating booking" +
                     "if the activity is a regular session #21 #4")
     public Booking createBooking(@Parameter(description = "A Booking DTO object", required = true)@Valid @RequestBody BookingDTO booking,
-                                 @Parameter(description = "The activity ID", required = true)@PathVariable Long activity_id) {
+                                 @Parameter(description = "The activity ID", required = true)@PathVariable Long activity_id) throws IOException, MessagingException {
         Booking b = new Booking();
         boolean regularBooking = booking.isRegularBooking();
         Long account_id = booking.getAccountId();

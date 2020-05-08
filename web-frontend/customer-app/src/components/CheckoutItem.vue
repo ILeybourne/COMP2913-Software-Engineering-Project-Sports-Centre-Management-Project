@@ -45,7 +45,7 @@
 
       <v-row
         ><v-col v-if="isMembership">Automatic Renewal? </v-col>
-        <v-col v-if="isBooking">participants: </v-col>
+        <v-col v-if="isBooking">Participants: </v-col>
         <v-col>{{
           membershipSaleDetails.repeatingPayment || bookingDetails.participants
         }}</v-col></v-row
