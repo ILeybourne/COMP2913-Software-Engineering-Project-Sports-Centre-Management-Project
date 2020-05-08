@@ -5,26 +5,24 @@
     </div>
     <div id="profile-container" class="row">
       <div id="left-column" class="col-sm-7">
-        <div id="profile-info-container" class="container">
-          <div class="row">
-            <div class="col-xl-5 text-center align-self-center">
-              <img
-                :src="user.picture"
-                id="profile-picture"
-                class="rounded rounded-circle border-bottom border-dark"
-                alt="Profile Picture"
-              />
-            </div>
-            <div class="col-xl-7">
-              <h2>{{ user.nickname }}</h2>
-              <ul id="user-info" class="container list-unstyled">
-                <li>{{ $auth.user.name }}</li>
-                <li>{{ $auth.user.email }}</li>
-              </ul>
-              <router-link id="bookings-button" to="/bookingtable"
-                >My Bookings</router-link
-              >
-            </div>
+        <div id="profile-info-container" class="row">
+          <div id="picture-col" class="col-xl-5 text-center">
+            <img
+              :src="user.picture"
+              id="profile-picture"
+              class="rounded rounded-circle border-bottom border-dark"
+              alt="Profile Picture"
+            />
+          </div>
+          <div id="info-col" class="col-xl-7">
+            <h2>{{ user.nickname }}</h2>
+            <ul id="user-info" class="container list-unstyled">
+              <li>{{ $auth.user.name }}</li>
+              <li>{{ $auth.user.email }}</li>
+            </ul>
+            <router-link id="bookings-button" to="/bookingtable"
+              >My Bookings</router-link
+            >
           </div>
         </div>
       </div>
@@ -189,7 +187,7 @@ export default {
 <style scoped>
 #profile-container {
   margin-top: 80px;
-  padding: 5%;
+  padding: 5% 3%;
   background: #f6f9fa;
 }
 #left-column {
