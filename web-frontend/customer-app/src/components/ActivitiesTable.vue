@@ -81,6 +81,9 @@
       <v-icon small class="mr-2" @click="editItem(item)">
         mdi-pencil
       </v-icon>
+      <v-icon small @click="deleteItem(item)">
+        mdi-delete
+      </v-icon>
     </template>
   </v-data-table>
 </template>
@@ -160,12 +163,11 @@ export default {
       const str = this.newActivity.name;
       return str.length < 21;
     },
-    currentNameState(){
+    currentNameState() {
       const str = this.selectedActivity.name;
       return str.length < 21;
     }
   },
-
 
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
@@ -173,7 +175,8 @@ export default {
       getActivity: "getActivities",
       getFacilities: "getFacilities",
       updateActivityTypes: "updateActivityTypes",
-      createActivityType: "createActivityType"
+      createActivityType: "createActivityType",
+      deleteActivityType: "deleteActivity"
     }),
     showNewActivity() {
       this.$bvModal.show("new-activity-modal");
@@ -226,6 +229,13 @@ export default {
         totalCapacity: this.newActivity.capacity
       };
       await this.createActivityType({ facilityId, body });
+    },
+    async deleteItem(item) {
+      const id = item.id;
+      const index = this.sorted.indexOf(item);
+      confirm("Are you sure you want to delete this item?") &&
+        this.sorted.splice(index, 1) &&
+        this.deleteActivityType(id);
     }
   },
 
