@@ -11,6 +11,7 @@
       <b-modal
         id="new-activity-modal"
         title="New Activity Type"
+        :ok-disabled="!nameState"
         @ok="addActivity()"
       >
         <b-form>
@@ -18,6 +19,8 @@
             ><b-form-input
               id="Activity"
               v-model="newActivity.name"
+              placeholder="Activity Name"
+              :state="nameState"
             ></b-form-input>
           </b-form-group>
           <b-form-group id="facility" label="Facility" label-for="Facility">
@@ -41,14 +44,15 @@
       <b-modal
         id="edit-modal"
         title="Edit Activity Type"
+        :ok-disabled="!currentNameState"
         @ok="updateActivity()"
       >
         <b-form>
           <b-form-group id="activity" label="Activity Name" label-for="Activity"
             ><b-form-input
               id="Activity"
-              :options="setActivityOptions()"
               v-model="selectedActivity.name"
+              :state="currentNameState"
             ></b-form-input>
           </b-form-group>
           <b-form-group id="facility" label="Facility" label-for="Facility">
@@ -118,18 +122,18 @@ export default {
       ],
       selectedActivity: {
         id: null,
-        name: null,
+        name: " ",
         capacity: null,
         facility: null,
         cost: null
       },
       newActivity: {
         id: null,
-        name: null,
+        name: " ",
         capacity: null,
         facility: null,
         cost: null
-      },
+      }
     };
   },
   computed: {
@@ -147,12 +151,21 @@ export default {
       }
       return facilityArr;
     },
-    sorted(){
-      return this.dataWithFacilities.slice().sort(function(a,b){
+    sorted() {
+      return this.dataWithFacilities.slice().sort(function(a, b) {
         return a.id - b.id;
       });
+    },
+    nameState() {
+      const str = this.newActivity.name;
+      return str.length < 21;
+    },
+    currentNameState(){
+      const str = this.selectedActivity.name;
+      return str.length < 21;
     }
   },
+
 
   methods: {
     dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
