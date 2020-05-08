@@ -141,17 +141,22 @@ export default {
         {
           text: "FACILITY",
           value: "name",
-          class: "yellow--text title font-weight-bold"
+          class: "yellow--text title font-weight-bold",
+          sortable: true
         },
         {
           text: "COST",
           value: "formattedCost",
-          class: "yellow--text title font-weight-bold"
+          class: "yellow--text title font-weight-bold",
+          sortable: true
+
         },
         {
           text: "INCOME",
           value: "formattedIncome",
-          class: "yellow--text title font-weight-bold"
+          class: "yellow--text title font-weight-bold",
+          sortable: true
+
         }
       ],
       dataWithFacilities: [],

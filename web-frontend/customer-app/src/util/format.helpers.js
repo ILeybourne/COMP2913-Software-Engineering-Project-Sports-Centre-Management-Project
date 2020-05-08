@@ -7,6 +7,16 @@ export const formatDate = value => {
   }
   return "";
 };
+export const dateToString = value => {
+  const newDate = new Date(value);
+  return (
+    newDate.getDate() +
+    "/" +
+    (newDate.getMonth() + 1) +
+    "/" +
+    newDate.getFullYear()
+  );
+};
 
 export const formatCurrency = value => {
   return "£" + Number(value).toFixed(2);

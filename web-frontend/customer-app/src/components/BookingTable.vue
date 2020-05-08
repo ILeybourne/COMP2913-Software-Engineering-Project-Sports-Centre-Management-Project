@@ -1,52 +1,52 @@
 <template>
-  <div>
-    <v-container class="new-booking">
-      <button
-        type="submit"
-        value="submit"
-        class="site-btn"
-        v-on:click="directToBookingPage()"
-      >
-        Place Booking
-      </button>
-    </v-container>
-    <v-text-field
-      v-model="query"
-      append-icon="mdi-magnify"
-      label="Search"
-      single-line
-      hide-details
-    ></v-text-field>
-    <v-btn @click="search">search</v-btn>
-
-    <v-data-table :headers="headers" :items="dataWithActivities">
-      <template v-slot:item.actions="{ item }">
-        <v-icon @click="showDelete(item)">
-          mdi-delete
-        </v-icon>
-        <v-icon @click="showReceipt(item)">
-          mdi-printer
-        </v-icon>
-        <v-icon @click="emailReceipt(item)">
-          mdi-email
-        </v-icon>
-        <v-icon
-          v-if="item.regularBooking === true"
-          color="red"
-          @click="stopRegularSessionPayments(item)"
+  <v-app class="app">
+    <v-card dark>
+      <v-container class="new-booking">
+        <button
+          type="submit"
+          value="submit"
+          class="site-btn"
+          v-on:click="directToBookingPage()"
         >
-          mdi-stop
-        </v-icon>
-      </template>
-    </v-data-table>
-  </div>
+          Place New Booking
+        </button>
+      </v-container>
+      <v-data-table
+        dense
+        :headers="headers"
+        :items="dataWithActivities"
+        class="white--text"
+        dark
+      >
+        <template v-slot:item.actions="{ item }">
+          <v-icon @click="showDelete(item)">
+            mdi-delete
+          </v-icon>
+          <v-icon @click="showReceipt(item)">
+            mdi-printer
+          </v-icon>
+          <v-icon @click="emailReceipt(item)">
+            mdi-email
+          </v-icon>
+          <v-icon
+            v-if="item.regularBooking === true"
+            color="red"
+            @click="stopRegularSessionPayments(item)"
+          >
+            mdi-stop
+          </v-icon>
+        </template>
+      </v-data-table>
+    </v-card>
+  </v-app>
 </template>
-
-<style scoped></style>
-
+<style scoped>
+.app {
+  height: min-content;
+}
+</style>
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { formatCurrency } from "@/util/format.helpers";
 
 export default {
   name: "BookingTable",
@@ -54,54 +54,63 @@ export default {
   // ItemsPerPageDropdown
   data: function() {
     return {
-      /*
-      account: null
-      activity: null
-      createdAt: 1584288689000
-      id: 1
-      receipt: null
-      updatedAt: 1584288692000
-      * */
       booking: [],
       singleSelect: false,
       selected: [],
       headers: [
         {
+          class: "yellow--text heading font-weight-bold",
           value: "id",
-          text: "Booking Reference",
+          text: "BOOKING #",
           sortable: true
         },
         {
           value: "customer_id",
-          text: "Customer Id",
-          sortable: false
+          text: "CUSTOMER #",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
         },
         {
           value: "activity.resource.name",
-          text: "Facility",
-          sortable: true
+          text: "FACILITY",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
         },
         {
           value: "activity.name",
-          text: "Activity",
-          sortable: true
+          text: "ACTIVITY",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
         },
         {
-          value: "activity.startTime",
-          text: "Date",
-          sortable: true
+          value: "activity.formattedDate",
+          text: "DATE",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
         },
         {
           value: "activity.slot",
-          text: "Time Slot",
-          sortable: true
+          text: "TIME SLOT",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
         },
-        { value: "participants", text: "participants", sortable: true },
-        { value: "amount", text: "Total Cost", sortable: true },
+        {
+          value: "participants",
+          text: "PARTICIPANTS",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
+        },
+        {
+          value: "amount",
+          text: "CHARGE",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
+        },
         {
           value: "actions",
-          text: "Actions",
-          sortable: false
+          text: "ACTIONS",
+          sortable: false,
+          class: "yellow--text heading font-weight-bold"
         }
       ],
       selectedBooking: {
@@ -124,84 +133,28 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("timetable", ["bookings"]),
     ...mapGetters("timetable", ["sessions"]),
-    ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("facilities", ["facilities"]),
-    ...mapGetters("auth", ["isAuthenticated", "user", "isEmployeeOrManager"])
+    ...mapGetters("timetable", {
+      bookings: "bookings",
+      bookingsLoading: "bookingsLoading",
+      paging: "paging"
+    })
   },
   methods: {
-    dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("timetable", {
-      getBooking: "getBookings",
-      deleteBooking: "deleteBooking",
-      getBookingByEmail: "getBookingByEmail",
       getSessions: "getAllSessions",
+      getBookings: "getBookings",
+      deleteBooking: "deleteBooking",
       stopRegularSession: "stopRegularSession"
     }),
-    ...mapActions("facilities", {
-      getActivity: "getActivities",
-      getFacilities: "getFacilities"
-    }),
-    showNewBooking() {
-      this.$router.push("/bookings");
-    },
-    editItem(item) {
-      console.log(item);
-      this.selectedBooking.id = item.id;
-      this.selectedBooking.name = item.activity.name;
-      this.selectedBooking.facility = item.activity.resource.name;
-      this.selectedBooking.startTime = item.activity.startTime;
-      this.selectedBooking.endTime = item.activity.endTime;
-      console.log(this.selectedBooking);
-      this.$bvModal.show("edit-modal");
-    },
-    showDelete(item) {
-      if (confirm("Are you sure you want to cancel this booking?")) {
+    async showDelete(item) {
+      const index = this.dataWithActivities.indexOf(item);
+      if (confirm("Are you sure you want to cancel this booking?") && this.dataWithActivities.splice(index,1)) {
         this.deleteBooking(item.id);
       }
-      this.getRelatedActivity();
+      await this.collectData();
     },
-    async getRelatedActivity() {
-      await this.getBooking();
-      await this.getSessions();
-      let ActivityArr = [];
-      for (const booking of this.bookings) {
-        console.log("sessions");
-        booking.activity = this.sessions.find(
-          activity => Number(activity.id) === Number(booking.session_id)
-        );
-        let date = new Date(booking.activity.startTime);
-        booking.activity.startTime =
-          date.getDate() +
-          "/" +
-          (date.getMonth() + 1) +
-          "/" +
-          date.getFullYear();
-        booking.amount = formatCurrency(booking.amount);
-        ActivityArr.push(booking);
-      }
-      console.log("Activity Arr");
-      console.log(ActivityArr);
-      this.dataWithActivities = ActivityArr;
-    },
-    search() {
-      console.log("query");
-      let query = this.query;
-      let filteredBookings = [];
-      for (const booking of this.dataWithActivities) {
-        console.log("data");
-        console.log(booking);
-        if (booking.accountId === query) {
-          console.log("found booking");
-          console.log(booking);
-          filteredBookings.push(booking);
-        }
-      }
-      console.log("filtered");
-      console.log(filteredBookings);
-      this.dataWithActivities = filteredBookings;
-    },
+
     async directToBookingPage() {
       await this.$router.push({
         name: "BookingPage"
@@ -214,18 +167,33 @@ export default {
         activityId: booking.activity.id
       };
       await this.stopRegularSession(body);
-      await this.getRelatedActivity();
-    }
+      await this.collectData();
+    },
     // emailReceipt(item){}
     // showReceipt(item){}
-  },
 
+    async collectData() {
+      await this.getBookings();
+      console.log("collectData");
+      //await this.getSessions();
+      //await this.getBookings();
+      for (const booking of this.bookings) {
+        for (const session of this.sessions) {
+          if (booking.session_id === session.id) {
+            //booking.activity = session;
+            booking.activity.formattedDate = session.formattedDate;
+            booking.activity.slot = session.slot;
+          }
+        }
+      }
+      console.log(this.bookings);
+      this.dataWithActivities = this.bookings;
+    }
+  },
   async mounted() {
-    await this.getActivity();
     await this.getSessions();
-    await this.getBooking();
-    await this.getFacilities();
-    await this.getRelatedActivity();
+    await this.getBookings();
+    await this.collectData();
   }
 };
 </script>
