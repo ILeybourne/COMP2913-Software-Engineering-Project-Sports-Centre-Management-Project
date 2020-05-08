@@ -4,6 +4,7 @@ import com.stripe.exception.CardException;
 import com.stripe.exception.StripeException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,7 @@ public class ActivityServiceImpl implements ActivityService {
   private final PaymentService paymentService;
 
   @Autowired
-  public ActivityServiceImpl(ActivityRepository activityRepository, RegularSessionRepository regularSessionRepository, BookingRepository bookingRepository, ActivityTypeRepository activityTypeRepository, PaymentService paymentService) {
+  public ActivityServiceImpl(ActivityRepository activityRepository, RegularSessionRepository regularSessionRepository, BookingRepository bookingRepository, ActivityTypeRepository activityTypeRepository, @Lazy PaymentService paymentService) {
     this.activityRepository = activityRepository;
     this.regularSessionRepository = regularSessionRepository;
     this.bookingRepository = bookingRepository;
@@ -163,7 +164,7 @@ public class ActivityServiceImpl implements ActivityService {
               Booking new_booking = Booking.createBookingFromRegularSession(new_activity, booking);
               Customer customer = new_booking.getAccount().getCustomer();
               try {
-                PayResponseBodyDTO paymentResponseDTO = paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), new_booking.getAmount(), false);
+                PayResponseBodyDTO paymentResponseDTO = paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), new_booking.getAmount(), false, 1);
                 new_booking.setTransactionId(paymentResponseDTO.getTransactionId());
                 this.bookingRepository.save(new_booking);
               }catch (CardException err){

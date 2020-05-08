@@ -354,7 +354,10 @@ export default {
         },
         email: this.email,
         regularSession: this.bookingDetails.regularBooking,
-        cost: this.price
+        cost: this.price,
+        membershipTypeId: this.membershipSaleDetails.id,
+        sessionId: this.bookingDetails.sessionId,
+        participants: this.bookingDetails.participants
       };
 
       if (this.isMembership) {
@@ -485,8 +488,11 @@ export default {
           },
           activityTypeId: this.bookingDetails.activityTypeId,
           email: this.email,
-          regularSession: this.bookingDetails.regularBooking //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
-        }
+          regularSession: this.bookingDetails.regularBooking, //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
+          membershipTypeId: this.membershipSaleDetails.id,
+          sessionId: this.bookingDetails.sessionId,
+          participants: this.bookingDetails.participants
+    }
       );
       if (paymentIntent.status === 200) {
         this.paymentResponse.accountId = paymentIntent.data.accountId;
