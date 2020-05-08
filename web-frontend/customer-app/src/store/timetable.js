@@ -82,7 +82,7 @@ const actions = {
   },
   async getBookings({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.get(`/bookings/email/`);
+    const { data } = await axios.get(`/bookings`);
     let bookings = [];
     if (data._embedded) {
       bookings = data._embedded.bookingDToes;

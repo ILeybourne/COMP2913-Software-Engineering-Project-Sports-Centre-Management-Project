@@ -83,18 +83,20 @@ public class BookingController {
     }
 
 
-    @GetMapping("/email/")
+    @GetMapping("")
     @Operation(summary = "Get the logged in users bookings or all if staff/manager",
             description = "returns a list of bookings placed by the logged in user or all bookings if staff")
-    public PagedModel<BookingDTO> getBookingsByEmail(Pageable pageable, @AuthenticationPrincipal Authentication user) {
+    public PagedModel<BookingDTO> getBookings(Pageable pageable, @AuthenticationPrincipal Authentication user) {
         Boolean isManager = false;
-        String authUsername = user.getName();
-        Collection<? extends GrantedAuthority> permissions = user.getAuthorities();
-        if(permissions.size() > 1){
-            isManager=true;
+        String authUsername = null;
+        if(user != null){
+            authUsername = user.getName();
+            Collection<? extends GrantedAuthority> permissions = user.getAuthorities();
+            if(permissions.size() > 1){
+                isManager=true;
+            }
         }
         logger.info(authUsername);
-        logger.info(permissions.toString());
         return pagedResourcesAssembler.toModel((bookingService.findByUsername(pageable, authUsername, isManager)), bookingPagedResourcesAssembler);
     }
 

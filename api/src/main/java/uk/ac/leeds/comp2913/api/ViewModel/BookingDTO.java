@@ -23,6 +23,7 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
   private BigDecimal amount;
   private Long session_id;
   private String transactionId;
+  private Long customer_id;
 
   public BookingDTO() {
   }
@@ -101,4 +102,11 @@ public class BookingDTO extends RepresentationModel<BookingDTO> {
     this.transactionId = transactionId;
   }
 
+  public Long getCustomer_id() {
+    return customer_id;
+  }
+
+  public void setCustomer_id(Long customer_id) {
+    this.customer_id = customer_id;
+  }
 }

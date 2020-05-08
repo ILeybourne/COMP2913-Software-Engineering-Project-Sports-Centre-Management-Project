@@ -47,8 +47,8 @@ export default {
           sortable: true
         },
         {
-          value: "accountId",
-          text: "Account",
+          value: "customer_id",
+          text: "Customer Id",
           sortable: false
         },
         {
