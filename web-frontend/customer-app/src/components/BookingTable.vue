@@ -157,22 +157,14 @@ export default {
       this.$bvModal.show("edit-modal");
     },
     showDelete(item) {
-      console.log(item);
-      const id = item.id;
-      const index = this.dataWithActivities.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.bookings.splice(index, 1) &&
-        this.deleteBooking(id);
-    },
-    setFacilityOptions() {
-      let facilities = this.facilities;
-      let facilityArray = [{ value: null, text: "Please Select" }];
-      for (const facility of facilities) {
-        facilityArray.push({ value: facility.name, text: facility.name });
+      if (confirm("Are you sure you want to cancel this booking?")) {
+        this.deleteBooking(item.id);
       }
-      return facilityArray;
+      this.getRelatedActivity();
     },
     async getRelatedActivity() {
+      await this.getBooking();
+      await this.getSessions();
       let ActivityArr = [];
       for (const booking of this.bookings) {
         console.log("sessions");
@@ -191,16 +183,7 @@ export default {
       }
       console.log("Activity Arr");
       console.log(ActivityArr);
-      return ActivityArr;
-    },
-
-    updateTable() {
-      const id = this.selectedBooking.id;
-      this.dataWithActivities.find(booking => booking.id === id);
-      console.log("updateBooking");
-    },
-    addBooking() {
-      console.log("addBooking");
+      this.dataWithActivities = ActivityArr;
     },
     search() {
       console.log("query");
@@ -231,6 +214,7 @@ export default {
         activityId: booking.activity.id
       };
       await this.stopRegularSession(body);
+      await this.getRelatedActivity();
     }
     // emailReceipt(item){}
     // showReceipt(item){}
@@ -239,15 +223,9 @@ export default {
   async mounted() {
     await this.getActivity();
     await this.getSessions();
-    //  let body = {
-    //    email: this.$auth.user.email,
-    //    isAuthorised: this.isEmployeeOrManager
-    //  };
     await this.getBooking();
     await this.getFacilities();
-    //console.log(this.bookings);
-    this.dataWithActivities = await this.getRelatedActivity();
-    //console.log(this.dataWithActivities);
+    await this.getRelatedActivity();
   }
 };
 </script>
