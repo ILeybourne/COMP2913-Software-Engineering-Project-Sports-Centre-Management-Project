@@ -1,5 +1,6 @@
 package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
+import uk.ac.leeds.comp2913.api.Domain.Model.Activity;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Membership;
@@ -17,8 +19,12 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
 import uk.ac.leeds.comp2913.api.Domain.Service.ReceiptService;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+
+import javax.mail.MessagingException;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -44,19 +50,22 @@ class ReceiptServiceImplTest {
         if (c == null) {
             c = new Customer();
             c.setEmailAddress(emailAddress);
+            c.setDateOfBirth(new Date());
             this.customerRepository.save(c);
         }
 
 
         Booking s1 = new Booking();
         s1.setAmount(BigDecimal.valueOf(220));
+        final Activity activity = new Activity();
+        s1.setActivity(activity);
         Booking s2 = new Booking();
         s2.setAmount(BigDecimal.valueOf(220));
         Membership s3 = new Membership();
         s3.setAmount(BigDecimal.valueOf(220));
         Booking s4 = new Booking();
         s4.setAmount(BigDecimal.valueOf(220));
-        sales = List.of(s1, s2, s3, s4);
+        sales = List.of(s1);
     }
 
     @AfterEach
@@ -65,7 +74,6 @@ class ReceiptServiceImplTest {
     }
 
     /**
-     * TODO: Seb Garwood fix, add s3, file download etc
      * <p>
      * Issues with cascading when deleting and persisting to storage
      * <p>
@@ -73,7 +81,7 @@ class ReceiptServiceImplTest {
      */
     @Disabled
     @Test
-    void invoice() {
+    void invoice() throws IOException, MessagingException {
         Receipt r = receiptService.invoice("12345678", sales, c);
         receiptService.delete(r.getId());
     }

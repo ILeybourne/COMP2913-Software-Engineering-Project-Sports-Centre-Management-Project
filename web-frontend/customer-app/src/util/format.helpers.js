@@ -11,3 +11,11 @@ export const formatDate = value => {
 export const formatCurrency = value => {
   return "£" + Number(value).toFixed(2);
 };
+
+export const formatDateYMD = value => {
+  if (value) {
+    const dt = new Date(value);
+    return dt.getFullYear() + "-" + dt.getMonth() + "-" + dt.getDate();
+  }
+  return "";
+}

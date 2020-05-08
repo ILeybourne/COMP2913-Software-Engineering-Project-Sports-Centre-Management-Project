@@ -6,9 +6,11 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 
 import uk.ac.leeds.comp2913.api.Domain.Model.Account;
@@ -17,7 +19,7 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
 import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
 
 public interface BookingService {
-  Booking createNewBookingForActivity(Booking booking, Long activity_id, Long account_id, Boolean regularBooking);
+  Booking createNewBookingForActivity(Booking booking, Long activity_id, Long account_id, Boolean regularBooking) throws IOException, MessagingException;
 
   void cancelRegularSession(Long activity_id, Long account_id);
 

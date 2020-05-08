@@ -11,6 +11,7 @@
       <b-modal
         id="new-activity-modal"
         title="New Activity Type"
+        :ok-disabled="!nameState"
         @ok="addActivity()"
       >
         <b-form>
@@ -18,6 +19,8 @@
             ><b-form-input
               id="Activity"
               v-model="newActivity.name"
+              placeholder="Activity Name"
+              :state="nameState"
             ></b-form-input>
           </b-form-group>
           <b-form-group id="facility" label="Facility" label-for="Facility">
@@ -41,14 +44,15 @@
       <b-modal
         id="edit-modal"
         title="Edit Activity Type"
+        :ok-disabled="!currentNameState"
         @ok="updateActivity()"
       >
         <b-form>
           <b-form-group id="activity" label="Activity Name" label-for="Activity"
             ><b-form-input
               id="Activity"
-              :options="setActivityOptions()"
               v-model="selectedActivity.name"
+              :state="currentNameState"
             ></b-form-input>
           </b-form-group>
           <b-form-group id="facility" label="Facility" label-for="Facility">
@@ -76,6 +80,9 @@
     <template v-slot:item.actions="{ item }">
       <v-icon small class="mr-2" @click="editItem(item)">
         mdi-pencil
+      </v-icon>
+      <v-icon small @click="deleteItem(item)">
+        mdi-delete
       </v-icon>
     </template>
   </v-data-table>
@@ -118,18 +125,18 @@ export default {
       ],
       selectedActivity: {
         id: null,
-        name: null,
+        name: " ",
         capacity: null,
         facility: null,
         cost: null
       },
       newActivity: {
         id: null,
-        name: null,
+        name: " ",
         capacity: null,
         facility: null,
         cost: null
-      },
+      }
     };
   },
   computed: {
@@ -147,10 +154,18 @@ export default {
       }
       return facilityArr;
     },
-    sorted(){
-      return this.dataWithFacilities.slice().sort(function(a,b){
+    sorted() {
+      return this.dataWithFacilities.slice().sort(function(a, b) {
         return a.id - b.id;
       });
+    },
+    nameState() {
+      const str = this.newActivity.name;
+      return str.length < 21;
+    },
+    currentNameState() {
+      const str = this.selectedActivity.name;
+      return str.length < 21;
     }
   },
 
@@ -160,7 +175,8 @@ export default {
       getActivity: "getActivities",
       getFacilities: "getFacilities",
       updateActivityTypes: "updateActivityTypes",
-      createActivityType: "createActivityType"
+      createActivityType: "createActivityType",
+      deleteActivityType: "deleteActivity"
     }),
     showNewActivity() {
       this.$bvModal.show("new-activity-modal");
@@ -213,6 +229,13 @@ export default {
         totalCapacity: this.newActivity.capacity
       };
       await this.createActivityType({ facilityId, body });
+    },
+    async deleteItem(item) {
+      const id = item.id;
+      const index = this.sorted.indexOf(item);
+      confirm("Are you sure you want to delete this item?") &&
+        this.sorted.splice(index, 1) &&
+        this.deleteActivityType(id);
     }
   },
 
