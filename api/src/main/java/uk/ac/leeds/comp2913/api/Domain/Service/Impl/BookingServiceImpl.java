@@ -124,7 +124,6 @@ public class BookingServiceImpl implements BookingService {
     if(regularBooking){
       booking.setRegularSession(a.getRegularSession());
     }
-    booking.setAmount(a.getCost());
     List<Sale> list = new ArrayList<>();
     list.add(booking);
     receiptService.invoice(booking.getTransactionId(), list, account.getCustomer());

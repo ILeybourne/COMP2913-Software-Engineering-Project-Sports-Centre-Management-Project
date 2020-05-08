@@ -104,7 +104,6 @@ public class MembershipServiceImpl implements MembershipService {
         List<Account> customerAccounts = accountRepository.findAllByCustomerId(customer_id);
         if (customerAccounts.size() > 0) {
             account = customerAccounts.get(customerAccounts.size() - 1);
-            logger.info(account.toString());
         }
         return account;
     }
