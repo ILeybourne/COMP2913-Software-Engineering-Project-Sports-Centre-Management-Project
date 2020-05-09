@@ -140,11 +140,11 @@
             name="guest"
             @click="getUserType($event)"
             :disabled="!(timeValid && participantsValid)"
-            v-if="!account || isEmployeeOrManager"
+            v-if="(!account || isEmployeeOrManager) && !bookingInformation.regularSession "
           >
             Checkout As Guest
           </button>
-          <b-col md="3" v-if="(!account || isEmployeeOrManager) && account" />
+          <b-col md="3" v-if="(!account || isEmployeeOrManager) && account && !bookingInformation.regularSession  " />
           <button
             type="button"
             class="btn btn-outline-primary"
@@ -299,6 +299,8 @@ export default {
 
       if(this.bookingInformation.regularSession){
         this.bookingInformation.participants = 1
+        this.participantsValid = true
+
       }
     },
 
@@ -495,23 +497,31 @@ export default {
 
     async setMaxParticipants() {
       if (this.bookingInformation.selectedActivityId !== null) {
-        let data = await this.$http.get("/bookings");
+
+
+        let data = await this.$http.get("/bookings?page=0&size=1000");
 
         let bookings = data.data._embedded.bookingDToes;
         let customerCount = 0;
 
         for (const booking of bookings) {
+          console.log(booking.session_id + " " + this.bookingInformation.selectedSessionId)
           if (
             booking.session_id === this.bookingInformation.selectedSessionId
           ) {
             customerCount = customerCount + booking.participants;
           }
         }
+        console.log("this.activities")
+        console.log(this.activities)
 
         this.maxParticipants =
           this.activities.find(
             x => x.id === this.bookingInformation.selectedActivityId
           ).totalCapacity - customerCount;
+
+        this.bookingInformation.participants = 1;
+
 
         if (this.maxParticipants < 1) {
           this.bookingInformation.participants = 0;

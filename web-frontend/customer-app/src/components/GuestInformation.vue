@@ -4,6 +4,7 @@
       class="guest-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
     >
+      <h4 style="text-align: center; padding-bottom: 10px;">Guest Information</h4>
       <form @submit="submitCustomerDetails($event)">
         <div class="form-row">
           <label for="firstName">First Name:</label>
@@ -215,7 +216,6 @@ export default {
       email: "",
       phone: "",
       health: "",
-      // cardCash: "card",
       componentWidth: 90,
       firstNameValid: null,
       surnameValid: null,
