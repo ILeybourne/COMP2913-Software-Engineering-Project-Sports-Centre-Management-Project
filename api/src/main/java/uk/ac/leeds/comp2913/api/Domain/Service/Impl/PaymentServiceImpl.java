@@ -302,8 +302,9 @@ public class PaymentServiceImpl implements PaymentService {
                 internalCustomer = new uk.ac.leeds.comp2913.api.Domain.Model.Customer();
                 internalCustomer.setEmailAddress(email);
                 internalCustomer.setDateOfBirth(new Date());
-                internalCustomer.setAuth0_username(username); //set auth0 username to currently logged in user. to be used when viewing records
-                customerRepository.save(internalCustomer);
+                if(!isManager) {
+                    internalCustomer.setAuth0_username(username); //set auth0 username to currently logged in user. to be used when viewing records
+                }customerRepository.save(internalCustomer);
                 customer_id = internalCustomer.getId();
                 logger.info("asdsasas");
                 logger.info(customer_id.toString());
@@ -323,10 +324,13 @@ public class PaymentServiceImpl implements PaymentService {
                                     .setEmail(email)
                                     .build();
                     customer = Customer.create(customerParams);
-                    internalCustomer.setStripeId(customer.getId()); //Set the auth0 username to currently logged in user if they're a customer
-                    if(internalCustomer.getAuth0_username() == null && username != null && !isManager){
-                        internalCustomer.setAuth0_username(username);
-                    }
+                    internalCustomer.setStripeId(customer.getId());
+                    //Set the auth0 username to currently logged in user if they're a customer
+                    if (!isManager){
+                        if (internalCustomer.getAuth0_username() == null && username != null) {
+                            internalCustomer.setAuth0_username(username);
+                        }
+                }
                     customerRepository.save(internalCustomer);
                 }
 
