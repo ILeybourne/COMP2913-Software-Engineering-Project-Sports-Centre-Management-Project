@@ -90,7 +90,7 @@
             step="1"
             type="number"
             min="1"
-            :disabled="!activitiesValid || maxParticipants < 1"
+            :disabled="!activitiesValid || maxParticipants < 1 || computedRegularSessionStatus"
             v-bind:max="maxParticipants"
           >
           </b-form-input>
@@ -296,6 +296,10 @@ export default {
     setRegularSession() {
       this.bookingInformation.regularSession = !this
         .computedRegularSessionStatus;
+
+      if(this.bookingInformation.regularSession){
+        this.bookingInformation.participants = 1
+      }
     },
 
     checkRegularSession() {
