@@ -12,7 +12,7 @@ const state = {
       totalElements: null,
       totalPages: null,
       currentPageHref: null,
-      nextPageHref: `/bookings?page=${0}&size=${20}`, // just need first page to initialise store
+      nextPageHref: `/bookings?page=${0}&size=${50}`, // just need first page to initialise store
       lastPageHref: null,
       isDataToLoad: true
     }
@@ -138,7 +138,6 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return session;
   },
-  async getBookingsPage(){},
   async getBookings({ state, commit, dispatch }) {
     const paging = state.paging.bookings;
     if (!paging.isDataToLoad) {
@@ -173,7 +172,6 @@ const actions = {
         lastPageHref: data._links.last.href
       });
 
-
       if (pageIdentifier === data._links.last.href) {
         // if this was the last page then we are done
         commit("SET_BOOKING_LOADING", false);
@@ -204,13 +202,17 @@ const actions = {
     let result = false;
     commit("loading/START_LOADING", null, { root: true });
     const response = await axios.delete(`/bookings/${bookingId}`);
-    if (response.status === 204) {
-      // Delete was successful, remove the copy of the session from the store
-      commit("SET_BOOKINGS", [
-        ...state.bookings.filter(booking => booking.id !== bookingId)
-      ]);
+    if (response.status === 200) {
+      console.log("success");
+      // Delete was successful, remove the copy of the booking from the store
+      const index = state.bookings.findIndex(b => b.id === bookingId);
+      state.bookings.splice(index, 1);
+      commit("SET_BOOKINGS", state.bookings);
+      result = true;
     }
     commit("loading/FINISH_LOADING", null, { root: true });
+    console.log("Response");
+    console.log(state.bookings);
     return result;
   },
   async getResources({ commit }) {

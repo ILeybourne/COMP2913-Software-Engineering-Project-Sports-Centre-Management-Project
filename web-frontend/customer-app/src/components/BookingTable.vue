@@ -1,48 +1,52 @@
 <template>
   <v-app class="usage-container">
-    <v-card dark class="card">
-      <v-container class="new-booking">
-        <v-btn
-          class="black--text"
-          color="yellow"
-          type="submit"
-          value="submit"
-          v-on:click="directToBookingPage()"
-        >
-          <b>Place New Booking</b>
-        </v-btn>
-      </v-container>
-      <v-data-table
-        dense
-        :items-per-page="20"
-        :headers="headers"
-        :items="dataWithActivities"
-        class="white--text"
-        :footer-props="footerProps"
-        :server-items-length="totalElements"
-        dark
-      >
-        <template v-slot:item.actions="{ item }">
-          <v-icon title="Cancel Booking" @click="showDelete(item)">
-            mdi-delete
-          </v-icon>
-          <v-icon title="View Receipt" @click="showReceipt(item)">
-            mdi-printer
-          </v-icon>
-          <v-icon title="Email Receipt" @click="emailReceipt(item)">
-            mdi-email
-          </v-icon>
-          <v-icon
-            title="Unsubscribe From Session"
-            v-if="item.regularBooking === true"
-            color="red"
-            @click="stopRegularSessionPayments(item)"
+    <v-layout child-flex>
+      <v-card dark class="card">
+        <v-container class="new-booking">
+          <v-btn
+            title="Create a new booking"
+            class="black--text"
+            color="yellow"
+            type="submit"
+            value="submit"
+            v-on:click="directToBookingPage()"
           >
-            mdi-stop
-          </v-icon>
-        </template>
-      </v-data-table>
-    </v-card>
+            <b>Place New Booking</b>
+          </v-btn>
+        </v-container>
+        <v-data-table
+          no-data-text="You do not have any bookings placed"
+          must-sort
+          dense
+          :items-per-page="20"
+          :headers="headers"
+          :items="dataWithActivities"
+          class="white--text"
+          :footer-props="footerProps"
+          dark
+        >
+          <template v-slot:item.actions="{ item }">
+            <v-icon title="Cancel Booking" @click="showDelete(item)">
+              mdi-delete
+            </v-icon>
+            <v-icon title="View Receipt" @click="showReceipt(item)">
+              mdi-printer
+            </v-icon>
+            <v-icon title="Email Receipt" @click="emailReceipt(item)">
+              mdi-email
+            </v-icon>
+            <v-icon
+              title="Unsubscribe From Session"
+              v-if="item.regularBooking === true"
+              color="red"
+              @click="stopRegularSessionPayments(item)"
+            >
+              mdi-stop
+            </v-icon>
+          </template>
+        </v-data-table>
+      </v-card>
+    </v-layout>
   </v-app>
 </template>
 <style scoped>
@@ -56,7 +60,7 @@
   padding-bottom: 20px;
 }
 .card {
-  margin: 20px;
+  margin-top: 50px;
 }
 </style>
 <script>
@@ -69,7 +73,9 @@ export default {
   // ItemsPerPageDropdown
   data: function() {
     return {
-      footerProps: { "items-per-page-options": [5, 10, 20, 100] },
+      footerProps: {
+        "items-per-page-options": [20, 40, 80, 100]
+      },
       singleSelect: false,
       headers: [
         {
@@ -164,7 +170,7 @@ export default {
       if (
         confirm("Are you sure you want to cancel this booking?") &&
         this.dataWithActivities.splice(index, 1) &&
-        this.deleteBooking(item.id)
+        this.deleteBooking(item.id) && await this.getBookings()
       );
     },
 
@@ -187,10 +193,9 @@ export default {
     },
 
     async collectData() {
-      console.log("pages");
-      console.log(this.pages);
       await this.getSessions();
       await this.getBookings();
+      //Struggled to apply this data in the store...
       for (const booking of this.bookings) {
         for (const session of this.sessions) {
           if (booking.session_id === session.id) {
@@ -199,24 +204,20 @@ export default {
           }
         }
       }
-      console.log(this.bookings);
       this.dataWithActivities = this.bookings;
     }
   },
-  // emailReceipt(item){}
+  // emailReceipt(item){}dat
   // showReceipt(item){}
- // watch: {
- //   options: {
- //     handler() {
- //       this.getBookings();
- //     },
- //     deep: true
- //   }
- // },
 
-  async mounted() {
-    await this.getSessions();
-    await this.getBookings();
+  watch: {
+    handler() {
+        this.dataWithActivities();
+      },
+      deep: true
+  },
+
+  async created() {
     await this.collectData();
   }
 };
