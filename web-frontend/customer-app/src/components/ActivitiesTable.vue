@@ -1,20 +1,31 @@
 <template>
   <v-app class="usage-container">
+    <v-container class="new-activity">
+      <v-btn
+        class="black--text"
+        color="yellow"
+        type="submit"
+        value="submit"
+        v-on:click="showNewActivity()"
+      >
+        <b>New Activity</b>
+      </v-btn>
+    </v-container>
+
     <v-data-table
       :headers="headers"
       :items="sorted"
+      class="white--text"
       :loding="true"
       :footer-props="footerProps"
       :items-per-page="10"
+      dark
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
           <v-spacer></v-spacer>
           <v-dialog max-width="500px"></v-dialog>
         </v-toolbar>
-        <v-btn color="primary" dark class="mb-2" @click="showNewActivity()"
-          >New Activity</v-btn
-        >
         <b-modal
           id="new-activity-modal"
           title="New Activity Type"
@@ -119,25 +130,30 @@ export default {
         {
           value: "name",
           text: "Activity",
-          sortable: true
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
         },
         {
           value: "totalCapacity",
           text: "Capacity",
-          sortable: true
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
         },
         {
           value: "facility.name",
-          text: "Facility"
+          text: "Facility",
+          class: "yellow--text heading font-weight-bold"
         },
         {
           value: "formattedCost",
-          text: "Cost"
+          text: "Cost",
+          class: "yellow--text heading font-weight-bold"
         },
         {
           value: "actions",
           text: "Actions",
-          sortable: false
+          sortable: false,
+          class: "yellow--text heading font-weight-bold"
         }
       ],
       selectedActivity: {
