@@ -21,7 +21,7 @@ import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
 public interface BookingService {
   Booking createNewBookingForActivity(Booking booking, Long activity_id, Long account_id, Boolean regularBooking) throws IOException, MessagingException;
 
-  void cancelRegularSession(Long activity_id, Long account_id);
+  Page<Booking> cancelRegularSession(Long activity_id, Long account_id, Pageable pageable);
 
   Page<Booking> findAll(Pageable pageable);
 

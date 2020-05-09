@@ -12,7 +12,7 @@ const state = {
       totalElements: null,
       totalPages: null,
       currentPageHref: null,
-      nextPageHref: `/bookings?page=${0}&size=${20}`, // just need first page to initialise store
+      nextPageHref: `/bookings?page=${0}&size=${10}`, // just need first page to initialise store
       lastPageHref: null,
       isDataToLoad: true
     }
@@ -217,13 +217,14 @@ const actions = {
   async stopRegularSession({ commit }, body) {
     let account_id = body.accountId;
     let activity_id = body.activityId;
-    let bookingId = body.bookingId;
     commit("loading/START_LOADING", null, { root: true });
-    const data = await axios.put(`/bookings/cancel/${activity_id}/${account_id}`);
-    commit("SET_BOOKINGS", [
-      ...state.bookings.filter(booking => booking.id !== bookingId),
-      data._embedded
-    ]);
+    const { data } = await axios.put(
+      `/bookings/cancel/${activity_id}/${account_id}`
+    );
+    const updatedBookings = data._embedded.bookingDToes;
+    commit("SET_BOOKINGS",
+      updatedBookings
+    );
     commit("loading/START_LOADING", null, { root: true });
   }
 };

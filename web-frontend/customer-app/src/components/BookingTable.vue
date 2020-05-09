@@ -54,9 +54,7 @@ export default {
   // ItemsPerPageDropdown
   data: function() {
     return {
-      booking: [],
       singleSelect: false,
-      selected: [],
       headers: [
         {
           class: "yellow--text heading font-weight-bold",
@@ -127,9 +125,7 @@ export default {
         startTime: null,
         endTime: null
       },
-      dataWithActivities: [],
-      email: null,
-      query: null
+      dataWithActivities: []
     };
   },
   computed: {
@@ -149,10 +145,11 @@ export default {
     }),
     async showDelete(item) {
       const index = this.dataWithActivities.indexOf(item);
-      if (confirm("Are you sure you want to cancel this booking?") && this.dataWithActivities.splice(index,1)) {
-        this.deleteBooking(item.id);
-      }
-      await this.collectData();
+      if (
+        confirm("Are you sure you want to cancel this booking?") &&
+        this.dataWithActivities.splice(index, 1) &&
+        this.deleteBooking(item.id)
+      );
     },
 
     async directToBookingPage() {
@@ -166,21 +163,17 @@ export default {
         accountId: booking.accountId,
         activityId: booking.activity.id
       };
-      await this.stopRegularSession(body);
+      if (
+        confirm("Are you sure you want to unsubscribe from this session?") &&
+        (await this.stopRegularSession(body))
+      );
       await this.collectData();
     },
-    // emailReceipt(item){}
-    // showReceipt(item){}
 
     async collectData() {
-      await this.getBookings();
-      console.log("collectData");
-      //await this.getSessions();
-      //await this.getBookings();
       for (const booking of this.bookings) {
         for (const session of this.sessions) {
           if (booking.session_id === session.id) {
-            //booking.activity = session;
             booking.activity.formattedDate = session.formattedDate;
             booking.activity.slot = session.slot;
           }
@@ -189,6 +182,8 @@ export default {
       console.log(this.bookings);
       this.dataWithActivities = this.bookings;
     }
+    // emailReceipt(item){}
+    // showReceipt(item){}
   },
   async mounted() {
     await this.getSessions();

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
@@ -134,9 +135,9 @@ public class BookingController {
     @PutMapping("/cancel/{activity_id}/{account_id}")
     @Operation(summary = "unsubscribe from a regular session",
             description = "stop repeating bookings for a regular session")
-    public void cancelRegularSessionBooking(@Parameter(description = "The ID of the regular session activity", required = true)@PathVariable Long activity_id,
-                                            @Parameter(description = "The ID of the account booked onto it", required = true)@PathVariable Long account_id) {
-        bookingService.cancelRegularSession(activity_id, account_id);
+    public PagedModel<BookingDTO> cancelRegularSessionBooking(Pageable pageable, @Parameter(description = "The ID of the regular session activity", required = true)@PathVariable Long activity_id,
+                                                        @Parameter(description = "The ID of the account booked onto it", required = true)@PathVariable Long account_id) {
+        return pagedResourcesAssembler.toModel((bookingService.cancelRegularSession(activity_id, account_id, pageable)), bookingPagedResourcesAssembler);
     }
 
     @DeleteMapping("/{booking_id}")
