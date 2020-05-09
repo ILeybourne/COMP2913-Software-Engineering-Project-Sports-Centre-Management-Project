@@ -401,7 +401,7 @@ public class PaymentServiceImpl implements PaymentService {
         String transactionId = "CASH" + UUID.randomUUID().toString();
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
         //Payment response, contains data required for posting booking record
-        responseBody.setTransactionId("Cash");
+        responseBody.setTransactionId(transactionId);
         responseBody.setAccountId(account.getId()); //this gets the account record
         responseBody.setAmountPaid(salesCost);
         return responseBody;
