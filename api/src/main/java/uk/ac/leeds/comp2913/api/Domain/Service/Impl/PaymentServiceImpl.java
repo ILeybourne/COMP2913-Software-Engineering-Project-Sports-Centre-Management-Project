@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
@@ -381,6 +382,7 @@ public class PaymentServiceImpl implements PaymentService {
             internalCustomer = new uk.ac.leeds.comp2913.api.Domain.Model.Customer();
             account = new Account();
             internalCustomer.setEmailAddress(email);
+            internalCustomer.setDateOfBirth(new Date());
             account.setCustomer(internalCustomer);
             customerRepository.save(internalCustomer);
             accountRepository.save(account);
@@ -396,6 +398,7 @@ public class PaymentServiceImpl implements PaymentService {
             }
         }
         salesCost = calculateBookingTotal(inputCost, false, participants, member);
+        String transactionId = "CASH" + UUID.randomUUID().toString();
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
         //Payment response, contains data required for posting booking record
         responseBody.setTransactionId("Cash");

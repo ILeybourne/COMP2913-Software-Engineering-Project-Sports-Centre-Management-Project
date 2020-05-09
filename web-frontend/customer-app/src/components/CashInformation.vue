@@ -34,7 +34,7 @@
                 class="form-control"
                 v-model="cashGiven"
                 required
-                @keyup="getChange"
+                @keyup="[getChange(), setTwoNumberDecimal()]"
                 pattern="^\d*(\.\d{0,2})?$"
               ></b-form-input>
             </b-input-group>
@@ -52,7 +52,7 @@
                 readonly
                 type="number"
                 step="0.01"
-                @keyup="[getChange, setTwoNumberDecimal($event)]"
+                @keyup="[getChange]"
               ></b-form-input>
             </b-input-group>
           </div>
@@ -152,16 +152,16 @@ export default {
   computed: {
     change: {
       get() {
-        return Number(this.cashGiven) - this.$attrs.activityPrice;
+        return (Number(this.cashGiven) - this.$attrs.activityPrice).toFixed(2);;
       },
       set() {
-        this.changeVal = Number(this.cashGiven) - this.$attrs.activityPrice;
+        this.changeVal = (Number(this.cashGiven) - this.$attrs.activityPrice).toFixed(2);;
       }
     }
   },
   methods: {
-    setTwoNumberDecimal(event) {
-      this.cashGiven = parseFloat(event).toFixed(2);
+    setTwoNumberDecimal() {
+      this.cashGiven = parseFloat(this.cashGiven).toFixed(2);
     },
 
     getChange() {

@@ -325,6 +325,9 @@ export default {
     },
 
     getPrice() {
+      const membershipDiscount = 0.7;
+      const regularSessionDiscount = 0.7;
+
       if (this.bookingInformation.selectedActivityId != null) {
         let selectedActivity = this.activities.find(
           x => x.id === this.bookingInformation.selectedActivityId
@@ -332,13 +335,13 @@ export default {
         this.price = selectedActivity.cost;
 
         if (this.isMember) {
-          this.price = selectedActivity.cost  * 0.7;
+          this.price = selectedActivity.cost  * membershipDiscount;
         }
 
         if (this.bookingInformation.regularSession) {
-          this.price = ( 0.7 * this.price +
+          this.price = ( regularSessionDiscount * this.price +
             Math.round(
-              (0.7 *
+              (regularSessionDiscount *
                 selectedActivity.cost *
                 (Number(this.bookingInformation.participants) - 1) +
                 Number.EPSILON) *
