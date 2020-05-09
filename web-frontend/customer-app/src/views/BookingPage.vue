@@ -26,7 +26,7 @@
         <b-col v-bind:class="{ 'd-none': hideCash }">
           <div id="cashDiv">
             <CashInformation
-              :activityPrice="this.price"
+              :activityPrice="this.cashPrice"
               @submitCashPayment="handleCashPayment"
             ></CashInformation>
           </div>
@@ -118,6 +118,7 @@ export default {
       date: new Date(),
       selectedTime: null,
       price: null,
+      cashPrice: null,
       userType: null,
       firstName: "",
       surname: "",
@@ -174,8 +175,7 @@ export default {
     ...mapGetters("facilities", ["activities"]),
     ...mapGetters("auth", ["user", "isEmployeeOrManager", "permissions"]),
     ...mapGetters("customers", ["customers"]),
-    ...mapGetters("timetable", ["sessions"]),
-
+    ...mapGetters("timetable", ["sessions"])
   },
   methods: {
     ...mapActions("facilities", ["getActivities"]),
@@ -196,8 +196,7 @@ export default {
 
     async handleCashPayment(value) {
       if (value.changeVal >= 0) {
-
-        console.log(this.bookingInformation)
+        console.log(this.bookingInformation);
         let body = {
           email: this.email,
           regularSession: this.bookingInformation.regularSession,
@@ -205,18 +204,16 @@ export default {
           activityTypeId: this.bookingInformation.selectedActivityId,
           sessionId: this.bookingInformation.selectedSessionId,
           participants: this.bookingInformation.participants
-        }
+        };
 
-        let cashPaymentResponse = await this.$http.post(`/payments/cash`, body)
-        console.log("cashPaymentRespone")
-        console.log(cashPaymentRespone)
-        this.cashPaymentResponse = cashPaymentResponse
-        if(cashPaymentResponse.transactionId === "Cash"){
+        let cashPaymentResponse = await this.$http.post(`/payments/cash`, body);
+        this.cashPaymentResponse = cashPaymentResponse.data;
+        console.log(this.cashPaymentResponse);
+        if (this.cashPaymentResponse.transactionId != null) {
           await this.createCashBooking();
-        }else{
+        } else {
           //booking failed
         }
-
         // this.routerPushPaymentSuccess(paymentSuccessData);
       } else {
         //invalid amount of cash given
@@ -233,18 +230,37 @@ export default {
     },
 
     async createCashBooking() {
-      console.log("paymentResponse")
-      console.log(this.paymentResponse)
+      console.log("paymentResponse");
+      console.log(this.paymentResponse);
       try {
         const body = {
-          accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
+          accountId: this.cashPaymentResponse.accountId, //if card payment then get from payment response body
           //TODO ADD participant field
           participants: this.participants,
           regularBooking: this.regularBooking, //need to be dynamic (cash payment defaulted to false, same for guest)
-          transactionId: "cash", //if cash then send "cash" //
+          transactionId: this.cashPaymentResponse.transactionId, //if cash then send "cash" //
           amount: this.price //get from payment response body if card (may vary if regular session) if cash take from online price
         };
         await this.$http.post(`/bookings/` + this.selectedSessionId, body); //needs to post session id
+
+        let bookingInformation = {
+          facility: this.bookingInformation.selectedFacilityName,
+          activityTypeId: this.bookingInformation.selectedActivityId,
+          activity: this.bookingInformation.selectedActivityName,
+          sessionId: this.bookingInformation.selectedSessionId,
+          date: this.bookingInformation.selectedDate,
+          time: this.bookingInformation.selectedTime,
+          price: this.price,
+          participants: this.bookingInformation.participants,
+          regularBooking: this.bookingInformation.regularSession
+        };
+
+        let paymentSuccessData = {
+          bookingDetails: bookingInformation,
+          paymentResponse: this.cashPaymentResponse
+        };
+
+        this.routerPushPaymentSuccess(paymentSuccessData);
       } catch (e) {
         console.log(e);
       }
@@ -267,7 +283,7 @@ export default {
     },
 
     async showGuestInfo(value) {
-      this.bookingInformation = value.bookingInformation
+      this.bookingInformation = value.bookingInformation;
       this.selectedFacility = value.bookingInformation.selectedFacilityId;
       this.selectedActivity = value.bookingInformation.selectedActivityName;
       this.selectedActivityId = value.bookingInformation.selectedActivityId;
@@ -276,6 +292,7 @@ export default {
       this.date = value.bookingInformation.selectedDate;
       this.selectedTime = value.bookingInformation.selectedTime;
       this.price = value.price;
+      this.cashPrice = value.cashPrice;
       this.selectedFacilityName = value.bookingInformation.selectedFacilityName;
       this.participants = value.bookingInformation.participants;
       this.regularBooking = value.bookingInformation.regularSession;

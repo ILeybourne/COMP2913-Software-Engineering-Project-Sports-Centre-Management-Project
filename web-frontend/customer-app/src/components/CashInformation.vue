@@ -51,7 +51,7 @@
                 v-model="change"
                 readonly
                 type="number"
-                step="0.01"
+                step="0.1"
                 @keyup="[getChange]"
               ></b-form-input>
             </b-input-group>

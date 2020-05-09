@@ -139,18 +139,18 @@
             class="btn btn-outline-secondary"
             name="guest"
             @click="getUserType($event)"
-            :disabled="!timeValid"
+            :disabled="!(timeValid && participantsValid)"
             v-if="!account || isEmployeeOrManager"
           >
             Checkout As Guest
           </button>
-          <b-col md="3" />
+          <b-col md="3" v-if="(!account || isEmployeeOrManager) && account" />
           <button
             type="button"
             class="btn btn-outline-primary"
             name="account"
             @click="getUserType($event)"
-            :disabled="!timeValid"
+            :disabled="!(timeValid && participantsValid)"
             v-if="account"
           >
             Checkout With Account
@@ -224,6 +224,7 @@ label {
 import { mapActions, mapGetters } from "vuex";
 import { isEmpty } from "../util/session.helpers";
 import { addZero } from "../util/format.helpers";
+
 export default {
   name: "BookingInformation",
   data() {
@@ -243,6 +244,7 @@ export default {
       activityOptions: [],
       timeOptions: [{ value: null, text: "" }],
       price: null,
+      cashPrice: null,
       userType: null,
       componentWidth: 90,
       facilityValid: null,
@@ -252,7 +254,9 @@ export default {
       participantsValid: null,
       regularBookingOption: "No",
       isRegularSession: false,
-      maxParticipants: null
+      maxParticipants: null,
+      userMemberships: [],
+      customer: null
     };
   },
   props: {
@@ -263,13 +267,15 @@ export default {
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
     ...mapGetters("membership", ["memberships"]),
+    ...mapGetters("customers", ["customers"]),
+    ...mapGetters("accounts", ["accounts"]),
 
     account: function() {
       return !isEmpty(this.user);
     },
 
     isMember: function() {
-      return this.memberships.length > 0;
+      return this.userMemberships.length > 0;
     },
 
     computedRegularSessionStatus: function() {
@@ -284,6 +290,8 @@ export default {
     ...mapActions("membership", ["getMemberships"]),
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
+    ...mapActions("customers", ["getAllCustomers"]),
+    ...mapActions("accounts", ["getAccounts"]),
 
     setRegularSession() {
       this.bookingInformation.regularSession = !this
@@ -333,37 +341,57 @@ export default {
           x => x.id === this.bookingInformation.selectedActivityId
         );
         this.price = selectedActivity.cost;
+        this.cashPrice = Math.round(
+          ((selectedActivity.cost * this.bookingInformation.participants +
+            Number.EPSILON) *
+            100) /
+            100
+        ).toFixed(2);
 
         if (this.isMember) {
-          this.price = selectedActivity.cost  * membershipDiscount;
+          this.price = selectedActivity.cost * membershipDiscount;
         }
 
         if (this.bookingInformation.regularSession) {
-          this.price = ( regularSessionDiscount * this.price +
+          this.price = (
+            regularSessionDiscount * this.price +
             Math.round(
               (regularSessionDiscount *
                 selectedActivity.cost *
                 (Number(this.bookingInformation.participants) - 1) +
                 Number.EPSILON) *
                 100
-            ) / 100
+            ) /
+              100
+          ).toFixed(2);
+
+          this.cashPrice = Math.round(
+            ((this.cashPrice * regularSessionDiscount + Number.EPSILON) * 100) /
+              100
           ).toFixed(2);
         } else {
-          this.price = ( this.price +
+          this.price = (
+            this.price +
             Math.round(
               (selectedActivity.cost *
                 (Number(this.bookingInformation.participants) - 1) +
                 Number.EPSILON) *
                 100
-            ) / 100
+            ) /
+              100
           ).toFixed(2);
         }
 
-        if (this.bookingInformation.participants === 0 || this.bookingInformation.participants == null){
-          this.price = 0.00.toFixed(2)
+        if (
+          this.bookingInformation.participants === 0 ||
+          this.bookingInformation.participants == null
+        ) {
+          this.price = (0.0).toFixed(2);
+          this.cashPrice = (0.0).toFixed(2);
         }
       } else {
-        this.price = 0.00.toFixed(2)
+        this.price = (0.0).toFixed(2);
+        this.cashPrice = (0.0).toFixed(2);
       }
     },
 
@@ -490,6 +518,12 @@ export default {
 
     getUserType(e) {
       this.userType = e.toElement.name;
+      console.log(this.userType);
+      if (this.userType === "guest") {
+        this.price = this.cashPrice;
+      } else {
+        this.getPrice();
+      }
       this.submitForm(1);
     },
 
@@ -539,6 +573,14 @@ export default {
       this.validateDate();
       this.validateTime();
       this.validateParticipants();
+    },
+
+    async getCustomer() {
+      if (!isEmpty(this.user)) {
+        this.customer = this.customers.find(
+          x => x.emailAddress === this.$auth.user.email
+        );
+      }
     },
 
     // eslint-disable-next-line no-unused-vars
@@ -603,6 +645,25 @@ export default {
         this.checkRegularSession();
         this.getPrice();
       }
+    },
+    getMembers() {
+      let userAccounts = [];
+      for (const account of this.accounts) {
+        if (account.customerId === this.customer.id) {
+          userAccounts.push(account);
+        }
+      }
+
+      let userMemberships = [];
+      for (const membership of this.memberships) {
+        for (const account of userAccounts) {
+          if (membership.accountId == account.id) {
+            userMemberships.push(membership);
+          }
+        }
+      }
+
+      this.userMemberships = userMemberships;
     }
   },
 
@@ -610,7 +671,15 @@ export default {
     await this.getFacilities();
     await this.getActivities();
     await this.getAllSessions();
+    await this.getAllCustomers();
     await this.getMemberships();
+    await this.getAccounts();
+    if (this.customers) {
+      await this.getCustomer();
+    }
+    if (this.customer) {
+      this.getMembers();
+    }
     await this.fillByParams();
   }
 };

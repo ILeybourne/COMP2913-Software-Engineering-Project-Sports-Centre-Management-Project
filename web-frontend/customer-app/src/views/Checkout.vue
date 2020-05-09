@@ -357,7 +357,7 @@ export default {
         cost: this.price,
         membershipTypeId: this.membershipSaleDetails.id,
         sessionId: this.bookingDetails.sessionId,
-        participants: this.bookingDetails.participants
+        participants: Number(this.bookingDetails.participants)
       };
 
       if (this.isMembership) {
@@ -462,7 +462,7 @@ export default {
         const body = {
           accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
           //TODO ADD participant field
-          participants: this.bookingDetails.participants,
+          participants: Number(this.bookingDetails.participants),
           regularBooking: this.bookingDetails.regularBooking, //need to be dynamic (cash payment defaulted to false, same for guest)
           transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
           amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
@@ -493,7 +493,7 @@ export default {
           regularSession: this.bookingDetails.regularBooking, //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
           membershipTypeId: this.membershipSaleDetails.id,
           sessionId: this.bookingDetails.sessionId,
-          participants: this.bookingDetails.participants
+          participants: Number(this.bookingDetails.participants)
     }
       );
       if (paymentIntent.status === 200) {
