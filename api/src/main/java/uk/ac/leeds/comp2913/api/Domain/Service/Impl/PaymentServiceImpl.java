@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.CustomerRepository;
@@ -402,7 +403,8 @@ public class PaymentServiceImpl implements PaymentService {
         salesCost = calculateBookingTotal(inputCost, false, participants, member);
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
         //Payment response, contains data required for posting booking record
-        responseBody.setTransactionId("Cash");
+        String transactionId = "CASH" + UUID.randomUUID().toString();
+        responseBody.setTransactionId(transactionId);
         responseBody.setAccountId(account.getId()); //this gets the account record
         responseBody.setAmountPaid(salesCost);
         return responseBody;

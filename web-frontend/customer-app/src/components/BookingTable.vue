@@ -1,34 +1,38 @@
 <template>
-  <v-app class="app">
-    <v-card dark>
+  <v-app class="usage-container">
+    <v-card dark class="card">
       <v-container class="new-booking">
-        <button
+        <v-btn
+          class="black--text"
+          color="yellow"
           type="submit"
           value="submit"
-          class="site-btn"
           v-on:click="directToBookingPage()"
         >
-          Place New Booking
-        </button>
+          <b>Place New Booking</b>
+        </v-btn>
       </v-container>
       <v-data-table
         dense
+        :items-per-page="20"
         :headers="headers"
         :items="dataWithActivities"
         class="white--text"
+        :footer-props="footerProps"
         dark
       >
         <template v-slot:item.actions="{ item }">
-          <v-icon @click="showDelete(item)">
+          <v-icon title="Cancel Booking" @click="showDelete(item)">
             mdi-delete
           </v-icon>
-          <v-icon @click="showReceipt(item)">
+          <v-icon title="View Receipt" @click="showReceipt(item)">
             mdi-printer
           </v-icon>
-          <v-icon @click="emailReceipt(item)">
+          <v-icon title="Email Receipt" @click="emailReceipt(item)">
             mdi-email
           </v-icon>
           <v-icon
+            title="Unsubscribe From Session"
             v-if="item.regularBooking === true"
             color="red"
             @click="stopRegularSessionPayments(item)"
@@ -41,8 +45,17 @@
   </v-app>
 </template>
 <style scoped>
-.app {
-  height: min-content;
+.usage-container {
+  min-height: 50%;
+  height: auto;
+  display: flex;
+  width: 100%;
+}
+.new-booking {
+  padding-bottom: 20px;
+}
+.card {
+  margin: 20px;
 }
 </style>
 <script>
@@ -51,9 +64,11 @@ import { mapActions, mapGetters } from "vuex";
 export default {
   name: "BookingTable",
   components: {},
+  totalBookings: null,
   // ItemsPerPageDropdown
   data: function() {
     return {
+      footerProps: { "items-per-page-options": [5, 10, 20, 100] },
       singleSelect: false,
       headers: [
         {
@@ -99,7 +114,7 @@ export default {
           class: "yellow--text heading font-weight-bold"
         },
         {
-          value: "amount",
+          value: "formattedAmount",
           text: "CHARGE",
           sortable: true,
           class: "yellow--text heading font-weight-bold"
@@ -131,9 +146,7 @@ export default {
   computed: {
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("timetable", {
-      bookings: "bookings",
-      bookingsLoading: "bookingsLoading",
-      paging: "paging"
+      bookings: "bookings"
     })
   },
   methods: {
@@ -182,9 +195,18 @@ export default {
       console.log(this.bookings);
       this.dataWithActivities = this.bookings;
     }
-    // emailReceipt(item){}
-    // showReceipt(item){}
   },
+  // emailReceipt(item){}
+  // showReceipt(item){}
+//watch: {
+//  options: {
+//    handler() {
+//      this.getBookings();
+//    },
+//    deep: true
+//  }
+//},
+
   async mounted() {
     await this.getSessions();
     await this.getBookings();
