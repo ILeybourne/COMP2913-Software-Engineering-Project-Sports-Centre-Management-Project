@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 
 import uk.ac.leeds.comp2913.api.Domain.Service.PaymentService;
 import uk.ac.leeds.comp2913.api.ViewModel.PaymentDTO;
@@ -55,13 +58,18 @@ public class PaymentController {
     //Customer New Card Payment
     //TODO Move into response body
     @PostMapping(path = "/intent/card/{customer_id}")
-    public PayResponseBodyDTO createFromNewCard(@RequestBody PaymentDTO requestBody, @PathVariable Long customer_id, @AuthenticationPrincipal Jwt user) throws StripeException {
+    public PayResponseBodyDTO createFromNewCard(@RequestBody PaymentDTO requestBody, @PathVariable Long customer_id, @AuthenticationPrincipal Authentication user) throws StripeException {
         String emailAddress = requestBody.getEmail();
         Integer participants = 0;
         BigDecimal cost = null;
         String username = null;
-        if(user.getSubject()!= null){
-            username = user.getSubject();
+        Boolean isManager = false;
+        if(user != null){
+            username = user.getName();
+            Collection<? extends GrantedAuthority> permissions = user.getAuthorities();
+            if(permissions.size() > 1){
+                isManager=true;
+            }
         }
         if (requestBody.getSessionId() != null) {
             cost = paymentService.getBookingCharge(requestBody.getSessionId());
@@ -77,7 +85,7 @@ public class PaymentController {
         if (participants == null) {
             participants = 0;
         }
-        return paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking, participants, username);
+        return paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking, participants, username, isManager);
     }
 
     //Customer Saved Card Payment

@@ -272,7 +272,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     //Account user checkout
     @Override
-    public PayResponseBodyDTO createFromNewCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking, Integer participants, String username) throws StripeException {
+    public PayResponseBodyDTO createFromNewCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking, Integer participants, String username, Boolean isManager) throws StripeException {
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
         BigDecimal cost = null;
         //TODO Move to env
@@ -323,8 +323,8 @@ public class PaymentServiceImpl implements PaymentService {
                                     .setEmail(email)
                                     .build();
                     customer = Customer.create(customerParams);
-                    internalCustomer.setStripeId(customer.getId()); //Set the auth0 username to currently logged in user
-                    if(internalCustomer.getAuth0_username() == null && username != null){
+                    internalCustomer.setStripeId(customer.getId()); //Set the auth0 username to currently logged in user if they're a customer
+                    if(internalCustomer.getAuth0_username() == null && username != null && !isManager){
                         internalCustomer.setAuth0_username(username);
                     }
                     customerRepository.save(internalCustomer);

@@ -56,7 +56,9 @@ const getters = {
       session => Number(session.resource.id) === Number(facilityId)
     );
   },
-  bookingsLoading: state => state.paging.bookings.isDataToLoad
+  bookingsLoading: state => state.paging.bookings.isDataToLoad,
+  totalElements: state => state.paging.bookings.totalElements,
+  pages: state => state.paging.bookings.pages
 };
 
 const mutations = {
@@ -75,6 +77,18 @@ const mutations = {
     state.bookings.push(...page);
   },
   SET_BOOKING_PAGE_INFO: (state, payload) => {
+    state.paging.bookings = {
+      ...state.paging.bookings,
+      ...payload
+    };
+  },
+  SET_TOTAL_ELEMENTS: (state, payload) => {
+    state.paging.bookings = {
+      ...state.paging.bookings,
+      ...payload
+    };
+  },
+  SET_TOTAL_PAGES: (state, payload) => {
     state.paging.bookings = {
       ...state.paging.bookings,
       ...payload
@@ -124,6 +138,7 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return session;
   },
+  async getBookingsPage(){},
   async getBookings({ state, commit, dispatch }) {
     const paging = state.paging.bookings;
     if (!paging.isDataToLoad) {
@@ -133,6 +148,10 @@ const actions = {
     // We don't have all the data from the server and we need to load it
     commit("loading/START_LOADING", null, { root: true });
     let { data } = await axios.get(paging.nextPageHref);
+    commit("SET_TOTAL_ELEMENTS", { totalElements: data.page.totalElements });
+    console.log(data.page.totalElements);
+    commit("SET_TOTAL_PAGES", { totalPages: data.page.totalPages });
+    console.log(data.page.totalPages);
     const pageIdentifier = data._links.self.href;
     if (data._embedded) {
       const bookingPage = data._embedded.bookingDToes;
@@ -153,6 +172,7 @@ const actions = {
         nextPageHref: data._links.next.href,
         lastPageHref: data._links.last.href
       });
+
 
       if (pageIdentifier === data._links.last.href) {
         // if this was the last page then we are done
@@ -222,9 +242,7 @@ const actions = {
       `/bookings/cancel/${activity_id}/${account_id}`
     );
     const updatedBookings = data._embedded.bookingDToes;
-    commit("SET_BOOKINGS",
-      updatedBookings
-    );
+    commit("SET_BOOKINGS", updatedBookings);
     commit("loading/START_LOADING", null, { root: true });
   }
 };

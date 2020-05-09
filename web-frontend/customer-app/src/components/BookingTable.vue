@@ -19,6 +19,7 @@
         :items="dataWithActivities"
         class="white--text"
         :footer-props="footerProps"
+        :server-items-length="totalElements"
         dark
       >
         <template v-slot:item.actions="{ item }">
@@ -60,7 +61,7 @@
 </style>
 <script>
 import { mapActions, mapGetters } from "vuex";
-
+//:server-items-length="totalElements" this in v-data-table prevented data from being loaded when a new user logged in
 export default {
   name: "BookingTable",
   components: {},
@@ -145,6 +146,8 @@ export default {
   },
   computed: {
     ...mapGetters("timetable", ["sessions"]),
+    ...mapGetters("timetable", ["totalElements"]),
+    ...mapGetters("timetable", ["pages"]),
     ...mapGetters("timetable", {
       bookings: "bookings"
     })
@@ -184,6 +187,10 @@ export default {
     },
 
     async collectData() {
+      console.log("pages");
+      console.log(this.pages);
+      await this.getSessions();
+      await this.getBookings();
       for (const booking of this.bookings) {
         for (const session of this.sessions) {
           if (booking.session_id === session.id) {
@@ -198,14 +205,14 @@ export default {
   },
   // emailReceipt(item){}
   // showReceipt(item){}
-//watch: {
-//  options: {
-//    handler() {
-//      this.getBookings();
-//    },
-//    deep: true
-//  }
-//},
+ // watch: {
+ //   options: {
+ //     handler() {
+ //       this.getBookings();
+ //     },
+ //     deep: true
+ //   }
+ // },
 
   async mounted() {
     await this.getSessions();

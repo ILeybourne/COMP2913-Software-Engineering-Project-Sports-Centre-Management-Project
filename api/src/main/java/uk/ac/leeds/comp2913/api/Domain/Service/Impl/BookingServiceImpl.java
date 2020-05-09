@@ -140,12 +140,12 @@ public class BookingServiceImpl implements BookingService {
   //is turned to null.
   @Transactional
   @Override
-  public Page<Booking> cancelRegularSession(Long activity_id, Long account_id, Pageable pageable){
+  public Page<Booking> cancelRegularSession(Long activity_id, Long account_id, Pageable pageable, String username, Boolean isManager){
     Activity a = activityRepository.findById(activity_id)
         .orElseThrow(() -> new ResourceNotFoundException("Activity not found for ID" + activity_id));
     Long regular_session_id = a.getRegularSession().getId();
     bookingRepository.unsubscribeFromRegularSession(regular_session_id, account_id);
-    return bookingRepository.findAll(pageable);
+    return bookingRepository.findAllbyUsername(pageable, username, isManager);
   }
 
 }
