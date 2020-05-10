@@ -4,12 +4,14 @@
       <h1>Our <span>Facilities</span></h1>
     </div>
     <v-alert show v-if="isEmployeeOrManager">
-      <b-button
-        variant="primary"
-        :to="{ name: 'FacilityPage', params: { id: 'create' } }"
-      >
-        Create a new Facility
-      </b-button>
+      <v-container class="create-button">
+        <b-button
+          variant="dark"
+          :to="{ name: 'FacilityPage', params: { id: 'create' } }"
+        >
+          <b>CREATE NEW FACILITY</b>
+        </b-button>
+      </v-container>
     </v-alert>
     <b-card-group class="cards">
       <Facility
@@ -48,11 +50,17 @@
 .heading-div span {
   background: #fcff18;
 }
-  .cards{
-    display: flex;
-    justify-content: center;
-    text-align: center;
-  }
+.cards {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+.create-button {
+  width: 100%;
+  text-align: right;
+  justify-content: flex-end;
+  margin-right: 100px;
+}
 </style>
 
 <script>
