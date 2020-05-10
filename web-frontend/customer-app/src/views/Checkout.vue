@@ -455,7 +455,7 @@ export default {
           participants: Number(this.bookingDetails.participants),
           regularBooking: this.bookingDetails.regularBooking, //need to be dynamic (cash payment defaulted to false, same for guest)
           transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
-          amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
+          amount: this.paymentResponse.amountPaid / 100//get from payment response body if card (may vary if regular session) if cash take from online price
         };
         await this.$http.post(
           `/bookings/` + this.bookingDetails.sessionId,
@@ -490,7 +490,6 @@ export default {
         this.paymentResponse.accountId = paymentIntent.data.accountId;
         this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
         this.paymentResponse.transactionId = paymentIntent.data.transactionId;
-
 
         if (this.isMembership) {
           await this.addMember();
