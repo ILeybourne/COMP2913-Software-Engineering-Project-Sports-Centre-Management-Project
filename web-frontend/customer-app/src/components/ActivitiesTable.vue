@@ -129,29 +129,29 @@ export default {
       headers: [
         {
           value: "name",
-          text: "Activity",
+          text: "ACTIVITY",
           sortable: true,
           class: "yellow--text heading font-weight-bold"
         },
         {
           value: "totalCapacity",
-          text: "Capacity",
+          text: "CAPACITY",
           sortable: true,
           class: "yellow--text heading font-weight-bold"
         },
         {
           value: "facility.name",
-          text: "Facility",
+          text: "FACILITY",
           class: "yellow--text heading font-weight-bold"
         },
         {
           value: "formattedCost",
-          text: "Cost",
+          text: "COST",
           class: "yellow--text heading font-weight-bold"
         },
         {
           value: "actions",
-          text: "Actions",
+          text: "ACTIONS",
           sortable: false,
           class: "yellow--text heading font-weight-bold"
         }
@@ -266,9 +266,13 @@ export default {
     async deleteItem(item) {
       const id = item.id;
       const index = this.sorted.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.sorted.splice(index, 1) &&
-        this.deleteActivityType(id);
+      try {
+        confirm("Are you sure you want to delete this item?") &&
+          this.sorted.splice(index, 1) &&
+          this.deleteActivityType(id);
+      } catch (error) {
+        console.log(error.response.status);
+      }
     }
   },
 
