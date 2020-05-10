@@ -90,7 +90,11 @@
             step="1"
             type="number"
             min="1"
-            :disabled="!activitiesValid || maxParticipants < 1 || computedRegularSessionStatus"
+            :disabled="
+              !activitiesValid ||
+                maxParticipants < 1 ||
+                computedRegularSessionStatus
+            "
             v-bind:max="maxParticipants"
           >
           </b-form-input>
@@ -140,11 +144,21 @@
             name="guest"
             @click="getUserType($event)"
             :disabled="!(timeValid && participantsValid)"
-            v-if="(!account || isEmployeeOrManager) && !bookingInformation.regularSession "
+            v-if="
+              (!account || isEmployeeOrManager) &&
+                !bookingInformation.regularSession
+            "
           >
             Checkout As Guest
           </button>
-          <b-col md="3" v-if="(!account || isEmployeeOrManager) && account && !bookingInformation.regularSession  " />
+          <b-col
+            md="3"
+            v-if="
+              (!account || isEmployeeOrManager) &&
+                account &&
+                !bookingInformation.regularSession
+            "
+          />
           <button
             type="button"
             class="btn btn-outline-primary"
@@ -297,10 +311,9 @@ export default {
       this.bookingInformation.regularSession = !this
         .computedRegularSessionStatus;
 
-      if(this.bookingInformation.regularSession){
-        this.bookingInformation.participants = 1
-        this.participantsValid = true
-
+      if (this.bookingInformation.regularSession) {
+        this.bookingInformation.participants = 1;
+        this.participantsValid = true;
       }
     },
 
@@ -497,23 +510,23 @@ export default {
 
     async setMaxParticipants() {
       if (this.bookingInformation.selectedActivityId !== null) {
-
-
         let data = await this.$http.get("/bookings?page=0&size=1000");
 
         let bookings = data.data._embedded.bookingDToes;
         let customerCount = 0;
 
         for (const booking of bookings) {
-          console.log(booking.session_id + " " + this.bookingInformation.selectedSessionId)
+          console.log(
+            booking.session_id + " " + this.bookingInformation.selectedSessionId
+          );
           if (
             booking.session_id === this.bookingInformation.selectedSessionId
           ) {
             customerCount = customerCount + booking.participants;
           }
         }
-        console.log("this.activities")
-        console.log(this.activities)
+        console.log("this.activities");
+        console.log(this.activities);
 
         this.maxParticipants =
           this.activities.find(
@@ -521,11 +534,13 @@ export default {
           ).totalCapacity - customerCount;
 
         this.bookingInformation.participants = 1;
-
+        this.participantsValid = true;
+        this.getPrice();
 
         if (this.maxParticipants < 1) {
           this.bookingInformation.participants = 0;
           this.participantsValid = false;
+          this.price = null;
         }
       }
     },

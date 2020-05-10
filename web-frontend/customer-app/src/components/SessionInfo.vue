@@ -33,7 +33,10 @@
       </tbody>
     </table>
     <div class="alert alert-danger" v-if="error">{{ error }}</div>
-    <b-button variant="primary" v-if="userCanBook" @click="routerPushBookingWithPreviewInfo"
+    <b-button
+      variant="primary"
+      v-if="userCanBook"
+      @click="routerPushBookingWithPreviewInfo"
       >Book this Session</b-button
     >
     <b-button variant="danger" v-if="userCanDelete" @click="deleteASession">
@@ -75,7 +78,6 @@ export default {
   },
   computed: {
     ...mapGetters("auth", ["isEmployeeOrManager"]),
-
 
     placesAvailableForSession() {
       if (!this.session) {

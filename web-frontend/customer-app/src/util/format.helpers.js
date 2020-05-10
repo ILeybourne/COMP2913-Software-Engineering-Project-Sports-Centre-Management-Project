@@ -18,4 +18,4 @@ export const formatDateYMD = value => {
     return dt.getFullYear() + "-" + dt.getMonth() + "-" + dt.getDate();
   }
   return "";
-}
+};

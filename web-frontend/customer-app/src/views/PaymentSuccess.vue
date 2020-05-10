@@ -207,7 +207,11 @@ export default {
     this.isUser = !isEmpty(this.user);
 
     if (this.paymentResponse != null) {
-      if (this.bookingDetails != null && (this.membershipSaleDetails==null||this.membershipSaleDetails.id==null)) {
+      if (
+        this.bookingDetails != null &&
+        (this.membershipSaleDetails == null ||
+          this.membershipSaleDetails.id == null)
+      ) {
         this.hideBookingDiv = false;
       }
       if (this.membershipSaleDetails != null) {

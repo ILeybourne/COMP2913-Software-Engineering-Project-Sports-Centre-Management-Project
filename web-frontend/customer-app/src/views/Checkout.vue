@@ -308,14 +308,6 @@ export default {
       this.card.mount("#card-element");
     },
     setBookingDetails() {
-      // this.bookingDetails.facility = this.$route.params.bookingDetails.facility;
-      // this.bookingDetails.activity = this.$route.params.bookingDetails.activity;
-      // this.bookingDetails.date = this.$route.params.bookingDetails.date;
-      // this.bookingDetails.time = this.$route.params.bookingDetails.time;
-      // this.bookingDetails.price = this.$route.params.bookingDetails.price;
-      // this.bookingDetails.activityTypeId = this.$route.params.bookingDetails.activityTypeId;
-      // this.bookingDetails.sessionId = this.$route.params.bookingDetails.sessionId;
-      // this.bookingDetails.participants = this.$route.params.bookingDetails.participants;
       this.bookingDetails = this.$route.params.bookingDetails;
       this.price = this.$route.params.bookingDetails.price;
     },
@@ -335,7 +327,7 @@ export default {
       this.formData.selectedOption = this.$route.params.selectedOption;
     },
     async getCustomer() {
-      if (this.user) {
+      if (!isEmpty(this.user)) {
         this.customer = this.customers.find(
           x => x.emailAddress === this.$auth.user.email
         );
@@ -379,10 +371,7 @@ export default {
           body
         );
       } else {
-        paymentIntent = await this.$http.post(
-          `/payments/guest-intent/`,
-          body
-        );
+        paymentIntent = await this.$http.post(`/payments/guest-intent/`, body);
       }
       if (paymentIntent.status === 200) {
         this.paymentResponse.accountId = paymentIntent.data.accountId;
@@ -408,6 +397,7 @@ export default {
         // Show error to your customer (e.g., insufficient funds)
       } else {
         // The payment has been processed!
+
         if (result.paymentIntent.status === "succeeded") {
           this.paymentSuccess = true;
 
@@ -456,8 +446,8 @@ export default {
     },
 
     async createBooking() {
-      console.log("paymentResponse")
-      console.log(this.paymentResponse)
+      console.log("paymentResponse");
+      console.log(this.paymentResponse);
       try {
         const body = {
           accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
@@ -494,7 +484,7 @@ export default {
           membershipTypeId: this.membershipSaleDetails.id,
           sessionId: this.bookingDetails.sessionId,
           participants: Number(this.bookingDetails.participants)
-    }
+        }
       );
       if (paymentIntent.status === 200) {
         this.paymentResponse.accountId = paymentIntent.data.accountId;

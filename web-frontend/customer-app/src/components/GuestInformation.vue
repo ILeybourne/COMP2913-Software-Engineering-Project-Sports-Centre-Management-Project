@@ -4,7 +4,9 @@
       class="guest-container"
       v-bind:style="{ width: this.componentWidth + '%' }"
     >
-      <h4 style="text-align: center; padding-bottom: 10px;">Guest Information</h4>
+      <h4 style="text-align: center; padding-bottom: 10px;">
+        Guest Information
+      </h4>
       <form @submit="submitCustomerDetails($event)">
         <div class="form-row">
           <label for="firstName">First Name:</label>
@@ -142,9 +144,9 @@
   justify-content: center;
   flex-basis: auto; /* default value */
   flex-grow: 1;
-  -webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
-  -moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
-  box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 10px 10px 24px 5px rgba(0, 0, 0, 0.1);
 }
 
 .error {
