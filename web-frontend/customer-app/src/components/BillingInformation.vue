@@ -39,7 +39,7 @@
             class="form-control"
             @keyup="validateEmail"
             @change="validateEmail"
-            :disabled="disableEmail"
+            :disabled="disableEmail && !isEmployeeOrManager"
           />
         </div>
         <div class="form-row">
@@ -211,7 +211,7 @@ export default {
   },
   computed: {
     ...mapGetters("customers", ["customers"]),
-    ...mapGetters("auth", ["user"]),
+    ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
 
     customer: function () {
       return this.customers.find( customer => customer.emailAddress === this.user.email)

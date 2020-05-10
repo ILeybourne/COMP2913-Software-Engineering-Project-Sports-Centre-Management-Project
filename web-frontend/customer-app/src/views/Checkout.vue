@@ -60,7 +60,7 @@
             <form id="payment-form">
               <div id="cardDiv">
                 <div id="card-element"></div>
-                <div id="checkbox-div" v-if="!this.isMembership && !this.bookingDetails.regularBooking ">
+                <div id="checkbox-div" v-if="!this.isMembership && !this.bookingDetails.regularBooking && loggedIn">
                 <label for="checkbox">Save Card Details:</label>
                 <input type="checkbox" id="checkbox" v-model="saveCard">
                 </div>
@@ -297,6 +297,9 @@ export default {
       } else {
         return false;
       }
+    },
+    loggedIn: function () {
+      return !isEmpty(this.user)
     }
   },
   methods: {
