@@ -491,7 +491,13 @@ export default {
         this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
         this.paymentResponse.transactionId = paymentIntent.data.transactionId;
 
-        await this.createBooking();
+
+        if (this.isMembership) {
+          await this.addMember();
+        }
+        if (this.isBooking) {
+          await this.createBooking();
+        }
         let paymentSuccessData = {
           bookingDetails: this.bookingDetails,
           membershipSaleDetails: this.membershipSaleDetails,

@@ -512,21 +512,27 @@ export default {
       if (this.bookingInformation.selectedActivityId !== null) {
         let data = await this.$http.get("/bookings?page=0&size=1000");
 
-        let bookings = data.data._embedded.bookingDToes;
+        let bookings = null
+        if (data.data._embedded){
+
+          bookings = data.data._embedded.bookingDToes;
+        }
         let customerCount = 0;
 
-        for (const booking of bookings) {
-          console.log(
-            booking.session_id + " " + this.bookingInformation.selectedSessionId
-          );
-          if (
-            booking.session_id === this.bookingInformation.selectedSessionId
-          ) {
-            customerCount = customerCount + booking.participants;
+        if (bookings) {
+          for (const booking of bookings) {
+            console.log(
+                    booking.session_id + " " + this.bookingInformation.selectedSessionId
+            );
+            if (
+                    booking.session_id === this.bookingInformation.selectedSessionId
+            ) {
+              customerCount = customerCount + booking.participants;
+            }
           }
+          console.log("this.activities");
+          console.log(this.activities);
         }
-        console.log("this.activities");
-        console.log(this.activities);
 
         this.maxParticipants =
           this.activities.find(
