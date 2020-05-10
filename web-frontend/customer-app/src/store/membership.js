@@ -56,7 +56,7 @@ const actions = {
   async getMemberships({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/membership/members");
-    if (data._embedded){
+    if (data._embedded) {
       commit("SET_MEMBERSHIPS", data._embedded.membershipDToes);
     }
     commit("loading/FINISH_LOADING", null, { root: true });

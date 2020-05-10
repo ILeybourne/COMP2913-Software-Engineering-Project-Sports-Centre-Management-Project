@@ -60,9 +60,16 @@
             <form id="payment-form">
               <div id="cardDiv">
                 <div id="card-element"></div>
-                <div id="checkbox-div" v-if="!this.isMembership && !this.bookingDetails.regularBooking && loggedIn">
-                <label for="checkbox">Save Card Details:</label>
-                <input type="checkbox" id="checkbox" v-model="saveCard">
+                <div
+                  id="checkbox-div"
+                  v-if="
+                    !this.isMembership &&
+                      !this.bookingDetails.regularBooking &&
+                      loggedIn
+                  "
+                >
+                  <label for="checkbox">Save Card Details:</label>
+                  <input type="checkbox" id="checkbox" v-model="saveCard" />
                 </div>
                 <div class="buttonDiv">
                   <button
@@ -111,12 +118,10 @@
 </template>
 
 <style scoped>
-
-
-  #checkbox-div{
-    top: 200px;
-    margin-top: 20px;
-  }
+#checkbox-div {
+  top: 200px;
+  margin-top: 20px;
+}
 
 #card-bg {
   max-height: 80%;
@@ -298,8 +303,8 @@ export default {
         return false;
       }
     },
-    loggedIn: function () {
-      return !isEmpty(this.user)
+    loggedIn: function() {
+      return !isEmpty(this.user);
     }
   },
   methods: {
@@ -399,9 +404,13 @@ export default {
     async sendClientSecretToServer(client_secret) {
       //uses client secret from  payment intent to make payment
       // eslint-disable-next-line no-undef
-      let setup = null
-      if(this.saveCard || this.isMembership || this.bookingDetails.regularBooking){
-        setup = "off_session"
+      let setup = null;
+      if (
+        this.saveCard ||
+        this.isMembership ||
+        this.bookingDetails.regularBooking
+      ) {
+        setup = "off_session";
       }
 
       const result = await this.stripe.confirmCardPayment(client_secret, {
@@ -475,7 +484,7 @@ export default {
           participants: Number(this.bookingDetails.participants),
           regularBooking: this.bookingDetails.regularBooking, //need to be dynamic (cash payment defaulted to false, same for guest)
           transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
-          amount: this.paymentResponse.amountPaid / 100//get from payment response body if card (may vary if regular session) if cash take from online price
+          amount: this.paymentResponse.amountPaid / 100 //get from payment response body if card (may vary if regular session) if cash take from online price
         };
         await this.$http.post(
           `/bookings/` + this.bookingDetails.sessionId,

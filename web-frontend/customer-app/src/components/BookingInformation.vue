@@ -512,9 +512,8 @@ export default {
       if (this.bookingInformation.selectedActivityId !== null) {
         let data = await this.$http.get("/bookings?page=0&size=1000");
 
-        let bookings = null
-        if (data.data._embedded){
-
+        let bookings = null;
+        if (data.data._embedded) {
           bookings = data.data._embedded.bookingDToes;
         }
         let customerCount = 0;
@@ -522,10 +521,12 @@ export default {
         if (bookings) {
           for (const booking of bookings) {
             console.log(
-                    booking.session_id + " " + this.bookingInformation.selectedSessionId
+              booking.session_id +
+                " " +
+                this.bookingInformation.selectedSessionId
             );
             if (
-                    booking.session_id === this.bookingInformation.selectedSessionId
+              booking.session_id === this.bookingInformation.selectedSessionId
             ) {
               customerCount = customerCount + booking.participants;
             }
