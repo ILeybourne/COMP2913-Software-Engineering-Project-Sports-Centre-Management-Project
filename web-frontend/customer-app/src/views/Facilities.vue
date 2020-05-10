@@ -5,12 +5,16 @@
     </div>
     <v-alert show v-if="isEmployeeOrManager">
       <v-container class="create-button">
-        <b-button
-          variant="dark"
+        <b-btn
+          class="button-create"
+          variant="white"
           :to="{ name: 'FacilityPage', params: { id: 'create' } }"
-        >
-          <b>CREATE NEW FACILITY</b>
-        </b-button>
+          ><span>
+            <v-icon color="#1f1f1f" x-large title="Create New Facility"
+              >mdi-plus</v-icon
+            ></span
+          >
+        </b-btn>
       </v-container>
     </v-alert>
     <b-card-group class="cards">
@@ -47,7 +51,7 @@
   width: 100%;
   padding: 10px;
 }
-.heading-div span {
+span {
   background: #fcff18;
 }
 .cards {
@@ -56,10 +60,20 @@
   text-align: center;
 }
 .create-button {
-  width: 100%;
+  width: 85%;
   text-align: right;
   justify-content: flex-end;
   margin-right: 100px;
+}
+.button-create {
+  color: white !important;
+}
+.button-create span {
+  padding: 15px;
+}
+.button-create:hover span {
+  padding: 15px;
+  background: rgba(255,255,0,.5);
 }
 </style>
 

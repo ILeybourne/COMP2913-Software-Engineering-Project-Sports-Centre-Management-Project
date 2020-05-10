@@ -13,12 +13,15 @@
       </b-card-text>
       <b-row class="facility-details">
         <b-button class="button" id="button-timetable"
+                  variant="outline-dark"
           :to="{ name: 'FacilityTimetable', params: { id: facility.id } }"
           >See Timetable</b-button
         >
         <b-button class="button" id="button-details"
           :to="{ name: 'FacilityPage', params: { id: facility.id } }"
-          >View Details</b-button
+                  variant="outline-dark"
+
+        >View Details</b-button
         >
       </b-row>
     </b-card>
@@ -43,11 +46,9 @@
   width: auto;
   height: auto;
   margin: 5px !important;
-  background-color: #1f1f1f !important;
 ;
 }
 #button-timetable{
-  background-color: yellow;
 }
 .title{
   color: #1f1f1f;
