@@ -79,7 +79,7 @@ export default {
           offset: 0,
           triggers: "hover",
           html: true,
-          target: eventInfo.el
+          target: eventInfo.el,
         }
       });
       popover.$mount();
@@ -162,7 +162,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <div class="alert alert-warning" v-if="error">{{ error }}</div>
     <div id="calendar">
       <FullCalendar
@@ -185,6 +185,7 @@ export default {
         @eventClick="activityClick($event)"
         @select="onSelect($event)"
         :timeZone="'UTC'"
+        event-color="yellow"
       />
       <b-modal
         id="create-activity-modal"

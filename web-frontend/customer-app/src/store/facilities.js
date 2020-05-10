@@ -27,7 +27,11 @@ const getters = {
       return {
         ...activity,
         formattedCost: formatCurrency(activity.cost),
-        formattedStartAt: formatDate(activity.startTime)
+        formattedStartAt: formatDate(activity.startTime),
+        facility: state.facilities.find(
+          facility => Number(facility.id) === Number(activity.facility_id)
+        ),
+        memberPricing: formatCurrency((activity.cost)*0.7)
       };
     }),
   getFacilityById: state => id => {
@@ -152,7 +156,7 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
     return data;
   },
-  async deleteFacility({ state, commit }, facilityId){
+  async deleteFacility({ state, commit }, facilityId) {
     let result = false;
     commit("loading/START_LOADING", null, { root: true });
     const response = await axios.delete(`/resources/${facilityId}`);
@@ -168,7 +172,7 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return result;
   },
-  async updateActivityTypes({ commit }, { activityId, body}){
+  async updateActivityTypes({ commit }, { activityId, body }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.put(`/activitytypes/${activityId}`, body);
     commit("SET_ACTIVITIES", [
@@ -178,7 +182,10 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
   },
   async createActivityType({ commit }, { facilityId, body }) {
-    const { data } = await axios.post(`/activitytypes/resource/${facilityId}`, body);
+    const { data } = await axios.post(
+      `/activitytypes/resource/${facilityId}`,
+      body
+    );
     commit("SET_ACTIVITIES", [...state.activities, data]);
     commit("loading/START_LOADING", null, { root: true });
     return data;

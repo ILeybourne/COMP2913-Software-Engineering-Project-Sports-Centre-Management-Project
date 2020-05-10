@@ -14,7 +14,13 @@
         <b-navbar-nav class="ml-auto">
           <b-nav-item to="/">Home</b-nav-item>
           <b-nav-item to="/timetable">Timetable</b-nav-item>
-          <b-nav-item to="/facilities">Facilities</b-nav-item>
+          <b-nav-item-dropdown toggle-class="text-dark" text="Facilities">
+            <b-dropdown-item to="/facilities">Our Facilities</b-dropdown-item>
+            <b-dropdown-item to="/facilitypricelisting"
+              >Price List</b-dropdown-item
+            >
+          </b-nav-item-dropdown>
+
           <b-nav-item to="/activitiestable" v-if="isEmployeeOrManager"
             >Activities</b-nav-item
           >
@@ -31,7 +37,7 @@
             <b-dropdown-item to="/weeklyusage">Table</b-dropdown-item>
             <b-dropdown-item to="/weeklyusagegraph">Graph</b-dropdown-item>
           </b-nav-item-dropdown>
-        <!-- Right aligned nav items -->
+          <!-- Right aligned nav items -->
           <div class="hr-box">
             <b-nav-item-dropdown
               toggle-class="text-dark"
@@ -62,6 +68,9 @@
 .navbar-light .navbar-nav .nav-link {
   color: #1e1e1e !important;
   font-family: "PT Sans", sans-serif !important;
+}
+a.dropdown-item. active {
+  color: #000!important;
 }
 </style>
 <script>
