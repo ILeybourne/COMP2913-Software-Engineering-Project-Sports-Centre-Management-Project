@@ -191,12 +191,6 @@ export default {
       });
     },
     setBookingDetails() {
-      // this.bookingDetails.facility = this.$route.params.bookingDetails.facility;
-      // this.bookingDetails.activity = this.$route.params.bookingDetails.activity;
-      // this.bookingDetails.date = this.$route.params.bookingDetails.date;
-      // this.bookingDetails.time = this.$route.params.bookingDetails.time;
-      // this.bookingDetails.price = this.$route.params.bookingDetails.price;
-      // this.bookingDetails.participants = this.$route.params.bookingDetails.participants;
       this.bookingDetails = this.$route.params.bookingDetails;
       this.isBooking = true;
       this.isMembership = false;
