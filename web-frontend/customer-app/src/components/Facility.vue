@@ -7,21 +7,26 @@
       :img-alt="facility.name"
       img-top
     >
-      <b-card-title class="title"><span>{{facility.name}}</span></b-card-title>
+      <b-card-title class="title"
+        ><span>{{ facility.name }}</span></b-card-title
+      >
       <b-card-text>
         {{ facility.description }}
       </b-card-text>
       <b-row class="facility-details">
-        <b-button class="button" id="button-timetable"
-                  variant="outline-dark"
+        <b-button
+          class="button"
+          id="button-timetable"
+          variant="outline-dark"
           :to="{ name: 'FacilityTimetable', params: { id: facility.id } }"
           >See Timetable</b-button
         >
-        <b-button class="button" id="button-details"
+        <b-button
+          class="button"
+          id="button-details"
           :to="{ name: 'FacilityPage', params: { id: facility.id } }"
-                  variant="outline-dark"
-
-        >View Details</b-button
+          variant="outline-dark"
+          >View Details</b-button
         >
       </b-row>
     </b-card>
@@ -36,21 +41,19 @@
   text-align: center;
   background: #f6f9fa;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-
 }
-.facility-details{
+.facility-details {
   text-align: center;
   justify-content: center;
 }
-.button{
+.button {
   width: auto;
   height: auto;
   margin: 5px !important;
-;
 }
-#button-timetable{
+#button-timetable {
 }
-.title{
+.title {
   color: #1f1f1f;
 }
 .title span {
