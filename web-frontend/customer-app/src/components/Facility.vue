@@ -16,8 +16,8 @@
       <b-row class="facility-details">
         <b-button
           class="button"
-          id="button-timetable"
-          variant="outline-dark"
+          id="my-timetable"
+          variant="outline-light"
           :to="{ name: 'FacilityTimetable', params: { id: facility.id } }"
           >See Timetable</b-button
         >
@@ -25,7 +25,7 @@
           class="button"
           id="button-details"
           :to="{ name: 'FacilityPage', params: { id: facility.id } }"
-          variant="outline-dark"
+          variant="outline-light"
           >View Details</b-button
         >
       </b-row>
@@ -39,7 +39,8 @@
   margin: 10px;
   flex-direction: column;
   text-align: center;
-  background: #f6f9fa;
+  color: #f6f9fa !important;
+  background: #1f1f1f;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .facility-details {
@@ -54,7 +55,8 @@
 #button-timetable {
 }
 .title {
-  color: #1f1f1f;
+  color: #f6f9fa !important;
+  text-decoration-color: #f6f9fa !important;
 }
 .title span {
   background: transparent;
@@ -63,6 +65,12 @@
 .facility-card:hover .title span {
   background: #fcff18;
   padding: 3px;
+  color: #1f1f1f;
+}
+.button .active {
+  color: #fff !important;
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
 }
 </style>
 

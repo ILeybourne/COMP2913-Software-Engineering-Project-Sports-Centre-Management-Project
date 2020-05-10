@@ -73,7 +73,7 @@ span {
 }
 .button-create:hover span {
   padding: 15px;
-  background: rgba(255,255,0,.5);
+  background: rgba(255, 255, 0, 0.5);
 }
 </style>
 

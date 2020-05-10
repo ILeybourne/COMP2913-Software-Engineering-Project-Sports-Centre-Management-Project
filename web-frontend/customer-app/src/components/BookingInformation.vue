@@ -116,7 +116,7 @@
           >
             Checkout As Guest
           </button>
-          <b-col md="3"/>
+          <b-col md="3" />
           <button
             type="button"
             class="btn btn-outline-primary"
@@ -437,7 +437,7 @@ export default {
 
         this.bookingInformation.selectedFacilityId = facilityId;
         this.setFacilityName(facilityId);
-        this.facilityValid = true
+        this.facilityValid = true;
         await this.setActivityTypeOptions(facilityId);
 
         this.bookingInformation.selectedActivityId = activityTypeId;
@@ -458,12 +458,12 @@ export default {
         const formattedDate =
           year + "-" + month.substr(-2) + "-" + date.substr(-2);
         this.bookingInformation.selectedDate = formattedDate;
-        this.dateValid = true
+        this.dateValid = true;
 
         this.getTimes();
         this.bookingInformation.selectedSessionId = sessionId;
-        this.getSelectedTime(sessionId)
-        this.timeValid = true
+        this.getSelectedTime(sessionId);
+        this.timeValid = true;
 
         this.getPrice();
       }

@@ -70,7 +70,7 @@
   font-family: "PT Sans", sans-serif !important;
 }
 a.dropdown-item. active {
-  color: #000!important;
+  color: #000 !important;
 }
 </style>
 <script>

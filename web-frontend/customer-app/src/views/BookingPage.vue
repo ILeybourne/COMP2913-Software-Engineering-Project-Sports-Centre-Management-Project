@@ -8,7 +8,7 @@
       <b-row class="row">
         <b-col col lg="maxColSize " v-bind:class="{ 'd-none': hideBooking }">
           <BookingInformation
-                  :sessionInformatiom="sessionInformation"
+            :sessionInformatiom="sessionInformation"
             class="checkout-container"
             @getUserType="showGuestInfo"
           ></BookingInformation>
@@ -186,7 +186,7 @@ export default {
   },
   props: {
     activityPrice: Number,
-    activityType: Number,
+    activityType: Number
   },
   data() {
     return {
@@ -245,7 +245,6 @@ export default {
         transactionId: null
       },
       sessionInformation: Object
-
     };
   },
   computed: {
@@ -267,9 +266,9 @@ export default {
     ...mapActions("timetable", ["getAllSessions"]),
     formatCurrency: formatCurrency,
 
-    setSessionInformation(){
-      if(!isEmpty(this.$route.params))
-       this.sessionInformation = this.$route.params.sessionInformation;
+    setSessionInformation() {
+      if (!isEmpty(this.$route.params))
+        this.sessionInformation = this.$route.params.sessionInformation;
     },
 
     async getCustomer() {

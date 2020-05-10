@@ -270,7 +270,7 @@
   </div>
 </template>
 <style scoped>
-.home-image{
+.home-image {
   left: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
@@ -279,8 +279,8 @@
   right: 50%;
   width: 100vw;
 }
-  .hero-section .set-bg{
-    box-shadow: inset 0 0 500px rgba(0, 0, 0, 1) !important;
+.hero-section .set-bg {
+  box-shadow: inset 0 0 500px rgba(0, 0, 0, 1) !important;
 }
 </style>
 <script>

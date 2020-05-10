@@ -42,7 +42,7 @@ export default {
   name: "FacilityTimetable",
   components: {
     FullCalendar,
-    SessionInfo,
+    SessionInfo
   },
   props: {
     facilityId: {
@@ -54,7 +54,7 @@ export default {
     return {
       calendarPlugins: [timeGridPlugin],
       previewSession: null,
-      error: null,
+      error: null
     };
   },
   computed: {

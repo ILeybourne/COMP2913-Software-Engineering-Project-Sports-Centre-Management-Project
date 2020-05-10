@@ -375,10 +375,7 @@ export default {
           body
         );
       } else {
-        paymentIntent = await this.$http.post(
-          `/payments/guest-intent/`,
-          body
-        );
+        paymentIntent = await this.$http.post(`/payments/guest-intent/`, body);
       }
       if (paymentIntent.status === 200) {
         this.paymentResponse.accountId = paymentIntent.data.accountId;

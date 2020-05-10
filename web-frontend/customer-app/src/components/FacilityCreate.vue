@@ -1,7 +1,7 @@
 <template>
   <div v-if="!edit" class="facility-create">
     <div class="outer-container">
-      <v-row class="info-container">
+      <v-card dark class="info-container">
         <h3>Create a <span>new Facility</span></h3>
         <b-form @submit.prevent="submit">
           <b-form-group label="Facility Name: " label-for="name">
@@ -13,7 +13,7 @@
               v-model="form.description"
             ></b-form-textarea>
           </b-form-group>
-          <b-form-group>
+          <b-form-group class="file-form">
             <b-form-file
               v-model="form.file"
               :state="Boolean(form.file)"
@@ -33,7 +33,7 @@
             >
           </v-container>
         </b-form>
-      </v-row>
+      </v-card>
     </div>
   </div>
   <div v-else class="facility-edit">
@@ -56,19 +56,20 @@
 }
 
 .info-container {
-  color: #353535;
+  color: white !important;
   display: flex;
   justify-content: center;
   flex-direction: column;
   width: auto;
+  min-width: 75%;
   height: max-content;
   padding: 40px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  background: #f6f9fa;
 }
 .info-container h3 {
   padding-bottom: 20px;
   text-align: center;
+  color: white;
 }
 .submit-button-container {
   display: flex;
@@ -79,8 +80,16 @@
   width: max-content !important;
 }
 span {
+  color: #1f1f1f;
   background: #fcff18;
   padding: 10px;
+}
+.form-control:focus {
+  border-color: yellow;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 255, 0);
+}
+.form-control {
+  border: 2px solid white;
 }
 </style>
 <script>

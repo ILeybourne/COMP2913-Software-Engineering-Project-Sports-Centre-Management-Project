@@ -31,7 +31,7 @@ const getters = {
         facility: state.facilities.find(
           facility => Number(facility.id) === Number(activity.facility_id)
         ),
-        memberPricing: formatCurrency((activity.cost)*0.7)
+        memberPricing: formatCurrency(activity.cost * 0.7)
       };
     }),
   getFacilityById: state => id => {

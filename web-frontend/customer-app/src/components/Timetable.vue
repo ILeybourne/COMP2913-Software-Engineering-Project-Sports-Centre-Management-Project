@@ -79,7 +79,7 @@ export default {
           offset: 0,
           triggers: "hover",
           html: true,
-          target: eventInfo.el,
+          target: eventInfo.el
         }
       });
       popover.$mount();

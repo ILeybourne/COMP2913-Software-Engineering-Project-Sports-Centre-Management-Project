@@ -129,7 +129,7 @@ export default {
         capacity: null,
         facility: null,
         cost: null
-      },
+      }
     };
   },
   computed: {
@@ -147,8 +147,8 @@ export default {
       }
       return facilityArr;
     },
-    sorted(){
-      return this.dataWithFacilities.slice().sort(function(a,b){
+    sorted() {
+      return this.dataWithFacilities.slice().sort(function(a, b) {
         return a.id - b.id;
       });
     }
