@@ -1,23 +1,24 @@
 <template>
   <div class="facility">
     <b-card
+      dark
+      class="facility-card"
       :title="facility.name"
       :img-src="this.imageUrl"
       @error="handleImageError"
       :img-alt="facility.name"
       img-top
-      style="max-width: 20rem;"
     >
       <b-card-text>
         {{ facility.description }}
       </b-card-text>
-      <b-row>
-        <b-button
+      <b-row class="facility-details">
+        <b-button class="button"
           :to="{ name: 'FacilityTimetable', params: { id: facility.id } }"
           variant="info"
           >See Timetable</b-button
         >
-        <b-button
+        <b-button class="button"
           :to="{ name: 'FacilityPage', params: { id: facility.id } }"
           variant="outline-primary"
           >View Details</b-button
@@ -27,7 +28,23 @@
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.facility-card {
+  max-width: 20rem;
+  margin: 10px;
+  flex-direction: column;
+  text-align: center;
+}
+.facility-details{
+  text-align: center;
+  justify-content: center;
+}
+.button{
+  width: auto;
+  height: auto;
+  margin: 5px !important;
+}
+</style>
 
 <script>
 const defaultImage =

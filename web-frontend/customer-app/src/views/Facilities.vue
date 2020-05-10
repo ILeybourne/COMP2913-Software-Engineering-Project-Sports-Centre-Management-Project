@@ -1,5 +1,5 @@
 <template>
-  <div class="facilities">
+  <div class="facilities" justify="center">
     <div class="heading-div">
       <h1>Our <span>Facilities</span></h1>
     </div>
@@ -11,7 +11,7 @@
         Create a new Facility
       </b-button>
     </v-alert>
-    <b-card-group>
+    <b-card-group class="cards">
       <Facility
         v-for="facility in facilities"
         :key="facility.id"
@@ -48,6 +48,11 @@
 .heading-div span {
   background: #fcff18;
 }
+  .cards{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
 </style>
 
 <script>
