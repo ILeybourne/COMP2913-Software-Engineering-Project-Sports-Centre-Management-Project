@@ -60,6 +60,10 @@
             <form id="payment-form">
               <div id="cardDiv">
                 <div id="card-element"></div>
+                <div id="checkbox-div" v-if="!this.isMembership && !this.bookingDetails.regularBooking ">
+                <label for="checkbox">Save Card Details:</label>
+                <input type="checkbox" id="checkbox" v-model="saveCard">
+                </div>
                 <div class="buttonDiv">
                   <button
                     type="button"
@@ -107,6 +111,13 @@
 </template>
 
 <style scoped>
+
+
+  #checkbox-div{
+    top: 200px;
+    margin-top: 20px;
+  }
+
 #card-bg {
   max-height: 80%;
   padding-left: 5%;
@@ -273,7 +284,8 @@ export default {
       isBooking: false,
       isMembership: false,
       paymentSuccess: false,
-      paymentSubmit: false
+      paymentSubmit: false,
+      saveCard: false
     };
   },
   computed: {
@@ -384,6 +396,11 @@ export default {
     async sendClientSecretToServer(client_secret) {
       //uses client secret from  payment intent to make payment
       // eslint-disable-next-line no-undef
+      let setup = null
+      if(this.saveCard || this.isMembership || this.bookingDetails.regularBooking){
+        setup = "off_session"
+      }
+
       const result = await this.stripe.confirmCardPayment(client_secret, {
         payment_method: {
           card: this.card,
@@ -391,7 +408,7 @@ export default {
             name: this.firstName
           }
         },
-        setup_future_usage: "off_session"
+        setup_future_usage: setup
       });
       if (result.error) {
         // Show error to your customer (e.g., insufficient funds)
