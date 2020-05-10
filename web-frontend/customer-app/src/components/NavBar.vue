@@ -11,7 +11,7 @@
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse class="main-menu" id="nav-collapse" is-nav>
-        <b-navbar-nav>
+        <b-navbar-nav class="ml-auto">
           <b-nav-item to="/">Home</b-nav-item>
           <b-nav-item to="/timetable">Timetable</b-nav-item>
           <b-nav-item to="/facilities">Facilities</b-nav-item>
@@ -31,9 +31,7 @@
             <b-dropdown-item to="/weeklyusage">Table</b-dropdown-item>
             <b-dropdown-item to="/weeklyusagegraph">Graph</b-dropdown-item>
           </b-nav-item-dropdown>
-        </b-navbar-nav>
         <!-- Right aligned nav items -->
-        <b-navbar-nav class="ml-auto">
           <div class="hr-box">
             <b-nav-item-dropdown
               toggle-class="text-dark"
