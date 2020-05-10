@@ -12,7 +12,7 @@ const state = {
       totalElements: null,
       totalPages: null,
       currentPageHref: null,
-      nextPageHref: `/bookings?page=${0}&size=${50}`, // just need first page to initialise store
+      nextPageHref: `/bookings?page=${0}&size=${20}`, // just need first page to initialise store
       lastPageHref: null,
       isDataToLoad: true
     }

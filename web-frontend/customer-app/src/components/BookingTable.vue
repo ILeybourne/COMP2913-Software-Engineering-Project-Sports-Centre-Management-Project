@@ -170,7 +170,8 @@ export default {
       if (
         confirm("Are you sure you want to cancel this booking?") &&
         this.dataWithActivities.splice(index, 1) &&
-        this.deleteBooking(item.id) && await this.getBookings()
+        this.deleteBooking(item.id) &&
+        (await this.getBookings())
       );
     },
 
@@ -212,9 +213,9 @@ export default {
 
   watch: {
     handler() {
-        this.dataWithActivities();
-      },
-      deep: true
+      this.dataWithActivities();
+    },
+    deep: true
   },
 
   async created() {

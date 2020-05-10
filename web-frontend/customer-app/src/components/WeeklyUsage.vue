@@ -149,14 +149,12 @@ export default {
           value: "formattedCost",
           class: "yellow--text title font-weight-bold",
           sortable: true
-
         },
         {
           text: "INCOME",
           value: "formattedIncome",
           class: "yellow--text title font-weight-bold",
           sortable: true
-
         }
       ],
       dataWithFacilities: [],
