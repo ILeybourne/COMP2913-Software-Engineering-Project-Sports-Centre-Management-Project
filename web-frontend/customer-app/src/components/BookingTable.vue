@@ -65,12 +65,10 @@
 </style>
 <script>
 import { mapActions, mapGetters } from "vuex";
-//:server-items-length="totalElements" this in v-data-table prevented data from being loaded when a new user logged in
 export default {
   name: "BookingTable",
   components: {},
   totalBookings: null,
-  // ItemsPerPageDropdown
   data: function() {
     return {
       footerProps: {
