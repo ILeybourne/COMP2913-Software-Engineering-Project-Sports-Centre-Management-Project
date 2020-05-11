@@ -164,7 +164,7 @@ public class ActivityServiceImpl implements ActivityService {
               Booking new_booking = Booking.createBookingFromRegularSession(new_activity, booking);
               Customer customer = new_booking.getAccount().getCustomer();
               try {
-                PayResponseBodyDTO paymentResponseDTO = paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), new_booking.getAmount(), false, 1);
+                PayResponseBodyDTO paymentResponseDTO = paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), new_booking.getAmount(), false, 0);
                 new_booking.setTransactionId(paymentResponseDTO.getTransactionId());
                 this.bookingRepository.save(new_booking);
               }catch (CardException err){

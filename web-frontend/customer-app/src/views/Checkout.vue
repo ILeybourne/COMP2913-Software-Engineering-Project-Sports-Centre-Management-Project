@@ -60,6 +60,22 @@
             <form id="payment-form">
               <div id="cardDiv">
                 <div id="card-element"></div>
+                <div
+                  id="checkbox-div"
+                  v-if="
+                    !this.isMembership &&
+                      !this.bookingDetails.regularBooking &&
+                      loggedIn
+                  "
+                >
+                  <label for="checkbox">Save Card Details:</label>
+                  <input
+                    type="checkbox"
+                    id="checkbox"
+                    v-model="saveCard"
+                    style="padding-left: 10px;"
+                  />
+                </div>
                 <div class="buttonDiv">
                   <button
                     type="button"
@@ -107,6 +123,10 @@
 </template>
 
 <style scoped>
+#checkbox-div {
+  margin-top: 40px;
+}
+
 #card-bg {
   max-height: 80%;
   padding-left: 5%;
@@ -215,6 +235,10 @@
 .centered-text {
   text-align: center;
 }
+
+#paymentButton {
+  margin-top: -40px;
+}
 </style>
 
 <script>
@@ -273,7 +297,8 @@ export default {
       isBooking: false,
       isMembership: false,
       paymentSuccess: false,
-      paymentSubmit: false
+      paymentSubmit: false,
+      saveCard: false
     };
   },
   computed: {
@@ -285,6 +310,9 @@ export default {
       } else {
         return false;
       }
+    },
+    loggedIn: function() {
+      return !isEmpty(this.user);
     }
   },
   methods: {
@@ -308,14 +336,7 @@ export default {
       this.card.mount("#card-element");
     },
     setBookingDetails() {
-      this.bookingDetails.facility = this.$route.params.bookingDetails.facility;
-      this.bookingDetails.activity = this.$route.params.bookingDetails.activity;
-      this.bookingDetails.date = this.$route.params.bookingDetails.date;
-      this.bookingDetails.time = this.$route.params.bookingDetails.time;
-      this.bookingDetails.price = this.$route.params.bookingDetails.price;
-      this.bookingDetails.activityTypeId = this.$route.params.bookingDetails.activityTypeId;
-      this.bookingDetails.sessionId = this.$route.params.bookingDetails.sessionId;
-      this.bookingDetails.participants = this.$route.params.bookingDetails.participants;
+      this.bookingDetails = this.$route.params.bookingDetails;
       this.price = this.$route.params.bookingDetails.price;
     },
     setMembershipDetails() {
@@ -334,7 +355,7 @@ export default {
       this.formData.selectedOption = this.$route.params.selectedOption;
     },
     async getCustomer() {
-      if (this.user) {
+      if (!isEmpty(this.user)) {
         this.customer = this.customers.find(
           x => x.emailAddress === this.$auth.user.email
         );
@@ -352,15 +373,18 @@ export default {
           }
         },
         email: this.email,
-        repeatingPayment: false,
-        participants: this.bookingDetails.participants
+        regularSession: this.bookingDetails.regularBooking,
+        cost: this.price,
+        membershipTypeId: this.membershipSaleDetails.id,
+        sessionId: this.bookingDetails.sessionId,
+        participants: Number(this.bookingDetails.participants)
       };
 
       if (this.isMembership) {
         body.membershipTypeId = this.membershipSaleDetails.id;
       }
       if (this.isBooking) {
-        body.sessionId = this.bookingDetails.sessionId;
+        body.activityTypeId = this.bookingDetails.activityTypeId;
       }
       if (!isEmpty(this.user)) {
         let id = null;
@@ -388,6 +412,15 @@ export default {
     async sendClientSecretToServer(client_secret) {
       //uses client secret from  payment intent to make payment
       // eslint-disable-next-line no-undef
+      let setup = null;
+      if (
+        this.saveCard ||
+        this.isMembership ||
+        this.bookingDetails.regularBooking
+      ) {
+        setup = "off_session";
+      }
+
       const result = await this.stripe.confirmCardPayment(client_secret, {
         payment_method: {
           card: this.card,
@@ -395,12 +428,13 @@ export default {
             name: this.firstName
           }
         },
-        setup_future_usage: "off_session"
+        setup_future_usage: setup
       });
       if (result.error) {
         // Show error to your customer (e.g., insufficient funds)
       } else {
         // The payment has been processed!
+
         if (result.paymentIntent.status === "succeeded") {
           this.paymentSuccess = true;
 
@@ -449,14 +483,16 @@ export default {
     },
 
     async createBooking() {
+      console.log("paymentResponse");
+      console.log(this.paymentResponse);
       try {
         const body = {
           accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
           //TODO ADD participant field
-          participants: this.bookingDetails.participants,
-          regularBooking: false, //need to be dynamic (cash payment defaulted to false, same for guest)
+          participants: Number(this.bookingDetails.participants),
+          regularBooking: this.bookingDetails.regularBooking, //need to be dynamic (cash payment defaulted to false, same for guest)
           transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
-          amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
+          amount: this.paymentResponse.amountPaid / 100 //get from payment response body if card (may vary if regular session) if cash take from online price
         };
         await this.$http.post(
           `/bookings/` + this.bookingDetails.sessionId,
@@ -479,11 +515,12 @@ export default {
               name: this.firstName
             }
           },
-          sessionId: this.bookingDetails.sessionId,
+          activityTypeId: this.bookingDetails.activityTypeId,
           email: this.email,
-          regularSession: false, //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
-          participants: this.bookingId.participants,
-          membershipTypeId: this.membershipSaleDetails.id
+          regularSession: this.bookingDetails.regularBooking, //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
+          membershipTypeId: this.membershipSaleDetails.id,
+          sessionId: this.bookingDetails.sessionId,
+          participants: Number(this.bookingDetails.participants)
         }
       );
       if (paymentIntent.status === 200) {
@@ -491,7 +528,12 @@ export default {
         this.paymentResponse.amountPaid = paymentIntent.data.amountPaid;
         this.paymentResponse.transactionId = paymentIntent.data.transactionId;
 
-        await this.createBooking();
+        if (this.isMembership) {
+          await this.addMember();
+        }
+        if (this.isBooking) {
+          await this.createBooking();
+        }
         let paymentSuccessData = {
           bookingDetails: this.bookingDetails,
           membershipSaleDetails: this.membershipSaleDetails,

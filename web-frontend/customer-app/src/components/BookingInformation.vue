@@ -20,7 +20,6 @@
                 setFacilityName($event)
               ]
             "
-            @load="setFormDefaults($event)"
             v-bind:state="facilityValid"
             required
           >
@@ -37,10 +36,8 @@
               [
                 // selectActivityName(),
                 validateActivity(),
-                getPrice(),
                 getTimes(),
-                setActivityName($event),
-                setMaxParticipants($event)
+                setActivityName($event)
               ]
             "
             v-bind:state="activitiesValid"
@@ -67,7 +64,15 @@
             name="time"
             id="time"
             v-bind:state="timeValid"
-            @change="[validateTime(), getSelectedTime($event)]"
+            @change="
+              [
+                validateTime(),
+                getSelectedTime($event),
+                checkRegularSession(),
+                setMaxParticipants(),
+                validateParticipants()
+              ]
+            "
             required
           >
           </b-form-select>
@@ -76,25 +81,34 @@
           <label for="participants">Participants:</label>
           <b-form-input
             v-model="bookingInformation.participants"
-            name="bookingInformation.participants"
-            id="bookingInformation.participants"
+            name="participants"
+            id="participants"
             v-bind:state="participantsValid"
-            @change="[getPrice()]"
+            @change="[getPrice(), validateParticipants()]"
+            @keyup="validateParticipants"
             required
             step="1"
             type="number"
             min="1"
-            :disabled="!activitiesValid"
-            v-bind:max="bookingInformation.maxParticipants"
+            :disabled="
+              !activitiesValid ||
+                maxParticipants < 1 ||
+                computedRegularSessionStatus
+            "
+            v-bind:max="maxParticipants"
           >
           </b-form-input>
         </div>
+        <b-row v-if="maxParticipants < 1 && maxParticipants !== null">
+          <div class="form-row" id="full-error" name="full-error">
+            <p>Selected Activity is Full.</p>
+          </div>
+        </b-row>
         <div class="form-row">
           <label for="price" style="padding-top: 10px">Price:</label>
           <b-input-group size="lg" prepend="£" style="width: 90%">
             <b-form-input
               type="text"
-              step="0.01"
               id="price"
               name="price"
               v-model="price"
@@ -102,6 +116,22 @@
               readonly
             ></b-form-input>
           </b-input-group>
+        </div>
+        <div class="form-row" v-if="isMember && isRegularSession">
+          <label for="cardRadio">Regular<br />Booking:</label>
+          <b-form-group style="width: 90%;">
+            <b-form-radio-group
+              id="btn-radios-2"
+              v-model="regularBookingOption"
+              :options="['Yes', 'No']"
+              buttons
+              button-variant="outline-primary"
+              size="lg"
+              name="radio-btn-outline"
+              style="width: 100%"
+              @change="[setRegularSession(), getPrice()]"
+            ></b-form-radio-group>
+          </b-form-group>
         </div>
 
         <div class="button-container">
@@ -111,18 +141,28 @@
             class="btn btn-outline-secondary"
             name="guest"
             @click="getUserType($event)"
-            :disabled="!timeValid"
-            v-if="!account || isEmployeeOrManager"
+            :disabled="!(timeValid && participantsValid)"
+            v-if="
+              (!account || isEmployeeOrManager) &&
+                !bookingInformation.regularSession
+            "
           >
             Checkout As Guest
           </button>
-          <b-col md="3" />
+          <b-col
+            md="3"
+            v-if="
+              (!account || isEmployeeOrManager) &&
+                account &&
+                !bookingInformation.regularSession
+            "
+          />
           <button
             type="button"
             class="btn btn-outline-primary"
             name="account"
             @click="getUserType($event)"
-            :disabled="!timeValid"
+            :disabled="!(timeValid && participantsValid)"
             v-if="account"
           >
             Checkout With Account
@@ -190,11 +230,26 @@ select {
 label {
   width: 10%;
 }
+
+#full-error {
+  text-align: center;
+  color: red;
+  width: 100%;
+  margin: auto;
+}
+
+#full-error p {
+  text-align: center;
+  color: red;
+  margin: auto;
+}
 </style>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
 import { isEmpty } from "../util/session.helpers";
+import { addZero } from "../util/format.helpers";
+
 export default {
   name: "BookingInformation",
   data() {
@@ -207,20 +262,26 @@ export default {
         selectedDate: null,
         selectedTime: null,
         participants: null,
-        selectedSessionId: null
+        selectedSessionId: null,
+        regularSession: false
       },
-
       facilityOptions: [],
       activityOptions: [],
-      timeOptions: ["Please Select"],
+      timeOptions: [{ value: null, text: "" }],
       price: null,
+      cashPrice: null,
       userType: null,
       componentWidth: 90,
       facilityValid: null,
       activitiesValid: null,
       dateValid: null,
       timeValid: null,
-      participantsValid: null
+      participantsValid: null,
+      regularBookingOption: "No",
+      isRegularSession: false,
+      maxParticipants: null,
+      userMemberships: [],
+      customer: null
     };
   },
   props: {
@@ -230,21 +291,64 @@ export default {
     ...mapGetters("facilities", ["facilities", "activities"]),
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
+    ...mapGetters("membership", ["memberships"]),
+    ...mapGetters("customers", ["customers"]),
+    ...mapGetters("accounts", ["accounts"]),
+
     account: function() {
-      return !this.isEmpty(this.user);
+      return !isEmpty(this.user);
+    },
+
+    isMember: function() {
+      return this.userMemberships.length > 0;
+    },
+
+    computedRegularSessionStatus: function() {
+      if (this.regularBookingOption === "Yes") {
+        return true;
+      } else {
+        return false;
+      }
     }
   },
   methods: {
+    ...mapActions("membership", ["getMemberships"]),
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
-    setMaxParticipants(activityId) {
-      this.maxParticipants = this.activities.find(
-        x => x.id === activityId
-      ).totalCapacity;
+    ...mapActions("customers", ["getAllCustomers"]),
+    ...mapActions("accounts", ["getAccounts"]),
+
+    setRegularSession() {
+      this.bookingInformation.regularSession = !this
+        .computedRegularSessionStatus;
+
+      if (this.bookingInformation.regularSession) {
+        this.bookingInformation.participants = 1;
+        this.participantsValid = true;
+      }
+    },
+
+    checkRegularSession() {
+      if (this.bookingInformation.selectedSessionId != null) {
+        console.log(
+          this.sessions.find(
+            s => s.id === this.bookingInformation.selectedSessionId
+          )
+        );
+        this.isRegularSession =
+          this.sessions.find(
+            s => s.id === this.bookingInformation.selectedSessionId
+          ).regularSessionId != null;
+      } else {
+        this.isRegularSession = false;
+      }
     },
 
     setActivityName(e) {
+      this.bookingInformation.selectedSessionId = null;
+      this.bookingInformation.selectedTime = null;
       if (e != null) {
+        this.activitiesValid = true;
         this.bookingInformation.selectedActivityName = this.activities.find(
           x => x.id === e
         ).name;
@@ -259,19 +363,65 @@ export default {
     },
 
     getPrice() {
-      if (!this.bookingInformation.participants) {
-        this.bookingInformation.participants = 1;
-        this.participantsValid = true;
-      }
+      const membershipDiscount = 0.7;
+      const regularSessionDiscount = 0.7;
 
       if (this.bookingInformation.selectedActivityId != null) {
         let selectedActivity = this.activities.find(
           x => x.id === this.bookingInformation.selectedActivityId
         );
-        this.price =
-          selectedActivity.cost * Number(this.bookingInformation.participants);
+        this.price = selectedActivity.cost;
+        this.cashPrice = Math.round(
+          ((selectedActivity.cost * this.bookingInformation.participants +
+            Number.EPSILON) *
+            100) /
+            100
+        ).toFixed(2);
+
+        if (this.isMember) {
+          this.price = selectedActivity.cost * membershipDiscount;
+        }
+
+        if (this.bookingInformation.regularSession) {
+          this.price = (
+            regularSessionDiscount * this.price +
+            Math.round(
+              (regularSessionDiscount *
+                selectedActivity.cost *
+                (Number(this.bookingInformation.participants) - 1) +
+                Number.EPSILON) *
+                100
+            ) /
+              100
+          ).toFixed(2);
+
+          this.cashPrice = Math.round(
+            ((this.cashPrice * regularSessionDiscount + Number.EPSILON) * 100) /
+              100
+          ).toFixed(2);
+        } else {
+          this.price = (
+            this.price +
+            Math.round(
+              (selectedActivity.cost *
+                (Number(this.bookingInformation.participants) - 1) +
+                Number.EPSILON) *
+                100
+            ) /
+              100
+          ).toFixed(2);
+        }
+
+        if (
+          this.bookingInformation.participants === 0 ||
+          this.bookingInformation.participants == null
+        ) {
+          this.price = (0.0).toFixed(2);
+          this.cashPrice = (0.0).toFixed(2);
+        }
       } else {
-        this.price = 0;
+        this.price = (0.0).toFixed(2);
+        this.cashPrice = (0.0).toFixed(2);
       }
     },
 
@@ -284,6 +434,9 @@ export default {
 
     async setActivityTypeOptions(e) {
       this.bookingInformation.selectedActivityId = null;
+      this.bookingInformation.selectedSessionId = null;
+      this.bookingInformation.selectedTime = null;
+      this.timeOptions = [{ value: null, text: "" }];
       if (!(e == null)) {
         const activityTypesRequest = await this.$http.get(
           "http://localhost:8000/activitytypes/resource/" + e
@@ -316,10 +469,108 @@ export default {
       }
       this.facilityOptions = facilityArray;
     },
-    setFormDefaults() {},
+
+    getTimes() {
+      if (this.bookingInformation.selectedDate != null) {
+        if (
+          this.bookingInformation.selectedFacilityId != null &&
+          this.bookingInformation.selectedActivityId != null
+        ) {
+          let timeArray = [
+            {
+              value: null,
+              text: "Please Select"
+            }
+          ];
+          for (const activity of this.sessions) {
+            let selectedTime = new Date(activity.startTime);
+            const year = selectedTime.getFullYear();
+            const month = addZero(
+              (parseInt(selectedTime.getMonth()) + 1).toString()
+            );
+            const date = addZero(selectedTime.getDate());
+            let hours = addZero(selectedTime.getUTCHours());
+            const mins = addZero(selectedTime.getMinutes());
+            let formattedDate = year + "-" + month + "-" + date;
+
+            let activityName = this.activityOptions.find(
+              x => x.value == this.bookingInformation.selectedActivityId
+            ).text;
+
+            if (
+              activity.name == activityName &&
+              formattedDate == this.bookingInformation.selectedDate
+            ) {
+              let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
+              if (!timeArray.includes(formattedDate)) {
+                timeArray.push({
+                  value: activity.id,
+                  text: formattedTime
+                });
+              }
+            }
+          }
+          if (this.bookingInformation.selectedDate != null) {
+            this.timeOptions = timeArray;
+          } else {
+            this.timeOptions = null;
+          }
+        }
+      }
+    },
+
+    async setMaxParticipants() {
+      if (this.bookingInformation.selectedActivityId !== null) {
+        let data = await this.$http.get("/bookings?page=0&size=1000");
+
+        let bookings = null;
+        if (data.data._embedded) {
+          bookings = data.data._embedded.bookingDToes;
+        }
+        let customerCount = 0;
+
+        if (bookings) {
+          for (const booking of bookings) {
+            console.log(
+              booking.session_id +
+                " " +
+                this.bookingInformation.selectedSessionId
+            );
+            if (
+              booking.session_id === this.bookingInformation.selectedSessionId
+            ) {
+              customerCount = customerCount + booking.participants;
+            }
+          }
+          console.log("this.activities");
+          console.log(this.activities);
+        }
+
+        this.maxParticipants =
+          this.activities.find(
+            x => x.id === this.bookingInformation.selectedActivityId
+          ).totalCapacity - customerCount;
+
+        this.bookingInformation.participants = 1;
+        this.participantsValid = true;
+        this.getPrice();
+
+        if (this.maxParticipants < 1) {
+          this.bookingInformation.participants = 0;
+          this.participantsValid = false;
+          this.price = null;
+        }
+      }
+    },
 
     getUserType(e) {
       this.userType = e.toElement.name;
+      console.log(this.userType);
+      if (this.userType === "guest") {
+        this.price = this.cashPrice;
+      } else {
+        this.getPrice();
+      }
       this.submitForm(1);
     },
 
@@ -337,10 +588,30 @@ export default {
       this.dateValid = this.$data.date != null;
     },
     validateTime() {
-      this.timeValid = !(
-        this.bookingInformation.selectedTime == null ||
-        this.bookingInformation.selectedTime === this.timeOptions[0]
-      );
+      this.timeValid = this.bookingInformation.selectedSessionId !== null;
+    },
+
+    validateParticipants() {
+      if (this.bookingInformation.participants == null) {
+        console.log("yes");
+        console.log(this.participantsValid);
+
+        this.participantsValid = true;
+        this.bookingInformation.participants = 1;
+      }
+      console.log(this.bookingInformation.participants);
+
+      if (this.bookingInformation.participants > this.maxParticipants) {
+        this.bookingInformation.participants = this.maxParticipants;
+      }
+      if (
+        Number(this.bookingInformation.participants) === 0 ||
+        this.bookingInformation.participants == null
+      ) {
+        this.participantsValid = false;
+      } else {
+        this.participantsValid = true;
+      }
     },
 
     callValidation() {
@@ -348,6 +619,15 @@ export default {
       this.validateActivity();
       this.validateDate();
       this.validateTime();
+      this.validateParticipants();
+    },
+
+    async getCustomer() {
+      if (!isEmpty(this.user)) {
+        this.customer = this.customers.find(
+          x => x.emailAddress === this.$auth.user.email
+        );
+      }
     },
 
     // eslint-disable-next-line no-unused-vars
@@ -362,68 +642,12 @@ export default {
         this.activitiesValid = true;
         this.dateValid = true;
         this.timeValid = true;
-        // this.bookingData = {
-        //   facility: this.fac;
-        //   activity: this.$route.params.bookingDetails.activity;
-        //   date: this.$route.params.bookingDetails.date;
-        //   time: this.$route.params.bookingDetails.time;
-        //   price: this.$route.params.bookingDetails.price;
-        // }
         this.$emit("getUserType", this.$data);
       } else {
         //Dont pass data and call validators
         this.callValidation();
       }
     },
-    isEmpty(obj) {
-      if (Object.keys(obj).length === 0) {
-        return true;
-      } else {
-        if (Object.keys(obj)[0] == "success") {
-          return false;
-        } else {
-          return false;
-        }
-      }
-    },
-
-    // // TODO, shouldn't access routes like this, use props and either inject with router or from booking page
-    // fillByQuery() {
-    //   this.setFacilityOptions();
-    //   this.activityOptions = [];
-    //   const facilityId = this.$route.query.facilityId;
-    //   const activityTypeId = this.$route.query.activityId;
-    //   const activityId = this.$route.query.sessionId;
-    //   if (!this.isEmpty(this.$route.query)) {
-    //     //If query isn't empty fill ids, bookingInformation.selectedDate and timeOptions
-    //     this.bookingInformation.selectedFacilityId = facilityId;
-    //     this.setActivityTypeOptions(facilityId);
-    //     this.bookingInformation.selectedActivityId = activityTypeId;
-    //     this.bookingInformation.selectedActivityName = this.activities.find(
-    //       x =>
-    //         Number(x.id) === Number(this.bookingInformation.selectedActivityId)
-    //     ).name;
-    //     this.selectActivityName();
-    //     let selectedDateUnix = this.sessions.find(x => x.id == activityId)
-    //       .startTime;
-    //     let selectedDate = new Date(selectedDateUnix);
-    //     const year = selectedDate.getFullYear();
-    //     const month = "0" + parseInt(selectedDate.getMonth() + 1).toString();
-    //     const date = "0" + selectedDate.getDate();
-    //     const hours = "0" + selectedDate.getHours();
-    //     const mins = "0" + selectedDate.getMinutes();
-    //     const formattedDate =
-    //       year + "-" + month.substr(-2) + "-" + date.substr(-2);
-    //     const forrmattedTime = hours.substr(-2) + ":" + mins.substr(-2);
-    //
-    //     this.bookingInformation.selectedDate = formattedDate;
-    //
-    //     this.timeOptions.push(forrmattedTime);
-    //     this.bookingInformation.selectedTime = forrmattedTime;
-    //     this.getPrice(activityTypeId);
-    //     this.callValidation();
-    //   }
-    // },
 
     async fillByParams() {
       this.setFacilityOptions();
@@ -464,58 +688,29 @@ export default {
         this.bookingInformation.selectedSessionId = sessionId;
         this.getSelectedTime(sessionId);
         this.timeValid = true;
-
+        this.setMaxParticipants();
+        this.checkRegularSession();
         this.getPrice();
       }
     },
-
-    getTimes() {
-      if (this.bookingInformation.selectedDate != null) {
-        if (
-          this.bookingInformation.selectedFacilityId != null &&
-          this.bookingInformation.selectedActivityId != null
-        ) {
-          let timeArray = [
-            {
-              value: null,
-              text: "Please Select"
-            }
-          ];
-          for (const activity of this.sessions) {
-            let selectedTime = new Date(activity.startTime);
-            const year = selectedTime.getFullYear();
-            const month = this.addZero(
-              (parseInt(selectedTime.getMonth()) + 1).toString()
-            );
-            const date = this.addZero(selectedTime.getDate());
-            let hours = this.addZero(selectedTime.getUTCHours());
-            const mins = this.addZero(selectedTime.getMinutes());
-            let formattedDate = year + "-" + month + "-" + date;
-
-            let activityName = this.activityOptions.find(
-              x => x.value == this.bookingInformation.selectedActivityId
-            ).text;
-
-            if (
-              activity.name == activityName &&
-              formattedDate == this.bookingInformation.selectedDate
-            ) {
-              let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
-              if (!timeArray.includes(formattedDate)) {
-                timeArray.push({
-                  value: activity.id,
-                  text: formattedTime
-                });
-              }
-            }
-          }
-          this.timeOptions = timeArray;
+    getMembers() {
+      let userAccounts = [];
+      for (const account of this.accounts) {
+        if (account.customerId === this.customer.id) {
+          userAccounts.push(account);
         }
       }
-    },
 
-    addZero(value) {
-      return ("0" + value.toString()).slice(-2);
+      let userMemberships = [];
+      for (const membership of this.memberships) {
+        for (const account of userAccounts) {
+          if (membership.accountId == account.id) {
+            userMemberships.push(membership);
+          }
+        }
+      }
+
+      this.userMemberships = userMemberships;
     }
   },
 
@@ -523,6 +718,15 @@ export default {
     await this.getFacilities();
     await this.getActivities();
     await this.getAllSessions();
+    await this.getAllCustomers();
+    await this.getMemberships();
+    await this.getAccounts();
+    if (this.customers) {
+      await this.getCustomer();
+    }
+    if (this.customer) {
+      this.getMembers();
+    }
     await this.fillByParams();
   }
 };

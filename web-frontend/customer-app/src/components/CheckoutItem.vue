@@ -50,6 +50,11 @@
           membershipSaleDetails.repeatingPayment || bookingDetails.participants
         }}</v-col></v-row
       >
+      <hr v-if="isBooking" />
+      <v-row v-if="isBooking">
+        <v-col v-if="isBooking">Regular Booking: </v-col>
+        <v-col>{{ regularBookingValue }}</v-col></v-row
+      >
       <hr v-if="isMembership || isBooking" />
     </div>
     <div v-if="isBooking == false && isMembership == false">
@@ -158,13 +163,22 @@ export default {
         date: null,
         time: null,
         price: null,
-        participants: null
+        participants: null,
+        regularBooking: false
       },
       isBooking: false,
       isMembership: false
     };
   },
-  computed: {},
+  computed: {
+    regularBookingValue: function() {
+      if (this.regularBooking == false) {
+        return "No";
+      } else {
+        return "Yes";
+      }
+    }
+  },
   methods: {
     routerPushBookingCreate() {
       this.$router.push({
@@ -177,12 +191,7 @@ export default {
       });
     },
     setBookingDetails() {
-      this.bookingDetails.facility = this.$route.params.bookingDetails.facility;
-      this.bookingDetails.activity = this.$route.params.bookingDetails.activity;
-      this.bookingDetails.date = this.$route.params.bookingDetails.date;
-      this.bookingDetails.time = this.$route.params.bookingDetails.time;
-      this.bookingDetails.price = this.$route.params.bookingDetails.price;
-      this.bookingDetails.participants = this.$route.params.bookingDetails.participants;
+      this.bookingDetails = this.$route.params.bookingDetails;
       this.isBooking = true;
       this.isMembership = false;
     },

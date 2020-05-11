@@ -39,7 +39,7 @@
             class="form-control"
             @keyup="validateEmail"
             @change="validateEmail"
-            :disabled="disableEmail"
+            :disabled="disableEmail && !isEmployeeOrManager"
           />
         </div>
         <div class="form-row">
@@ -126,21 +126,20 @@
 </template>
 
 <style scoped>
-  .billing-info:hover h3 {
-    background: #fcff18;
-  }
-  #billingForm{
-    padding-top: 30px;
-  }
+.billing-info:hover h3 {
+  background: #fcff18;
+}
+#billingForm {
+  padding-top: 30px;
+}
 
-  h3{
-    text-align: center;
-    margin-top: -40px  ;
-  }
+h3 {
+  text-align: center;
+  margin-top: -40px;
+}
 
-  #mainDiv{
-/*background: #d5d5d5;*/
-  }
+#mainDiv {
+}
 
 .form-row {
   padding: 5px;
@@ -149,15 +148,8 @@
 .billing-container {
   margin: auto;
   width: 50%;
-  /*border: 3px solid #fcff18;*/
   padding: 20px;
   padding-top: 40px;
-  /*background-color: #f3f3f3;*/
-  /*border-radius: 20px;*/
-  /*-webkit-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);*/
-  /*-moz-box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);*/
-  /*box-shadow: 10px 10px 24px 5px rgba(0,0,0,0.1);*/
-
 }
 
 .button-container {
@@ -188,8 +180,8 @@ button {
 </style>
 
 <script>
-  import {mapGetters} from "vuex"
-  import { isEmpty } from "../util/session.helpers";
+import { mapGetters } from "vuex";
+import { isEmpty } from "../util/session.helpers";
 export default {
   name: "BillingInformation",
   data() {
@@ -211,26 +203,27 @@ export default {
   },
   computed: {
     ...mapGetters("customers", ["customers"]),
-    ...mapGetters("auth", ["user"]),
+    ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
 
-    customer: function () {
-      return this.customers.find( customer => customer.emailAddress === this.user.email)
+    customer: function() {
+      return this.customers.find(
+        customer => customer.emailAddress === this.user.email
+      );
     },
 
-    disableEmail: function(){
-      return !isEmpty(this.user)
+    disableEmail: function() {
+      return !isEmpty(this.user);
     },
 
-    userEmail: function(){
-      return this.user.email
+    userEmail: function() {
+      return this.user.email;
     }
   },
   methods: {
-    setEmail(){
-      if (this.userEmail){
-
-        this.email = this.userEmail
-        this.emailValid = true
+    setEmail() {
+      if (this.userEmail) {
+        this.email = this.userEmail;
+        this.emailValid = true;
       }
     },
 
@@ -286,7 +279,7 @@ export default {
     }
   },
   mounted() {
-    this.setEmail()
+    this.setEmail();
   }
 };
 </script>

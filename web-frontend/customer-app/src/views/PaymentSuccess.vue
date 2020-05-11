@@ -205,8 +205,13 @@ export default {
   mounted() {
     this.setData();
     this.isUser = !isEmpty(this.user);
+
     if (this.paymentResponse != null) {
-      if (this.bookingDetails.activityTypeId != null) {
+      if (
+        this.bookingDetails != null &&
+        (this.membershipSaleDetails == null ||
+          this.membershipSaleDetails.id == null)
+      ) {
         this.hideBookingDiv = false;
       }
       if (this.membershipSaleDetails != null) {

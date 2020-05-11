@@ -102,6 +102,7 @@
                   v-model="formBody.email"
                   label="Email Address"
                   required
+                  :disabled="!isEmployeeOrManager"
                   :rules="[rules.required, rules.email]"
                 ></v-text-field>
                 <v-text-field
@@ -351,7 +352,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("membership", ["membershipTypes", "selectedMembershipType"])
+    ...mapGetters("membership", ["membershipTypes", "selectedMembershipType"]),
+    ...mapGetters("auth", ["isEmployeeOrManager"])
   },
   methods: {
     formatCurrency: formatCurrency,
