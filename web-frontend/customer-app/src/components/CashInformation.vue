@@ -152,10 +152,12 @@ export default {
   computed: {
     change: {
       get() {
-        return (Number(this.cashGiven) - this.$attrs.activityPrice).toFixed(2);;
+        return (Number(this.cashGiven) - this.$attrs.activityPrice).toFixed(2);
       },
       set() {
-        this.changeVal = (Number(this.cashGiven) - this.$attrs.activityPrice).toFixed(2);;
+        this.changeVal = (
+          Number(this.cashGiven) - this.$attrs.activityPrice
+        ).toFixed(2);
       }
     }
   },

@@ -41,7 +41,7 @@ authHttp.interceptors.response.use(
         router.push({ name: "Unauthorised" });
       }
       if (error.response.status === 500) {
-        router.push({ name: "ServerError", params:error.response.data });
+        router.push({ name: "ServerError", params: error.response.data });
       }
     }
 

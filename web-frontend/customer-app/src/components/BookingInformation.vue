@@ -521,46 +521,39 @@ export default {
 
     async setMaxParticipants(e) {
       if (this.bookingInformation.selectedActivityId !== null) {
-        let page = 0
-        let size = 50
-        let bookingArray = []
+        let page = 0;
+        let size = 50;
+        let bookingArray = [];
 
-        let data = await this.$http.get("/bookings/activity/" + e + "?page=" + page + "&size=" + size);
-        bookingArray.push(data.data._embedded.bookingDToes)
-        page = page + 1
-        console.log(data)
+        let data = await this.$http.get(
+          "/bookings/activity/" + e + "?page=" + page + "&size=" + size
+        );
+        bookingArray.push(data.data._embedded.bookingDToes);
+        page = page + 1;
+        console.log(data);
 
-        while (data.data.page.totalElements  > size * (page) && data.data){
-          console.log("data.data.page.size === size")
-          console.log(data.data.page.size === size)
-          data = await this.$http.get("/bookings/activity/" + e + "?page=" + page + "&size=" + size);
-          for (const book of data.data._embedded.bookingDToes){
-            bookingArray.push(book)
+        while (data.data.page.totalElements > size * page && data.data) {
+          console.log("data.data.page.size === size");
+          console.log(data.data.page.size === size);
+          data = await this.$http.get(
+            "/bookings/activity/" + e + "?page=" + page + "&size=" + size
+          );
+          for (const book of data.data._embedded.bookingDToes) {
+            bookingArray.push(book);
           }
-          page = page + 1
+          page = page + 1;
         }
-
-
-        console.log(bookingArray);
 
         let customerCount = 0;
 
         if (bookingArray) {
           for (const booking of bookingArray[0]) {
-            console.log(booking)
-            console.log(
-              booking.session_id +
-                " " +
-                this.bookingInformation.selectedSessionId
-            );
             if (
               booking.session_id === this.bookingInformation.selectedSessionId
             ) {
               customerCount = customerCount + booking.participants;
             }
           }
-          console.log("this.activities");
-          console.log(this.activities);
         }
 
         this.maxParticipants =
@@ -620,14 +613,10 @@ export default {
       if (this.bookingInformation.participants > this.maxParticipants) {
         this.bookingInformation.participants = this.maxParticipants;
       }
-      if (
+      this.participantsValid = !(
         Number(this.bookingInformation.participants) === 0 ||
         this.bookingInformation.participants == null
-      ) {
-        this.participantsValid = false;
-      } else {
-        this.participantsValid = true;
-      }
+      );
     },
 
     callValidation() {

@@ -237,7 +237,7 @@ const actions = {
         commit("SET_ACTIVITIES", state.activities);
         result = true;
       }
-    }else{
+    } else {
       response.errorMessage = "Error";
     }
     commit("loading/FINISH_LOADING", null, { root: true });

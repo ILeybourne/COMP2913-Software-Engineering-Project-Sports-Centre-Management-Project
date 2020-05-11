@@ -26,4 +26,3 @@ export const authGuard = (to, from, next) => {
     }
   });
 };
-
