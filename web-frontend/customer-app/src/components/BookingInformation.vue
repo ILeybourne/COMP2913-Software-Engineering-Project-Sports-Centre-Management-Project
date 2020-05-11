@@ -69,7 +69,7 @@
                 validateTime(),
                 getSelectedTime($event),
                 checkRegularSession(),
-                setMaxParticipants(),
+                setMaxParticipants($event),
                 validateParticipants()
               ]
             "
@@ -465,6 +465,7 @@ export default {
     },
 
     getTimes() {
+      //If the rest of the form is filled in
       if (this.bookingInformation.selectedDate != null) {
         if (
           this.bookingInformation.selectedFacilityId != null &&
@@ -476,6 +477,8 @@ export default {
               text: "Please Select"
             }
           ];
+
+          //Check each session to see if session matches form input
           for (const activity of this.sessions) {
             let selectedTime = new Date(activity.startTime);
             const year = selectedTime.getFullYear();
@@ -492,11 +495,14 @@ export default {
             ).text;
 
             if (
-              activity.name == activityName &&
-              formattedDate == this.bookingInformation.selectedDate
+              activity.name === activityName &&
+              formattedDate === this.bookingInformation.selectedDate &&
+              activity.resource.id ===
+                this.bookingInformation.selectedFacilityId
             ) {
               let formattedTime = hours.substr(-2) + ":" + mins.substr(-2);
               if (!timeArray.includes(formattedDate)) {
+                //Add to select box
                 timeArray.push({
                   value: activity.id,
                   text: formattedTime
@@ -513,18 +519,35 @@ export default {
       }
     },
 
-    async setMaxParticipants() {
+    async setMaxParticipants(e) {
       if (this.bookingInformation.selectedActivityId !== null) {
-        let data = await this.$http.get("/bookings?page=0&size=1000");
+        let page = 0
+        let size = 50
+        let bookingArray = []
 
-        let bookings = null;
-        if (data.data._embedded) {
-          bookings = data.data._embedded.bookingDToes;
+        let data = await this.$http.get("/bookings/activity/" + e + "?page=" + page + "&size=" + size);
+        bookingArray.push(data.data._embedded.bookingDToes)
+        page = page + 1
+        console.log(data)
+
+        while (data.data.page.totalElements  > size * (page) && data.data){
+          console.log("data.data.page.size === size")
+          console.log(data.data.page.size === size)
+          data = await this.$http.get("/bookings/activity/" + e + "?page=" + page + "&size=" + size);
+          for (const book of data.data._embedded.bookingDToes){
+            bookingArray.push(book)
+          }
+          page = page + 1
         }
+
+
+        console.log(bookingArray);
+
         let customerCount = 0;
 
-        if (bookings) {
-          for (const booking of bookings) {
+        if (bookingArray) {
+          for (const booking of bookingArray[0]) {
+            console.log(booking)
             console.log(
               booking.session_id +
                 " " +
@@ -681,7 +704,7 @@ export default {
         this.bookingInformation.selectedSessionId = sessionId;
         this.getSelectedTime(sessionId);
         this.timeValid = true;
-        this.setMaxParticipants();
+        this.setMaxParticipants(sessionId);
         this.checkRegularSession();
         this.getPrice();
       }
