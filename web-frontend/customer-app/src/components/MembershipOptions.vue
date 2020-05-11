@@ -210,7 +210,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-width: 150px;
+  min-width: 230px;
   max-width: 400px;
   flex-basis: auto; /* default value */
   flex-grow: 1;
@@ -272,6 +272,7 @@
   flex-direction: column;
   justify-content: center;
   width: auto;
+  margin-top: 20px;
 }
 .pricing .name {
   justify-content: center;
