@@ -6,6 +6,13 @@ This project is composed of 3 Sub-Modules (API, Native App, JavaScript Frontend)
 
 This file is intended to give a general overview of all of these files.
 
+## Important Information
+The [Google Drive](https://drive.google.com/drive/folders/1V5RevX7kC0lr3WkIBLYp0s5wWk5fcJMx?usp=sharing) folder contains all of the information and material not in the repository.
+
+## Wiki
+
+The wiki can be found [here](https://gitlab.com/sgarwood/comp2913-sports-centre-management-project/-/wikis/home)
+
 ## API
 
 Please see the [wiki](https://gitlab.com/sgarwood/comp2913-sports-centre-management-project/-/wikis/API-Technical-Reference) for Technical Reference with respect to the API
