@@ -280,8 +280,8 @@ export default {
       regularBookingOption: "No",
       isRegularSession: false,
       maxParticipants: null,
-      userMemberships: [],
-      customer: null
+      customer: null,
+      isMember: false
     };
   },
   props: {
@@ -291,16 +291,11 @@ export default {
     ...mapGetters("facilities", ["facilities", "activities"]),
     ...mapGetters("timetable", ["sessions"]),
     ...mapGetters("auth", ["user", "isEmployeeOrManager"]),
-    ...mapGetters("membership", ["memberships"]),
     ...mapGetters("customers", ["customers"]),
     ...mapGetters("accounts", ["accounts"]),
 
     account: function() {
       return !isEmpty(this.user);
-    },
-
-    isMember: function() {
-      return this.userMemberships.length > 0;
     },
 
     computedRegularSessionStatus: function() {
@@ -312,7 +307,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions("membership", ["getMemberships"]),
     ...mapActions("facilities", ["getFacilities", "getActivities"]),
     ...mapActions("timetable", ["getAllSessions"]),
     ...mapActions("customers", ["getAllCustomers"]),
@@ -565,7 +559,6 @@ export default {
 
     getUserType(e) {
       this.userType = e.toElement.name;
-      console.log(this.userType);
       if (this.userType === "guest") {
         this.price = this.cashPrice;
       } else {
@@ -693,24 +686,28 @@ export default {
         this.getPrice();
       }
     },
-    getMembers() {
-      let userAccounts = [];
-      for (const account of this.accounts) {
-        if (account.customerId === this.customer.id) {
-          userAccounts.push(account);
-        }
-      }
 
-      let userMemberships = [];
-      for (const membership of this.memberships) {
-        for (const account of userAccounts) {
-          if (membership.accountId == account.id) {
-            userMemberships.push(membership);
-          }
-        }
-      }
+    async checkForActiveMembership() {
+      //Check via email if user is a member
+      let email = null;
+      if (!isEmpty(this.user)) {
+        email = this.user.email;
 
-      this.userMemberships = userMemberships;
+        const membershipDTO = {
+          accountId: 0,
+          repeatingPayment: false,
+          email: email
+        };
+        await this.$http
+          .post("/membership/membercheck", membershipDTO)
+          .then(response => {
+            this.postResponse = response.data;
+            this.isMember = response.data;
+          })
+          .catch(function() {});
+      } else {
+        this.isMember = false;
+      }
     }
   },
 
@@ -719,14 +716,11 @@ export default {
     await this.getActivities();
     await this.getAllSessions();
     await this.getAllCustomers();
-    await this.getMemberships();
     await this.getAccounts();
     if (this.customers) {
       await this.getCustomer();
     }
-    if (this.customer) {
-      this.getMembers();
-    }
+    await this.checkForActiveMembership();
     await this.fillByParams();
   }
 };
