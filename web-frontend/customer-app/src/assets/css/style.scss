@@ -7,8 +7,8 @@ $grid-breakpoints: (
   xs: 0,
   sm: 456px,
   md: 789px,
-  lg: 999px,
-  xl: 1234px
+  lg: 1245px,
+  xl: 1400px
 );
 $bv-enable-table-stacked: false;
 
@@ -34,6 +34,7 @@ body {
   -webkit-font-smoothing: antialiased;
   font-smoothing: antialiased;
   position: fixed;
+  overflow-y: auto;
 }
 
 h1,
