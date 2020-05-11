@@ -4,7 +4,6 @@
       <b-navbar-brand to="/"
         ><img
           src="../assets/logo.png"
-          style="height: 84.8px; width: 264.8px"
           alt=""
         />
       </b-navbar-brand>
@@ -71,6 +70,11 @@
 }
 a.dropdown-item. active {
   color: #000 !important;
+}
+img{
+  height: 84.8px;
+  width: 264.8px;
+  min-width: 200px;
 }
 </style>
 <script>
