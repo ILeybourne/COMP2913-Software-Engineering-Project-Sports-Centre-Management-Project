@@ -10,7 +10,7 @@
       <b-card-title class="title"
         ><span>{{ facility.name }}</span></b-card-title
       >
-      <b-card-text>
+      <b-card-text class="description">
         {{ facility.description }}
       </b-card-text>
       <b-row class="facility-details">
@@ -47,6 +47,9 @@
 .facility-details {
   text-align: center;
   justify-content: center;
+}
+.description{
+  color: whitesmoke;
 }
 .button {
   width: auto;
