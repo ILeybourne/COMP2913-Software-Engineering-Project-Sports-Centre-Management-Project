@@ -30,16 +30,21 @@ authHttp.interceptors.response.use(
   error => {
     if (!error.response) {
       router.push({ name: "ServerError" });
+    } else {
+      if (error.response.status === 400) {
+        store.dispatch("validation/setValidationErrors", error.response.data);
+      }
+      if (error.response.status === 401) {
+        store.dispatch("auth/loginWithRedirect");
+      }
+      if (error.response.status === 403) {
+        router.push({ name: "Unauthorised" });
+      }
+      if (error.response.status === 500) {
+        router.push({ name: "ServerError", params:error.response.data });
+      }
     }
-    if (error.response.status === 400) {
-      store.dispatch("validation/setValidationErrors", error.response.data);
-    }
-    if (error.response.status === 401) {
-      store.dispatch("auth/loginWithRedirect");
-    }
-    if (error.response.status === 403) {
-      router.push({ name: "Unauthorised" });
-    }
+
     return Promise.reject(error);
   }
 );

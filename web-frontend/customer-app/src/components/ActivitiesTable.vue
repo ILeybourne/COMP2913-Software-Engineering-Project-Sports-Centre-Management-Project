@@ -266,13 +266,9 @@ export default {
     async deleteItem(item) {
       const id = item.id;
       const index = this.sorted.indexOf(item);
-      try {
-        confirm("Are you sure you want to delete this item?") &&
-          this.sorted.splice(index, 1) &&
-          this.deleteActivityType(id);
-      } catch (error) {
-        console.log(error.response.status);
-      }
+      confirm("Are you sure you want to delete this item?") &&
+        this.sorted.splice(index, 1) &&
+        this.deleteActivityType(id);
     }
   },
 

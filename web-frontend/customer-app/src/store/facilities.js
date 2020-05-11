@@ -14,6 +14,17 @@ const state = {
       nextPageHref: `/resources?page=${0}&size=${10}`, // just need first page to initialise store
       lastPageHref: null,
       isDataToLoad: true
+    },
+    activities: {
+      pages: [],
+      number: null,
+      size: null,
+      totalElements: null,
+      totalPages: null,
+      currentPageHref: null,
+      nextPageHref: `/resources?page=${0}&size=${10}`, // just need first page to initialise store
+      lastPageHref: null,
+      isDataToLoad: true
     }
   },
   facilities: [], // the facilities in the sports center
@@ -55,10 +66,26 @@ const mutations = {
     state.paging.facilities.pages.push(pageId);
     state.facilities.push(...page);
   },
-  SET_ACTIVITIES: (state, payload) => (state.activities = payload),
   SET_FACILITY_PAGE_INFO: (state, payload) => {
     state.paging.facilities = {
       ...state.paging.facilities,
+      ...payload
+    };
+  },
+  SET_ACTIVITIES: (state, payload) => (state.activities = payload),
+  APPEND_ACTIVITIES: (state, { pageId, page }) => {
+    if (state.paging.activities.pages.includes(pageId)) {
+      // already got this page, don't want duplicates!!
+      return;
+    }
+    state.paging.activities.pages.push(pageId);
+    state.activities.push(...page);
+  },
+  SET_ACTIVITIES_LOADING: (state, payload) =>
+    (state.paging.activities.isDataToLoad = payload),
+  SET_ACTIVITY_PAGE_INFO: (state, payload) => {
+    state.paging.activities = {
+      ...state.paging.activities,
       ...payload
     };
   }
@@ -152,7 +179,7 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
     return data;
   },
-  async deleteFacility({ state, commit }, facilityId){
+  async deleteFacility({ state, commit }, facilityId) {
     let result = false;
     commit("loading/START_LOADING", null, { root: true });
     const response = await axios.delete(`/resources/${facilityId}`);
@@ -168,7 +195,7 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return result;
   },
-  async updateActivityTypes({ commit }, { activityId, body}){
+  async updateActivityTypes({ commit }, { activityId, body }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.put(`/activitytypes/${activityId}`, body);
     commit("SET_ACTIVITIES", [
@@ -178,7 +205,10 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
   },
   async createActivityType({ commit }, { facilityId, body }) {
-    const { data } = await axios.post(`/activitytypes/resource/${facilityId}`, body);
+    const { data } = await axios.post(
+      `/activitytypes/resource/${facilityId}`,
+      body
+    );
     commit("SET_ACTIVITIES", [...state.activities, data]);
     commit("loading/START_LOADING", null, { root: true });
     return data;
@@ -203,6 +233,8 @@ const actions = {
         commit("SET_ACTIVITIES", state.activities);
         result = true;
       }
+    }else{
+      response.errorMessage = "Error";
     }
     commit("loading/FINISH_LOADING", null, { root: true });
     return result;
@@ -218,5 +250,13 @@ const facilities = {
   mutations,
   actions
 };
-
+/*
+const activities = {
+  namespaced,
+  state,
+  getters,
+  mutations,
+  actions
+};
+ */
 export default facilities;
