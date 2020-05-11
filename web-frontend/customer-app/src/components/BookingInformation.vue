@@ -81,8 +81,8 @@
           <label for="participants">Participants:</label>
           <b-form-input
             v-model="bookingInformation.participants"
-            name="bookingInformation.participants"
-            id="bookingInformation.participants"
+            name="participants"
+            id="participants"
             v-bind:state="participantsValid"
             @change="[getPrice(), validateParticipants()]"
             @keyup="validateParticipants"
@@ -99,13 +99,11 @@
           >
           </b-form-input>
         </div>
-        <div
-          class="form-row"
-          style="margin: auto"
-          v-if="maxParticipants < 1 && maxParticipants !== null"
-        >
-          Selected Activity is Full.
-        </div>
+        <b-row v-if="maxParticipants < 1 && maxParticipants !== null">
+          <div class="form-row" id="full-error" name="full-error">
+            <p>Selected Activity is Full.</p>
+          </div>
+        </b-row>
         <div class="form-row">
           <label for="price" style="padding-top: 10px">Price:</label>
           <b-input-group size="lg" prepend="£" style="width: 90%">
@@ -231,6 +229,19 @@ select {
 
 label {
   width: 10%;
+}
+
+#full-error {
+  text-align: center;
+  color: red;
+  width: 100%;
+  margin: auto;
+}
+
+#full-error p {
+  text-align: center;
+  color: red;
+  margin: auto;
 }
 </style>
 

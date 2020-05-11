@@ -69,7 +69,12 @@
                   "
                 >
                   <label for="checkbox">Save Card Details:</label>
-                  <input type="checkbox" id="checkbox" v-model="saveCard" />
+                  <input
+                    type="checkbox"
+                    id="checkbox"
+                    v-model="saveCard"
+                    style="padding-left: 10px;"
+                  />
                 </div>
                 <div class="buttonDiv">
                   <button
@@ -119,8 +124,7 @@
 
 <style scoped>
 #checkbox-div {
-  top: 200px;
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 #card-bg {
@@ -230,6 +234,10 @@
 
 .centered-text {
   text-align: center;
+}
+
+#paymentButton {
+  margin-top: -40px;
 }
 </style>
 
