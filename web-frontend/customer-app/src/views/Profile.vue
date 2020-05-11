@@ -166,7 +166,7 @@ export default {
         .put(`/membership/members/${membership_id}/stop`)
         .then(response => console.log(response));
       this.cancelModal = false;
-      this.getMemberships();
+      await this.getMemberships();
     }
   },
   async mounted() {
