@@ -29,10 +29,18 @@
             <v-icon title="Cancel Booking" @click="showDelete(item)">
               mdi-delete
             </v-icon>
-            <v-icon title="View Receipt" @click="showReceipt(item)">
+            <v-icon
+              v-if="item._links.PDF"
+              title="View Receipt"
+              @click="showReceipt(item)"
+            >
               mdi-printer
             </v-icon>
-            <v-icon title="Email Receipt" @click="emailReceipt(item)">
+            <v-icon
+              v-if="item._links.EMAIL"
+              title="Email Receipt"
+              @click="emailReceipt(item)"
+            >
               mdi-email
             </v-icon>
             <v-icon
@@ -56,15 +64,18 @@
   display: flex;
   width: 100%;
 }
+
 .new-booking {
   padding-bottom: 20px;
 }
+
 .card {
   margin-top: 50px;
 }
 </style>
 <script>
 import { mapActions, mapGetters } from "vuex";
+
 export default {
   name: "BookingTable",
   components: {},
@@ -172,7 +183,22 @@ export default {
         (await this.getBookings())
       );
     },
-
+    async emailReceipt(item) {
+      if (!item._links) {
+        return;
+      }
+      if (item._links.EMAIL) {
+        await this.$http.get(item._links.EMAIL.href);
+      }
+    },
+    async showReceipt(item) {
+      if (!item._links) {
+        return;
+      }
+      if (item._links.PDF) {
+        window.open(item._links.PDF.href);
+      }
+    },
     async directToBookingPage() {
       await this.$router.push({
         name: "BookingPage"
@@ -206,9 +232,6 @@ export default {
       this.dataWithActivities = this.bookings;
     }
   },
-  // emailReceipt(item){}dat
-  // showReceipt(item){}
-
   watch: {
     handler() {
       this.dataWithActivities();

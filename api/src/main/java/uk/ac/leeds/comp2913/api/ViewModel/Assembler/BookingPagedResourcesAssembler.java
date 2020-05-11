@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.ac.leeds.comp2913.api.Controller.AccountController;
 import uk.ac.leeds.comp2913.api.Controller.ActivityController;
 import uk.ac.leeds.comp2913.api.Controller.BookingController;
+import uk.ac.leeds.comp2913.api.Controller.ReceiptController;
 import uk.ac.leeds.comp2913.api.Domain.Model.Booking;
 import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
 
@@ -26,7 +27,16 @@ public class BookingPagedResourcesAssembler extends RepresentationModelAssembler
         bookingDto.add(linkTo(methodOn(BookingController.class).getBookingById(booking.getId())).withSelfRel());
         bookingDto.add(linkTo(methodOn(AccountController.class).getAccountById(booking.getAccount().getId())).withRel("Account"));
         bookingDto.add(linkTo(methodOn(ActivityController.class).getActivityByActivityId(booking.getActivity().getId())).withRel("Activity"));
-        //bookingDto.add(linkTo(ReceiptController.class).slash(booking.getReceipt().getId()).slash("receipt").withRel("Receipt"));
+        if(booking.getReceipt() != null){
+            bookingDto.add(linkTo(ReceiptController.class)
+                    .slash(booking.getReceipt().getId())
+                    .slash("pdf")
+                    .withRel("PDF"));
+            bookingDto.add(linkTo(ReceiptController.class)
+                    .slash(booking.getReceipt().getId())
+                    .slash("email")
+                    .withRel("EMAIL"));
+        }
         if (booking.getRegularSession()!=null){
              bookingDto.add(linkTo(BookingController.class).slash("cancel").slash(booking.getActivity().getId()).slash(booking.getAccount().getId()).withRel("Unsubscribe from regular session"));
              bookingDto.setRegularBooking(true);

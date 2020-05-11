@@ -10,6 +10,7 @@ import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -29,4 +30,8 @@ public interface ReceiptService {
   Receipt findById(Long receipt_id);
 
   Page<Receipt> findAll(Pageable pageable);
+
+  void sendReceiptToCustomer(Receipt receipt) throws MessagingException;
+
+  File downloadPdf(Long receipt_id) throws IOException;
 }

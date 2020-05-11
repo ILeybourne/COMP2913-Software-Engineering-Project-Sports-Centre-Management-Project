@@ -17,6 +17,7 @@ import org.thymeleaf.context.Context;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ReceiptRepository;
 import uk.ac.leeds.comp2913.api.Domain.Model.Customer;
 import uk.ac.leeds.comp2913.api.Domain.Model.Receipt;
+import uk.ac.leeds.comp2913.api.Domain.Model.Resource;
 import uk.ac.leeds.comp2913.api.Domain.Model.Sale;
 import uk.ac.leeds.comp2913.api.Domain.Service.QrCodeGenerator;
 import uk.ac.leeds.comp2913.api.Domain.Service.ReceiptService;
@@ -104,7 +105,8 @@ public class ReceiptServiceImpl implements ReceiptService {
         HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(file));
     }
 
-    private void sendReceiptToCustomer(Receipt receipt) throws MessagingException {
+    @Override
+    public void sendReceiptToCustomer(Receipt receipt) throws MessagingException {
         // Create mime message
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper;
@@ -131,5 +133,15 @@ public class ReceiptServiceImpl implements ReceiptService {
 
 
         return this.templateEngine.process("receipt.html", ctx);
+    }
+    @Override
+    public File downloadPdf(Long receipt_id) throws IOException {
+        Receipt receipt = receiptRepository.findById(receipt_id)
+                .orElseThrow(() -> new ResourceNotFoundException("Receipt with ID " + receipt_id + " could not be found"));
+        final String filePath = receipt.getPdfLocation();
+        byte[] bytes = this.s3Client.getFile(filePath);
+        FileOutputStream stream = new FileOutputStream(filePath);
+        stream.write(bytes);
+        return new File(filePath);
     }
 }

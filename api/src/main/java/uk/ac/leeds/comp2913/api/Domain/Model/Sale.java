@@ -52,7 +52,7 @@ public abstract class Sale {
    * Hence if we need to get the time of payment, we get the created_at
    * timestamp from the receipt
    */
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "receipt_id")
   protected Receipt receipt;
 
