@@ -58,6 +58,7 @@ span {
   display: flex;
   justify-content: center;
   text-align: center;
+  flex-wrap: wrap;
 }
 .create-button {
   width: 85%;

@@ -36,6 +36,7 @@
 <style scoped>
 .facility-card {
   max-width: 20rem;
+  min-width: 20rem;
   margin: 10px;
   flex-direction: column;
   text-align: center;
