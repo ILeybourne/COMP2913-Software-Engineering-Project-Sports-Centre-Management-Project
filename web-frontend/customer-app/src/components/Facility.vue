@@ -1,25 +1,31 @@
 <template>
   <div class="facility">
     <b-card
-      :title="facility.name"
+      class="facility-card"
       :img-src="this.imageUrl"
       @error="handleImageError"
       :img-alt="facility.name"
       img-top
-      style="max-width: 20rem;"
     >
+      <b-card-title class="title"
+        ><span>{{ facility.name }}</span></b-card-title
+      >
       <b-card-text>
         {{ facility.description }}
       </b-card-text>
-      <b-row>
+      <b-row class="facility-details">
         <b-button
+          class="button"
+          id="my-timetable"
+          variant="outline-light"
           :to="{ name: 'FacilityTimetable', params: { id: facility.id } }"
-          variant="info"
           >See Timetable</b-button
         >
         <b-button
+          class="button"
+          id="button-details"
           :to="{ name: 'FacilityPage', params: { id: facility.id } }"
-          variant="outline-primary"
+          variant="outline-light"
           >View Details</b-button
         >
       </b-row>
@@ -27,7 +33,46 @@
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.facility-card {
+  max-width: 20rem;
+  margin: 10px;
+  flex-direction: column;
+  text-align: center;
+  color: #f6f9fa !important;
+  background: #1f1f1f;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.facility-details {
+  text-align: center;
+  justify-content: center;
+}
+.button {
+  width: auto;
+  height: auto;
+  margin: 5px !important;
+}
+#button-timetable {
+}
+.title {
+  color: #f6f9fa !important;
+  text-decoration-color: #f6f9fa !important;
+}
+.title span {
+  background: transparent;
+  padding: 3px;
+}
+.facility-card:hover .title span {
+  background: #fcff18;
+  padding: 3px;
+  color: #1f1f1f;
+}
+.button .active {
+  color: #fff !important;
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+}
+</style>
 
 <script>
 const defaultImage =

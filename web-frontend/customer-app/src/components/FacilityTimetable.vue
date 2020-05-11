@@ -13,6 +13,7 @@
         minTime="06:00:00"
         maxTime="23:00:00"
         @eventClick="activityClick($event)"
+        event-color="yellow"
       />
     </div>
     <b-modal
@@ -113,4 +114,8 @@ export default {
 <style scoped lang="scss">
 @import "~@fullcalendar/core/main.min.css";
 @import "~@fullcalendar/timegrid/main.min.css";
+.calendar {
+  background-color: #1f1f1f;
+  text-decoration-color: #1f1f1f;
+}
 </style>

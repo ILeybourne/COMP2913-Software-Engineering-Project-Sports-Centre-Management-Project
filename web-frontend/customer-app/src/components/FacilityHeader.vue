@@ -1,7 +1,11 @@
 <template>
   <div class="facility-header">
     <div v-if="error" class="alert alert-warning">{{ error }}</div>
-    <b-card :title="'Details for ' + facility.name" :img-src="imageUrl">
+    <b-card
+      :title="'Details for ' + facility.name"
+      :img-src="imageUrl"
+      class="facility-card"
+    >
       <b-card-text>{{
         facility.description || "No description available..."
       }}</b-card-text>
@@ -15,7 +19,14 @@
     </b-card>
   </div>
 </template>
-
+<style scoped>
+.facility-card {
+  flex-direction: column;
+  text-align: center;
+  background: #f6f9fa;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+</style>
 <script>
 import { mapActions, mapGetters } from "vuex";
 
@@ -65,5 +76,3 @@ export default {
   }
 };
 </script>
-
-<style scoped></style>

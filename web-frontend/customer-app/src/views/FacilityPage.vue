@@ -11,11 +11,12 @@
               <b-nav-item
                 v-if="isEmployeeOrManager"
                 :to="{ name: 'FacilityEdit', params: { id: facility.id } }"
-                >Edit</b-nav-item
+                ><h5><span>Edit</span></h5></b-nav-item
               >
               <b-nav-item
+                title="View Facility Timetable"
                 :to="{ name: 'FacilityTimetable', params: { id: facility.id } }"
-                >See Timetable</b-nav-item
+                ><h5><span>See Timetable</span></h5></b-nav-item
               >
             </b-nav>
           </b-card-header>
@@ -61,4 +62,13 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.card {
+  background: #f6f9fa;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+span {
+  background: #fcff18;
+  padding: 4px;
+}
+</style>

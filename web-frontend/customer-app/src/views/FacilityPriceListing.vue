@@ -1,33 +1,39 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col-8">
-        <div class="heading-div">
-          <h1><span>Price</span> List</h1>
+  <v-app>
+    <div class="container">
+      <div class="row">
+        <div class="col-8">
+          <div class="heading-div">
+            <h1><span>Price</span> List</h1>
+          </div>
         </div>
       </div>
-      <div class="col-4">
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
+      <div class="row">
+        <div class="col-md-12">
+          <v-data-table
+            class="white--text"
+            dark
+            :headers="headers"
+            :items="activities"
+            item-key="id"
+            group-by="facility.name"
+          >
+            <template
+              class="white"
+              v-slot:group.header="{ items, isOpen, toggle }"
+            >
+              <th colspan="5" bgcolor="#404040" class="white--text">
+                <v-icon class="yellow--text" @click="toggle"
+                  >{{ isOpen ? "mdi-minus" : "mdi-plus" }}
+                </v-icon>
+                {{ items[0].facility.name }}
+              </th>
+            </template>
+          </v-data-table>
+        </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-md-12">
-        <v-data-table
-          :headers="headers"
-          :items="activities"
-          :search="search"
-          item-key="name"
-          items-per-page="10"
-        ></v-data-table>
-      </div>
-    </div>
-  </div>
+  </v-app>
 </template>
 <style scoped>
 @media screen and (max-width: 600px) {
@@ -57,35 +63,44 @@ export default {
   name: "FacilityPriceListing",
   data: function() {
     return {
-      search: "",
-      rowData: [],
       headers: [
         {
           value: "name",
-          text: "Activity Type",
-          sortable: true
+          text: "ACTIVITY",
+          sortable: true,
+          class: "yellow--text title font-weight-bold"
         },
         {
           value: "formattedCost",
-          text: "Cost",
-          sortable: false
+          text: "FULL PRICE",
+          sortable: false,
+          class: "yellow--text title font-weight-bold"
+        },
+        {
+          value: "memberPricing",
+          text: "MEMBER PRICE",
+          sortable: false,
+          class: "yellow--text title font-weight-bold"
         },
         {
           value: "totalCapacity",
-          text: "Total Capacity",
-          sortable: false
+          text: "TOTAL CAPACITY",
+          sortable: false,
+          class: "yellow--text title font-weight-bold"
         }
       ]
     };
   },
   computed: {
-    ...mapGetters("facilities", ["activities"])
+    ...mapGetters("facilities", ["activities", "facilities"])
   },
   methods: {
-    ...mapActions("facilities", ["getActivities"])
+    ...mapActions("facilities", ["getActivities", "getFacilities"])
   },
-  mounted() {
-    this.getActivities();
+  async mounted() {
+    await this.getFacilities();
+    await this.getActivities();
+    console.log(this.activities);
   }
 };
 </script>
