@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -47,7 +48,7 @@ class ReceiptTest {
         receipt.setCreatedAt(createdAt);
         receipt.setTotal(total);
         receipt.setProductDescription(productDescription);
-        receipt.setSales(new HashSet<>());
+        receipt.setSales(new ArrayList<>());
         receipt.setCustomer(customer);
         receipt.setPdfLocation(pdfLocation);
 

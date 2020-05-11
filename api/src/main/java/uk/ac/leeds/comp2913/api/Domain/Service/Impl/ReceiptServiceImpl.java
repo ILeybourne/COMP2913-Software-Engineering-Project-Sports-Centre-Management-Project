@@ -73,7 +73,7 @@ public class ReceiptServiceImpl implements ReceiptService {
         s3Client.uploadFile(pdf);
 
         receipt.setPdfLocation(filePath);
-//        this.receiptRepository.save(receipt);
+        this.receiptRepository.save(receipt);
 
         sendReceiptToCustomer(receipt);
 

@@ -1,16 +1,22 @@
 package uk.ac.leeds.comp2913.api.Domain.Model;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.hateoas.PagedModel;
-
-import javax.persistence.*;
-import javax.validation.constraints.Size;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Receipt {
@@ -31,7 +37,7 @@ public class Receipt {
                     CascadeType.PERSIST
             }
     )
-    private Set<Sale> sales;
+    private List<Sale> sales;
 
     @Column(
             nullable = true,
@@ -55,15 +61,15 @@ public class Receipt {
 
     }
 
-    public Receipt(Collection<Sale> sales, String transactionId) {
+    public Receipt(List<Sale> sales, String transactionId) {
 
-        this.setSales(Set.copyOf(sales));
+        this.setSales(sales);
         this.total = BigInteger.valueOf(0);
         for (Sale sale : sales) {
             /*TODO: fix types misalignment*/
             total = total.add(sale.getAmount().toBigInteger());
             sale.setReceipt(this);
-//            sale.setTransactionId(transactionId);
+            sale.setTransactionId(transactionId);
         }
     }
 
@@ -99,11 +105,11 @@ public class Receipt {
         this.productDescription = product_description;
     }
 
-    public Set<Sale> getSales() {
+    public List<Sale> getSales() {
         return sales;
     }
 
-    public void setSales(Set<Sale> sales) {
+    public void setSales(List<Sale> sales) {
         this.sales = sales;
     }
 
