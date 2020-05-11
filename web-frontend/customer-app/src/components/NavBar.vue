@@ -1,17 +1,13 @@
 <template>
   <header class="header-section">
-    <b-navbar type="light" toggleable="lg">
+    <b-navbar toggle-class="text-dark" toggleable="lg">
       <b-navbar-brand to="/"
-        ><img
-          src="../assets/logo.png"
-          alt=""
-        />
+        ><img src="../assets/logo.png" alt="" />
       </b-navbar-brand>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse class="main-menu" id="nav-collapse" is-nav>
         <b-navbar-nav class="ml-auto">
-          <b-nav-item to="/">Home</b-nav-item>
           <b-nav-item to="/timetable">Timetable</b-nav-item>
           <b-nav-item-dropdown toggle-class="text-dark" text="Facilities">
             <b-dropdown-item to="/facilities">Our Facilities</b-dropdown-item>
@@ -40,6 +36,7 @@
           <div class="hr-box">
             <b-nav-item-dropdown
               toggle-class="text-dark"
+              text="#1f1f1f"
               v-if="isAuthenticated"
               right
             >
@@ -64,17 +61,26 @@
   </header>
 </template>
 <style scoped>
+.header-section {
+  width: 100vw !important;
+}
 .navbar-light .navbar-nav .nav-link {
-  color: #1e1e1e !important;
+  color: #353a40 !important;
   font-family: "PT Sans", sans-serif !important;
 }
 a.dropdown-item. active {
   color: #000 !important;
 }
-img{
+img {
   height: 84.8px;
   width: 264.8px;
-  min-width: 200px;
+  min-width: 150px;
+}
+@media screen and (max-width: 600px) {
+  img {
+    height: 42.4px;
+    width: 132.4px;
+  }
 }
 </style>
 <script>

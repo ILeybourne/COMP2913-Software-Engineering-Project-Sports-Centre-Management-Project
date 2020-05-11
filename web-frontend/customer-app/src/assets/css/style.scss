@@ -33,6 +33,7 @@ body {
   font-family: "PT Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   font-smoothing: antialiased;
+  position: fixed;
 }
 
 h1,
@@ -480,12 +481,10 @@ Header section
 }
 
 .header-right {
-  float: right;
   padding-top: 0 !important;
 }
 
 .header-right .hr-box {
-  width: 294px;
   padding: 31px 52px;
   background: #fcff18;
 }
