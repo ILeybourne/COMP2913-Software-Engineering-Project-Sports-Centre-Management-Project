@@ -7,7 +7,25 @@ export const formatDate = value => {
   }
   return "";
 };
+export const dateToString = value => {
+  const newDate = new Date(value);
+  return (
+    newDate.getDate() +
+    "/" +
+    (newDate.getMonth() + 1) +
+    "/" +
+    newDate.getFullYear()
+  );
+};
 
 export const formatCurrency = value => {
   return "£" + Number(value).toFixed(2);
 };
+
+export const formatDateYMD = value => {
+  if (value) {
+    const dt = new Date(value);
+    return dt.getFullYear() + "-" + dt.getMonth() + "-" + dt.getDate();
+  }
+  return "";
+}

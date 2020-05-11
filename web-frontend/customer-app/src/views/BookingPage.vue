@@ -8,6 +8,7 @@
       <b-row class="row">
         <b-col col lg="maxColSize " v-bind:class="{ 'd-none': hideBooking }">
           <BookingInformation
+            :sessionInformatiom="sessionInformation"
             class="checkout-container"
             @getUserType="showGuestInfo"
           ></BookingInformation>
@@ -242,7 +243,8 @@ export default {
         accountId: null,
         amountPaid: null,
         transactionId: null
-      }
+      },
+      sessionInformation: Object
     };
   },
   computed: {
@@ -263,6 +265,11 @@ export default {
     ...mapActions("customers", ["getAllCustomers"]),
     ...mapActions("timetable", ["getAllSessions"]),
     formatCurrency: formatCurrency,
+
+    setSessionInformation() {
+      if (!isEmpty(this.$route.params))
+        this.sessionInformation = this.$route.params.sessionInformation;
+    },
 
     async getCustomer() {
       this.customer = this.customers.find(
@@ -528,6 +535,7 @@ export default {
   async mounted() {
     await this.getActivities();
     await this.getAllSessions;
+    this.setSessionInformation();
     this.configureStripe();
   }
 };

@@ -33,7 +33,10 @@
       </tbody>
     </table>
     <div class="alert alert-danger" v-if="error">{{ error }}</div>
-    <b-button variant="primary" v-if="userCanBook" :to="bookingLink"
+    <b-button
+      variant="primary"
+      v-if="userCanBook"
+      @click="routerPushBookingWithPreviewInfo"
       >Book this Session</b-button
     >
     <b-button variant="danger" v-if="userCanDelete" @click="deleteASession">
@@ -60,7 +63,7 @@ export default {
         name: "BookingPage",
         query: {
           facilityId: this.session.resource.id,
-          activityId: this.session.activityId,
+          activityId: this.session.activityTypeId,
           sessionId: this.session.id
         }
       },
@@ -75,6 +78,7 @@ export default {
   },
   computed: {
     ...mapGetters("auth", ["isEmployeeOrManager"]),
+
     placesAvailableForSession() {
       if (!this.session) {
         return false;
@@ -94,6 +98,23 @@ export default {
   },
   methods: {
     ...mapActions("timetable", ["deleteSession"]),
+
+    async routerPushBookingWithPreviewInfo() {
+      let sessionInformation = {
+        facilityId: this.session.resource.id,
+        activityTypeId: this.session.activityTypeId,
+        sessionId: this.session.id
+      };
+
+      // eslint-disable-next-line vue/no-async-in-computed-properties
+      await this.$router.push({
+        name: "BookingPage",
+        params: {
+          sessionInformation: sessionInformation
+        }
+      });
+    },
+
     async deleteASession() {
       const result = await this.deleteSession(this.session.id);
       if (result) {

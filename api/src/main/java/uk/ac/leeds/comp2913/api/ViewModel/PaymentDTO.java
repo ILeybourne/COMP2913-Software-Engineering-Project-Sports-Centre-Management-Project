@@ -9,7 +9,8 @@ public class PaymentDTO {
     private Long customerId;
     private Boolean regularSession;
     private Long membershipTypeId;
-    private Long activityTypeId;
+    private Long sessionId;
+    private Integer participants;
 
     public Long getMembershipTypeId() {
         return membershipTypeId;
@@ -17,14 +18,6 @@ public class PaymentDTO {
 
     public void setMembershipTypeId(Long membershipTypeId) {
         this.membershipTypeId = membershipTypeId;
-    }
-
-    public Long getActivityTypeId() {
-        return activityTypeId;
-    }
-
-    public void setActivityTypeId(Long activityTypeId) {
-        this.activityTypeId = activityTypeId;
     }
 
     public String getEmail() {
@@ -49,5 +42,21 @@ public class PaymentDTO {
 
     public void setRegularSession(Boolean regularSession) {
         this.regularSession = regularSession;
+    }
+
+    public Integer getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(Integer participants) {
+        this.participants = participants;
+    }
+
+    public Long getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(Long sessionId) {
+        this.sessionId = sessionId;
     }
 }

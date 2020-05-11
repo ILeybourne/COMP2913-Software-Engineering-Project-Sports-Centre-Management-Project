@@ -3,6 +3,7 @@ package uk.ac.leeds.comp2913.api.Domain.Service.Impl;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.AccountRepository;
 import uk.ac.leeds.comp2913.api.DataAccessLayer.Repository.ActivityRepository;
@@ -84,8 +86,8 @@ public class BookingServiceImpl implements BookingService {
 
   @Transactional
   @Override
-  public Page<Booking>findByEmail(Pageable pageable, String email, Boolean isManager){
-    return bookingRepository.findAllbyEmail(pageable, email, isManager);
+  public Page<Booking>findByUsername(Pageable pageable, String authUsername, Boolean isManager){
+    return bookingRepository.findAllbyUsername(pageable, authUsername, isManager);
   }
 
   @Transactional
@@ -124,7 +126,6 @@ public class BookingServiceImpl implements BookingService {
     if(regularBooking){
       booking.setRegularSession(a.getRegularSession());
     }
-    booking.setAmount(a.getCost());
     List<Sale> list = new ArrayList<>();
     list.add(booking);
     receiptService.invoice(booking.getTransactionId(), list, account.getCustomer());
@@ -139,11 +140,12 @@ public class BookingServiceImpl implements BookingService {
   //is turned to null.
   @Transactional
   @Override
-  public void cancelRegularSession(Long activity_id, Long account_id){
+  public Page<Booking> cancelRegularSession(Long activity_id, Long account_id, Pageable pageable, String username, Boolean isManager){
     Activity a = activityRepository.findById(activity_id)
         .orElseThrow(() -> new ResourceNotFoundException("Activity not found for ID" + activity_id));
     Long regular_session_id = a.getRegularSession().getId();
     bookingRepository.unsubscribeFromRegularSession(regular_session_id, account_id);
+    return bookingRepository.findAllbyUsername(pageable, username, isManager);
   }
 
 }

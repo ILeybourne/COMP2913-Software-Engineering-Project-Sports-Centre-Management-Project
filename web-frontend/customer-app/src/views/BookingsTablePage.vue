@@ -3,11 +3,21 @@
     <div class="heading-div">
       <h1><span>Booking </span> Management</h1>
     </div>
-    <BookingTable></BookingTable>
+    <v-row class="info-container">
+      <BookingTable></BookingTable>
+    </v-row>
   </div>
 </template>
 
 <style scoped>
+.info-container {
+  display: flex;
+  justify-content: flex-end;
+  text-align: right;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+}
 @media screen and (max-width: 600px) {
   .heading-div h1 {
     font-size: 10vw;

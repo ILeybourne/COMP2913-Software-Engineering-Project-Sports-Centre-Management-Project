@@ -15,7 +15,7 @@
   }
 }
 .heading-div {
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 .heading-div h1 {
   width: 60%;

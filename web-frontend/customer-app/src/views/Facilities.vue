@@ -1,17 +1,23 @@
 <template>
-  <div class="facilities">
+  <div class="facilities" justify="center">
     <div class="heading-div">
       <h1>Our <span>Facilities</span></h1>
     </div>
     <v-alert show v-if="isEmployeeOrManager">
-      <b-button
-        variant="primary"
-        :to="{ name: 'FacilityPage', params: { id: 'create' } }"
-      >
-        Create a new Facility
-      </b-button>
+      <v-container class="create-button">
+        <b-btn
+          class="button-create"
+          variant="white"
+          :to="{ name: 'FacilityPage', params: { id: 'create' } }"
+          ><span>
+            <v-icon color="#1f1f1f" x-large title="Create New Facility"
+              >mdi-plus</v-icon
+            ></span
+          >
+        </b-btn>
+      </v-container>
     </v-alert>
-    <b-card-group>
+    <b-card-group class="cards">
       <Facility
         v-for="facility in facilities"
         :key="facility.id"
@@ -45,8 +51,29 @@
   width: 100%;
   padding: 10px;
 }
-.heading-div span {
+span {
   background: #fcff18;
+}
+.cards {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+.create-button {
+  width: 85%;
+  text-align: right;
+  justify-content: flex-end;
+  margin-right: 100px;
+}
+.button-create {
+  color: white !important;
+}
+.button-create span {
+  padding: 15px;
+}
+.button-create:hover span {
+  padding: 15px;
+  background: rgba(255, 255, 0, 0.5);
 }
 </style>
 

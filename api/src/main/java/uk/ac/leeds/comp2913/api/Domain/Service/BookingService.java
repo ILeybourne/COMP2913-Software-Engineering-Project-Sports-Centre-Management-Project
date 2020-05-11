@@ -21,7 +21,7 @@ import uk.ac.leeds.comp2913.api.ViewModel.BookingDTO;
 public interface BookingService {
   Booking createNewBookingForActivity(Booking booking, Long activity_id, Long account_id, Boolean regularBooking) throws IOException, MessagingException;
 
-  void cancelRegularSession(Long activity_id, Long account_id);
+  Page<Booking> cancelRegularSession(Long activity_id, Long account_id, Pageable pageable, String username, Boolean isManager);
 
   Page<Booking> findAll(Pageable pageable);
 
@@ -33,7 +33,7 @@ public interface BookingService {
 
   Page<Booking> findByActivityId(Pageable pageable, Long activity_id);
 
-  Page<Booking> findByEmail(Pageable pageable, String email, Boolean isManager);
+  Page<Booking> findByUsername(Pageable pageable, String username, Boolean isManager);
 
   Account findAccountFromBooking(Long booking_id);
 

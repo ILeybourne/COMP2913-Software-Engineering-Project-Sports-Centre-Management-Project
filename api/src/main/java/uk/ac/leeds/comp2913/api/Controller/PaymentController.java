@@ -7,6 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 
 import uk.ac.leeds.comp2913.api.Domain.Service.PaymentService;
 import uk.ac.leeds.comp2913.api.ViewModel.PaymentDTO;
@@ -35,56 +40,92 @@ public class PaymentController {
     @PostMapping(path = "/guest-intent/")
     public PayResponseBodyDTO create(@RequestBody PaymentDTO requestBody) throws StripeException {
         String emailAddress = requestBody.getEmail();
+        Integer participants = 0;
         BigDecimal cost = null;
-        if(requestBody.getActivityTypeId() != null){
-            cost = paymentService.getActivityTypeCost(requestBody.getActivityTypeId());
+        if (requestBody.getSessionId() != null) {
+            cost = paymentService.getBookingCharge(requestBody.getSessionId());
+            participants = requestBody.getParticipants();
         }
-        if(requestBody.getMembershipTypeId() != null){
+        if (requestBody.getMembershipTypeId() != null) {
             cost = paymentService.getMembershipTypeCost(requestBody.getMembershipTypeId());
         }
-        return paymentService.create(emailAddress, cost, false);
+        if (participants == null) {
+            participants = 0;
+        }
+        return paymentService.create(emailAddress, cost, false, participants);
     }
 
     //Customer New Card Payment
     //TODO Move into response body
     @PostMapping(path = "/intent/card/{customer_id}")
-    public PayResponseBodyDTO createFromNewCard(@RequestBody PaymentDTO requestBody, @PathVariable Long customer_id) throws StripeException {
+    public PayResponseBodyDTO createFromNewCard(@RequestBody PaymentDTO requestBody, @PathVariable Long customer_id, @AuthenticationPrincipal Authentication user) throws StripeException {
         String emailAddress = requestBody.getEmail();
+        Integer participants = 0;
         BigDecimal cost = null;
-        if(requestBody.getActivityTypeId() != null){
-            cost = paymentService.getActivityTypeCost(requestBody.getActivityTypeId());
+        String username = null;
+        Boolean isManager = false;
+        if(user != null){
+            username = user.getName();
+            Collection<? extends GrantedAuthority> permissions = user.getAuthorities();
+            if(permissions.size() > 1){
+                isManager=true;
+            }
         }
-        if(requestBody.getMembershipTypeId() != null){
+        if (requestBody.getSessionId() != null) {
+            cost = paymentService.getBookingCharge(requestBody.getSessionId());
+            participants = requestBody.getParticipants();
+        }
+        if (requestBody.getMembershipTypeId() != null) {
             cost = paymentService.getMembershipTypeCost(requestBody.getMembershipTypeId());
         }
         Boolean regularSessionBooking = requestBody.getRegularSession();
-        if (regularSessionBooking == null){
+        if (regularSessionBooking == null) {
             regularSessionBooking = false;
         }
-        return  paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking);
+        if (participants == null) {
+            participants = 0;
+        }
+        return paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking, participants, username, isManager);
     }
 
     //Customer Saved Card Payment
     @PostMapping(path = "/intent/saved/{customer_id}")
     public PayResponseBodyDTO createFromSavedCard(@RequestBody PaymentDTO requestBody, @PathVariable Long customer_id) throws StripeException {
         String emailAddress = requestBody.getEmail();
+        Integer participants = 0;
         BigDecimal cost = null;
-        if(requestBody.getActivityTypeId() != null){
-            cost = paymentService.getActivityTypeCost(requestBody.getActivityTypeId());
-
+        if (requestBody.getSessionId() != null) {
+            cost = paymentService.getBookingCharge(requestBody.getSessionId());
+            participants = requestBody.getParticipants();
         }
-        if(requestBody.getMembershipTypeId() != null){
+        if (requestBody.getMembershipTypeId() != null) {
             cost = paymentService.getMembershipTypeCost(requestBody.getMembershipTypeId());
         }
         Boolean regularSessionBooking = requestBody.getRegularSession();
-        if (regularSessionBooking == null){
+        if (regularSessionBooking == null) {
             regularSessionBooking = false;
         }
-        return paymentService.createFromSavedCard(customer_id, emailAddress, cost, regularSessionBooking);
+        if (participants == null) {
+            participants = 0;
+        }
+        return paymentService.createFromSavedCard(customer_id, emailAddress, cost, regularSessionBooking, participants);
     }
 
     @PostMapping(path = "/customer/stripe_id/{customer_id}")
-    public Boolean isStripeCustomer(@PathVariable Long customer_id){
+    public Boolean isStripeCustomer(@PathVariable Long customer_id) {
         return paymentService.isStripeCustomer(customer_id);
+    }
+
+    //Cash end point for walk in customers (employee feature)
+    @PostMapping(path = "/cash")
+    public PayResponseBodyDTO cashPayment(@RequestBody PaymentDTO requestBody) {
+        String emailAddress = requestBody.getEmail();
+        Integer participants = 0;
+        BigDecimal cost = null;
+        if (requestBody.getSessionId() != null) {
+            cost = paymentService.getBookingCharge(requestBody.getSessionId());
+            participants = requestBody.getParticipants();
+        }
+        return paymentService.cashPayment(emailAddress, cost, participants);
     }
 }
