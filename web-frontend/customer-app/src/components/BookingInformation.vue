@@ -518,22 +518,25 @@ export default {
       if (this.bookingInformation.selectedActivityId !== null) {
         let page = 0;
         let size = 50;
-        let bookingArray = [];
+        let bookingArray = null;
 
         let data = await this.$http.get(
           "/bookings/activity/" + e + "?page=" + page + "&size=" + size
         );
-        bookingArray.push(data.data._embedded.bookingDToes);
-        page = page + 1;
-
-        while (data.data.page.totalElements > size * page && data.data) {
-          data = await this.$http.get(
-            "/bookings/activity/" + e + "?page=" + page + "&size=" + size
-          );
-          for (const book of data.data._embedded.bookingDToes) {
-            bookingArray.push(book);
-          }
+        if (data.data._embedded) {
+          bookingArray = [];
+          bookingArray.push(data.data._embedded.bookingDToes);
           page = page + 1;
+
+          while (data.data.page.totalElements > size * page && data.data) {
+            data = await this.$http.get(
+              "/bookings/activity/" + e + "?page=" + page + "&size=" + size
+            );
+            for (const book of data.data._embedded.bookingDToes) {
+              bookingArray.push(book);
+            }
+            page = page + 1;
+          }
         }
 
         let customerCount = 0;
@@ -594,7 +597,6 @@ export default {
 
     validateParticipants() {
       if (this.bookingInformation.participants == null) {
-
         this.participantsValid = true;
         this.bookingInformation.participants = 1;
       }

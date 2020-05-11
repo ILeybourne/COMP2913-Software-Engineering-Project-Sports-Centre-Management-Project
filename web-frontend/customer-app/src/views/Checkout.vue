@@ -82,6 +82,7 @@
                     class="btn btn-outline-primary"
                     id="paymentButton"
                     @click="submitMembershipPayment()"
+                    :disabled="paymentSubmit"
                   >
                     Pay
                     {{
