@@ -16,7 +16,9 @@ const actions = {
   async getAllCustomers({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/customer");
-    commit("SET_CUSTOMERS", data._embedded.customerDToes);
+    if (data.page.totalElements > 0) {
+      commit("SET_CUSTOMERS", data._embedded.customerDToes);
+    }
     commit("loading/FINISH_LOADING", null, { root: true });
     return data;
   }
