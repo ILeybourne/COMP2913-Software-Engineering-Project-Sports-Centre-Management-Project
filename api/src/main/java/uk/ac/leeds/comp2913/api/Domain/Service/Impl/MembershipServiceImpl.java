@@ -104,7 +104,6 @@ public class MembershipServiceImpl implements MembershipService {
         List<Account> customerAccounts = accountRepository.findAllByCustomerId(customer_id);
         if (customerAccounts.size() > 0) {
             account = customerAccounts.get(customerAccounts.size() - 1);
-            logger.info(account.toString());
         }
         return account;
     }
@@ -170,7 +169,7 @@ public class MembershipServiceImpl implements MembershipService {
                 Membership renewedMembership = Membership.renewMembership(lastMembership);
                 Customer customer = renewedMembership.getAccount().getCustomer();
                 try {
-                    PayResponseBodyDTO payResponse = paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), renewedMembership.getAmount(), false);
+                    PayResponseBodyDTO payResponse = paymentService.createFromSavedCard(customer.getId(), customer.getEmailAddress(), renewedMembership.getAmount(), false, 0);
                     renewedMembership.setTransactionId(payResponse.getTransactionId());
                     membershipRepository.save(renewedMembership);
                 } catch (CardException err) {

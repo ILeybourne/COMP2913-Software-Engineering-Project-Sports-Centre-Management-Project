@@ -1,10 +1,17 @@
 package uk.ac.leeds.comp2913.api.Controller;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -44,6 +52,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequestMapping("/bookings")
 
 public class BookingController {
+    Logger logger = LoggerFactory.getLogger(BookingController.class);
     private final BookingService bookingService;
     private final PagedResourcesAssembler<Booking> pagedResourcesAssembler;
     private final BookingPagedResourcesAssembler bookingPagedResourcesAssembler;
@@ -57,12 +66,12 @@ public class BookingController {
         this.bookingPagedResourcesAssembler = bookingPagedResourcesAssembler;
     }
 
-    @GetMapping("")
-    @Operation(summary = "Get a list of all bookings",
-            description = "Get list of all bookings with basic information, self link provides more details")
-    public PagedModel<BookingDTO> getBookings(Pageable pageable) {
-        return pagedResourcesAssembler.toModel((bookingService.findAll(pageable)), bookingPagedResourcesAssembler);
-    }
+ //  @GetMapping("")
+ //  @Operation(summary = "Get a list of all bookings",
+ //          description = "Get list of all bookings with basic information, self link provides more details")
+ //  public PagedModel<BookingDTO> getBookings(Pageable pageable) {
+ //      return pagedResourcesAssembler.toModel((bookingService.findAll(pageable)), bookingPagedResourcesAssembler);
+ //  }
 
     @GetMapping("/{booking_id}")
     @Operation(summary = "Get a specific booking",
@@ -75,11 +84,21 @@ public class BookingController {
     }
 
 
-    @GetMapping("/email/{email}/{isManager}")
+    @GetMapping("")
     @Operation(summary = "Get the logged in users bookings or all if staff/manager",
             description = "returns a list of bookings placed by the logged in user or all bookings if staff")
-    public PagedModel<BookingDTO> getBookingsByEmail(Pageable pageable, @Parameter(description = "The logged in users email and a boolean whether the user if staff", required = true)@PathVariable String email, @PathVariable Boolean isManager) {
-        return pagedResourcesAssembler.toModel((bookingService.findByEmail(pageable, email, isManager)), bookingPagedResourcesAssembler);
+    public PagedModel<BookingDTO> getBookings(Pageable pageable, @AuthenticationPrincipal Authentication user) {
+        Boolean isManager = false;
+        String authUsername = null;
+        if(user != null){
+            authUsername = user.getName();
+            Collection<? extends GrantedAuthority> permissions = user.getAuthorities();
+            if(permissions.size() > 1){
+                isManager=true;
+            }
+        }
+        logger.info(authUsername);
+        return pagedResourcesAssembler.toModel((bookingService.findByUsername(pageable, authUsername, isManager)), bookingPagedResourcesAssembler);
     }
 
     @GetMapping("/account/{account_id}")
@@ -116,9 +135,18 @@ public class BookingController {
     @PutMapping("/cancel/{activity_id}/{account_id}")
     @Operation(summary = "unsubscribe from a regular session",
             description = "stop repeating bookings for a regular session")
-    public void cancelRegularSessionBooking(@Parameter(description = "The ID of the regular session activity", required = true)@PathVariable Long activity_id,
-                                            @Parameter(description = "The ID of the account booked onto it", required = true)@PathVariable Long account_id) {
-        bookingService.cancelRegularSession(activity_id, account_id);
+    public PagedModel<BookingDTO> cancelRegularSessionBooking(@AuthenticationPrincipal Authentication user, Pageable pageable, @Parameter(description = "The ID of the regular session activity", required = true)@PathVariable Long activity_id,
+                                                        @Parameter(description = "The ID of the account booked onto it", required = true)@PathVariable Long account_id) {
+        Boolean isManager = false;
+        String authUsername = null;
+        if(user != null){
+            authUsername = user.getName();
+            Collection<? extends GrantedAuthority> permissions = user.getAuthorities();
+            if(permissions.size() > 1){
+                isManager=true;
+            }
+        }
+        return pagedResourcesAssembler.toModel((bookingService.cancelRegularSession(activity_id, account_id, pageable, authUsername, isManager)), bookingPagedResourcesAssembler);
     }
 
     @DeleteMapping("/{booking_id}")

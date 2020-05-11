@@ -38,6 +38,9 @@ public class Customer {
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
+    @Column(name = "auth0_username")
+    private String auth0_username;
+
     public Date getDateOfBirth() {
         return dateOfBirth;
     }
@@ -93,5 +96,13 @@ public class Customer {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getAuth0_username() {
+        return auth0_username;
+    }
+
+    public void setAuth0_username(String auth0_username) {
+        this.auth0_username = auth0_username;
     }
 }

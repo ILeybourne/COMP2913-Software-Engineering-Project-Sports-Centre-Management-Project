@@ -1,7 +1,22 @@
 import axios from "@/plugins/axios.plugin";
 import { formatDate } from "@/util/format.helpers";
+import { formatCurrency } from "../util/format.helpers";
+import { dateToString } from "../util/format.helpers";
 
 const state = {
+  paging: {
+    bookings: {
+      pages: [],
+      number: null,
+      size: null,
+      totalElements: null,
+      totalPages: null,
+      currentPageHref: null,
+      nextPageHref: `/bookings?page=${0}&size=${20}`, // just need first page to initialise store
+      lastPageHref: null,
+      isDataToLoad: true
+    }
+  },
   sessions: [],
   bookings: []
 };
@@ -20,22 +35,65 @@ const getters = {
       return {
         ...activity,
         formattedStartAt: formatDate(activity.startTime),
-        isFull: sessionIsFull(activity)
+        slot:
+          formatDate(activity.startTime) + " - " + formatDate(activity.endTime),
+        isFull: sessionIsFull(activity),
+        formattedDate: dateToString(activity.startTime)
       };
     }),
-  bookings: state => state.bookings,
+  bookings: state =>
+    state.bookings.map(booking => {
+      return {
+        ...booking,
+        activity: state.sessions.find(
+          session => Number(session.id) === Number(booking.session_id)
+        ),
+        formattedAmount: formatCurrency(booking.amount)
+      };
+    }),
   getSessionsForFacility: state => facilityId => {
     return state.sessions.filter(
       session => Number(session.resource.id) === Number(facilityId)
     );
-  }
+  },
+  bookingsLoading: state => state.paging.bookings.isDataToLoad,
+  totalElements: state => state.paging.bookings.totalElements,
+  pages: state => state.paging.bookings.pages
 };
 
 const mutations = {
   SET_SESSIONS: (state, payload) => (state.sessions = payload),
-  SET_BOOKINGS: (state, payload) => (state.bookings = payload),
   SET_RESOURCES: (state, payload) => (state.resources = payload),
-  ADD_SESSION: (state, payload) => state.sessions.push(payload)
+  ADD_SESSION: (state, payload) => state.sessions.push(payload),
+  SET_BOOKINGS_LOADING: (state, payload) =>
+    (state.paging.bookings.isDataToLoad = payload),
+  SET_BOOKINGS: (state, payload) => (state.bookings = payload),
+  APPEND_BOOKINGS: (state, { pageId, page }) => {
+    if (state.paging.bookings.pages.includes(pageId)) {
+      // already got this page, don't want duplicates!!
+      return;
+    }
+    state.paging.bookings.pages.push(pageId);
+    state.bookings.push(...page);
+  },
+  SET_BOOKING_PAGE_INFO: (state, payload) => {
+    state.paging.bookings = {
+      ...state.paging.bookings,
+      ...payload
+    };
+  },
+  SET_TOTAL_ELEMENTS: (state, payload) => {
+    state.paging.bookings = {
+      ...state.paging.bookings,
+      ...payload
+    };
+  },
+  SET_TOTAL_PAGES: (state, payload) => {
+    state.paging.bookings = {
+      ...state.paging.bookings,
+      ...payload
+    };
+  }
 };
 
 const actions = {
@@ -80,16 +138,52 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return session;
   },
-  async getBookings({ commit }, body) {
-    commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.get(
-      `/bookings/email/${body.email}/${body.isAuthorised}`
-    );
-    let bookings = [];
-    if (data._embedded) {
-      bookings = data._embedded.bookingDToes;
+  async getBookings({ state, commit, dispatch }) {
+    const paging = state.paging.bookings;
+    if (!paging.isDataToLoad) {
+      // Don't need to do anything, we have all the data, just return what we have in the store
+      return state.bookings;
     }
-    commit("SET_BOOKINGS", bookings);
+    // We don't have all the data from the server and we need to load it
+    commit("loading/START_LOADING", null, { root: true });
+    let { data } = await axios.get(paging.nextPageHref);
+    commit("SET_TOTAL_ELEMENTS", { totalElements: data.page.totalElements });
+    console.log(data.page.totalElements);
+    commit("SET_TOTAL_PAGES", { totalPages: data.page.totalPages });
+    console.log(data.page.totalPages);
+    const pageIdentifier = data._links.self.href;
+    if (data._embedded) {
+      const bookingPage = data._embedded.bookingDToes;
+      commit("APPEND_BOOKINGS", {
+        pageId: pageIdentifier,
+        page: bookingPage
+      });
+    }
+    // Which page have we just retrieved
+    commit("SET_BOOKING_PAGE_INFO", {
+      currentPageHref: pageIdentifier
+    });
+
+    // load next pages if there are any
+    if (data._links && data._links.last && data._links.next) {
+      // Bookkeeping for pagination
+      commit("SET_BOOKING_PAGE_INFO", {
+        nextPageHref: data._links.next.href,
+        lastPageHref: data._links.last.href
+      });
+
+      if (pageIdentifier === data._links.last.href) {
+        // if this was the last page then we are done
+        commit("SET_BOOKING_LOADING", false);
+      } else {
+        // There are other pages
+        // Keep getting the next page, we don't need to wait as we have enough to do a first render of the page
+        dispatch("getBookings");
+      }
+    } else {
+      // no pagination
+      commit("SET_BOOKINGS_LOADING", false);
+    }
     commit("loading/FINISH_LOADING", null, { root: true });
     return bookings;
   },
@@ -104,11 +198,22 @@ const actions = {
     commit("loading/FINISH_LOADING", null, { root: true });
     return bookings;
   },
-  async deleteBooking({ commit }, bookingId) {
+  async deleteBooking({ state, commit }, bookingId) {
+    let result = false;
     commit("loading/START_LOADING", null, { root: true });
-    const { data } = await axios.delete(`/bookings/${bookingId}`);
-    commit("SET_BOOKINGS", data);
+    const response = await axios.delete(`/bookings/${bookingId}`);
+    if (response.status === 200) {
+      console.log("success");
+      // Delete was successful, remove the copy of the booking from the store
+      const index = state.bookings.findIndex(b => b.id === bookingId);
+      state.bookings.splice(index, 1);
+      commit("SET_BOOKINGS", state.bookings);
+      result = true;
+    }
     commit("loading/FINISH_LOADING", null, { root: true });
+    console.log("Response");
+    console.log(state.bookings);
+    return result;
   },
   async getResources({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
@@ -130,12 +235,23 @@ const actions = {
     commit("ADD_SESSION", data);
     commit("loading/FINISH_LOADING", null, { root: true });
     return data;
+  },
+  async stopRegularSession({ commit }, body) {
+    let account_id = body.accountId;
+    let activity_id = body.activityId;
+    commit("loading/START_LOADING", null, { root: true });
+    const { data } = await axios.put(
+      `/bookings/cancel/${activity_id}/${account_id}`
+    );
+    const updatedBookings = data._embedded.bookingDToes;
+    commit("SET_BOOKINGS", updatedBookings);
+    commit("loading/START_LOADING", null, { root: true });
   }
 };
 
 const namespaced = true;
 
-const facilities = {
+const bookings = {
   namespaced,
   state,
   getters,
@@ -143,4 +259,4 @@ const facilities = {
   actions
 };
 
-export default facilities;
+export default bookings;

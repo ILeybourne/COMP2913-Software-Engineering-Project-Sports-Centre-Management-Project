@@ -352,15 +352,15 @@ export default {
           }
         },
         email: this.email,
-        regularSession: false,
-        cost: this.price
+        repeatingPayment: false,
+        participants: this.bookingDetails.participants
       };
 
       if (this.isMembership) {
         body.membershipTypeId = this.membershipSaleDetails.id;
       }
       if (this.isBooking) {
-        body.activityTypeId = this.bookingDetails.activityTypeId;
+        body.sessionId = this.bookingDetails.sessionId;
       }
       if (!isEmpty(this.user)) {
         let id = null;
@@ -375,10 +375,7 @@ export default {
           body
         );
       } else {
-        paymentIntent = await this.$http.post(
-          `/payments/guest-intent/`,
-          body
-        );
+        paymentIntent = await this.$http.post(`/payments/guest-intent/`, body);
       }
       if (paymentIntent.status === 200) {
         this.paymentResponse.accountId = paymentIntent.data.accountId;
@@ -456,7 +453,7 @@ export default {
         const body = {
           accountId: this.paymentResponse.accountId, //if card payment then get from payment response body
           //TODO ADD participant field
-          participants: 1,
+          participants: this.bookingDetails.participants,
           regularBooking: false, //need to be dynamic (cash payment defaulted to false, same for guest)
           transactionId: this.paymentResponse.transactionId, //if cash then send "cash" //
           amount: this.paymentResponse.amountPaid //get from payment response body if card (may vary if regular session) if cash take from online price
@@ -482,9 +479,11 @@ export default {
               name: this.firstName
             }
           },
-          activityTypeId: this.bookingDetails.activityTypeId,
+          sessionId: this.bookingDetails.sessionId,
           email: this.email,
-          regularSession: false //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
+          regularSession: false, //If true (a regular session booking) then server will calculate and charge 70% of the passed cost
+          participants: this.bookingId.participants,
+          membershipTypeId: this.membershipSaleDetails.id
         }
       );
       if (paymentIntent.status === 200) {

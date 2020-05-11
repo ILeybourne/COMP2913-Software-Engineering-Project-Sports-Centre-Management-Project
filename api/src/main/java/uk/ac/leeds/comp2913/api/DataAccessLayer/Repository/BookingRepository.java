@@ -30,7 +30,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, CustomB
   @Override
   void deleteById(Long aLong);
 
-  @Query(" select b from Booking b inner join Account a on b.account.id = a.id inner join Customer c on a.customer.id = c.id where c.emailAddress =:email or true=:isManager")
-  Page<Booking> findAllbyEmail(Pageable pageable, String email, Boolean isManager);
+  @Query(" select b from Booking b inner join Account a on b.account.id = a.id inner join Customer c on a.customer.id = c.id where c.auth0_username =:authUsername or true=:isManager")
+  Page<Booking> findAllbyUsername(Pageable pageable, String authUsername, Boolean isManager);
 
 }

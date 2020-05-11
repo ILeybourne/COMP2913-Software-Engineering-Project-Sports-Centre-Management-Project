@@ -1,115 +1,134 @@
 <template>
-  <v-data-table :headers="headers" :items="dataWithActivities">
-    <template v-slot:top>
-      <v-toolbar flat color="white">
-        <v-spacer></v-spacer>
-        <v-dialog max-width="500px"> </v-dialog>
-      </v-toolbar>
-      <v-btn color="primary" dark class="mb-2" @click="showNewBooking()"
-        >New Booking</v-btn
-      >
-      <b-modal id="edit-modal" title="Edit Booking" @ok="updateTable()">
-        <b-form>
-          <b-form-group
-            id="resource.name"
-            label="Facility"
-            label-for="FacilityName"
-            ><b-form-select
-              id="FacilityName"
-              :options="setFacilityOptions()"
-              v-model="selectedBooking.facility"
-              required
-            ></b-form-select>
-          </b-form-group>
-          <b-form-group id="name" label="Booking" label-for="BookingName">
-            <b-form-input
-              id="BookingName"
-              v-model="selectedBooking.name"
-              required
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group id="startTime" label="Start Time" label-for="StartTime">
-            <b-form-input
-              id="StartTime"
-              v-model="selectedBooking.startTime"
-              required
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group id="endTime" label="End Time" label-for="EndTime">
-            <b-form-input
-              id="EndTime"
-              v-model="selectedBooking.endTime"
-              required
-            ></b-form-input>
-          </b-form-group>
-        </b-form>
-      </b-modal>
-    </template>
-    <template v-slot:item.actions="{ item }">
-      <v-icon small @click="showDelete(item)">
-        mdi-delete
-      </v-icon>
-    </template>
-  </v-data-table>
+  <v-app class="usage-container">
+    <v-layout child-flex>
+      <v-card dark class="card">
+        <v-container class="new-booking">
+          <v-btn
+            title="Create a new booking"
+            class="black--text"
+            color="yellow"
+            type="submit"
+            value="submit"
+            v-on:click="directToBookingPage()"
+          >
+            <b>Place New Booking</b>
+          </v-btn>
+        </v-container>
+        <v-data-table
+          no-data-text="You do not have any bookings placed"
+          must-sort
+          dense
+          :items-per-page="20"
+          :headers="headers"
+          :items="dataWithActivities"
+          class="white--text"
+          :footer-props="footerProps"
+          dark
+        >
+          <template v-slot:item.actions="{ item }">
+            <v-icon title="Cancel Booking" @click="showDelete(item)">
+              mdi-delete
+            </v-icon>
+            <v-icon title="View Receipt" @click="showReceipt(item)">
+              mdi-printer
+            </v-icon>
+            <v-icon title="Email Receipt" @click="emailReceipt(item)">
+              mdi-email
+            </v-icon>
+            <v-icon
+              title="Unsubscribe From Session"
+              v-if="item.regularBooking === true"
+              color="red"
+              @click="stopRegularSessionPayments(item)"
+            >
+              mdi-stop
+            </v-icon>
+          </template>
+        </v-data-table>
+      </v-card>
+    </v-layout>
+  </v-app>
 </template>
-
-<style scoped></style>
-
+<style scoped>
+.usage-container {
+  min-height: 50%;
+  height: auto;
+  display: flex;
+  width: 100%;
+}
+.new-booking {
+  padding-bottom: 20px;
+}
+.card {
+  margin-top: 50px;
+}
+</style>
 <script>
 import { mapActions, mapGetters } from "vuex";
-
 export default {
   name: "BookingTable",
   components: {},
-  // ItemsPerPageDropdown
+  totalBookings: null,
   data: function() {
     return {
-      /*
-      account: null
-      activity: null
-      createdAt: 1584288689000
-      id: 1
-      receipt: null
-      updatedAt: 1584288692000
-      * */
-      booking: [],
+      footerProps: {
+        "items-per-page-options": [20, 40, 80, 100]
+      },
       singleSelect: false,
-      selected: [],
       headers: [
         {
+          class: "yellow--text heading font-weight-bold",
           value: "id",
-          text: "Booking Reference",
+          text: "BOOKING #",
           sortable: true
         },
         {
-          value: "accountId",
-          text: "Account",
-          sortable: false
-        },
-        {
-          value: "activity.formattedStartAt",
-          text: "Booking Time",
-          sortable: true
-        },
-        {
-          value: "activity.name",
-          text: "Session",
-          sortable: true
+          value: "customer_id",
+          text: "CUSTOMER #",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
         },
         {
           value: "activity.resource.name",
-          text: "Facility",
-          sortable: true
+          text: "FACILITY",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
         },
         {
-          value: "regularBooking",
-          text: "Subscribed",
-          sortable: true
+          value: "activity.name",
+          text: "ACTIVITY",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
+        },
+        {
+          value: "activity.formattedDate",
+          text: "DATE",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
+        },
+        {
+          value: "activity.slot",
+          text: "TIME SLOT",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
+        },
+        {
+          value: "participants",
+          text: "PARTICIPANTS",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
+        },
+        {
+          value: "formattedAmount",
+          text: "CHARGE",
+          sortable: true,
+          class: "yellow--text heading font-weight-bold"
         },
         {
           value: "actions",
-          text: "Actions",
-          sortable: false
+          text: "ACTIONS",
+          sortable: false,
+          class: "yellow--text heading font-weight-bold"
         }
       ],
       selectedBooking: {
@@ -126,91 +145,79 @@ export default {
         startTime: null,
         endTime: null
       },
-      dataWithActivities: [],
-      email: null
+      dataWithActivities: []
     };
   },
   computed: {
-    ...mapGetters("timetable", ["bookings"]),
     ...mapGetters("timetable", ["sessions"]),
-    ...mapGetters("facilities", ["activities"]),
-    ...mapGetters("facilities", ["facilities"]),
-    ...mapGetters("auth", ["isAuthenticated", "user", "isEmployeeOrManager"])
+    ...mapGetters("timetable", ["totalElements"]),
+    ...mapGetters("timetable", ["pages"]),
+    ...mapGetters("timetable", {
+      bookings: "bookings"
+    })
   },
   methods: {
-    dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
     ...mapActions("timetable", {
-      getBooking: "getBookings",
+      getSessions: "getAllSessions",
+      getBookings: "getBookings",
       deleteBooking: "deleteBooking",
-      getBookingByEmail: "getBookingByEmail",
-      getSessions: "getAllSessions"
+      stopRegularSession: "stopRegularSession"
     }),
-    ...mapActions("facilities", {
-      getActivity: "getActivities",
-      getFacilities: "getFacilities"
-    }),
-    showNewBooking() {
-      this.$router.push("/bookings");
-    },
-    editItem(item) {
-      console.log(item);
-      this.selectedBooking.id = item.id;
-      this.selectedBooking.name = item.activity.name;
-      this.selectedBooking.facility = item.activity.resource.name;
-      this.selectedBooking.startTime = item.activity.startTime;
-      this.selectedBooking.endTime = item.activity.endTime;
-      console.log(this.selectedBooking);
-      this.$bvModal.show("edit-modal");
-    },
-    showDelete(item) {
-      console.log(item);
-      const id = item.id;
+    async showDelete(item) {
       const index = this.dataWithActivities.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.bookings.splice(index, 1) &&
-        this.deleteBooking(id);
+      if (
+        confirm("Are you sure you want to cancel this booking?") &&
+        this.dataWithActivities.splice(index, 1) &&
+        this.deleteBooking(item.id) &&
+        (await this.getBookings())
+      );
     },
-    setFacilityOptions() {
-      let facilities = this.facilities;
-      let facilityArray = [{ value: null, text: "Please Select" }];
-      for (const facility of facilities) {
-        facilityArray.push({ value: facility.name, text: facility.name });
-      }
-      return facilityArray;
+
+    async directToBookingPage() {
+      await this.$router.push({
+        name: "BookingPage"
+      });
     },
-    async getRelatedActivity() {
-      let ActivityArr = [];
+    async stopRegularSessionPayments(booking) {
+      let body = {
+        bookingId: booking.id,
+        accountId: booking.accountId,
+        activityId: booking.activity.id
+      };
+      if (
+        confirm("Are you sure you want to unsubscribe from this session?") &&
+        (await this.stopRegularSession(body))
+      );
+      await this.collectData();
+    },
+
+    async collectData() {
+      await this.getSessions();
+      await this.getBookings();
+      //Struggled to apply this data in the store...
       for (const booking of this.bookings) {
-        console.log("sessions");
-        booking.activity = this.sessions.find(
-          activity => Number(activity.id) === Number(booking.session_id)
-        );
-        ActivityArr.push(booking);
+        for (const session of this.sessions) {
+          if (booking.session_id === session.id) {
+            booking.activity.formattedDate = session.formattedDate;
+            booking.activity.slot = session.slot;
+          }
+        }
       }
-      console.log("Activity Arr");
-      console.log(ActivityArr);
-      return ActivityArr;
-    },
-    updateTable() {
-      const id = this.selectedBooking.id;
-      this.dataWithActivities.find(booking => booking.id === id);
-      console.log("updateBooking");
-    },
-    addBooking() {
-      console.log("addBooking");
+      this.dataWithActivities = this.bookings;
     }
   },
+  // emailReceipt(item){}dat
+  // showReceipt(item){}
 
-  async mounted() {
-    await this.getActivity();
-    await this.getSessions();
-    let body = {
-      email: this.$auth.user.email,
-      isAuthorised: this.isEmployeeOrManager
-    };
-    await this.getBooking(body);
-    await this.getFacilities();
-    this.dataWithActivities = await this.getRelatedActivity();
+  watch: {
+    handler() {
+      this.dataWithActivities();
+    },
+    deep: true
+  },
+
+  async created() {
+    await this.collectData();
   }
 };
 </script>
