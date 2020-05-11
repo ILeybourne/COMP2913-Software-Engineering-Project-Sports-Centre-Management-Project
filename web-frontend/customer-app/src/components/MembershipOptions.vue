@@ -164,6 +164,14 @@
 </template>
 
 <style scoped>
+@media screen and (max-width: 400px) {
+  .pricing .name h2 {
+    font-size: 10vw !important;
+  }
+  .pricing .membership-price h1 {
+    font-size: 10vw !important;
+  }
+}
 .membership-options {
   padding: 59px 0px 59px 0px;
   min-height: 50%;
