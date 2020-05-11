@@ -324,11 +324,6 @@ export default {
 
     checkRegularSession() {
       if (this.bookingInformation.selectedSessionId != null) {
-        console.log(
-          this.sessions.find(
-            s => s.id === this.bookingInformation.selectedSessionId
-          )
-        );
         this.isRegularSession =
           this.sessions.find(
             s => s.id === this.bookingInformation.selectedSessionId
@@ -530,11 +525,8 @@ export default {
         );
         bookingArray.push(data.data._embedded.bookingDToes);
         page = page + 1;
-        console.log(data);
 
         while (data.data.page.totalElements > size * page && data.data) {
-          console.log("data.data.page.size === size");
-          console.log(data.data.page.size === size);
           data = await this.$http.get(
             "/bookings/activity/" + e + "?page=" + page + "&size=" + size
           );
@@ -602,13 +594,10 @@ export default {
 
     validateParticipants() {
       if (this.bookingInformation.participants == null) {
-        console.log("yes");
-        console.log(this.participantsValid);
 
         this.participantsValid = true;
         this.bookingInformation.participants = 1;
       }
-      console.log(this.bookingInformation.participants);
 
       if (this.bookingInformation.participants > this.maxParticipants) {
         this.bookingInformation.participants = this.maxParticipants;
