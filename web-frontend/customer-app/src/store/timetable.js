@@ -100,7 +100,10 @@ const actions = {
   async getAllSessions({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/timetable");
-    let session = data._embedded.activityDToes;
+    let session = [];
+    if (data.page.totalElements > 0) {
+      session = data._embedded.activityDToes;
+    }
     commit("SET_SESSIONS", session);
     commit("loading/FINISH_LOADING", null, { root: true });
     return session;
@@ -131,7 +134,7 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/activities");
     let session = [];
-    if (data._embessed) {
+    if (data.page.totalElements > 0) {
       session = data._embedded.activityDToes;
     }
     commit("SET_SESSIONS", session);
@@ -219,7 +222,7 @@ const actions = {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/resources");
     let resources = [];
-    if (data._embedded) {
+    if (data.page.totalElements > 0) {
       resources = data._embedded.resourceDToes;
     }
     commit("SET_RESOURCES", resources);

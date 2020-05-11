@@ -18,7 +18,9 @@ const actions = {
     const { data } = await axios.get(
       `/membership/members/account/${account_id}`
     );
-    commit("SET_USERMEMBERSHIPS", data._embedded.membershipDToes);
+    if (data.page.totalElements > 0) {
+      commit("SET_USERMEMBERSHIPS", data._embedded.membershipDToes);
+    }
     commit("loading/FINISH_LOADING", null, { root: true });
   }
 };
