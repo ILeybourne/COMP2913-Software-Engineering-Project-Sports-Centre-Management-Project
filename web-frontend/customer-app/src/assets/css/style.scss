@@ -7,8 +7,8 @@ $grid-breakpoints: (
   xs: 0,
   sm: 456px,
   md: 789px,
-  lg: 999px,
-  xl: 1234px
+  lg: 1245px,
+  xl: 1400px
 );
 $bv-enable-table-stacked: false;
 
@@ -480,12 +480,10 @@ Header section
 }
 
 .header-right {
-  float: right;
   padding-top: 0 !important;
 }
 
 .header-right .hr-box {
-  width: 294px;
   padding: 31px 52px;
   background: #fcff18;
 }
@@ -527,7 +525,7 @@ Hero section
 
 .hero-text h2 {
   font-size: 96px;
-  color: #ffffff;
+  color: #ffffff !important;
   line-height: 1;
 }
 
@@ -1369,7 +1367,7 @@ Responsive
 
 /* Large Mobile :480px. */
 
-@media only screen and (max-width: 767px) {
+@media only screen and (min-width: 480px) and (max-width: 767px) {
   .site-logo {
     padding-left: 15px;
   }
@@ -1495,7 +1493,7 @@ Responsive
 
 /* Small Mobile :320px. */
 
-@media only screen and (max-width: 479px) {
+@media only screen and (min-width: 10px) and (max-width: 479px){
   .section-title h2 {
     font-size: 36px;
   }
@@ -1508,3 +1506,4 @@ Responsive
     margin-right: 0;
   }
 }
+

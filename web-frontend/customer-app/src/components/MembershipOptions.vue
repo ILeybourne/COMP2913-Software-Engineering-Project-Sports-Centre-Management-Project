@@ -164,6 +164,14 @@
 </template>
 
 <style scoped>
+@media screen and (max-width: 400px) {
+  .pricing .name h2 {
+    font-size: 10vw !important;
+  }
+  .pricing .membership-price h1 {
+    font-size: 10vw !important;
+  }
+}
 .membership-options {
   padding: 59px 0px 59px 0px;
   min-height: 50%;
@@ -202,7 +210,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-width: 150px;
+  min-width: 230px;
   max-width: 400px;
   flex-basis: auto; /* default value */
   flex-grow: 1;
@@ -264,6 +272,7 @@
   flex-direction: column;
   justify-content: center;
   width: auto;
+  margin-top: 20px;
 }
 .pricing .name {
   justify-content: center;

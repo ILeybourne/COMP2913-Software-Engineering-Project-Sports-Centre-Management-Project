@@ -10,7 +10,7 @@
       <b-card-title class="title"
         ><span>{{ facility.name }}</span></b-card-title
       >
-      <b-card-text>
+      <b-card-text class="description">
         {{ facility.description }}
       </b-card-text>
       <b-row class="facility-details">
@@ -19,14 +19,14 @@
           id="my-timetable"
           variant="outline-light"
           :to="{ name: 'FacilityTimetable', params: { id: facility.id } }"
-          >See Timetable</b-button
+          ><b>See Timetable</b></b-button
         >
         <b-button
           class="button"
           id="button-details"
           :to="{ name: 'FacilityPage', params: { id: facility.id } }"
           variant="outline-light"
-          >View Details</b-button
+          ><b>View Details</b></b-button
         >
       </b-row>
     </b-card>
@@ -34,8 +34,16 @@
 </template>
 
 <style scoped>
+.btn-primary {
+  color: yellow !important;
+}
+
+.btn-outline-primary {
+  color: yellow !important;
+}
 .facility-card {
   max-width: 20rem;
+  min-width: 15rem;
   margin: 10px;
   flex-direction: column;
   text-align: center;
@@ -46,6 +54,9 @@
 .facility-details {
   text-align: center;
   justify-content: center;
+}
+.description {
+  color: whitesmoke;
 }
 .button {
   width: auto;
@@ -67,10 +78,22 @@
   padding: 3px;
   color: #1f1f1f;
 }
-.button .active {
-  color: #fff !important;
-  background-color: #28a745 !important;
-  border-color: #28a745 !important;
+
+#button-details {
+  border-color: yellow !important;
+  color: yellow !important;
+}
+#button-details:hover {
+  background-color: yellow !important;
+  color: #1f1f1f !important;
+}
+#my-timetable {
+  border-color: yellow !important;
+  color: yellow !important;
+}
+#my-timetable:hover {
+  background-color: yellow !important;
+  color: #1f1f1f !important;
 }
 </style>
 
