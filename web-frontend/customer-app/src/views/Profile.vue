@@ -166,14 +166,7 @@ export default {
         .put(`/membership/members/${membership_id}/stop`)
         .then(response => console.log(response));
       this.cancelModal = false;
-    }
-  },
-  watch: {
-    memberships: {
-      handler() {
-        this.getMemberships();
-      },
-      deep: true
+      await this.getMemberships();
     }
   },
   async mounted() {
