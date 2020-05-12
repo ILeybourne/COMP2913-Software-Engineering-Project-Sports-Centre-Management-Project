@@ -378,11 +378,13 @@ export default {
         cost: this.price,
         membershipTypeId: this.membershipSaleDetails.id,
         sessionId: this.bookingDetails.sessionId,
-        participants: Number(this.bookingDetails.participants)
+        participants: Number(this.bookingDetails.participants),
+        saveCard: this.saveCard
       };
 
       if (this.isMembership) {
         body.membershipTypeId = this.membershipSaleDetails.id;
+        body.saveCard = true
       }
       if (this.isBooking) {
         body.activityTypeId = this.bookingDetails.activityTypeId;

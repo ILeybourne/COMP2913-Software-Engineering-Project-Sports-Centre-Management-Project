@@ -38,3 +38,6 @@ s3.bucket.name=comp2913-dev
 s3.default.folder=
 s3.access.name=
 s3.access.secret=
+########################################################## LOAD SQL DATA
+#spring.datasource.initialization-mode=always
+#spring.datasource.continue-on-error=true

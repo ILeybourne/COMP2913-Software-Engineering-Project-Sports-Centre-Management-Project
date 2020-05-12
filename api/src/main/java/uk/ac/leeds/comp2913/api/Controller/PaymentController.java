@@ -64,6 +64,7 @@ public class PaymentController {
         BigDecimal cost = null;
         String username = null;
         Boolean isManager = false;
+        Boolean saveCard = false;
         if(user != null){
             username = user.getName();
             Collection<? extends GrantedAuthority> permissions = user.getAuthorities();
@@ -85,7 +86,11 @@ public class PaymentController {
         if (participants == null) {
             participants = 0;
         }
-        return paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking, participants, username, isManager);
+        if (requestBody.getSaveCard() != null) {
+            saveCard = requestBody.getSaveCard();
+        }
+
+            return paymentService.createFromNewCard(customer_id, emailAddress, cost, regularSessionBooking, participants, username, isManager , saveCard);
     }
 
     //Customer Saved Card Payment

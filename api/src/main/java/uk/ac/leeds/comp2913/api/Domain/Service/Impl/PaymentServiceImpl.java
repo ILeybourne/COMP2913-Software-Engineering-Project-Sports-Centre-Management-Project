@@ -80,7 +80,6 @@ public class PaymentServiceImpl implements PaymentService {
         return originalAmount.multiply(BigDecimal.valueOf(0.7));
     }
     public BigDecimal calculateBookingTotal(BigDecimal originalAmount, Boolean regularBooking, Integer participants, Boolean member){
-        logger.info("calculate booking");
         BigDecimal total = null;
         if(member){
             //If a member then apply the discount to 1xcost
@@ -115,7 +114,6 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentIntent intent = null;
         Customer customer = null;
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
-        logger.info("request");
         logger.info("/guest-intent");
         BigDecimal salesCost = cost; //default sales cost from input
         //If participants is greater than 0 then this is a booking payment, otherwise, if 0 then its a membership payment
@@ -208,7 +206,6 @@ public class PaymentServiceImpl implements PaymentService {
             salesCost = calculateBookingTotal(inputCost, regularSessionBooking, participants, member);
         }
         Long newCost = (salesCost.multiply(new BigDecimal(100.0))).longValue();
-        logger.info("new: " + newCost.toString());
         try {
             if (customerRepository.findById(customer_id).isPresent()) {
                 //Get API Customer
@@ -251,8 +248,6 @@ public class PaymentServiceImpl implements PaymentService {
                 responseBody.setAccountId(account.getId());
                 responseBody.setAmountPaid(new BigDecimal(newCost.toString()));
                 Long account_id = account.getId();
-                logger.info("account: " + account_id.toString());
-
             } else {
                 responseBody.setError("Customer id not Found!");
             }
@@ -271,7 +266,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     //Account user checkout
     @Override
-    public PayResponseBodyDTO createFromNewCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking, Integer participants, String username, Boolean isManager) throws StripeException {
+    public PayResponseBodyDTO createFromNewCard(Long customer_id, String email, BigDecimal inputCost, Boolean regularSessionBooking, Integer participants, String username, Boolean isManager, Boolean saveCard) throws StripeException {
         PayResponseBodyDTO responseBody = new PayResponseBodyDTO();
         BigDecimal cost = null;
         //TODO Move to env
@@ -293,7 +288,6 @@ public class PaymentServiceImpl implements PaymentService {
             salesCost = calculateBookingTotal(inputCost, regularSessionBooking, participants, member);
         }
         Long newCost = (salesCost.multiply(new BigDecimal(100.0))).longValue();
-        logger.info("new: " + newCost.toString());
         try {
             internalCustomer = customerRepository.findByEmailAddress(email);
             if (internalCustomer == null) {
@@ -303,10 +297,9 @@ public class PaymentServiceImpl implements PaymentService {
                 internalCustomer.setDateOfBirth(new Date());
                 if(!isManager) {
                     internalCustomer.setAuth0_username(username); //set auth0 username to currently logged in user. to be used when viewing records
-                }customerRepository.save(internalCustomer);
+                }
+                customerRepository.save(internalCustomer);
                 customer_id = internalCustomer.getId();
-                logger.info("asdsasas");
-                logger.info(customer_id.toString());
             }
 
             if (customerRepository.findById(customer_id).isPresent()) {
@@ -323,7 +316,9 @@ public class PaymentServiceImpl implements PaymentService {
                                     .setEmail(email)
                                     .build();
                     customer = Customer.create(customerParams);
-                    internalCustomer.setStripeId(customer.getId());
+                    if (saveCard){
+                        internalCustomer.setStripeId(customer.getId());
+                    }
                     //Set the auth0 username to currently logged in user if they're a customer
                     if (!isManager){
                         if (internalCustomer.getAuth0_username() == null && username != null) {
@@ -337,8 +332,9 @@ public class PaymentServiceImpl implements PaymentService {
                     account.setCustomer(internalCustomer);
                     accountRepository.save(account);
                 }
-                customer = Customer.retrieve(internalCustomer.getStripeId());
-                logger.info(customer.getId(), customer.getAddress());
+                if (internalCustomer.getStripeId() != null){
+                    customer = Customer.retrieve(internalCustomer.getStripeId());
+                }
 
                 //Create Payment Intent
                 PaymentIntentCreateParams intentParams = PaymentIntentCreateParams.builder()

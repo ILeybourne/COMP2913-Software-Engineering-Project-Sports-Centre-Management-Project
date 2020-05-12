@@ -11,6 +11,7 @@ public class PaymentDTO {
     private Long membershipTypeId;
     private Long sessionId;
     private Integer participants;
+    private Boolean saveCard;
 
     public Long getMembershipTypeId() {
         return membershipTypeId;
@@ -58,5 +59,13 @@ public class PaymentDTO {
 
     public void setSessionId(Long sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public Boolean getSaveCard() {
+        return saveCard;
+    }
+
+    public void setSaveCard(Boolean saveCard) {
+        this.saveCard = saveCard;
     }
 }
