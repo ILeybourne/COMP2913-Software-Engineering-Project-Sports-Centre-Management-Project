@@ -38,7 +38,9 @@ const actions = {
   async getMembershipTypes({ commit }) {
     commit("loading/START_LOADING", null, { root: true });
     const { data } = await axios.get("/membership/types");
-    commit("SET_MEMBERSHIPTYPES", data._embedded.membershipTypeDToes);
+    if (data.page.totalElements > 0) {
+      commit("SET_MEMBERSHIPTYPES", data._embedded.membershipTypeDToes);
+    }
     commit("loading/FINISH_LOADING", null, { root: true });
   },
   async getSelectedMembershipType({ commit }, selectedOption) {
@@ -67,7 +69,9 @@ const actions = {
     const { data } = await axios.get(
       `/membership/members/account/${accountId}`
     );
-    commit("SET_ACCOUNTMEMBERSHIPS", data._embedded.membershipDToes);
+    if (data.page.totalElements > 0) {
+      commit("SET_ACCOUNTMEMBERSHIPS", data._embedded.membershipDToes);
+    }
     commit("loading/FINISH_LOADING", null, { root: true });
     return data;
   }
